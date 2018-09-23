@@ -276,7 +276,7 @@ compress_html:
 # Defaults
 defaults:
   # _posts
-  - scope:
+    - scope:
       path: ""
       type: posts
     values:
@@ -287,7 +287,7 @@ defaults:
       share: true
       related: true
 
-    #_pages
+  #_pages
     - scope:
       path: ""
       type: pages
