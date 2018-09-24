@@ -2,7 +2,7 @@
 title: "About"
 permalink: "/about/"
 header:
-  image: /images/header.jpg/
+  image: /UO_Adv_Biol_Stats_I.github.io/images/header.jpg/
 
 ---
 
