@@ -2,7 +2,7 @@
 title: "Syllabus"
 permalink: "/syllabus/"
 header:
-  image: images/header.jpg
+  image: /images/header.jpg
 
 ---
 
