@@ -10,9 +10,7 @@ main:
     url: /code/
   - title: "Ethics"
     url: /ethics/
-  - title: "Homework"
-    url: /homework/
-  - title: "Lectures"
-    url: /lectures/
+  - title: "Schedule"
+    url: /schedule/
   - title: "Sitemap"
     url: /sitemap/
