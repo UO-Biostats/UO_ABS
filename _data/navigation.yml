@@ -6,11 +6,13 @@ main:
     url: /about/
   - title: "Syllabus"
     url: /syllabus/
-  # - title: "About"
-  #   url: https://mmistakes.github.io/minimal-mistakes/about/
-  # - title: "Sample Posts"
-  #   url: /year-archive/
-  # - title: "Sample Collections"
-  #   url: /collection-archive/
-  # - title: "Sitemap"
-  #   url: /sitemap/
+  - title: "Code"
+    url: /code/
+  - title: "Ethics"
+    url: /ethics/
+  - title: "Homework"
+    url: /homework/
+  - title: "Lectures"
+    url: /lectures/
+  - title: "Sitemap"
+    url: /sitemap/

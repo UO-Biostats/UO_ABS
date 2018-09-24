@@ -105,7 +105,7 @@ author:
   avatar           : /images/bill.jpg
   bio              : "A biologist with a running problem"
   location         : "Eugene, OR"
-  email            :
+  email            : "wcresko@uoregon.edu"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"

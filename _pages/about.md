@@ -6,4 +6,4 @@ header:
 
 ---
 
-This is where a brief description goes
+This is where information on the course, instructors, etc. will go
