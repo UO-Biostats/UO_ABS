@@ -2,7 +2,7 @@
 title: "About"
 permalink: "/about/"
 header:
-  image:"/_images/BioStats_header.jpg"
+  image:"/_images/header.jpg"
 
 ---
 
