@@ -1,9 +1,9 @@
 ---
-title: "Syllabus"
-permalink: "/syllabus/"
+title: "Homework"
+permalink: "/homework/"
 header:
   image: /images/header.jpg
 
 ---
 
-This is where a brief description goes
+This is where we will post the homeworks
