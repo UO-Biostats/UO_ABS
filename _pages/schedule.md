@@ -7,41 +7,41 @@ header:
 ---
 
 ## Week 1 -
-Tuesday [Slides]({{ https://wcresko.github.io/UO_ABS/ }}/pdfs_slides/01a.ABS_Week1.pdf)
-Thursday Slides
+* Tuesday [Slides](/pdfs_slides/01a.ABS_Week1.pdf)
+* Thursday Slides
 
 ## Week 2 -
-Tuesday Slides
-Thursday Slides
+* Tuesday Slides
+* Thursday Slides
 
 ## Week 3 -
-Tuesday Slides
-Thursday Slides
+* Tuesday Slides
+* Thursday Slides
 
 ## Week 4 -
-Tuesday Slides
-Thursday Slides
+* Tuesday Slides
+* Thursday Slides
 
 ## Week 5 -
-Tuesday Slides
-Thursday Slides
+* Tuesday Slides
+* Thursday Slides
 
 ## Week 6 -
-Tuesday Slides
-Thursday Slides
+* Tuesday Slides
+* Thursday Slides
 
 ## Week 7 -
-Tuesday Slides
-Thursday Slides
+* Tuesday Slides
+* Thursday Slides
 
 ## Week 8 -
-Tuesday Slides
-Thursday Slides
+* Tuesday Slides
+* Thursday Slides
 
 ## Week 9 -
-Tuesday Slides
-Thursday Slides
+* Tuesday Slides
+* Thursday Slides
 
 ## Week 10 -
-Tuesday Slides
-Thursday Slides
+* Tuesday Slides
+* Thursday Slides
