@@ -13,19 +13,19 @@ wcresko@uoregon.edu
 
 # Primary Instructor for Course 2 (Winter 2019)
 Dr. Peter Ralph
-xxxx
+270 Onyx Bridge
 plr@uoregon.edu
 
 # Teaching Assistant for Both Courses
 Matt Lukac
-xxx
+270 Onyx BNridge
 mlukac@uoregon.edu
 
 # Office Hours Fall 2018
-Matt
+Matt - 276 Onyx Bridge
 * Tuesday 1:00-2:30
 * Friday 11:00-12:30
 
-Bill
+Bill - 312 Pacific Hall
 * Monday 3:00-4:00
 * By appointment
