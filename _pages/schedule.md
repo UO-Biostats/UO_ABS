@@ -7,7 +7,7 @@ header:
 ---
 
 ## Week 1 -
-Tuesday [Slides](./pdfs_slides/01a.ABS_Week1.pdf)
+Tuesday [Slides]({{ https://wcresko.github.io/UO_ABS/ }}/pdfs_slides/01a.ABS_Week1.pdf)
 Thursday Slides
 
 ## Week 2 -

@@ -18,8 +18,8 @@ header:
 
 ## Teaching Assistant for Both Courses
 - Matt Lukac
-- - 270 Onyx Bridge
-mlukac@uoregon.edu
+- 270 Onyx Bridge
+- mlukac@uoregon.edu
 
 ## Office Hours Fall 2018
 Matt - 276 Onyx Bridge
