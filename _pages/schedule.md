@@ -7,8 +7,8 @@ header:
 ---
 
 ## Week 1 -
-* Tuesday [Slides](/pdfs_slides/01a.ABS_Week1.pdf)
-* Thursday Slides
+* Tuesday
+* Thursday [Slides1]:{{ site.url }}/pdfs_slides/01a.ABS_Week1.pdf
 
 ## Week 2 -
 * Tuesday Slides
