@@ -2,15 +2,13 @@
 main:
   - title: "About"
     url: /about/
+  - title: "Instructors"
+    url: /instructors/
+  - title: "Ethics"
+    url: /ethics/
   - title: "Syllabus"
     url: /syllabus/
   - title: "Schedule"
     url: /schedule/
   - title: "Code"
     url: /code/
-  - title: "Ethics"
-    url: /ethics/
-  - title: "Instructors"
-    url: /instructors/
-  - title: "Sitemap"
-    url: /sitemap/

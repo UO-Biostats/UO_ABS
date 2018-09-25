@@ -6,12 +6,13 @@ header:
 
 ---
 
-## Primary Instructor for Course 1 (Fall 2018)
+## Description of the course
 This course aims to provide students with an understanding of the core concepts and approaches for the analysis of biological data, particularly large data sets. This is meant as a first, foundational course for graduate students. It is advanced in that we will move through the material quickly with the goal of covering all major topics in univariate data analysis, forming a foundation for subsequent learning. Students will learn to use the powerful statistical programming language R.
 
 ## Course Information
 Schedule: Tue/Thur 10:00 AM - 11:50 AM, 40 Science Library
-Websites:
+
+##Websites:
  - Bi 610 Canvas site (https://canvas.uoregon.edu/)
  - GitHub Page for course repository (https://wcresko.github.io/UO_ABS/)
 
@@ -27,9 +28,10 @@ Websites:
 * Matt's recommended book
 
 ## Software:
-Latest version of R from the R Project (www.r-project.org)
-An R scripting environment such as RStudio (www.r-project.org) & TextWrangler (free version of BBEdit)
-Git and GitHub account
+* Latest version of R from the R Project (www.r-project.org)
+* An R scripting environment such as RStudio (www.r-project.org) & TextWrangler (free version of BBEdit)
+* Git and GitHub account
+* A good code editor like Atom
 
 ## Prerequisites:
 None, but students should be comfortable with algebra and the basics of calculus.

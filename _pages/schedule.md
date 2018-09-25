@@ -2,7 +2,7 @@
 title: "Schedule"
 permalink: "/schedule/"
 header:
-  image: ""/images/header.png"
+  image: /images/header.jpg
 
 ---
 
