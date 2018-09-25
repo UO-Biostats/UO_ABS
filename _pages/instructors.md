@@ -2,7 +2,7 @@
 title: "Instructors"
 permalink: "/instructors/"
 header:
-  overlay_image: ""/images/header.png"
+  image: /images/header.png
 
 ---
 
@@ -18,7 +18,7 @@ plr@uoregon.edu
 
 # Teaching Assistant for Both Courses
 Matt Lukac
-270 Onyx BNridge
+270 Onyx Bridge
 mlukac@uoregon.edu
 
 # Office Hours Fall 2018
