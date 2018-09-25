@@ -11,9 +11,10 @@ This is a GitHub website for the University of Oregon Advanced Biological Statis
 
 
 ## Instructors on your journey
-Bill Cresko
-Peter Ralph
-Matt
+
+- Bill Cresko
+- Peter Ralph
+- Matt Lukac
 
 ## Something Else
 
