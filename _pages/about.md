@@ -12,7 +12,7 @@ This course aims to provide students with an understanding of the core concepts 
 ## Course Information
 Schedule: Tue/Thur 10:00 AM - 11:50 AM, 40 Science Library
 
-##Websites:
+## Websites:
  - Bi 610 Canvas site (https://canvas.uoregon.edu/)
  - GitHub Page for course repository (https://wcresko.github.io/UO_ABS/)
 
@@ -22,10 +22,10 @@ Schedule: Tue/Thur 10:00 AM - 11:50 AM, 40 Science Library
 * Quinn, G. & M. Keough. 2002. Experimental Design and Data Analysis for Biologists. Cambridge Univ. Press.
 * Kruschke, J. 2018. Doing Bayesian Data Analysis, 2nd ed. Academic Press.
 
-* Haddock, S. and C. Dunn. 2011. Practical Computing for Biologists. Sinauer and Associates.
+* Haddock, S. and C. Dunn. 2011. Practical Computing for Biologists. Sinauer and Associates. (Recommended)
 * Wickham, H. 2009. GGPlot2: Elegant Graphics for Data Analysis. Springer. (Recommended)
 * Logan, M. 2010. Biostatistical Design and Analysis Using R. Wiley-Blackwell. (Recommended)
-* Matt's recommended book
+* Matt's recommended book.  (Recommended)
 
 ## Software:
 * Latest version of R from the R Project (www.r-project.org)
