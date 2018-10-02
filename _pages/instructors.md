@@ -23,7 +23,7 @@ header:
 
 ## Office Hours Fall 2018
 Matt
-* Tuesday 1:00-2:30 (276 Onyx Bridge)
+* Tuesday 12:30-2:00 (276 Onyx Bridge)
 * Friday 3:00-4:30 (271 Onyx Bridge)
 
 Bill - 312 Pacific Hall
