@@ -7,8 +7,7 @@ header:
 ---
 
 ## Week 1 -
-* Tuesday <a href="https://wcresko.github.io/UO_ABS/html/Lecture1.html" >Tuesday Lecture</a>
-* Thursday <a href="https://wcresko.github.io/UO_ABS/html/weekone_b.html" >Thursday Lecture</a>
+* SLIDES <a href="https://wcresko.github.io/UO_ABS/html/Week1_Lecture.html" >Tuesday Lecture</a>
 
 ## Week 2 -
 * Tuesday Slides
