@@ -22,9 +22,9 @@ header:
 - mlukac@uoregon.edu
 
 ## Office Hours Fall 2018
-Matt - 276 Onyx Bridge
-* Tuesday 1:00-2:30
-* Friday 11:00-12:30
+Matt
+* Tuesday 12:30-2:00 (276 Onyx Bridge)
+* Friday 3:00-4:30 (271 Onyx Bridge)
 
 Bill - 312 Pacific Hall
 * Monday 3:00-4:00
