@@ -3,12 +3,6 @@
 This is a GitHub website for the University of Oregon Advanced Biological Statistics Class. It is based upon the minimal mistakes (https://mmistakes.github.io/minimal-mistakes/) GitHub theme :smile:.
 
 
-## Notable Features
-
-- on
-- fontawesome
-- three
-
 
 ## Instructors on your journey
 
