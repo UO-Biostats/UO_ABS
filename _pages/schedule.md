@@ -7,7 +7,7 @@ header:
 ---
 
 ## Week 1 -
-* <a href="https://wcresko.github.io/UO_ABS/html/01.Week_01_Lecture.html" >SLIDES</a>
+* <a href="https://wcresko.github.io/UO_ABS/html/01.Week_01_Lecture_1_total.html" >SLIDES</a>
 
 ## Week 2 -
 * <a href="https://wcresko.github.io/UO_ABS/html/01.Week_02_Lecture.html" >SLIDES</a>
@@ -16,11 +16,10 @@ header:
 * <a href="https://wcresko.github.io/UO_ABS/html/01.Week_03_Lecture.html" >SLIDES</a>
 
 ## Week 4 -
-* <a href="https://wcresko.github.io/UO_ABS/html/04.Week_04_Lecture_total.html" >Tuesday & Thursday Slides</a>
+* <a href="https://wcresko.github.io/UO_ABS/html/04.Week_04_Lecture_4_total.html" >Tuesday & Thursday Slides</a>
 
 ## Week 5 -
-* <a href="https://wcresko.github.io/UO_ABS/html/05.Week_05_Lecture_5a.html" >Tuesday Slides</a>
-* <a href="https://wcresko.github.io/UO_ABS/html/05.Week_05_Lecture_5b.html" >Thursday Slides</a>
+* <a href="https://wcresko.github.io/UO_ABS/html/05.Week_05_Lecture_5_total.html" >Tuesday & Thursday Slides</a>
 
 ## Week 6 -
 * <a href="https://wcresko.github.io/UO_ABS/html/06.Week_06_Lecture_6a.html" >Tuesday Slides</a>
