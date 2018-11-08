@@ -22,7 +22,7 @@ header:
 * <a href="https://wcresko.github.io/UO_ABS/html/05.Week_05_Lecture_5_total.html" >Tuesday & Thursday Slides</a>
 
 ## Week 6 -
-* <a href="https://wcresko.github.io/UO_ABS/html/06.Week_06_Lecture_6_total.html" >Tuesday & Thursday Slides</a>
+* <a href="https://wcresko.github.io/UO_ABS/html/06.Week_06_Lecture_total.html" >Tuesday & Thursday Slides</a>
 
 ## Week 7 -
 * <a href="https://wcresko.github.io/UO_ABS/html/07.Week_07_Lecture_7a.html" >Tuesday Slides</a>
