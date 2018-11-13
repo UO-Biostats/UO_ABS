@@ -30,7 +30,7 @@ header:
 
 ## Week 8 -
 
-* <a href="https://wcresko.github.io/UO_ABS/html/08.Week_08_Lecture.slides.html">Tuesday & Thursday Slides</a>
+* [Tuesday & Thursday Slides](../html/08.Week_08_Lecture_8.slides.html)
 
 ## Week 9 -
 
