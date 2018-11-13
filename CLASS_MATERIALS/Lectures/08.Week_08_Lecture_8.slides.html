@@ -355,7 +355,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section><section id="unknown-coins" class="title-slide slide level1"><h1>Unknown coins</h1></section><section id="motivating-example" class="slide level2">
 <h2>Motivating example</h2>
 <p>Now suppose we want to estimate the probability of heads for a coin <em>without</em> knowing the possible values. (or, a disease incidence, or error rate in an experiment, …)</p>
-<p>We flip it <span class="math inline">\(n\)</span> times and get <span class="math inline">\(Z\)</span> Heads.</p>
+<p>We flip it <span class="math inline">\(n\)</span> times and get <span class="math inline">\(z\)</span> Heads.</p>
 <p>The <em>likelihood</em> of this, given the prob-of-heads <span class="math inline">\(\theta\)</span>, is: <span class="math display">\[p(z \given \theta) = \binom{n}{z}\theta^z (1-\theta)^{n-z} . \]</span></p>
 <p>How to weight the possible <span class="math inline">\(\theta\)</span>? Need a flexible set of weighting functions, i.e., <strong>prior distributions</strong> on <span class="math inline">\([0,1]\)</span>.</p>
 <div class="fragment">
@@ -539,7 +539,7 @@ model {
     Z &amp;\sim \Binom(10, \theta) \\
     \theta &amp;\sim \Beta(20, 20) 
 \end{aligned}\]</span></p>
-<p>Sample from <span class="math display">\[\theta \given Z = 6\]</span></p>
+<p>What’s our <em>best guess</em> at <span class="math inline">\(\theta\)</span>?</p>
 </div><div class="column" style="width:50%;">
 <pre><code>data {
     int N;   // number of flips
@@ -562,7 +562,7 @@ model {
     Z &amp;\sim \Binom(10, \theta) \\
     \theta &amp;\sim \Beta(20, 20) 
 \end{aligned}\]</span></p>
-<p>Sample from <span class="math display">\[\theta \given Z = 6\]</span></p>
+<p>What’s our <em>best guess</em> at <span class="math inline">\(\theta\)</span>?</p>
 </div><div class="column" style="width:50%;">
 <pre><code>data {
     int N;   // number of flips
@@ -585,7 +585,7 @@ model {
     Z &amp;\sim \Binom(10, \theta) \\
     \theta &amp;\sim \Beta(20, 20) 
 \end{aligned}\]</span></p>
-<p>Sample from <span class="math display">\[\theta \given Z = 6\]</span></p>
+<p>What’s our <em>best guess</em> at <span class="math inline">\(\theta\)</span>?</p>
 </div><div class="column" style="width:50%;">
 <pre><code>data {
     int N;   // number of flips
@@ -657,10 +657,11 @@ model {
 ## 
 ## $return_code
 ## [1] 0</code></pre>
-</section><section id="lets-check-that" class="slide level2">
-<h2>Let’s check that</h2>
+</section><section id="the-answer" class="slide level2">
+<h2>The answer!</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
+<p>The <em>maximum a posteriori probability estimate</em> (MAP) is 0.5208333.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">post_fun &lt;-<span class="st"> </span><span class="cf">function</span> (p) {</a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">    n &lt;-<span class="st"> </span><span class="dv">10</span>; z &lt;-<span class="st"> </span><span class="dv">6</span>; a &lt;-<span class="st"> </span>b &lt;-<span class="st"> </span><span class="dv">20</span></a>
 <a class="sourceLine" id="cb13-3" data-line-number="3">    lik &lt;-<span class="st"> </span><span class="kw">dbinom</span>(z, <span class="dt">size=</span>n, <span class="dt">prob=</span>p)</a>
@@ -669,13 +670,14 @@ model {
 <a class="sourceLine" id="cb13-6" data-line-number="6">}</a>
 <a class="sourceLine" id="cb13-7" data-line-number="7"><span class="kw">curve</span>(post_fun, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">xlab=</span><span class="kw">expression</span>(theta), <span class="dt">ylab=</span><span class="st">&#39;posterior prob&#39;</span>)</a>
 <a class="sourceLine" id="cb13-8" data-line-number="8"><span class="kw">points</span>(fit<span class="op">$</span>par, <span class="kw">post_fun</span>(fit<span class="op">$</span>par), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">pch=</span><span class="dv">20</span>)</a></code></pre></div>
+<p><em>Note:</em> If the prior was <em>uniform</em>, then this would be the <em>maximum likelihood estimate</em> (MLE) also.</p>
 </div><div class="column" style="width:50%;">
 <p><img src="figure/08.Week_08_Lecture_8/stan_check-1.png" title="plot of chunk stan_check" alt="plot of chunk stan_check" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </section></section>
-<section><section id="wrap-up" class="title-slide slide level1"><h1>Wrap-up</h1></section><section id="section-1" class="slide level2">
-<h2></h2>
+<section><section id="wrap-up" class="title-slide slide level1"><h1>Wrap-up</h1></section><section id="summary" class="slide level2">
+<h2>Summary</h2>
 <p>posterior <span class="math inline">\(=\)</span> prior <span class="math inline">\(\times\)</span> likelihood</p>
 <div class="fragment">
 <p>“updating prior ideas based on (more) data”</p>
@@ -684,7 +686,7 @@ model {
 <p>Stan lets us find <em>best fitting</em> parameters for <em>models</em>.</p>
 </div>
 <div class="fragment">
-<p>Next time: <strong>uncertainty</strong>.</p>
+<p>Next time: <strong>uncertainty</strong>, with Stan.</p>
 </div>
 </section></section>
 <section><section id="appendix" class="title-slide slide level1"><h1>Appendix</h1></section><section id="exercise-check-the-beta-binomial" class="slide level2">

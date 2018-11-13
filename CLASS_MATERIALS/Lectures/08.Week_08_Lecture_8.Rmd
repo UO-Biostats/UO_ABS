@@ -441,7 +441,7 @@ Now suppose we want to estimate the probability of heads
 for a coin *without* knowing the possible values.
 (or, a disease incidence, or error rate in an experiment, ...)
 
-We flip it $n$ times and get $Z$ Heads.
+We flip it $n$ times and get $z$ Heads.
 
 The *likelihood* of this, given the prob-of-heads $\theta$, is:
 $$p(z \given \theta) = \binom{n}{z}\theta^z (1-\theta)^{n-z} . $$
@@ -723,7 +723,7 @@ $$\begin{aligned}
     \theta &\sim \Beta(20, 20) 
 \end{aligned}$$
 
-Sample from $$\theta \given Z = 6$$
+What's our *best guess* at $\theta$?
 
 :::
 ::: {.column width="50%"}
@@ -755,7 +755,7 @@ $$\begin{aligned}
     \theta &\sim \Beta(20, 20) 
 \end{aligned}$$
 
-Sample from $$\theta \given Z = 6$$
+What's our *best guess* at $\theta$?
 
 :::
 ::: {.column width="50%"}
@@ -790,7 +790,7 @@ $$\begin{aligned}
     \theta &\sim \Beta(20, 20) 
 \end{aligned}$$
 
-Sample from $$\theta \given Z = 6$$
+What's our *best guess* at $\theta$?
 
 :::
 ::: {.column width="50%"}
@@ -875,10 +875,12 @@ library(rstan)
 
 ```
 
-## Let's check that
+## The answer!
 
 :::::::::::::: {.columns}
 ::: {.column width="50%"}
+
+The *maximum a posteriori probability estimate* (MAP) is `r fit$par`.
 
 ```{r stan_check_fake, eval=FALSE}
 post_fun <- function (p) {
@@ -890,6 +892,9 @@ post_fun <- function (p) {
 curve(post_fun, 0, 1, xlab=expression(theta), ylab='posterior prob')
 points(fit$par, post_fun(fit$par), col='red', pch=20)
 ```
+
+*Note:* If the prior was *uniform*, then this would be the
+*maximum likelihood estimate* (MLE) also.
 
 :::
 ::: {.column width="50%"}
@@ -910,7 +915,7 @@ points(fit$par, post_fun(fit$par), col='red', pch=20, cex=2)
 
 # Wrap-up
 
-## 
+## Summary
 
 posterior $=$ prior $\times$ likelihood
 
@@ -925,7 +930,7 @@ Stan lets us find *best fitting* parameters for *models*.
 . . .
 
 
-Next time: **uncertainty**.
+Next time: **uncertainty**, with Stan.
 
 
 # Appendix
