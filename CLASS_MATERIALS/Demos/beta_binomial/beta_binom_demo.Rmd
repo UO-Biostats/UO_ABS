@@ -1,0 +1,73 @@
+---
+title: "Beta binomial"
+author: "Peter Ralph"
+date: "November 15, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We flip an odd-looking coin 100 times, and get 65 heads. What is it’s "true" probability of heads?
+
+*What do we mean, "true"?*  The *long-run* proportion of heads that you'd get
+if you flipped the coin a lot of times.
+
+*What prior should we use?*
+Coins are probably *close* to fair (else they wouldn't look like coins),
+so let's take a Beta(10,10), which allows the probability to differ from 50%
+by about 10%.
+
+*Does it seem reasonable that $\theta = 1/2$?*
+
+We know that the posterior distribution of $\theta$, given the data (100 flips and 65 heads)
+is Beta(75, 45).  
+What this means is:
+suppose we have a big bag full of coins in which the distribution of
+"probabilities" is Beta(10,10).
+Then we flip *every* coin 100 times, but then put in a separate bag
+only those coins that got exactly 65 Heads
+(so, we *condition* on getting 65 heads).
+The math we did tells us that the distribution of probabilities
+for the coins in that new bag is Beta(75, 45).
+
+
+Let's look at that distribution,
+both using math and simulation:
+```{r plot_beta}
+layout(t(1:2))
+curve(dbeta(x, shape1=75, shape2=45), from=0, to=1,
+      xlab="theta", ylab="posterior prob", main="math")
+abline(v=1/2, col='red')
+abline(v=(75 - 1)/(75 + 45 - 2), col='green')
+
+random_thetas <- rbeta(1e6, shape1=75, shape2=45)
+hist(random_thetas, xlab="theta", ylab="posterior", main="simulation")
+abline(v=1/2, col='red')
+abline(v=(75 - 1)/(75 + 45 - 2), col='green')
+```
+
+It doesn't look likely that the coin has $\theta = 1/2$:
+the posterior probability that $\theta \le 1/2$ is
+only `r pbeta(1/2, 75, 45)`.
+
+*What is our best guess at $\theta$?*
+
+The posterior mode of $\theta$ is `r (75 - 1)/(75 + 45 - 2)`,
+which we have added as a green line to the plot above.
+
+*How far off are we?*
+
+We can quantify how far off we're likely to be with a 95% *credible interval*;
+we'll use the "highest density interval" (because that is the narrowest
+95% credible interval).
+
+```{r credible_interval}
+library(HDInterval)
+credible_interval <- hdi(rbeta(1e6, 75, 45), credMass=0.95)
+```
+
+Our 95% credible interval for the true proportion of the time
+that this coin comes up heads is from
+`r credible_interval[1]` to `r credible_interval[2]`.

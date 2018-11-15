@@ -31,6 +31,7 @@ header:
 ## Week 8 -
 
 * [Tuesday & Thursday Slides](../html/08.Week_08_Lecture_8.slides.html)
+* [in-class demo](../CLASS_MATERIALS/Demos/beta_binomial/beta_binom_demo.html) - Beta-Binomial analysis
 
 ## Week 9 -
 
