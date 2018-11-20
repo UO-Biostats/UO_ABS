@@ -32,7 +32,7 @@ options(mc.cores = parallel::detectCores())
 
 Suppose now we have data from $n$ different coins from the same source.
 We don't assume they have the *same* $\theta$,
-but don't know what it's distribution is,
+but don't know what its distribution is,
 so try to *learn* it.
 
 $$\begin{aligned}
@@ -246,7 +246,7 @@ How to do everything: see [the user's manual](http://mc-stan.org/users/documenta
 
 # Beta-Binomial with Stan
 
-## First, in words:
+## From before:
 
 We've flipped a coin 10 times and got 6 Heads.
 We think the coin is close to fair, so put a $\Beta(20,20)$ prior on
@@ -490,8 +490,8 @@ data {
 parameters {
     // probability of heads
     real<lower=0,upper=1> theta[n];
-    real<lower=0> alpha;
-    real<lower=0> beta;
+    real<lower=0, upper=100> alpha;
+    real<lower=0, upper=100> beta;
 }
 model {
     Z ~ binomial(N, theta);
@@ -522,7 +522,9 @@ N <- rep(50, ncoins)
 Z <- rbinom(ncoins, size=N, prob=true_theta)
 ```
 
-Find the posterior distribution on `alpha` and `beta`.
+Find the posterior distribution on `alpha` and `beta`:
+check convergence with `print()` and `stan_trace()`,
+then plot using `stan_hist()` and/or `stan_scat()`..
 
 
 :::
@@ -564,7 +566,7 @@ having
 
 1. name
 2. position
-3. number of "at bats"
+3. number of at bats
 4. number of hits
 
 

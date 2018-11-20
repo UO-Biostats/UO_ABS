@@ -1670,7 +1670,7 @@ transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985); }
 </section>
 <section><section id="hierarchical-coins" class="title-slide slide level1"><h1>Hierarchical coins</h1></section><section id="motivating-problem-more-coins" class="slide level2">
 <h2>Motivating problem: more coins</h2>
-<p>Suppose now we have data from <span class="math inline">\(n\)</span> different coins from the same source. We don’t assume they have the <em>same</em> <span class="math inline">\(\theta\)</span>, but don’t know what it’s distribution is, so try to <em>learn</em> it.</p>
+<p>Suppose now we have data from <span class="math inline">\(n\)</span> different coins from the same source. We don’t assume they have the <em>same</em> <span class="math inline">\(\theta\)</span>, but don’t know what its distribution is, so try to <em>learn</em> it.</p>
 <p><span class="math display">\[\begin{aligned}
     Z_i &amp;\sim \Binom(N_i, \theta_i) \\
     \theta_i &amp;\sim \Beta(\alpha, \beta) \\
@@ -1818,8 +1818,8 @@ generated quantities {
 <p>How to do everything: see <a href="http://mc-stan.org/users/documentation/index.html">the user’s manual</a>.</p>
 </div>
 </section></section>
-<section><section id="beta-binomial-with-stan" class="title-slide slide level1"><h1>Beta-Binomial with Stan</h1></section><section id="first-in-words" class="slide level2">
-<h2>First, in words:</h2>
+<section><section id="beta-binomial-with-stan" class="title-slide slide level1"><h1>Beta-Binomial with Stan</h1></section><section id="from-before" class="slide level2">
+<h2>From before:</h2>
 <p>We’ve flipped a coin 10 times and got 6 Heads. We think the coin is close to fair, so put a <span class="math inline">\(\Beta(20,20)\)</span> prior on it’s probability of heads, and want the posterior distribution.</p>
 <p><span class="math display">\[\begin{aligned}
     Z &amp;\sim \Binom(10, \theta) \\
@@ -1961,8 +1961,8 @@ model {
 parameters {
     // probability of heads
     real&lt;lower=0,upper=1&gt; theta[n];
-    real&lt;lower=0&gt; alpha;
-    real&lt;lower=0&gt; beta;
+    real&lt;lower=0, upper=100&gt; alpha;
+    real&lt;lower=0, upper=100&gt; beta;
 }
 model {
     Z ~ binomial(N, theta);
@@ -1983,7 +1983,7 @@ ncoins &lt;- 100
 true_theta &lt;- rbeta(ncoins, 20, 50)
 N &lt;- rep(50, ncoins)
 Z &lt;- rbinom(ncoins, size=N, prob=true_theta)</code></pre>
-<p>Find the posterior distribution on <code>alpha</code> and <code>beta</code>.</p>
+<p>Find the posterior distribution on <code>alpha</code> and <code>beta</code>: check convergence with <code>print()</code> and <code>stan_trace()</code>, then plot using <code>stan_hist()</code> and/or <code>stan_scat()</code>..</p>
 </div><div class="column" style="width:50%;">
 <pre><code>data {
     int n;      // number of coins
@@ -2012,7 +2012,7 @@ model {
 <ol type="1">
 <li>name</li>
 <li>position</li>
-<li>number of “at bats”</li>
+<li>number of at bats</li>
 <li>number of hits</li>
 </ol>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">batting &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;BattingAverage.csv&quot;</span>, <span class="dt">header=</span><span class="ot">TRUE</span>)</a>
