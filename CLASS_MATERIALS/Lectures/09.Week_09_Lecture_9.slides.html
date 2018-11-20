@@ -1934,8 +1934,8 @@ model {
 parameters {
     // probability of heads
     real&lt;lower=0,upper=1&gt; theta[n];
-    real&lt;lower=0&gt; alpha;
-    real&lt;lower=0&gt; beta;
+    real&lt;lower=0,upper=100&gt; alpha;
+    real&lt;lower=0,upper=100&gt; beta;
 }
 model {
     // how they are related
@@ -1993,8 +1993,8 @@ Z &lt;- rbinom(ncoins, size=N, prob=true_theta)</code></pre>
 parameters {
     // probability of heads
     real&lt;lower=0,upper=1&gt; theta[n];
-    real&lt;lower=0&gt; alpha;
-    real&lt;lower=0&gt; beta;
+    real&lt;lower=0,upper=100&gt; alpha;
+    real&lt;lower=0,upper=100&gt; beta;
 }
 model {
     Z ~ binomial(N, theta);

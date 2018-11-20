@@ -453,8 +453,8 @@ data {
 parameters {
     // probability of heads
     real<lower=0,upper=1> theta[n];
-    real<lower=0> alpha;
-    real<lower=0> beta;
+    real<lower=0,upper=100> alpha;
+    real<lower=0,upper=100> beta;
 }
 model {
     // how they are related
@@ -540,8 +540,8 @@ data {
 parameters {
     // probability of heads
     real<lower=0,upper=1> theta[n];
-    real<lower=0> alpha;
-    real<lower=0> beta;
+    real<lower=0,upper=100> alpha;
+    real<lower=0,upper=100> beta;
 }
 model {
     Z ~ binomial(N, theta);
