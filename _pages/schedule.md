@@ -35,7 +35,7 @@ header:
 
 ## Week 9 -
 
-* not yet posted
+* [Tuesday & Thursday Slides](../html/09.Week_09_Lecture_9.slides.html)
 
 ## Week 10 -
 
