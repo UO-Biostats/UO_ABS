@@ -207,6 +207,7 @@ $$\begin{aligned}
 
 ## The model
 
+<!--
 
 $$\begin{aligned}
     Z_i &\sim \Binom(N_i, \theta_i) \\
@@ -215,10 +216,10 @@ $$\begin{aligned}
     \kappa_p &\sim \Gam(0.1, 0.1) .
 \end{aligned}$$
 
+-->
 
-<!--
 :::::::::::::: {.columns}
-::: {.column width="60%"}
+::: {.column width="50%"}
 
 $$\begin{aligned}
     Z_i &\sim \Binom(N_i, \theta_i) \\
@@ -228,7 +229,34 @@ $$\begin{aligned}
 \end{aligned}$$
 
 ::::::::::::::
-::: {.column width="40%"}
+::: {.column width="50%"}
+
+
+```{r fake_stan_model, eval=FALSE}
+data {
+    int N;   // number of players
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+}
+parameters {
+    real<lower=0, upper=1> theta[N];
+    real<lower=0, upper=1> mu[npos];
+    real<lower=0> kappa[npos];
+}
+model {
+    real alpha;
+    real beta;
+    hits ~ binomial(at_bats, theta);
+    for (i in 1:N) {
+        alpha = mu[position[i]] * kappa[position[i]];
+        beta = (1 - mu[position[i]]) * kappa[position[i]];
+        theta[i] ~ beta(alpha, beta);
+    }
+    mu ~ beta(1,1);
+    kappa ~ gamma(0.1,0.1);
+```
 
 
 ```{r stan_model, cache=TRUE, include=FALSE}
@@ -258,7 +286,9 @@ model {
     kappa ~ gamma(0.1,0.1);
 } "
 ```
--->
+
+:::
+:::::::::::
 
 
 ##
