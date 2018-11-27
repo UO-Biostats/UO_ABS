@@ -1837,29 +1837,31 @@ $$\begin{aligned}
     \kappa_p &amp;\sim \Gam(0.1, 0.1) .
 \end{aligned}\]</span></p>
 </div><div class="column" style="width:50%;">
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">data {</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">    int N;   <span class="op">/</span><span class="er">/</span><span class="st"> </span>number of players</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">    int hits[N];</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">    int at_bats[N];</a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">    int npos; <span class="op">/</span><span class="er">/</span><span class="st"> </span>number of positions</a>
-<a class="sourceLine" id="cb10-6" data-line-number="6">    int position[N];</a>
-<a class="sourceLine" id="cb10-7" data-line-number="7">}</a>
-<a class="sourceLine" id="cb10-8" data-line-number="8">parameters {</a>
-<a class="sourceLine" id="cb10-9" data-line-number="9">    real<span class="op">&lt;</span>lower=<span class="dv">0</span>, upper=<span class="dv">1</span><span class="op">&gt;</span><span class="st"> </span>theta[N];</a>
-<a class="sourceLine" id="cb10-10" data-line-number="10">    real<span class="op">&lt;</span>lower=<span class="dv">0</span>, upper=<span class="dv">1</span><span class="op">&gt;</span><span class="st"> </span>mu[npos];</a>
-<a class="sourceLine" id="cb10-11" data-line-number="11">    real<span class="op">&lt;</span>lower=<span class="dv">0</span><span class="op">&gt;</span><span class="st"> </span>kappa[npos];</a>
-<a class="sourceLine" id="cb10-12" data-line-number="12">}</a>
-<a class="sourceLine" id="cb10-13" data-line-number="13">model {</a>
-<a class="sourceLine" id="cb10-14" data-line-number="14">    real alpha;</a>
-<a class="sourceLine" id="cb10-15" data-line-number="15">    real beta;</a>
-<a class="sourceLine" id="cb10-16" data-line-number="16">    hits <span class="op">~</span><span class="st"> </span><span class="kw">binomial</span>(at_bats, theta);</a>
-<a class="sourceLine" id="cb10-17" data-line-number="17">    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>N) {</a>
-<a class="sourceLine" id="cb10-18" data-line-number="18">        alpha =<span class="st"> </span>mu[position[i]] <span class="op">*</span><span class="st"> </span>kappa[position[i]];</a>
-<a class="sourceLine" id="cb10-19" data-line-number="19">        beta =<span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>mu[position[i]]) <span class="op">*</span><span class="st"> </span>kappa[position[i]];</a>
-<a class="sourceLine" id="cb10-20" data-line-number="20">        theta[i] <span class="op">~</span><span class="st"> </span><span class="kw">beta</span>(alpha, beta);</a>
-<a class="sourceLine" id="cb10-21" data-line-number="21">    }</a>
-<a class="sourceLine" id="cb10-22" data-line-number="22">    mu <span class="op">~</span><span class="st"> </span><span class="kw">beta</span>(<span class="dv">1</span>,<span class="dv">1</span>);</a>
-<a class="sourceLine" id="cb10-23" data-line-number="23">    kappa <span class="op">~</span><span class="st"> </span><span class="kw">gamma</span>(<span class="fl">0.1</span>,<span class="fl">0.1</span>);</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">pos_model &lt;-<span class="st"> &quot;</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="st">data {</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">    int N;   // number of players</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">    int hits[N];</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="st">    int at_bats[N];</span></a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="st">    int npos; // number of positions</span></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="st">    int position[N];</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="st">}</span></a>
+<a class="sourceLine" id="cb10-9" data-line-number="9"><span class="st">parameters {</span></a>
+<a class="sourceLine" id="cb10-10" data-line-number="10"><span class="st">    real&lt;lower=0, upper=1&gt; theta[N];</span></a>
+<a class="sourceLine" id="cb10-11" data-line-number="11"><span class="st">    real&lt;lower=0, upper=1&gt; mu[npos];</span></a>
+<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="st">    real&lt;lower=0&gt; kappa[npos];</span></a>
+<a class="sourceLine" id="cb10-13" data-line-number="13"><span class="st">}</span></a>
+<a class="sourceLine" id="cb10-14" data-line-number="14"><span class="st">model {</span></a>
+<a class="sourceLine" id="cb10-15" data-line-number="15"><span class="st">    real alpha;</span></a>
+<a class="sourceLine" id="cb10-16" data-line-number="16"><span class="st">    real beta;</span></a>
+<a class="sourceLine" id="cb10-17" data-line-number="17"><span class="st">    hits ~ binomial(at_bats, theta);</span></a>
+<a class="sourceLine" id="cb10-18" data-line-number="18"><span class="st">    for (i in 1:N) {</span></a>
+<a class="sourceLine" id="cb10-19" data-line-number="19"><span class="st">        alpha = mu[position[i]] * kappa[position[i]];</span></a>
+<a class="sourceLine" id="cb10-20" data-line-number="20"><span class="st">        beta = (1 - mu[position[i]]) * kappa[position[i]];</span></a>
+<a class="sourceLine" id="cb10-21" data-line-number="21"><span class="st">        theta[i] ~ beta(alpha, beta);</span></a>
+<a class="sourceLine" id="cb10-22" data-line-number="22"><span class="st">    }</span></a>
+<a class="sourceLine" id="cb10-23" data-line-number="23"><span class="st">    mu ~ beta(1,1);</span></a>
+<a class="sourceLine" id="cb10-24" data-line-number="24"><span class="st">    kappa ~ gamma(0.1,0.1);</span></a>
+<a class="sourceLine" id="cb10-25" data-line-number="25"><span class="st">}&quot;</span></a></code></pre></div>
 </div>
 </div>
 </section><section id="section" class="slide level2">

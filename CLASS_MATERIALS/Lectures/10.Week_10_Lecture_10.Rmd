@@ -233,6 +233,7 @@ $$\begin{aligned}
 
 
 ```{r fake_stan_model, eval=FALSE}
+pos_model <- "
 data {
     int N;   // number of players
     int hits[N];
@@ -256,6 +257,7 @@ model {
     }
     mu ~ beta(1,1);
     kappa ~ gamma(0.1,0.1);
+}"
 ```
 
 
