@@ -1,0 +1,66 @@
+---
+title: "Untitled"
+author: "Peter Ralph"
+date: "November 20, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Now we're going to run Stan to analyze data under this model:
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+
+First, let's simulate some data:
+```{r sim_data}
+set.seed(23)
+ncoins <- 100
+true_theta <- rbeta(ncoins, 20, 50)
+N <- rep(50, ncoins)
+Z <- rbinom(ncoins, size=N, prob=true_theta)
+```
+
+We get to observe `N` and `Z`, and try to infer `alpha` and `beta`.
+Here is the Stan block:
+```{r stan_model}
+stan_block <- "
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta[n];
+    real<lower=0,upper=100> alpha;
+    real<lower=0,upper=200> beta;
+}
+model {
+    Z ~ binomial(N, theta);
+    theta ~ beta(alpha, beta);
+    // uniform priors 'go without saying'
+    // alpha ~ uniform(0, 100);
+    // beta ~ uniform(0, 200);
+}"
+```
+
+Running Stan to do MCMC sampling from the posterior:
+```{r run_stan}
+library(rstan)
+fit <- stan(model_code=stan_block,  # stan block from above
+            data=list(n=ncoins, N=N, Z=Z),
+            chains=3, iter=10000)
+```
+
+Here are the diagnostics:
+```{r print_stan}
+print(fit, pars=c("alpha", "beta", "theta"))
+```
+

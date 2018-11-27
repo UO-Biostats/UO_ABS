@@ -31,11 +31,16 @@ header:
 
 * [Tuesday & Thursday Slides](../html/08.Week_08_Lecture_8.slides.html)
 * [in-class demo](../CLASS_MATERIALS/Demos/beta_binomial/beta_binom_demo.html) - Beta-Binomial analysis
+* reading: Kruschke, chapters 5 and 6 (and: install and test [rstan](https://mc-stan.org))
 
 ## Week 9 -
 
-* [Tuesday & Thursday Slides](../html/09.Week_09_Lecture_9.slides.html)
+* [Tuesday Slides](../html/09.Week_09_Lecture_9.slides.html)
+* reading: Kruschke, chapters 7, 9, and 14
 
 ## Week 10 -
 
-* not yet posted
+* [Tuesday & Thursday Slides](../html/10.Week_10_Lecture_10.slides.html)
+* reading: Kruschke, chapters 16, 17, and 13
+
+>>>>>>> week 10 slides
