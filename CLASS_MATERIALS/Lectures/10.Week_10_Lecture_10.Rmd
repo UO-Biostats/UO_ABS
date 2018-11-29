@@ -760,6 +760,39 @@ model {
 :::::::::
 
 
+## 
+
+```
+data {
+    int N;   // number of players
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+    vector[N] height;
+    vector[N] weight;
+}
+parameters {
+    real<lower=0, upper=1> theta[N];
+    vector[npos] gamma;
+    real alpha_w;
+    real alpha_h;
+    vector<lower=0>[npos] kappa;
+}
+model {
+    vector[N] mu;
+    mu = inv_logit(gamma[position] + alpha_h * height + alpha_w * weight);
+    theta ~ beta(mu .* kappa[position], (1-mu) .* kappa[position]);
+    hits ~ binomial(at_bats, theta);
+    kappa ~ gamma(0.1, 0.1);
+    gamma ~ normal(0, 5);
+    alpha_h ~ normal(0, 5);
+    alpha_w ~ normal(0, 5);
+} 
+```
+
+
+
 -------------------
 
 
@@ -830,4 +863,345 @@ abline(0,1, col='red')
    to a logistic transform of a linear model
    did not substantially affect the results.
 
+
+# Stochastic minute
+
+---------------
+
+If $X \sim \Cauchy(\text{center}=\mu, \text{scale}=\sigma)$, then $X$ has probability density
+$$\begin{aligned}
+    f(x \given \mu, \sigma) = \frac{1}{\pi\left( 1 + \left( \frac{x - \mu}{\sigma} \right)^2 \right)} .
+\end{aligned}$$
+
+> 1. The Cauchy is a good example of a distribution with "heavy tails":
+>    rare, very large values.
+> 
+> 2. If $Z \sim \Normal(0, 1)$ and $X ~ \Normal(0,1/Z)$ then $X \sim \Cauchy(0,1)$.
+>
+> 3. If $X_1, X_2, \ldots, X_n$ are independent $\Cauchy(0,1)$ then
+>    $\max(X_1, \ldots, X_n)$ is of size $n$.
+>
+> 4. If $X_1, X_2, \ldots, X_n$ are independent $\Cauchy(0,1)$ then
+>    $$\begin{aligned}
+>     \frac{1}{n} \left(X_1 + \cdots + X_n\right) \sim \Cauchy(0,1) .
+>    \end{aligned}$$
+
+----------------
+
+5. If $X_1, X_2, \ldots, X_n$ are independent $\Cauchy(0,1)$ then
+   $$\begin{aligned}
+    \frac{1}{n} \left(X_1 + \cdots + X_n\right) \sim \Cauchy(0,1) .
+   \end{aligned}$$
+
+*Wait, what?!?*
+
+. . .
+
+A single value has the *same distribution* as the mean of 1,000 of them?
+
+. . .
+
+Let's look:
+```{r cauchy_mean}
+meanplot <- function (rf, n=1e3, m=100) {
+    x <- matrix(rf(n*m), ncol=m)
+    layout(t(1:2))
+    hist(x[1,][abs(x[1,])<5], breaks=20, freq=FALSE,
+         main=sprintf("%d samples", m),
+         xlim=c(-5,5))
+    hist(colMeans(x)[abs(colMeans(x))<5], breaks=20, freq=FALSE,
+         main=sprintf("%d means of %d each", m, n),
+         xlim=c(-5,5))
+}
+```
+
+----------
+
+$X \sim \Normal(0,1)$
+```{r normmeans}
+meanplot(rnorm)
+```
+
+-----------
+
+$X \sim \Cauchy(0,1)$
+```{r cauchymeans}
+meanplot(rcauchy)
+```
+
+## Another way to look at it: extreme values
+
+```{r max_values}
+n <- 100
+plot(c(cummax(rcauchy(n))), type='l', ylab='max value so far', xlab='number of samples', col='red')
+lines(c(cummax(rnorm(n))), col='black')
+legend("bottomright", lty=1, col=c('black', 'red'), legend=c('normal', 'cauchy'))
+```
+
+## Another way to look at it: extreme values
+
+```{r max_values2}
+n <- 1000
+plot(c(cummax(rcauchy(n))), type='l', ylab='max value so far', xlab='number of samples', col='red')
+lines(c(cummax(rnorm(n))), col='black')
+legend("bottomright", lty=1, col=c('black', 'red'), legend=c('normal', 'cauchy'))
+```
+
+## Another way to look at it: extreme values
+
+```{r max_values3}
+n <- 1e6
+plot(c(cummax(rcauchy(n))), type='l', ylab='max value so far', xlab='number of samples', col='red')
+lines(c(cummax(rnorm(n))), col='black')
+legend("bottomright", lty=1, col=c('black', 'red'), legend=c('normal', 'cauchy'))
+```
+
+## Exercise: mixture of error rates.
+
+Suppose you are measuring relative metabolic rates
+of mice in the wild.
+Because life is complicated,
+the *accuracy* of your measurements varies widely.
+A model of the measured rate, $R_i$,
+for a mouse at temperature $T_i$ is
+$$\begin{aligned}
+    R &\sim \Normal(120 + 0.7 * (T_i - 37), 1/E) \\
+    E &\sim \Normal(0, 1) .
+\end{aligned}$$
+
+Simulate 200 measurements from this model,
+for temperatures between 36 and 38,
+and try to infer the true slope (`0.7`).
+
+
+# Robust regression
+
+
+## Standard linear regression
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    \hat y_i &= b_0 + b_1 x_i \\
+    y_i &\sim \Normal(\hat y_i, \sigma^2) .
+\end{aligned}$$
+
+Simulate data:
+
+```r
+truth <- list(b0=1.0, b1=2.0, sigma=0.5)
+n <- 200
+x <- rnorm(n, mean=0, sd=1)
+y <- ( truth$b0 + truth$b1 * x 
+        + rnorm(n, mean=0, sd=truth$sigma) )
+```
+
+:::
+::: {.column width="50%"}
+
+
+```{r simdata, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+truth <- list(b0=1.0, b1=2.0, sigma=0.5)
+n <- 200
+x <- rnorm(n, mean=0, sd=1)
+y <- truth$b0 + truth$b1 * x + rnorm(n, mean=0, sd=truth$sigma)
+plot(x,y)
+abline(truth$b0, truth$b1, col='red')
+```
+
+:::
+::::::::::::::
+
+
+
+------------------
+
+Standard linear regression
+```{r slr}
+system.time( slr <- lm(y ~ x) )
+summary(slr)
+```
+
+-----------------
+
+with Stan
+```{r stanlr, cache=TRUE}
+slr_block <- "
+data {
+    int N;
+    vector[N] x;
+    vector[N] y;
+}
+parameters {
+    real b0;
+    real b1;
+    real<lower=0> sigma;
+}
+model {
+    y ~ normal(b0 + b1*x, sigma);
+}"
+system.time(
+    stanlr <- stan(model_code=slr_block,
+                   data=list(N=length(x), x=x, y=y), iter=1e3))
+```
+
+----------------
+
+
+```{r summary_stanlr}
+print(stanlr)
+```
+
+
+## Cauchy noise?
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+
+Relative axon growth
+for neurons after $x$ hours:
+
+```r
+truth <- list(b0=1.0, b1=2.0, sigma=0.5)
+n <- 200
+x <- rnorm(n, mean=0, sd=1)
+y <- ( truth$b0 + truth$b1 * x 
+        + rcauchy(n, location=0, 
+                  scale=truth$sigma) )
+```
+
+:::
+::: {.column width="50%"}
+
+```{r simdata_rr, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+set.seed(12)
+truth <- list(b0=1.0, b1=2.0, sigma=0.5)
+n <- 200
+x <- rnorm(n, mean=0, sd=1)
+y <- truth$b0 + truth$b1 * x + rcauchy(n, location=0, scale=truth$sigma)
+plot(x,y)
+abline(truth$b0, truth$b1, col='red')
+```
+
+:::
+::::::::::::::
+
+
+------------------
+
+Standard linear regression
+```{r slrr}
+system.time( slr2 <- lm(y ~ x) )
+summary(slr2)
+```
+
+-----------------
+
+with Stan
+```{r stanrr, cache=TRUE}
+srr_block <- "
+data { 
+    int N;
+    vector[N] x;
+    vector[N] y;
+}
+parameters {
+    real b0;
+    real b1;
+    real<lower=0> sigma;
+}
+model {
+    y ~ cauchy(b0 + b1*x, sigma);
+}"
+system.time(
+    stanrr <- stan(model_code=srr_block,
+                   data=list(N=length(x), x=x, y=y), iter=1e3))
+```
+
+----------------
+
+
+```{r summary_stanrr}
+print(stanrr)
+```
+
+----------------
+
+
+```{r plot_simdata_rr, fig.width=3.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+make_lm_poly <- function (min_coefs, max_coefs, xlim, ...) {
+    polygon(x=c(xlim[1], 0, xlim[2], xlim[2], 0, xlim[1]),
+            y=c(max_coefs[1] + xlim[1] * min_coefs[2],
+                max_coefs[1],
+                max_coefs[1] + xlim[2] * max_coefs[2],
+                min_coefs[1] + xlim[2] * min_coefs[2],
+                min_coefs[1],
+                min_coefs[1] + xlim[1] * max_coefs[2]) , ...)
+}
+stancoefs <- extract(stanrr)
+layout(t(1:2))
+plot(x,y, main='lm()')
+make_lm_poly(coef(slr2)-2*summary(slr2)$coefficients[,"Std. Error"], 
+             coef(slr2)+2*summary(slr2)$coefficients[,"Std. Error"], 
+             range(x),
+             col=adjustcolor("purple", 0.2))
+abline(coef=coef(slr2), col='purple', lwd=2)
+abline(truth$b0, truth$b1, col='red', lwd=2)
+plot(x,y, main='stan()')
+make_lm_poly(c(quantile(stancoefs$b0, 0.025), quantile(stancoefs$b1, 0.025)),
+             c(quantile(stancoefs$b0, 0.975), quantile(stancoefs$b1, 0.975)),
+             range(x),
+             col=adjustcolor("green", 0.2))
+abline(truth$b0, truth$b1, col='red', lwd=2)
+abline(mean(stancoefs$b0), mean(stancoefs$b1), col='green', lwd=2)
+```
+
+----------------
+
+
+```{r plot_simdata_rr_again, fig.width=3.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+layout(t(1:2))
+plot(x,y, main='lm()', ylim=c(-10,10))
+make_lm_poly(coef(slr2)-2*summary(slr2)$coefficients[,"Std. Error"], 
+             coef(slr2)+2*summary(slr2)$coefficients[,"Std. Error"], 
+             range(x),
+             col=adjustcolor("purple", 0.2))
+abline(coef=coef(slr2), col='purple', lwd=2)
+abline(truth$b0, truth$b1, col='red', lwd=2)
+plot(x,y, main='stan()', ylim=c(-10,10))
+make_lm_poly(c(quantile(stancoefs$b0, 0.025), quantile(stancoefs$b1, 0.025)),
+             c(quantile(stancoefs$b0, 0.975), quantile(stancoefs$b1, 0.975)),
+             range(x),
+             col=adjustcolor("green", 0.2))
+abline(truth$b0, truth$b1, col='red', lwd=2)
+abline(mean(stancoefs$b0), mean(stancoefs$b1), col='green', lwd=2)
+```
+
+
+
+
+# Wrap-up
+
+## Modeling, and Stan
+
+1. How well a statistical method works depends on the situation.
+
+2. We can describe the "situation" with a *probability model*.
+
+3. Inference usually works best if the probabilistic model reflects reality .
+
+4. Stan lets you do inference using (almost) arbitrary models.
+
+5. Explicit models make it easy to simulate, and therefore test your methods.
+
+## Hierarchical Bayesian models
+
+1. It is often possible to infer things about *populations* that we can't infer about individuals.
+
+2. Doing so leads to *sharing of information* (or, "power") between samples,
+   and can improve accuracy.
+
+3. Priors (and hyperpriors) on individual parameters provides a good way to do this.
 
