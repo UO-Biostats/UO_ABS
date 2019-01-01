@@ -40,7 +40,7 @@ Quick links:
 ### Rstudio
 
 * Strongly recommended global configuration: 
-![Never save or restore .RData](media/rstudio_config_1.png)
+![Never save or restore .RData](rstudio_config_1.png)
 
 ### General resources
 
@@ -58,8 +58,4 @@ Quick links:
 - [Jenny Bryan's stat 545](http://stat545-ubc.github.io/) at UBC
 
 
--------------------------------
 
-This is a [jekyll](https://jekyllrb.com) website,
-modified from Karl Broman's [simple site](http://github.com/kbroman/simple_site)
-by way of [Cécile Ané](http://cecileane.github.io/computingtools/).
