@@ -1,6 +1,7 @@
 ---
-title: "About"
-permalink: "/about/"
+layout: page
+title: about this course
+description: 
 ---
 
 ## Description of the course

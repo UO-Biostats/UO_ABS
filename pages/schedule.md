@@ -1,6 +1,7 @@
 ---
-title: "Schedule"
-permalink: "/schedule/"
+layout: page
+title: course schedule
+description: schedule, with links to slides and homeworks
 ---
 
 Here is the schedule for Winter 2019. See [below](#fall) for Fall 2018.

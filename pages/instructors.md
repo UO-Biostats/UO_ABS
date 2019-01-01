@@ -1,9 +1,7 @@
 ---
-title: "Instructors"
-permalink: "/instructors/"
-header:
-  image: /images/header.png
-
+layout: page
+title: instructors
+description:
 ---
 
 ## Primary Instructor for Course 1 (Fall 2018)

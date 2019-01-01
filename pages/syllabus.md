@@ -1,6 +1,8 @@
 ---
-title: "Syllabus"
-permalink: "/syllabus/"
+layout: page
+title: course syllabus
+description: syllabus for UO Advanced Biological Statistics
+
 ---
 
 ## Course Description:

@@ -1,9 +1,7 @@
 ---
-title: "Ethics"
-permalink: "/ethics/"
-header:
-  image: /images/header.jpg
-
+layout: page
+title: ethics
+description: 
 ---
 
 ## Academic Honesty
