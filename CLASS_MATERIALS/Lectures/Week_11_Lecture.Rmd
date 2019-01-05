@@ -1,0 +1,727 @@
+---
+title: "(Generalized) Linear models: robustness and crossvalidation"
+author: "Peter Ralph"
+date: "7 January 2018 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+rstan_options(auto_write = TRUE)
+```
+
+# Reminders
+
+## 
+
+1. Course schedule
+
+2. Modeling
+
+3. Bayesian statistics, Stan, and MCMC
+
+
+
+## Linear models
+
+*Reminder:* standard linear regression
+is a maximum likelihood estimate 
+for $\vec b$ (and $\sigma$) 
+under the following model:
+$$\begin{aligned}
+    Y_i &= b_0 + b_1 X_1 + \cdots + b_k X_k + \epsilon_i \\
+    \epsilon_i &\sim \Normal(0, \sigma) .
+\end{aligned}$$
+
+. . .
+
+The key model component here is the *linear* predictor.
+
+
+
+# Power and model fit
+
+## Comparison of means
+
+If the predictor, $X$, is *discrete*
+then we are doing a $t$-test, or ANOVA, or something.
+
+. . .
+
+Simulate data - difference in means of 3.0:
+
+```{r simdata_t}
+truth <- list(b=c(1.0, 3.0), sigma=0.5)
+n <- 200
+x <- sample(c(1, 2), size=n, replace=TRUE)
+y <- truth$b[x] + rnorm(n, mean=0, sd=truth$sigma)
+```
+
+------------------
+
+The $t$-test
+```{r tt}
+system.time( tt <- t.test(y ~ x) )
+tt
+```
+
+-----------------------------
+
+with Stan
+```{r stantt, cache=TRUE}
+stt_block <- "
+data { 
+    int N;
+    int x[N]; // group index: 1's and 2's
+    vector[N] y;
+}
+parameters {
+    vector[2] b;
+    real<lower=0> sigma;
+}
+model {
+    y ~ normal(b[x], sigma);
+}"
+stt_model <- stan_model(model_code=stt_block)
+system.time( stantt <- sampling(stt_model,
+                                data=list(N=length(x), x=x, y=y), iter=1e3) )
+```
+
+--------------------------
+
+```{r summary_stantt}
+print(stantt)
+```
+
+## Power comparison
+
+Let's do *both* methods many times,
+and see how well they estimate the difference in means.
+
+```{r power_sim, cache=TRUE, dependson="stantt"}
+do_rep <- function (n, b, sigma) {
+    x <- sample(c(1, 2), size=n, replace=TRUE)
+    y <- b[x] + rnorm(n, mean=0, sd=sigma)
+    tt <- t.test(y ~ x)
+    stantt <- sampling(stt_model,
+                   data=list(N=length(x), x=x, y=y), iter=1e3, refresh=0, open_progress=FALSE)
+    bb <- extract(stantt)$b
+    out <- c(tt$estimate, tt$conf.int,
+             colMeans(bb),
+             quantile(bb[,1] - bb[,2], prob=c(0.025, 0.975)))
+    names(out) <- c('t_b1', 't_b2', 't_lower', 't_upper',
+                    's_b1', 's_b2', 's_lower', 's_upper')
+    return(out)
+}
+reps <- replicate(100, do_rep(n, truth$b, truth$sigma))
+```
+
+------------
+
+Estimates of differences in means across 100 datasets:
+
+```{r plot_power, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+layout(t(1:2))
+yord <- order(reps["t_b1",] - reps["t_b2",])
+plot(reps["t_b1",yord] - reps["t_b2",yord], 1:ncol(reps), type='n', xlim=range(reps[3:4,]),
+     xlab='estimate', ylab='replicate', main="t.test()")
+segments(x0=reps["t_lower",yord], x1=reps["t_upper",yord], y0=1:ncol(reps), col='red')
+points(reps["t_b1",yord] - reps["t_b2",yord], 1:ncol(reps), pch=20)
+abline(v=truth$b[1] - truth$b[2], col='blue', lwd=2, lty=3)
+yord <- order(reps["s_b1",] - reps["s_b2",])
+plot(reps["s_b1",yord] - reps["s_b2",yord], 1:ncol(reps), type='n', xlim=range(reps[3:4,]),
+     xlab='estimate', ylab='replicate', main="stan")
+segments(x0=reps["s_lower",yord], x1=reps["s_upper",yord], y0=1:ncol(reps), col='red')
+points(reps["s_b1",yord] - reps["s_b2",yord], 1:ncol(reps), pch=20)
+abline(v=truth$b[1] - truth$b[2], col='blue', lwd=2, lty=3)
+```
+
+
+# Robustification
+
+## 
+
+What if the noise was *not* Normal?
+
+Substituting `rnorm -> rcauchy`:
+
+```{r simdata_t2}
+x <- sample(c(1, 2), size=n, replace=TRUE)
+y <- truth$b[x] + rcauchy(n, location=0, scale=truth$sigma)
+```
+
+------------------
+
+The $t$-test
+```{r tt2}
+system.time( tt <- t.test(y ~ x) )
+tt
+```
+
+## Use the correct model, in Stan
+
+```{r stantt2, cache=TRUE}
+rtt_block <- "
+data { 
+    int N;
+    int x[N]; // group index: 1's and 2's
+    vector[N] y;
+}
+parameters {
+    vector[2] b;
+    real<lower=0> sigma;
+}
+model {
+    y ~ cauchy(b[x], sigma);
+}"
+rtt_model <- stan_model(model_code=rtt_block)
+```
+
+## Power, again
+
+Let's do *both* methods many times,
+and see how well they estimate the difference in means.
+
+```{r power_sim2, cache=TRUE, dependson="stantt"}
+do_rep_cauchy <- function (n, b, sigma) {
+    x <- sample(c(1, 2), size=n, replace=TRUE)
+    y <- b[x] + rcauchy(n, location=0, scale=sigma)
+    tt <- t.test(y ~ x)
+    stantt <- sampling(rtt_model,
+                   data=list(N=length(x), x=x, y=y), iter=1e3, refresh=0, open_progress=FALSE)
+    bb <- extract(stantt)$b
+    out <- c(tt$estimate, tt$conf.int,
+             colMeans(bb),
+             quantile(bb[,1] - bb[,2], prob=c(0.025, 0.975)))
+    names(out) <- c('t_b1', 't_b2', 't_lower', 't_upper',
+                    's_b1', 's_b2', 's_lower', 's_upper')
+    return(out)
+}
+cauchy_reps <- replicate(100, do_rep_cauchy(n, truth$b, truth$sigma))
+```
+
+--------------
+
+Estimates of differences in means across 100 datasets:
+
+```{r plot_power2, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+layout(t(1:2))
+yord <- order(cauchy_reps["t_b1",] - cauchy_reps["t_b2",])
+plot(cauchy_reps["t_b1",yord] - cauchy_reps["t_b2",yord], 1:ncol(cauchy_reps), type='n', xlim=range(cauchy_reps[3:4,]),
+     xlab='estimate', ylab='replicate', main="t.test()")
+segments(x0=cauchy_reps["t_lower",yord], x1=cauchy_reps["t_upper",yord], y0=1:ncol(cauchy_reps), col='red')
+points(cauchy_reps["t_b1",yord] - cauchy_reps["t_b2",yord], 1:ncol(cauchy_reps), pch=20)
+abline(v=truth$b[1] - truth$b[2], col='blue', lwd=2, lty=3)
+yord <- order(cauchy_reps["s_b1",] - cauchy_reps["s_b2",])
+plot(cauchy_reps["s_b1",yord] - cauchy_reps["s_b2",yord], 1:ncol(cauchy_reps), type='n', xlim=range(cauchy_reps[3:4,]),
+     xlab='estimate', ylab='replicate', main="stan")
+segments(x0=cauchy_reps["s_lower",yord], x1=cauchy_reps["s_upper",yord], y0=1:ncol(cauchy_reps), col='red')
+points(cauchy_reps["s_b1",yord] - cauchy_reps["s_b2",yord], 1:ncol(cauchy_reps), pch=20)
+abline(v=truth$b[1] - truth$b[2], col='blue', lwd=2, lty=3)
+```
+
+--------------
+
+Estimates of differences in means across 100 datasets (zoomed):
+
+```{r plot_power3, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+layout(t(1:2))
+yord <- order(cauchy_reps["t_b1",] - cauchy_reps["t_b2",])
+plot(cauchy_reps["t_b1",yord] - cauchy_reps["t_b2",yord], 1:ncol(cauchy_reps), type='n', 
+     xlim=c(-2.5,-1.5), xlab='estimate', ylab='replicate', main="t.test()")
+segments(x0=cauchy_reps["t_lower",yord], x1=cauchy_reps["t_upper",yord], y0=1:ncol(cauchy_reps), col='red')
+points(cauchy_reps["t_b1",yord] - cauchy_reps["t_b2",yord], 1:ncol(cauchy_reps), pch=20)
+abline(v=truth$b[1] - truth$b[2], col='blue', lwd=2, lty=3)
+yord <- order(cauchy_reps["s_b1",] - cauchy_reps["s_b2",])
+plot(cauchy_reps["s_b1",yord] - cauchy_reps["s_b2",yord], 1:ncol(cauchy_reps), type='n',
+     xlim=c(-2.5,-1.5), xlab='estimate', ylab='replicate', main="stan")
+segments(x0=cauchy_reps["s_lower",yord], x1=cauchy_reps["s_upper",yord], y0=1:ncol(cauchy_reps), col='red')
+points(cauchy_reps["s_b1",yord] - cauchy_reps["s_b2",yord], 1:ncol(cauchy_reps), pch=20)
+abline(v=truth$b[1] - truth$b[2], col='blue', lwd=2, lty=3)
+```
+
+
+## Model fit improves power.
+
+. . .
+
+Why?
+
+<!-- NOTE:
+    Talk through why t-test is misled by outliers
+    but the Cauchy model is not.
+-->
+
+
+# Math minute: matrix multiplication
+
+## Either
+
+To simulate from:
+$$\begin{aligned}
+    Y_i &= b_0 + b_1 X_1 + \cdots + b_k X_k + \epsilon_i \\
+    \epsilon_i &\sim \Normal(0, \sigma) .
+\end{aligned}$$
+
+```{r simdata_mv}
+coefs <- list(b0=1.0, b=c(3.0, -1.0, 0.0, 0.0),
+              sigma=0.5)
+n <- 200
+X <- matrix(rnorm(4*n, mean=0, sd=3), ncol=4)
+Y <- coefs$b0 
+for (k in 1:ncol(X)) {
+    Y <- Y + coefs$b[k] * X[,k]
+}
+Y <- Y + rnorm(n, mean=0, sd=coefs$sigma)
+```
+
+## Or
+
+To simulate from:
+$$\begin{aligned}
+    Y_i &= b_0 + b_1 X_1 + \cdots + b_k X_k + \epsilon_i \\
+    \epsilon_i &\sim \Normal(0, \sigma) .
+\end{aligned}$$
+
+```{r simdata_mv2}
+coefs <- list(b0=1.0, b=c(3.0, -1.0, 0.0, 0.0),
+              sigma=0.5)
+n <- 200
+X <- matrix(rnorm(4*n, mean=0, sd=3), ncol=4)
+Y <- coefs$b0 + X %*% coefs$b + rnorm(n, mean=0, sd=coefs$sigma)
+```
+
+## Because
+
+In R, `%*%` is *matrix multiplication*: if
+
+- $b$ is a $k$-vector
+- $X$ is an $n \times k$ matrix
+
+then $X b$ is shorthand for the $n$-vector
+$$ (Xb)_i = \sum_{j=1}^k X_{ij} b_j . $$
+
+<!-- NOTE:
+    Pictures on the board.
+-->
+
+
+. . .
+
+In Stan, matrix multiplication is `*`.
+
+
+# Multiple linear regression
+
+## Your turn
+
+Implement standard multiple linear regression in Stan,
+and compare (roughly) to `lm()`.
+
+Try doing the same thing with a `for` loop and with `*`.
+
+Do Cauchy regression.
+
+
+# Crossvalidation
+
+## What if we don't know the truth?
+
+Using a model that doesn't describe the data well
+often results in poor estimates.
+
+. . .
+
+But how do we know this is happening?
+
+. . .
+
+It depends,
+but here's one common problem.
+
+
+## Overfitting
+
+A $t$-test is misled by Cauchy noise
+because it tries too hard to fit the extreme outliers.
+
+. . .
+
+Taking the noise in the data too seriously
+is known as "overfitting"
+(or, "overgeneralizing").
+
+. . .
+
+Happily, it's easy to spot 
+(if you have independent observations).
+
+
+## Crossvalidation
+
+Maybe your model *fits*,
+but is it any *good*?
+
+. . .
+
+1. Divide your data randomly into 5 pieces.
+
+2. Fit your model on 4/5ths, and see how well it predicts the remaining 1/5th.
+
+3. Do this for each of the 5 pieces.
+
+Then, compare the mean *crossvalidation accuracy* between methods.
+
+. . .
+
+Example: for the t-test.
+
+```{r more_sims, echo=FALSE}
+x <- sample(c(1, 2), size=n, replace=TRUE)
+y <- truth$b[x] + rcauchy(n, location=0, scale=truth$sigma)
+```
+
+## 1. Divide your data randomly into 5 pieces.
+
+```{r t_xval1}
+random_label <- sample(rep(1:5, each=n/5))
+datasets <- lapply(1:5, function (k) {
+            list(test = data.frame(x = x[random_label == k],
+                                 y = y[random_label == k]),
+                 train = data.frame(x = x[random_label != k],
+                                 y = y[random_label != k]))
+          } )
+```
+
+## 2. Fit your model on 4/5ths, and see how well it predicts the remaining 1/5th.
+
+```{r t_xval2}
+t_xvals <- sapply(datasets, function (data) {
+                fit <- t.test(y ~ x, data=data$train)
+                pred <- fit$estimate[data$test$x]
+                return(sqrt(median( (data$test$y - pred)^2 )))
+           } )
+```
+
+## 3. Do this for each of the 5 pieces.
+
+```{r t_xval3}
+t_xvals
+```
+
+## Same thing for Stan:
+
+```{r s_xval2, cache=TRUE}
+(stan_xvals <- sapply(datasets, function (data) {
+                stantt <- sampling(rtt_model, # cauchy model
+                                   data=list(N=nrow(data$train), 
+                                             x=data$train$x,
+                                             y=data$train$y),
+                                   iter=1e3)
+                post_samples <- extract(stantt)
+                post_means <- colMeans(post_samples$b)
+                pred <- post_means[data$test$x]
+                return(sqrt(median( (data$test$y - pred)^2 )))
+          } ))
+```
+
+
+# Stochastic minute
+
+## The Cauchy as a scale mixture
+
+It turns out that if
+
+$$\begin{aligned}
+    \beta &\sim \Normal(0, 1/\sqrt{\lambda}) \\
+    \lambda &\sim \Gam(1/2, 1/2)
+\end{aligned}$$
+
+then
+
+$$\begin{aligned}
+    \beta &\sim \Cauchy(0, 1).
+\end{aligned}$$
+
+. . .
+
+*What black magic is this??*
+
+. . .
+
+1. It says so [here](https://betanalpha.github.io/assets/case_studies/fitting_the_cauchy.html).
+
+2. If you like to do integrals, you can check mathematically.
+
+3. Or, you can check with *simulation*.
+
+
+## More generally: Student's $t$ distribution
+
+If 
+$$\begin{aligned}
+    \beta &\sim \Normal(0, 1/\sqrt{\lambda}) \\
+    \lambda &\sim \Gam(\nu/2, \nu/2)
+\end{aligned}$$
+then $\beta \sim t(\text{df}=\nu)$, i.e.,
+has "Student's $t$ distribution with $\nu$ degrees of freedom",
+which has density
+$$ \P\{ \beta = t \} \propto \left(1 + \frac{t^2}{\nu} \right)^{-\frac{\nu+1}{2}} .$$
+
+. . .
+
+Facts: 
+
+> 1. A Cauchy is $t(\text{df}=1)$.
+> 2. A Normal is $t(\text{df}=\infty)$.
+> 3. If $X_1, \ldots, X_n$ are independent, mean-zero Normal,
+>    and $\hat \mu$ and $\hat \sigma$ are their empirical mean and SD,
+>    then $\hat \mu / (\hat \sigma / \sqrt{n}) \sim t(\text{df} = \nu)$.
+
+
+
+# Crossvalidation for regression
+
+## A model
+
+How does [leaf anthocyanin concentration](leaf_anthocyanin.tsv)
+increase with time in the sun,
+in ten different inbred lines
+with different baseline concentrations?
+
+```{r sim_antho_data, fig.width=2*fig.dim, fig.height=1.2*fig.dim, cache=TRUE}
+antho <- read.table("leaf_anthocyanin.tsv", header=TRUE)
+plot(y ~ x, col=geno, pch=20, data=antho)
+```
+
+##
+
+```{r leaf_stan, cache=TRUE}
+leaf_model <- stan_model(model_code=
+"
+data {
+    int N;
+    vector[N] x; // time
+    vector[N] y; // anthocyanin
+    int geno[N]; // genotype index
+}
+parameters {
+    real b; // slope
+    vector[2] c; // genotype intercept
+    real<lower=0> sigma; // scale
+}
+model {
+    y ~ cauchy(b * x + c[geno], sigma);
+    b ~ normal(0, 10);
+    c ~ normal(0, 10);
+    sigma ~ normal(0, 10);
+}
+")
+```
+
+<!-- NOTE
+    ask to interpret/critique this model
+-->
+
+## 
+
+::: {.columns}
+:::::: {.column width=50%}
+
+A single $k$-fold crossvalidation step should:
+
+1. Randomly extract $1/k$ of the data as "test",
+   and leave the rest as "training".
+
+2. Fit the model on the training data.
+
+3. Use the result to *predict* the values in the test data.
+
+4. Report a measure of prediction error.
+
+:::
+:::::: {.column width=50%}
+
+
+```{r simdata_t3}
+###
+# HELP ME WRITE THESE
+###
+
+ttest_crossvalidation <- function (k) {
+}
+
+stan_crossvalidation <- function (k) {
+}
+```
+
+:::
+::::::
+
+
+##
+
+*(my results:)*
+
+```
+> summary(crossvals)
+       lm            stan        stan_interactions    stan_df
+ Min.   : 5.637   Min.   : 2.381   Min.   : 2.462   Min.   :2.497  
+ 1st Qu.: 6.109   1st Qu.: 2.771   1st Qu.: 3.030   1st Qu.:3.237  
+ Median : 6.544   Median : 3.106   Median : 3.597   Median :3.591  
+ Mean   : 7.979   Mean   : 4.028   Mean   : 4.190   Mean   :4.120  
+ 3rd Qu.: 6.837   3rd Qu.: 3.932   3rd Qu.: 4.217   3rd Qu.:3.836  
+ Max.   :14.808   Max.   :14.441   Max.   :14.265   Max.   :9.173  
+```
+
+
+# Summary
+
+## 
+
+$$ \text{data} \sim \text{fit} + \text{predicted} $$
+
+> 1. The *model* of noise determines how to weight deviations from the *fit*.
+> 2. An appropriate model leads to more accurate predictions.
+> 3. Overfitting is a common pitfall,
+> 4. that *crossvalidation* can help avoid.
+
+
+
+# Generalized Linear Models
+
+## Ingredients of a GLM:
+
+1. A probability distribution, $Y$.
+
+  > *(the "family"; describes the output)*
+
+2. A linear predictor, $X \beta$.
+
+  > *(connects input to output)*
+
+3. A link function, $\E[Y] = h(X\beta)$.
+
+  > *(connects linear predictor to probability distribution)*
+
+## Common choices:
+
+- Linear regression:
+  $$ Y \sim \Normal(X \beta, \sigma) .$$
+
+- Logistic regression:
+  $$ Y \sim \Binom(n, \logistic(X\beta)) .$$
+
+- Gamma regression:
+  $$ Y \sim \Gam(\text{scale}=\exp(X\beta)/k, \text{shape}=k) .$$
+
+## Logistic regression, in R
+
+```
+glm(y ~ x, family=binomial)
+```
+
+. . .
+
+```
+family {stats}
+
+Family objects provide a convenient way to specify the details of the models used by functions such as glm.
+
+binomial(link = "logit")
+gaussian(link = "identity")
+Gamma(link = "inverse")
+inverse.gaussian(link = "1/mu^2")
+poisson(link = "log")
+
+Arguments
+
+link: a specification for the model link function. This can be a name/expression, a literal character string, a length-one character vector, or an object of class "link-glm" (such as generated by make.link) provided it is not specified via one of the standard names given next.
+
+The gaussian family accepts the links (as names) identity, log and inverse; the binomial family the links logit, probit, cauchit, (corresponding to logistic, normal and Cauchy CDFs respectively) log and cloglog (complementary log-log); the Gamma family the links inverse, identity and log; the poisson family the links log, identity, and sqrt; and the inverse.gaussian family the links 1/mu^2, inverse, identity and log.
+```
+
+# Unpacking logistic regression
+
+## Simulate data
+
+100 trials, where probability of success depends on $x$:
+```{r sim_logistic, fig.width=2*fig.dim}
+alpha <- -7; beta <- 1.2
+x <- runif(100, 0, 10)
+y <- alpha + beta * x
+p <- 1 / (1 + exp(-y))
+z <- rbinom(100, size=1, prob=p)
+plot(z ~ x)
+curve(1/(1+exp(-(-7 + 1.2 *x))), 0, 10, col='red', add=TRUE)
+```
+
+## `glm()`
+
+```{r run_glm}
+zz <- cbind(z, 1-z)
+summary(glm_fit <- glm(zz ~ x, family='binomial'))
+```
+
+## Stan
+
+::: {.columns}
+:::::: {.column width=50%}
+
+$$\begin{aligned}
+    Z &\sim \Binom(1, P) \\
+    P &= \logistic(\alpha + \beta X)
+\end{aligned}$$
+
+:::
+:::::: {.column width=50%}
+
+
+```{r stan_logistic, cache=TRUE}
+logistic_block <- "
+data {
+    int N;
+    vector[N] X;
+    int<lower=0> Z[N];
+}
+parameters {
+    real alpha;
+    real beta;
+}
+model {
+    vector[N] p;
+    p = inv_logit(alpha + beta * X);
+    Z ~ binomial(1, p);
+}"
+```
+
+:::
+::::::
+
+## Stan: fit the model
+
+```{r run_stan_logistic, cache=TRUE, dependson="stan_logistic"}
+fit <- stan(model_code=logistic_block,
+            data=list(N=100, X=x, Z=z))
+rstan::summary(fit)
+```
+
+## Stan: posterior distributions
+
+```{r plot_stan_logistic, fig.width=2*fig.dim}
+samples <- extract(fit)
+layout(t(1:2))
+hist(samples$alpha, main=expression(alpha))
+abline(v=alpha, col='red'); abline(v=coef(glm_fit)[1], col='green')
+hist(samples$beta, main=expression(beta))
+abline(v=beta, col='red'); abline(v=coef(glm_fit)[2], col='green')
+legend("topright", lty=1, col=c('red', 'green'), legend=c('truth', 'glm'))
+```
+

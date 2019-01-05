@@ -4,7 +4,10 @@ title: course schedule
 description: schedule, with links to slides and homeworks
 ---
 
-Here is the schedule for Winter 2019. See [below](#fall) for Fall 2018.
+Here is the schedule for Winter 2019. See [below](#fall-2018) for Fall 2018.
+The (Rmarkdown) source code for many of these lectures is available at [the github repository](https://github.com/petrelharp/UO_ABS),
+or by replacing the `.slides.html` suffix to `.Rmd` in the link below;
+the slides are made using [reveal.js](https://github.com/hakimel/reveal.js/).
 
 # Winter 2019
 
@@ -12,12 +15,14 @@ Week 11 (*1/7, Peter*)
 
 : Robust multiple linear regression; scale mixtures; model selection with crossvalidation; introduction to Generalized Linear Models (GLM).
 
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_11_Lecture.slides.html)
     - Reading: **(Kruschke, ch 15, 16, 17)**
 
 Week 12 (*1/14, Peter*)
 
 : More GLMs; Poisson regression; detecting and modeling overdispersion; quantifying goodness-of-fit.
 
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_12_Lecture.slides.html)
     - Reading: **(Kruschke, ch 24)**
 
 Week 13 (*1/21, Peter*)
@@ -62,37 +67,37 @@ Week 20 (*2/39, Peter*)
 
 Week 1 -
 
-: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/01.Week_01_Lecture_1_total.html)
+: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.html)
 
 Week 2 -
 
-: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/02.Week_02_Lecture_2_total.html)
+: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_02_Lecture.html)
 
 Week 3 -
 
-: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/03.Week_03_Lecture_3_total.html)
+: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_03_Lecture.html)
 
 Week 4 -
 
-: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/04.Week_04_Lecture_4_total.html)
+: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_04_Lecture.html)
 
 Week 5 -
 
-: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/05.Week_05_Lecture_5_total.html)
+: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_05_Lecture.html)
 
 Week 6 -
 
-: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/06.Week_06_Lecture_6_total.html)
+: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_06_Lecture.html)
 
 Week 7 -
 
-: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/07.Week_07_Lecture_7_total.html)
+: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_07_Lecture.html)
 
 Week 8 -
 
 : Bayesian statistics - prior distributions and uncertainty - using [Stan](https://mc-stan.org))
 
-    * [Tuesday & Thursday Slides](../html/08.Week_08_Lecture_8.slides.html)
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_08_Lecture.slides.html)
     * [in-class demo](../CLASS_MATERIALS/Demos/beta_binomial/beta_binom_demo.html) - Beta-Binomial analysis
     * reading: Kruschke, chapters 5 and 6 (and: install and test [rstan](https://mc-stan.org))
 
@@ -100,13 +105,13 @@ Week 9 -
 
 : Bayesian hierarchical modeling - shrinkage, and sharing power
 
-    * [Tuesday Slides](../html/09.Week_09_Lecture_9.slides.html)
+    * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_09_Lecture.slides.html)
     * reading: Kruschke, chapters 7, 9, and 14
 
 Week 10 -
 
 : Logistic regression - simulation, posterior predictive sampling - robust regression
 
-    * [Tuesday & Thursday Slides](../html/10.Week_10_Lecture_10.slides.html)
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_10_Lecture.slides.html)
     * reading: Kruschke, chapters 16, 17, and 13
 
