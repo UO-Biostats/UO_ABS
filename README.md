@@ -5,13 +5,6 @@ The actual website can be viewed at [https://petrelharp.github.io/UO_ABS/](https
 Quick link: the [schedule](https://petrelharp.github.io/UO_ABS/schedule.html), with links to the slides.
 
 
-## Instructors on your journey
-
-- Bill Cresko
-- Peter Ralph
-- Matt Lukac
-
-
 --------------------
 
 
