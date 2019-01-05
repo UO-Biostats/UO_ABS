@@ -62,31 +62,31 @@ Week 20 (*2/39, Peter*)
 
 Week 1 -
 
-: <a href="https://wcresko.github.io/UO_ABS/html/01.Week_01_Lecture_1_total.html" >Tuesday & Thursday Slides</a>
+: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/01.Week_01_Lecture_1_total.html)
 
 Week 2 -
 
-: <a href="https://wcresko.github.io/UO_ABS/html/02.Week_02_Lecture_2_total.html" >Tuesday & Thursday Slides</a>
+: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/02.Week_02_Lecture_2_total.html)
 
 Week 3 -
 
-: <a href="https://wcresko.github.io/UO_ABS/html/03.Week_03_Lecture_3_total.html" >Tuesday & Thursday Slides</a>
+: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/03.Week_03_Lecture_3_total.html)
 
 Week 4 -
 
-: <a href="https://wcresko.github.io/UO_ABS/html/04.Week_04_Lecture_4_total.html" >Tuesday & Thursday Slides</a>
+: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/04.Week_04_Lecture_4_total.html)
 
 Week 5 -
 
-: <a href="https://wcresko.github.io/UO_ABS/html/05.Week_05_Lecture_5_total.html" >Tuesday & Thursday Slides</a>
+: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/05.Week_05_Lecture_5_total.html)
 
 Week 6 -
 
-: <a href="https://wcresko.github.io/UO_ABS/html/06.Week_06_Lecture_6_total.html" >Tuesday & Thursday Slides</a>
+: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/06.Week_06_Lecture_6_total.html)
 
 Week 7 -
 
-: <a href="https://wcresko.github.io/UO_ABS/html/07.Week_07_Lecture_7_total.html" >Tuesday & Thursday Slides</a>
+: [Tuesday & Thursday Slides](CLASS_MATERIALS/Lectures/07.Week_07_Lecture_7_total.html)
 
 Week 8 -
 
