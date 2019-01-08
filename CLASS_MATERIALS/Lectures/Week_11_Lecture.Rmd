@@ -32,17 +32,17 @@ rstan_options(auto_write = TRUE)
 ## Linear models
 
 *Reminder:* standard linear regression
-is a maximum likelihood estimate 
+gives a maximum likelihood estimate 
 for $\vec b$ (and $\sigma$) 
 under the following model:
 $$\begin{aligned}
-    Y_i &= b_0 + b_1 X_1 + \cdots + b_k X_k + \epsilon_i \\
-    \epsilon_i &\sim \Normal(0, \sigma) .
+    Y_i &\sim \Normal(\mu_i, \sigma) \\
+    \mu_i &= b_0 + b_1 X_1 + \cdots + b_k X_k + \epsilon_i .
 \end{aligned}$$
 
 . . .
 
-The key model component here is the *linear* predictor.
+The key model component here is the *linear* predictor $\mu$.
 
 
 
