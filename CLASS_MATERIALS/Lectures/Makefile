@@ -3,6 +3,8 @@ SHELL := /bin/bash
 
 .PHONY : 
 
+.PRECIOUS : %.md
+
 MATHJAX = https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js
 # change this to the location of your local MathJax.js library
 LOCAL_MATHJAX = /usr/share/javascript/mathjax/MathJax.js

@@ -305,7 +305,7 @@ In R, `%*%` is *matrix multiplication*: if
 - $b$ is a $k$-vector
 - $X$ is an $n \times k$ matrix
 
-then $X b$ is shorthand for the $n$-vector
+then `X %*% b` (or, $X_b$ in math notation) is shorthand for the $n$-vector
 $$ (Xb)_i = \sum_{j=1}^k X_{ij} b_j . $$
 
 <!-- NOTE:
@@ -432,6 +432,15 @@ t_xvals
           } ))
 ```
 
+##
+
+Stan has about 40% better *crossvalidation accuracy*:
+```{r show_xval_numbers, echo=FALSE}
+xvr <- data.frame(mean=c("t test"=mean(t_xvals), "stan"=mean(stan_xvals)))
+xvr <- cbind(xvr, rbind(t_xvals, stan_xvals))
+colnames(xvr)[-1] <- paste("rep", 1:5)
+xvr
+```
 
 # Stochastic minute
 
