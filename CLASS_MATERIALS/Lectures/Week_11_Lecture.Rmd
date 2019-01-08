@@ -267,7 +267,7 @@ Why?
 To simulate from:
 $$\begin{aligned}
     \mu_i &= b_0 + b_1 X_{i1} + \cdots + b_k X_{i1} \\
-    \epsilon_i &\sim \Normal(\mu_i, \sigma) .
+    Y_i &\sim \Normal(\mu_i, \sigma) .
 \end{aligned}$$
 
 ```{r simdata_mv}
@@ -286,8 +286,8 @@ Y <- Y + rnorm(n, mean=0, sd=coefs$sigma)
 
 To simulate from:
 $$\begin{aligned}
-    Y_i &= b_0 + b_1 X_1 + \cdots + b_k X_k + \epsilon_i \\
-    \epsilon_i &\sim \Normal(0, \sigma) .
+    \mu_i &= b_0 + b_1 X_{i1} + \cdots + b_k X_{i1} \\
+    Y_i &\sim \Normal(\mu_i, \sigma) .
 \end{aligned}$$
 
 ```{r simdata_mv2}
@@ -328,6 +328,53 @@ and compare (roughly) to `lm()`.
 Try doing the same thing with a `for` loop and with `*`.
 
 Do Cauchy regression.
+
+## *solution:*
+
+With a for loop:
+
+```{r in_class, cache=TRUE}
+mlm_model_for <- stan_model( model_code="
+data { 
+    int N;
+    matrix[N, 4] x;
+    vector[N] y;
+}
+parameters {
+    real b0;
+    vector[4] b;
+    real<lower=0> sigma;
+}
+model {
+    vector[N] mu;
+    mu = rep_vector(b0, N);
+    for (k in 1:4) {
+        mu = mu + x[,k] * b[k];
+    }
+    y ~ normal(mu, sigma);
+}")
+```
+
+
+## *solution:*
+
+```{r in_class2, cache=TRUE}
+mlm_model <- stan_model( model_code="
+data { 
+    int N;
+    matrix[N, 4] x;
+    vector[N] y;
+}
+parameters {
+    real b0;
+    vector[4] b;
+    real<lower=0> sigma;
+}
+model {
+    y ~ normal(b0 + x * b, sigma);
+}")
+```
+
 
 
 # Crossvalidation
