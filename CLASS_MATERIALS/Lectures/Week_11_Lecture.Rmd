@@ -37,7 +37,7 @@ for $\vec b$ (and $\sigma$)
 under the following model:
 $$\begin{aligned}
     Y_i &\sim \Normal(\mu_i, \sigma) \\
-    \mu_i &= b_0 + b_1 X_1 + \cdots + b_k X_k + \epsilon_i .
+    \mu_i &= b_0 + b_1 X_1 + \cdots + b_k X_k .
 \end{aligned}$$
 
 . . .
@@ -266,8 +266,8 @@ Why?
 
 To simulate from:
 $$\begin{aligned}
-    Y_i &= b_0 + b_1 X_1 + \cdots + b_k X_k + \epsilon_i \\
-    \epsilon_i &\sim \Normal(0, \sigma) .
+    \mu_i &= b_0 + b_1 X_{i1} + \cdots + b_k X_{i1} \\
+    \epsilon_i &\sim \Normal(\mu_i, \sigma) .
 \end{aligned}$$
 
 ```{r simdata_mv}
