@@ -567,17 +567,20 @@ data {
     vector[N] x; // time
     vector[N] y; // anthocyanin
     int geno[N]; // genotype index
+    int ng; // number of genotypes
 }
 parameters {
     real b; // slope
-    vector[2] c; // genotype intercept
+    vector[ng] c; // genotype intercept
     real<lower=0> sigma; // scale
+    real<lower=0> nu; // hyperprior SD
 }
 model {
     y ~ cauchy(b * x + c[geno], sigma);
-    b ~ normal(0, 10);
-    c ~ normal(0, 10);
+    b ~ normal(0, nu);
+    c ~ normal(0, nu);
     sigma ~ normal(0, 10);
+    nu ~ gamma(0.5, 0.5);
 }
 ")
 ```
@@ -585,6 +588,37 @@ model {
 <!-- NOTE
     ask to interpret/critique this model
 -->
+
+## 
+
+```{r fit_leaf_model, cache=TRUE, dependson="leaf_stan"}
+leaf_fit <- sampling(leaf_model,
+                     data=list(N=nrow(antho),
+                               x=antho$x,
+                               y=antho$y,
+                               geno=antho$geno,
+                               ng=length(unique(antho$geno))))
+```
+
+##
+
+```{r show_leaf_fit}
+print(leaf_fit)
+```
+
+##
+
+```{r show_leaf_fit2}
+stan_trace(leaf_fit)
+```
+
+##
+
+```{r show_leaf_fit3}
+plot(leaf_fit)
+```
+
+
 
 ## 
 
