@@ -676,7 +676,7 @@ stan_crossvalidation <- function (k) {
 
 ## 
 
-$$ \text{data} \sim \text{fit} + \text{predicted} $$
+$$ \text{data} \sim \text{fit} + \text{residual} $$
 
 > 1. The *model* of noise determines how to weight deviations from the *fit*.
 > 2. An appropriate model leads to more accurate predictions.
