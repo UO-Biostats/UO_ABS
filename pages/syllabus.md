@@ -26,7 +26,7 @@ flexible modeling package [Stan](https://mc-stan.org).
     * office hours: TBA or by appointment, 312 Pacific Hall
 
 - [Matt Lukac](https://ie2.uoregon.edu/people/lukac/), mlukac@uoregon.edu
-    * office hours: TBA or by appointment, 270 Onyx Bridge
+    * office hours: Wednesdays: 2-3:30 in Onyx 276 and Fridays: 2-3:30 in Science Library B009
 
 
 ## Course Information
