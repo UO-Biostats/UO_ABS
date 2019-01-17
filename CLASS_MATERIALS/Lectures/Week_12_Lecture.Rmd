@@ -337,6 +337,10 @@ data$mu <- exp(rnorm(nrow(data), mean=data$y,
 data$counts <- rpois(nsamples, data$mu)
 ```
 
+```{r save_data, include=FALSE}
+write.table(data, file="poisson_counts_data.tsv", row.names=FALSE)
+```
+
 ```{r plot_counts, echo=FALSE, fig.width=2*fig.dim}
 layout(t(1:2))
 plot(counts ~ age, col=genotype, data=data, pch=20)
@@ -360,8 +364,8 @@ legend("topright", pch=20, col=1:2,
 
 $$\begin{aligned}
     Z_i &\sim \Poisson(y_i) \\
-    y_i &= a_{g_i} + b \times \text{age}_i \\
-        &\qquad {} + c_{g_i} \times \text{exposure}_i 
+    y_i &= \exp(a_{g_i} + b \times \text{age}_i \\
+        &\qquad {} + c_{g_i} \times \text{exposure}_i )
 \end{aligned}$$
 
 :::
@@ -373,16 +377,28 @@ $$\begin{aligned}
 -->
 
 ```
-poisson_block <- "
+poisson_model <- stan_model(model_code="
 data {
-
+    int N; // number of data points
+    vector[N] age;
+    vector[N] exposure;
+    int counts[N];
+    int genotype[N];
+    int ngenotypes;
 }
 parameters {
-
+    vector[ngenotypes] a; // intercepts
+    real b; // slope for age
+    vector[ngenotypes] c; // slopes for exposure
 }
 model {
-
-}"
+    vector[N] mu; // mean of the poissons
+    mu = exp(a[genotype] + b * age + c[genotype] .* exposure);
+    counts ~ poisson(mu);
+    a ~ normal(0, 100);
+    b ~ normal(0, 10);
+    c ~ normal(0, 20);
+}")
 ```
 
 :::
