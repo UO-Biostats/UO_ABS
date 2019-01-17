@@ -724,24 +724,32 @@ You can download the data [here](poisson_counts_data.tsv).
 :::::::::: {.column width="60%"}
 
 ```
+overdispersed_model <- stan_model(model_code="
 data {
-    int N; // number of obs
-    int counts[N];
+    int N; // number of data points
     vector[N] age;
-    vector[N] expo;
-    int geno[N];
+    vector[N] exposure;
+    int counts[N];
+    int genotype[N];
+    int ngenotypes;
 }
 parameters {
-    real<lower=0> mu[N]; // per-indiv 'mean'
-    vector[2] a;
-    real b;
-    vector[2] c;
-    real<lower=0> sigma;
+    vector[ngenotypes] a; // intercepts
+    real b; // slope for age
+    vector[ngenotypes] c; // slopes for exposure
+    real<lower=0> sigma; // SD on lognormal
+    vector[N] mu; // mean of the poissons
 }
 model {
-    // FILL THIS IN
-}
-
+    vector[N] y; // mean of the lognormals
+    y = a[genotype] + b * age + c[genotype] .* exposure;
+    mu ~ lognormal(y, sigma);
+    counts ~ poisson(mu);
+    a ~ normal(0, 100);
+    b ~ normal(0, 10);
+    c ~ normal(0, 20);
+    sigma ~ normal(0, 10);
+}")
 ```
 
 :::
@@ -810,9 +818,9 @@ params2 <- list(a=colMeans(post2$a),
                 c=colMeans(post2$c),
                 sigma=mean(post2$sigma))
 y2 <- with(list2env(scaled_data), 
-                params1$a[geno] 
-                    + params1$b * age
-                    + params1$c[geno] * expo)
+                params2$a[geno] 
+                    + params2$b * age
+                    + params2$c[geno] * expo)
 sim2 <- replicate(100, {
            mu = exp(rnorm(length(y2),
                           mean=y2, 
