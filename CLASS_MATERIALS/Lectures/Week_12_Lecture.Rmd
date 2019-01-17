@@ -766,7 +766,7 @@ fit2 <- stan(file="lognormal_poisson.stan",
 ----------------
 
 ```{r print_fullmodel}
-post2 <- extract(fit2)
+post2 <- rstan::extract(fit2)
 print(fit2)
 ```
 
@@ -939,6 +939,8 @@ segments(x0=seq_len(nrow(data)),
 points(data$counts[order(mu1)], pch=20, col='red', cex=0.5)
 legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "simulated range"), col=c('red', 'black'))
 ```
+
+
 
 ## A toy problem
 
