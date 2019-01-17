@@ -718,6 +718,8 @@ $$\begin{aligned}
     &\qquad {} + c_{g_i} \times \text{exposure}_i 
 \end{aligned}$$
 
+You can download the data [here](poisson_counts_data.tsv).
+
 :::
 :::::::::: {.column width="60%"}
 
