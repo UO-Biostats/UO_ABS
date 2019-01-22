@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="author" content="Peter Ralph">
-  <title>ANOVA</title>
+  <title>ANOVA, and contingency tables</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -1654,7 +1654,7 @@ transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985); }
     <div class="slides">
 
 <section id="title-slide">
-  <h1 class="title">ANOVA</h1>
+  <h1 class="title">ANOVA, and contingency tables</h1>
   <p class="author">Peter Ralph</p>
   <p class="date">21 January 2018 – Advanced Biological Statistics</p>
 </section>
@@ -1715,6 +1715,192 @@ Y / \sum_{i=1}^n Y_i \sim \Dirichlet(\alpha_1, \ldots, \alpha_n) .
 <li><span class="math inline">\(\Dirichlet(100, 100, 100)\)</span></li>
 </ul>
 <p>and describe the difference. <em>(Hint: plot these in the <span class="math inline">\((P_1, P_2)\)</span> plane.)</em></p>
+</section></section>
+<section><section id="categorical-data" class="title-slide slide level1"><h1>Categorical data</h1></section><section id="hair-and-eye-color" class="slide level2">
+<h2>Hair and Eye color</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span>(HairEyeColor)</a></code></pre></div>
+<pre><code>HairEyeColor             package:datasets              R Documentation
+
+Hair and Eye Color of Statistics Students
+
+Description:
+
+     Distribution of hair and eye color and sex in 592 statistics
+     students.
+
+Usage:
+
+     HairEyeColor
+     
+Format:
+
+     A 3-dimensional array resulting from cross-tabulating 592
+     observations on 3 variables.  The variables and their levels are
+     as follows:
+
+       No  Name  Levels                    
+        1  Hair  Black, Brown, Red, Blond  
+        2  Eye   Brown, Blue, Hazel, Green 
+        3  Sex   Male, Female              
+      
+Details:
+
+     The Hair x Eye table comes from a survey of students at the
+     University of Delaware reported by Snee (1974).  The split by
+     ‘Sex’ was added by Friendly (1992a) for didactic purposes.
+
+     This data set is useful for illustrating various techniques for
+     the analysis of contingency tables, such as the standard
+     chi-squared test or, more generally, log-linear modelling, and
+     graphical methods such as mosaic plots, sieve diagrams or
+     association plots.
+
+Source:
+
+     &lt;URL:
+     http://euclid.psych.yorku.ca/ftp/sas/vcd/catdata/haireye.sas&gt;
+
+     Snee (1974) gives the two-way table aggregated over ‘Sex’.  The
+     ‘Sex’ split of the ‘Brown hair, Brown eye’ cell was changed to
+     agree with that used by Friendly (2000).
+
+References:
+
+     Snee, R. D. (1974).  Graphical display of two-way contingency
+     tables.  _The American Statistician_, *28*, 9-12.  doi:
+     10.2307/2683520 (URL: http://doi.org/10.2307/2683520).
+</code></pre>
+</section><section class="slide level2">
+
+<pre><code>## , , Sex = Male
+## 
+##        Eye
+## Hair    Brown Blue Hazel Green
+##   Black    32   11    10     3
+##   Brown    53   50    25    15
+##   Red      10   10     7     7
+##   Blond     3   30     5     8
+## 
+## , , Sex = Female
+## 
+##        Eye
+## Hair    Brown Blue Hazel Green
+##   Black    36    9     5     2
+##   Brown    66   34    29    14
+##   Red      16    7     7     7
+##   Blond     4   64     5     8</code></pre>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">(haireye &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">hair =</span> <span class="kw">dimnames</span>(HairEyeColor)[[<span class="dv">1</span>]][<span class="kw">slice.index</span>(HairEyeColor, <span class="dv">1</span>)],</a>
+<a class="sourceLine" id="cb5-2" title="2">                      <span class="dt">eye =</span> <span class="kw">dimnames</span>(HairEyeColor)[[<span class="dv">2</span>]][<span class="kw">slice.index</span>(HairEyeColor, <span class="dv">2</span>)],</a>
+<a class="sourceLine" id="cb5-3" title="3">                      <span class="dt">sex =</span> <span class="kw">dimnames</span>(HairEyeColor)[[<span class="dv">3</span>]][<span class="kw">slice.index</span>(HairEyeColor, <span class="dv">3</span>)],</a>
+<a class="sourceLine" id="cb5-4" title="4">                      <span class="dt">number =</span> HairEyeColor))</a></code></pre></div>
+<pre><code>##     hair   eye    sex number.Hair number.Eye number.Sex number.Freq
+## 1  Black Brown   Male       Black      Brown       Male          32
+## 2  Brown Brown   Male       Brown      Brown       Male          53
+## 3    Red Brown   Male         Red      Brown       Male          10
+## 4  Blond Brown   Male       Blond      Brown       Male           3
+## 5  Black  Blue   Male       Black       Blue       Male          11
+## 6  Brown  Blue   Male       Brown       Blue       Male          50
+## 7    Red  Blue   Male         Red       Blue       Male          10
+## 8  Blond  Blue   Male       Blond       Blue       Male          30
+## 9  Black Hazel   Male       Black      Hazel       Male          10
+## 10 Brown Hazel   Male       Brown      Hazel       Male          25
+## 11   Red Hazel   Male         Red      Hazel       Male           7
+## 12 Blond Hazel   Male       Blond      Hazel       Male           5
+## 13 Black Green   Male       Black      Green       Male           3
+## 14 Brown Green   Male       Brown      Green       Male          15
+## 15   Red Green   Male         Red      Green       Male           7
+## 16 Blond Green   Male       Blond      Green       Male           8
+## 17 Black Brown Female       Black      Brown     Female          36
+## 18 Brown Brown Female       Brown      Brown     Female          66
+## 19   Red Brown Female         Red      Brown     Female          16
+## 20 Blond Brown Female       Blond      Brown     Female           4
+## 21 Black  Blue Female       Black       Blue     Female           9
+## 22 Brown  Blue Female       Brown       Blue     Female          34
+## 23   Red  Blue Female         Red       Blue     Female           7
+## 24 Blond  Blue Female       Blond       Blue     Female          64
+## 25 Black Hazel Female       Black      Hazel     Female           5
+## 26 Brown Hazel Female       Brown      Hazel     Female          29
+## 27   Red Hazel Female         Red      Hazel     Female           7
+## 28 Blond Hazel Female       Blond      Hazel     Female           5
+## 29 Black Green Female       Black      Green     Female           2
+## 30 Brown Green Female       Brown      Green     Female          14
+## 31   Red Green Female         Red      Green     Female           7
+## 32 Blond Green Female       Blond      Green     Female           8</code></pre>
+</section><section id="section" class="slide level2">
+<h2></h2>
+<p><em>Questions:</em></p>
+<ol type="1">
+<li>Are hair and eye color independent in this sample?</li>
+<li>Do hair and eye color proportions differ by sex?</li>
+</ol>
+</section><section id="independence-and-multiplicativity" class="slide level2">
+<h2>Independence and multiplicativity</h2>
+<p>If hair and eye color are <em>independent</em>, then probabilities of combinations are <em>multiplicative</em>: <span class="math display">\[\begin{aligned}
+    \P\{\text{black hair and blue eyes}\} \\
+    &amp;\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\given\text{black hair}\} \\
+\end{aligned}\]</span></p>
+<div class="fragment">
+<p>which by independence is <span class="math display">\[\begin{aligned}
+    &amp;\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\}
+\end{aligned}\]</span></p>
+</div>
+</section><section id="multiplicativity-to-additivity" class="slide level2">
+<h2>Multiplicativity to additivity</h2>
+<p>A model of <em>independence</em> will have a <em>multiplicative</em> form: <span class="math display">\[
+    p_{ab} = p_a \times p_b .
+\]</span></p>
+<div class="fragment">
+<p>Set <span class="math inline">\(\lambda = \log(p)\)</span>, so that <span class="math display">\[
+    \lambda_{ab} = \lambda_a + \lambda_b .
+\]</span></p>
+</div>
+</section></section>
+<section><section id="stochastic-facts" class="title-slide slide level1"><h1>Stochastic facts</h1></section><section id="poisson-additivity" class="slide level2">
+<h2>Poisson additivity</h2>
+<p>If we have Poisson-many things of two categories: <span class="math display">\[\begin{aligned}
+    A &amp;\sim \Poisson(a) \\
+    B &amp;\sim \Poisson(b)
+\end{aligned}\]</span> then the total number of things is also Poisson: <span class="math display">\[
+    A + B \sim \Poisson(a + b)
+\]</span> and each thing chooses its type independently: <span class="math display">\[
+    A \given A + B \sim \Binomial(A+B, a/(a+b)) .
+\]</span></p>
+</section></section>
+<section><section id="back-to-hair-and-eye-colors" class="title-slide slide level1"><h1>Back to hair and eye colors</h1></section><section id="a-model" class="slide level2">
+<h2>A model</h2>
+<p>For hair color <span class="math inline">\(i\)</span> and eye color <span class="math inline">\(j\)</span>, the number of students with that combination is <span class="math display">\[
+    N_{ij} \sim \Poisson(\mu{ij}) .
+\]</span></p>
+<div class="fragment">
+<p>If hair and eye color are independent of each other and of sex, then <span class="math display">\[
+    \mu{ij}
+    &amp;=
+    \exp\left( \alpha_i + \beta_j \right) .
+\]</span></p>
+</div>
+</section><section id="nonindependence" class="slide level2">
+<h2>Nonindependence?</h2>
+<p><span class="math display">\[
+    \mu{ij}
+    &amp;=
+    \exp\left( \alpha_i + \beta_j + \gamma_{ij} \right) ?
+\]</span></p>
+<div class="fragment">
+<p>Is this identifiable?</p>
+</div>
+</section><section id="nonindependence." class="slide level2">
+<h2>Nonindependence.</h2>
+<p><span class="math display">\[\begin{aligned}
+    \mu{ij} &amp;= \exp\left( \delta_{ij} \\
+    \delta_ij &amp;\sim \Normal( \alpha_i + \beta_j, \sigma) 
+\end{aligned}\]</span></p>
+<div class="fragment">
+<p><em>Pick appropriate priors.</em></p>
+</div>
 </section></section>
     </div>
   </div>

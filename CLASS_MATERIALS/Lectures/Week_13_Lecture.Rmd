@@ -1,5 +1,5 @@
 ---
-title: "ANOVA"
+title: "ANOVA, and contingency tables"
 author: "Peter Ralph"
 date: "21 January 2018 -- Advanced Biological Statistics"
 ---
@@ -157,3 +157,186 @@ Simulate from a
 
 and describe the difference.
 *(Hint: plot these in the $(P_1, P_2)$ plane.)*
+
+
+# Categorical data
+
+## Hair and Eye color
+
+```{r hair_eye_data}
+data(HairEyeColor)
+```
+```
+HairEyeColor             package:datasets              R Documentation
+
+Hair and Eye Color of Statistics Students
+
+Description:
+
+     Distribution of hair and eye color and sex in 592 statistics
+     students.
+
+Usage:
+
+     HairEyeColor
+     
+Format:
+
+     A 3-dimensional array resulting from cross-tabulating 592
+     observations on 3 variables.  The variables and their levels are
+     as follows:
+
+       No  Name  Levels                    
+        1  Hair  Black, Brown, Red, Blond  
+        2  Eye   Brown, Blue, Hazel, Green 
+        3  Sex   Male, Female              
+      
+Details:
+
+     The Hair x Eye table comes from a survey of students at the
+     University of Delaware reported by Snee (1974).  The split by
+     ‘Sex’ was added by Friendly (1992a) for didactic purposes.
+
+     This data set is useful for illustrating various techniques for
+     the analysis of contingency tables, such as the standard
+     chi-squared test or, more generally, log-linear modelling, and
+     graphical methods such as mosaic plots, sieve diagrams or
+     association plots.
+
+Source:
+
+     <URL:
+     http://euclid.psych.yorku.ca/ftp/sas/vcd/catdata/haireye.sas>
+
+     Snee (1974) gives the two-way table aggregated over ‘Sex’.  The
+     ‘Sex’ split of the ‘Brown hair, Brown eye’ cell was changed to
+     agree with that used by Friendly (2000).
+
+References:
+
+     Snee, R. D. (1974).  Graphical display of two-way contingency
+     tables.  _The American Statistician_, *28*, 9-12.  doi:
+     10.2307/2683520 (URL: http://doi.org/10.2307/2683520).
+
+```
+
+----------------
+
+```{r show_he, echo=FALSE}
+HairEyeColor
+```
+
+---------------
+
+```{r melt_he}
+(haireye <- data.frame(hair = dimnames(HairEyeColor)[[1]][slice.index(HairEyeColor, 1)],
+                      eye = dimnames(HairEyeColor)[[2]][slice.index(HairEyeColor, 2)],
+                      sex = dimnames(HairEyeColor)[[3]][slice.index(HairEyeColor, 3)],
+                      number = HairEyeColor))
+```
+
+## 
+
+*Questions:* 
+
+1. Are hair and eye color independent in this sample?
+2. Do hair and eye color proportions differ by sex?
+
+
+## Independence and multiplicativity
+
+If hair and eye color are *independent*,
+then probabilities of combinations are *multiplicative*:
+$$\begin{aligned}
+    \P\{\text{black hair and blue eyes}\} \\
+    &\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\given\text{black hair}\} \\
+\end{aligned}$$
+
+. . .
+
+which by independence is
+$$\begin{aligned}
+    &\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\}
+\end{aligned}$$
+
+
+## Multiplicativity to additivity
+
+A model of *independence* will have a *multiplicative* form:
+$$
+    p_{ab} = p_a \times p_b .
+$$
+
+. . .
+
+Set $\lambda = \log(p)$, so that
+$$
+    \lambda_{ab} = \lambda_a + \lambda_b .
+$$
+
+
+# Stochastic facts
+
+## Poisson additivity
+
+If we have Poisson-many things of two categories:
+$$\begin{aligned}
+    A &\sim \Poisson(a) \\
+    B &\sim \Poisson(b)
+\end{aligned}$$
+then the total number of things is also Poisson:
+$$
+    A + B \sim \Poisson(a + b)
+$$
+and each thing chooses its type independently:
+$$
+    A \given A + B \sim \Binomial(A+B, a/(a+b)) .
+$$
+
+# Back to hair and eye colors
+
+## A model
+
+For hair color $i$ and eye color $j$,
+the number of students with that combination is
+$$
+    N_{ij} \sim \Poisson(\mu{ij}) .
+$$
+
+. . .
+
+If hair and eye color are independent of each other
+and of sex, then
+$$
+    \mu{ij}
+    &=
+    \exp\left( \alpha_i + \beta_j \right) .
+$$
+
+
+## Nonindependence?
+
+$$
+    \mu{ij}
+    &=
+    \exp\left( \alpha_i + \beta_j + \gamma_{ij} \right) ?
+$$
+
+. . .
+
+Is this identifiable?
+
+
+## Nonindependence.
+
+$$\begin{aligned}
+    \mu{ij} &= \exp\left( \delta_{ij} \\
+    \delta_ij &\sim \Normal( \alpha_i + \beta_j, \sigma) 
+\end{aligned}$$
+
+. . .
+
+*Pick appropriate priors.*
+
