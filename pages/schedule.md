@@ -30,6 +30,7 @@ Week 13 (*1/21, Peter*)
 
 : Categorical data: chi-square for contingency tables, permutation tests; categorical prediction.
 
+    * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_13_Lecture.slides.html)
     - Reading: **(Kruschke, ch 22, 24)**
 
 Week 14 (*1/28, Peter*)

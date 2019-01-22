@@ -1,0 +1,159 @@
+---
+title: "ANOVA"
+author: "Peter Ralph"
+date: "21 January 2018 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+# ANOVA
+
+## Metric data from groups
+
+Suppose we have numerical observations coming from $m$ different groups.
+We'd like to know how different the means are between groups,
+compared to variation within groups.
+
+. . .
+
+*For example:* 
+dry leaf mass after 10d of growth
+of $k=5$ genotypes in
+in $m=4$ different conditions.
+([data here](leaf_mass.tsv))
+
+```{r simdata_ra, include=FALSE}
+ntreat <- 4
+ngeno <- 5
+truth <- list(mu=200,
+              geno=rnorm(ngeno, sd=5), 
+              treat=rnorm(ntreat, sd=5), 
+              sigma=2.0)
+n <- 200
+leafs <- data.frame(geno = letters[sample.int(ngeno, size=n, replace=TRUE)],
+                    treat = sample.int(ntreat, size=n, replace=TRUE))
+leafs$y <- pmax(0, truth$mu + truth$geno[leafs$geno] + truth$treat[leafs$treat]
+                + rnorm(n, sd=truth$sigma))
+write.table(leafs, file="leaf_mass.tsv", row.names=FALSE)
+```
+
+
+
+-----------------
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+Dry leaf mass after 10d of growth
+of $k=5$ genotypes in
+in $m=4$ different conditions.
+
+```r
+leafs <- read.table("leaf_mass.tsv", 
+                    header=TRUE)
+boxplot(y ~ geno + treat, 
+        main='dry leaf mass', 
+        xlab='genotype.treatment',
+        data=leafs)
+```
+
+
+:::
+::: {.column width="50%"}
+
+```{r plotdata_ra, fig.width=1.5*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+leafs <- read.table("leaf_mass.tsv", 
+                    header=TRUE)
+boxplot(y ~ geno + treat, 
+        main='dry leaf mass', 
+        xlab='genotype.treatment',
+        col=1:ngeno,
+        las=3,
+        data=leafs)
+abline(v=ngeno * (1:(ntreat-1)) + 0.5, lty=3)
+text(x=ngeno * (1:(ntreat)) - 2, y=220, labels=paste("treatment", 1:ntreat))
+```
+
+:::
+::::::::::::::
+
+
+-------------------
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+Each group has a different mean;
+noise about these is Normal with the same SD.
+Group means are random deviations
+from a mean determined additively by genotype and treatment.
+
+1. Make the model.
+2. What posterior(s) will we look at?
+
+
+:::
+::: {.column width="50%"}
+
+```{r plotdata_ra4, fig.width=1.5*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+boxplot(y ~ geno + treat, 
+        main='dry leaf mass', 
+        xlab='genotype.treatment',
+        col=1:ngeno,
+        las=3,
+        data=leafs)
+abline(v=ngeno * (1:(ntreat-1)) + 0.5, lty=3)
+text(x=ngeno * (1:(ntreat)) - 2, y=220, labels=paste("treatment", 1:ntreat))
+```
+
+:::
+::::::::::::::
+
+
+# Stochastic minute
+
+## The Dirichlet distribution
+
+A collection of $n$ nonnegative random numbers $(P_1, \ldots, P_n)$ 
+*that sums to 1*
+has a **Dirichlet($\alpha_1, \ldots, \alpha_n$)** distribution
+if it has probability density
+$$
+  \frac{1}{B(\alpha)} \prod_{i=1}^n p_i^{\alpha_i - 1} .
+$$
+
+*Facts:*
+
+> 1. If $U \sim \Beta(\alpha, \beta)$ then $(U, 1-U) \sim \Dirichlet(\alpha, \beta)$.
+> 
+> 2. If $Y_1, \ldots, Y_n$ are independent, Exponential with rates $\alpha_1, \ldots, \alpha_n$
+>    then
+>    $$
+>    Y / \sum_{i=1}^n Y_i \sim \Dirichlet(\alpha_1, \ldots, \alpha_n) .
+>    $$
+>
+> 3. Useful? Yes, if you need a distribution on numbers that sum to one 
+>    (e.g., class proportions).
+
+## Exercise
+
+Simulate from a
+
+- $\Dirichlet(1, 1, 1)$
+- $\Dirichlet(100, 100, 100)$
+
+and describe the difference.
+*(Hint: plot these in the $(P_1, P_2)$ plane.)*
