@@ -292,7 +292,7 @@ $$
 $$
 and each thing chooses its type independently:
 $$
-    A \given A + B \sim \Binomial(A+B, a/(a+b)) .
+    A \given A + B \sim \Binom\left(A+B, \frac{a}{a+b}\right) .
 $$
 
 # Back to hair and eye colors
@@ -302,27 +302,27 @@ $$
 For hair color $i$ and eye color $j$,
 the number of students with that combination is
 $$
-    N_{ij} \sim \Poisson(\mu{ij}) .
+    N_{ij} \sim \Poisson(\mu_{ij}) .
 $$
 
 . . .
 
 If hair and eye color are independent of each other
 and of sex, then
-$$
-    \mu{ij}
+$$\begin{aligned}
+    \mu_{ij}
     &=
     \exp\left( \alpha_i + \beta_j \right) .
-$$
+\end{aligned}$$
 
 
 ## Nonindependence?
 
-$$
-    \mu{ij}
+$$\begin{aligned}
+    \mu_{ij}
     &=
     \exp\left( \alpha_i + \beta_j + \gamma_{ij} \right) ?
-$$
+\end{aligned}$$
 
 . . .
 
@@ -332,8 +332,8 @@ Is this identifiable?
 ## Nonindependence.
 
 $$\begin{aligned}
-    \mu{ij} &= \exp\left( \delta_{ij} \\
-    \delta_ij &\sim \Normal( \alpha_i + \beta_j, \sigma) 
+    \mu_{ij} &= \exp\left( \delta_{ij} \right) \\
+    \delta_{ij} &\sim \Normal( \alpha_i + \beta_j, \sigma) 
 \end{aligned}$$
 
 . . .

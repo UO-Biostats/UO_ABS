@@ -1867,36 +1867,36 @@ References:
 \end{aligned}\]</span> then the total number of things is also Poisson: <span class="math display">\[
     A + B \sim \Poisson(a + b)
 \]</span> and each thing chooses its type independently: <span class="math display">\[
-    A \given A + B \sim \Binomial(A+B, a/(a+b)) .
+    A \given A + B \sim \Binom\left(A+B, \frac{a}{a+b}\right) .
 \]</span></p>
 </section></section>
 <section><section id="back-to-hair-and-eye-colors" class="title-slide slide level1"><h1>Back to hair and eye colors</h1></section><section id="a-model" class="slide level2">
 <h2>A model</h2>
 <p>For hair color <span class="math inline">\(i\)</span> and eye color <span class="math inline">\(j\)</span>, the number of students with that combination is <span class="math display">\[
-    N_{ij} \sim \Poisson(\mu{ij}) .
+    N_{ij} \sim \Poisson(\mu_{ij}) .
 \]</span></p>
 <div class="fragment">
-<p>If hair and eye color are independent of each other and of sex, then <span class="math display">\[
-    \mu{ij}
+<p>If hair and eye color are independent of each other and of sex, then <span class="math display">\[\begin{aligned}
+    \mu_{ij}
     &amp;=
     \exp\left( \alpha_i + \beta_j \right) .
-\]</span></p>
+\end{aligned}\]</span></p>
 </div>
 </section><section id="nonindependence" class="slide level2">
 <h2>Nonindependence?</h2>
-<p><span class="math display">\[
-    \mu{ij}
+<p><span class="math display">\[\begin{aligned}
+    \mu_{ij}
     &amp;=
     \exp\left( \alpha_i + \beta_j + \gamma_{ij} \right) ?
-\]</span></p>
+\end{aligned}\]</span></p>
 <div class="fragment">
 <p>Is this identifiable?</p>
 </div>
 </section><section id="nonindependence." class="slide level2">
 <h2>Nonindependence.</h2>
 <p><span class="math display">\[\begin{aligned}
-    \mu{ij} &amp;= \exp\left( \delta_{ij} \\
-    \delta_ij &amp;\sim \Normal( \alpha_i + \beta_j, \sigma) 
+    \mu_{ij} &amp;= \exp\left( \delta_{ij} \right) \\
+    \delta_{ij} &amp;\sim \Normal( \alpha_i + \beta_j, \sigma) 
 \end{aligned}\]</span></p>
 <div class="fragment">
 <p><em>Pick appropriate priors.</em></p>

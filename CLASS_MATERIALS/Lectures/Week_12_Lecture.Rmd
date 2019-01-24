@@ -961,12 +961,96 @@ data.frame(
 
 <!-- IMPLEMENT, IN-CLASS -->
 
+We'll use the fact that if the simulated data
+"look just like" the real data,
+then the rank of the real data in the simulated data
+should be *uniform*.
+
+Since we have 100 simulated datasets,
+that means that the probability that the real data is *smaller* than all the simulated data
+is $1/101$, and the probability that the real data is bigger than *only one* of the simulated data points
+is $1/101$, etcetera.
+
+This is a *distribution-free* measure of goodness of fit.
+
+## Warm-up
+
+To check that we understand what's going on here,
+we're doing to simulate data where the "sample" *fits* the model,
+so that the "sample" and the "simulations" are from the same distribution.
+
+```{r warmup}
+# 1. Simulate 99 draws from a distribution, then one more "sample".
+
+x <- runif(99 + 1) # the "sample" will be the first one
+
+# 2. Find the rank of the "sample" in all 100.
+
+r <- sum(x <= x[1])
+
+# 3. Do that a lot of times: we do it in a matrix to be efficient.
+
+nreps <- 1000
+X <- matrix(runif(100 * nreps), ncol=100)
+R <- rowSums(X <= X[,1])
+```
+
+##
+
+```{r a_hist}
+# 4. Histogram that.
+
+hist(R) # this looks pretty uniform, as it should!
+```
+
+## Chi-squraed for goodness of fit.
+
+If $N_i \sim \Poisson(P_i)$, then the mean *and* variance of $N_i$ is $P_i$.
+This motivates the chi-squared statistic:
+$$
+\chi^2 = \sum_i \frac{(N_i - P_i)^2}{P_i} .
+$$
+
+##
+
+```{r warmup_contd}
+# 5. Compute the chi-squared statistic.
+
+gof <- function (x, sim) {
+    R <- rowSums(x <= sim) # this is the rank minus 1
+    predicted <- length(x) / 10
+    chisq <- sum((table(R %/% 10) - predicted)^2 / predicted)
+    return(chisq)
+}
+
+# 6. Find the null distribution of this statistic
+
+null_distrn <- replicate(1000, {
+    nreps <- 1000
+    X <- matrix(runif(100 * nreps), ncol=100)
+    gof(X[,1], X[,2:100]) })
+```
 
 ## Goodness-of-fit: implementation
 
 <!-- IMPLEMENT, IN-CLASS -->
+```{r get_gof}
+gof1 <- gof(data$counts, sim1[, 1:99])
+gof2 <- gof(data$counts, sim2[, 1:99])
+```
 
-## Goodness-of-fit: application
+The goodness-of-fitscores obtained by our models were
 
-<!-- IMPLEMENT, IN-CLASS -->
+1. Original model: `r round(gof1)`
+2. Second model, with more randomness: `r round(gof2)`
 
+
+##
+
+Here is the "null distribution" of the goodness-of-fit scores.
+The first model is clearly outside this range,
+and the second one is on the edge.
+
+```{r show_gof_hist}
+hist(null_distrn, main='GOF scores')
+```
