@@ -123,6 +123,121 @@ text(x=ngeno * (1:(ntreat)) - 2, y=220, labels=paste("treatment", 1:ntreat))
 ::::::::::::::
 
 
+## a stan model
+
+```{r anova_model, cache=TRUE}
+anova_model <- stan_model(model_code="
+data {
+    int N;
+    int ngeno;
+    int ntreat;
+    vector[N] leaf;
+    int geno[N];
+    int treat[N];
+}
+parameters {
+    real mu;
+    vector[ngeno] alpha;
+    vector[ntreat] beta;
+    matrix[ngeno, ntreat] gamma;
+    matrix<lower=0>[ngeno, ntreat] sigma;
+    real<lower=0> sigma_gamma;
+}
+model {
+    vector[N] muvec;
+    vector[N] sigmavec;
+    muvec = mu + alpha[geno] + beta[treat];
+    for (k in 1:N) {
+        muvec[k] += sigma_gamma * gamma[geno[k], treat[k]];
+        sigmavec[k] = sigma[geno[k], treat[k]];
+    }
+    leaf ~ normal(muvec, sigmavec);
+    // DOESN'T WORK: leaf ~ normal(muvec, sigma[geno, treat]);
+    mu ~ normal(205, 10);
+    alpha ~ normal(0, 10);
+    beta ~ normal(0, 10);
+    for (k in 1:ngeno) {
+        // using Matt's trick here
+        gamma[k] ~ normal(0, 1);
+        sigma[k] ~ gamma(20, 10);
+    }
+    sigma_gamma ~ gamma(0.5, 0.5);
+}
+")
+```
+
+##
+
+```{r do_sampling, cache=TRUE, dependson="anova_model"}
+fit <- sampling(anova_model,
+            data=list(N=nrow(leafs),
+                      ngeno=ngeno,
+                      ntreat=ntreat,
+                      leaf=leafs$y,
+                      geno=as.numeric(leafs$geno),
+                      treat=as.numeric(leafs$treat)))
+```
+
+##
+
+```{r print_fit}
+print(fit)
+```
+
+## 
+
+```{r plot_trace}
+stan_trace(fit, pars=c("mu", "sigma_gamma", "alpha", "beta"))
+stan_plot(fit, pars=c("mu", "sigma_gamma", "alpha", "beta"))
+```
+
+##
+
+```{r plot_trace2}
+stan_trace(fit, pars=c("gamma", "sigma"))
+
+```
+
+```{r more}
+
+samples <- extract(fit)
+
+# let's get the posterior distribution of
+# the group mean for (genotype a, treatment 1)
+
+samples <- extract(fit)
+
+post_a1 <- samples$mu + samples$alpha[,1] + samples$beta[,1] + samples$gamma[,1,1]
+
+post_means <- as.vector(samples$mu) + samples$gamma
+for (k in 1:ngeno) {
+    post_means[,k,] <- post_means[,k,] + samples$alpha[,k]
+}
+for (k in 1:ntreat) {
+    post_means[,,k] <- post_means[,,k] + samples$beta[,k]
+}
+
+dim(post_means) <- c(dim(post_means)[1], prod(dim(post_means)[2:3]))
+colnames(post_means) <- outer(levels(leafs$geno), levels(leafs$treat), paste, sep=".")
+post_means <- as.data.frame(post_means)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Stochastic minute
 
 ## The Dirichlet distribution

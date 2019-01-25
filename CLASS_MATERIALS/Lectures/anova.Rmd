@@ -1,0 +1,178 @@
+# Homework 3: Interpret the code
+
+**Assignment:** 
+You should use R for your work, and 
+submit your work as **both** a final .Rmd file and rendered pdf or html files.
+
+**Due:** Submit your work via Canvas by the end of the day (midnight) on Thursday, January 31. 
+You can work with other members of class, but I expect each of you to construct and run all of the scripts
+yourself.
+
+```{r data, include=FALSE}
+set.seed(23)
+ntreat <- 4
+ngeno <- 5
+truth <- list(mu=200,
+              geno=rnorm(ngeno, sd=5), 
+              treat=rnorm(ntreat, sd=5), 
+              sigma=2.0)
+n <- 2000
+leafs <- data.frame(geno = letters[sample.int(ngeno, size=n, replace=TRUE)],
+                    treat = sample.int(ntreat, size=n, replace=TRUE))
+leafs$y <- pmax(0, truth$mu + truth$geno[leafs$geno] + truth$treat[leafs$treat]
+                + rnorm(n, sd=truth$sigma))
+
+```
+
+```{r setup}
+library(matrixStats)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+rstan_options(auto_write = TRUE)
+
+plot_cis <- function (Z, ...) {
+    # helper function to plot credible intervals, like stan_plot( )
+    q <- colQuantiles(Z, probs=c(0.025, 0.25, 0.5, 0.75, 0.975))
+    opar <- par(mar=c(par("mar"), 10)[c(1,5,3,4)])
+    plot(q[,3], 1:ncol(Z), type='n', 
+         xlab='value', ylab='', yaxt='n', xlim=range(q),
+         ...)
+    segments(x0=q[,1], x1=q[,5], y0=1:ncol(Z))
+    segments(x0=q[,2], x1=q[,4], y0=1:ncol(Z), lwd=3, col='red')
+    points(q[,3], 1:ncol(Z), pch=20, cex=2)
+    axis(2, at=1:ncol(Z), labels=colnames(Z), las=2)
+    par(opar)
+}
+```
+
+## The problem
+
+Here is a dataset ([`leaf_mass.tsv`](leaf_mass.tsv)).
+
+```{r read_data, cache=TRUE}
+leafs <- read.table("leaf_mass.tsv", 
+                    header=TRUE)
+# how many observations?
+table(leafs$geno, leafs$treat)
+```
+
+```{r raw_data}
+# here's the data
+boxplot(y ~ geno + treat, 
+        main='dry leaf mass', 
+        xlab='genotype.treatment',
+        col=1:ngeno,
+        las=3,
+        data=leafs)
+abline(v=ngeno * (1:(ntreat-1)) + 0.5, lty=3)
+text(x=ngeno * (1:(ntreat)) - 2, y=220, labels=paste("treatment", 1:ntreat))
+```
+
+```{r stan_model, cache=TRUE, dependson="read_data"}
+anova_model <- stan_model(model_code=" 
+data {
+    int N;
+    int ngeno;
+    int ntreat;
+    vector[N] leaf;
+    int geno[N];
+    int treat[N];
+}
+parameters {
+    real mu;
+    vector[ngeno] alpha;
+    vector[ntreat] beta;
+    matrix[ngeno, ntreat] gamma;
+    matrix<lower=0>[ngeno, ntreat] sigma;
+    real<lower=0> sigma_gamma;
+}
+model {
+    vector[N] muvec;
+    vector[N] sigmavec;
+    muvec = mu + alpha[geno] + beta[treat];
+    for (k in 1:N) {
+        muvec[k] += sigma_gamma * gamma[geno[k], treat[k]];
+        sigmavec[k] = sigma[geno[k], treat[k]];
+    }
+    leaf ~ normal(muvec, sigmavec);
+    mu ~ normal(205, 10);
+    alpha ~ normal(0, 10);
+    beta ~ normal(0, 10);
+    for (k in 1:ngeno) {
+        // using Matt's trick here
+        gamma[k] ~ normal(0, 1);
+        sigma[k] ~ gamma(20, 10);
+    }
+    sigma_gamma ~ gamma(0.5, 0.5);
+}
+")
+```
+
+```{r do_sampling, cache=TRUE, dependson="stan_model"}
+fit <- sampling(anova_model,
+                iter = 1e4,
+                data=list(N=nrow(leafs),
+                          ngeno=ngeno,
+                          ntreat=ntreat,
+                          leaf=leafs$y,
+                          geno=as.numeric(leafs$geno),
+                          treat=as.numeric(leafs$treat)))
+print(fit)
+```
+
+```{r FIXME}
+leafs$treat <- factor(leafs$treat)
+```
+
+```{r get_posteriors}
+# now we get the posterior means for each group
+samples <- extract(fit)
+post_means <- as.vector(samples$mu) + samples$gamma
+for (k in 1:ngeno) {
+    post_means[,k,] <- post_means[,k,] + samples$alpha[,k]
+}
+for (k in 1:ntreat) {
+    post_means[,,k] <- post_means[,,k] + samples$beta[,k]
+}
+
+dim(post_means) <- c(dim(post_means)[1], prod(dim(post_means)[2:3]))
+colnames(post_means) <- outer(levels(leafs$geno), levels(leafs$treat), paste, sep=".")
+post_means <- as.data.frame(post_means)
+post_quantiles <- colQuantiles(as.matrix(post_means), probs=c(0.025, 0.25, 0.5, 0.75, 0.975))
+
+# here we plot the data with the posterior estimates of the group mean on top
+yfact <- factor(paste(leafs$geno, leafs$treat, sep="."), 
+                levels=colnames(post_means))
+plot(y ~ as.numeric(yfact), 
+     main='dry leaf mass', 
+     xlab='genotype.treatment', xaxt='n',
+     pch=20, 
+     col=adjustcolor(as.numeric(geno), 0.5),
+     data=leafs, las=3)
+axis(1, at=1:(ngeno * ntreat), labels=levels(yfact), las=3)
+segments(x0=1:(ngeno * ntreat), col='red',
+         y0=post_quantiles[,1],
+         y1=post_quantiles[,5])
+segments(x0=1:(ngeno * ntreat), lwd=3,
+         y0=post_quantiles[,2],
+         y1=post_quantiles[,4])
+points(1:(ngeno * ntreat),
+       post_quantiles[,3],
+       pch=20, cex=2, col='black')
+abline(v=ngeno * (1:(ntreat-1)) + 0.5, lty=3)
+text(x=ngeno * (1:(ntreat)) - 2, y=220, labels=paste("treatment", 1:ntreat))
+```
+
+```{r marginal effects}
+post_geno <- samples$alpha
+colnames(post_geno) <- paste("alpha", levels(leafs$geno), sep="_")
+for (k in 1:ngeno) {
+    post_geno[,k] <- post_geno[,k] + samples$mu + rowMeans(samples$gamma[,k,])
+}
+post_treat <- samples$beta
+colnames(post_treat) <- paste("beta", levels(leafs$treat), sep="_")
+for (k in 1:ntreat) {
+    post_treat[,k] <- post_treat[,k] + samples$mu + rowMeans(samples$gamma[,,k])
+}
+plot_cis(cbind(post_geno, post_treat))
+```
