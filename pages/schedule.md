@@ -32,6 +32,7 @@ Week 13 (*1/21, Peter*)
 
     * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_13_Lecture.slides.html)
     - Reading: **(Kruschke, ch 22, 24)**
+    - [Homework 3](../CLASS_MATERIALS/Homework_Solutions/HW3_W19.html), due 1/31.
 
 Week 14 (*1/28, Peter*)
 
