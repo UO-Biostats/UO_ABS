@@ -139,7 +139,7 @@ img {
 <p>As part of a survey of plant–insect interactions in Upper Klamath Lake, we have measured the radius of a large number of lilypads, counted the number of insect pupae found on each. We would like to use these data to estimate the distribution of ages of the lilypads. We know that insects pupate here at a mean rate of 1 per square meter, and assume that lilypads are circular. Then, it is reasonable to assume that for a lilypad that is <span class="math inline">\(T\)</span> weeks old with radius <span class="math inline">\(R\)</span>, the number of insects on it, which we denote <span class="math inline">\(Z\)</span>, is Poisson distributed: <span class="math display">\[
     Z \sim \text{Poisson}(\pi T R^2) .
 \]</span> We want to infer the <em>distribution</em> of ages of the lilypads, assuming that the distribution if Gamma distributed, with shape <span class="math inline">\(k\)</span> and rate <span class="math inline">\(\lambda\)</span>.</p>
-<p>Here: <a href="lilypads.tsv">lilypads.tsv</a> is a file with the data. Please develop a Stan model, and apply it to estimate <span class="math inline">\(k\)</span> and <span class="math inline">\(\lambda\)</span>. Make a histogram of the distribution of lilypad ages using the maximum posterior estimates. How many lilypads do you estimate are older than 3 weeks old?</p>
+<p>Here: <a href="lilypads.tsv">lilypads.tsv</a> is a file with the data. Please develop a Stan model, and apply it to estimate <span class="math inline">\(k\)</span> and <span class="math inline">\(\lambda\)</span>. Make a histogram of the distribution of lilypad ages using the posterior mean estimates. How many lilypads do you estimate are older than 3 weeks old?</p>
 </section>
 </section>
 
