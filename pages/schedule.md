@@ -38,6 +38,7 @@ Week 14 (*1/28, Peter*)
 
 : Sparsifying priors and variable selection.
 
+    * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_14_Lecture.slides.html)
     - Reading: **(Kruschke, ch 19, 20)**
 
 Week 15 (*2/4, Bill*)
