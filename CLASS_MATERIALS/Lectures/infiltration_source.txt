@@ -1,0 +1,3 @@
+from https://www.tandfonline.com/doi/full/10.1080/24749508.2018.1481633
+"Estimation of infiltration rate from soil properties using regression model for cultivated land"
+

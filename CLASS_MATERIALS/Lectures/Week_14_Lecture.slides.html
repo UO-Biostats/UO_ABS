@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Peter Ralph">
+  <title>Sparsifying priors, and variable selection</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="reveal.js/css/theme/simple.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+  <style type="text/css">
+  
+  .reveal { font-size: 30px; }
+  
+  .reveal h1 { font-size: 1.5em; } 
+  
+  .reveal h2 { font-size: 1.2em; } 
+  
+  .reveal .slides { text-align: left; }
+  
+  .reveal .slides figure { text-align: center; }
+  
+  .reveal figcaption { display: none; }
+  
+  </style>
+  <div style="display: none">
+  \[
+  %%
+  % Add your macros here; they'll be included in pdf and html output.
+  %%
+  
+  \newcommand{\R}{\mathbb{R}}    % reals
+  \newcommand{\E}{\mathbb{E}}    % expectation
+  \renewcommand{\P}{\mathbb{P}}  % probability
+  \DeclareMathOperator{\logit}{logit}
+  \DeclareMathOperator{\logistic}{logistic}
+  \DeclareMathOperator{\sd}{sd}
+  \DeclareMathOperator{\var}{var}
+  \DeclareMathOperator{\cov}{cov}
+  \DeclareMathOperator{\Normal}{Normal}
+  \DeclareMathOperator{\Poisson}{Poisson}
+  \DeclareMathOperator{\Beta}{Beta}
+  \DeclareMathOperator{\Binom}{Binomial}
+  \DeclareMathOperator{\Gam}{Gamma}
+  \DeclareMathOperator{\Exp}{Exponential}
+  \DeclareMathOperator{\Cauchy}{Cauchy}
+  \DeclareMathOperator{\Unif}{Unif}
+  \DeclareMathOperator{\Dirichlet}{Dirichlet}
+  \DeclareMathOperator{\Wishart}{Wishart}
+  
+  \newcommand{\given}{\;\vert\;}
+  \]
+  </div>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Sparsifying priors, and variable selection</h1>
+  <p class="author">Peter Ralph</p>
+  <p class="date">28 January 2018 – Advanced Biological Statistics</p>
+</section>
+
+<section><section id="overview" class="title-slide slide level1"><h1>Overview</h1></section><section id="problems-with-linear-models" class="slide level2">
+<h2>Problems with linear models</h2>
+<ol type="1">
+<li><p>“Too much” noise (i.e., non-Normal noise).</p></li>
+<li><p>Too many variables.</p></li>
+</ol>
+</section><section id="problems-with-linear-models-1" class="slide level2">
+<h2>Problems with linear models</h2>
+<ol type="1">
+<li><del>
+“Too much” noise (i.e., non-Normal noise).
+</del></li>
+<li>Too many variables. <strong>(today)</strong></li>
+</ol>
+</section></section>
+<section><section id="variable-selection" class="title-slide slide level1"><h1>Variable selection</h1></section><section id="example-data" class="slide level2">
+<h2>Example data</h2>
+<figure>
+<img data-src="lars_diabetes_data.png" alt="from Efron, Hastie, Johnstone, &amp; Tibshirani" /><figcaption>from Efron, Hastie, Johnstone, &amp; Tibshirani</figcaption>
+</figure>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(lars)</a></code></pre></div>
+<pre><code>## Loaded lars 1.2</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">data</span>(diabetes)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">class</span>(diabetes<span class="op">$</span>x2) &lt;-<span class="st"> &quot;matrix&quot;</span></a></code></pre></div>
+<pre><code>diabetes                 package:lars                  R Documentation
+
+Blood and other measurements in diabetics
+
+Description:
+
+     The ‘diabetes’ data frame has 442 rows and 3 columns. These are
+     the data used in the Efron et al &quot;Least Angle Regression&quot; paper.
+
+Format:
+
+     This data frame contains the following columns:
+
+     x a matrix with 10 columns
+
+     y a numeric vector
+
+     x2 a matrix with 64 columns</code></pre>
+</section><section class="slide level2">
+
+<p>The dataset has</p>
+<ul>
+<li>442 diabetes patients</li>
+<li>10 main variables: age, gender, body mass index, average blood pressure (map), and six blood serum measurements (tc, ldl, hdl, tch, ltg, glu)</li>
+<li>45 interactions, e.g. <code>age:ldl</code></li>
+<li>9 quadratic effects, e.g. <code>age^2</code></li>
+<li>measure of disease progression taken one year later: <code>y</code></li>
+</ul>
+</section><section id="section" class="slide level2">
+<h2></h2>
+<p><img src="figure/Week_14_Lecture/show_cors-1.png" title="plot of chunk show_cors" alt="plot of chunk show_cors" style="display: block; margin: auto;" /></p>
+</section><section id="section-1" class="slide level2">
+<h2></h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">cor</span>(<span class="kw">cbind</span>(diabetes<span class="op">$</span>x, <span class="dt">y=</span>diabetes<span class="op">$</span>y))</a></code></pre></div>
+<pre><code>##             age         sex        bmi        map         tc        ldl
+## age  1.00000000  0.17373710  0.1850847  0.3354267 0.26006082  0.2192431
+## sex  0.17373710  1.00000000  0.0881614  0.2410132 0.03527682  0.1426373
+## bmi  0.18508467  0.08816140  1.0000000  0.3954153 0.24977742  0.2611699
+## map  0.33542671  0.24101317  0.3954153  1.0000000 0.24246971  0.1855578
+## tc   0.26006082  0.03527682  0.2497774  0.2424697 1.00000000  0.8966630
+## ldl  0.21924314  0.14263726  0.2611699  0.1855578 0.89666296  1.0000000
+## hdl -0.07518097 -0.37908963 -0.3668110 -0.1787612 0.05151936 -0.1964551
+## tch  0.20384090  0.33211509  0.4138066  0.2576534 0.54220728  0.6598169
+## ltg  0.27077678  0.14991756  0.4461586  0.3934781 0.51550076  0.3183534
+## glu  0.30173101  0.20813322  0.3886800  0.3904294 0.32571675  0.2906004
+## y    0.18788875  0.04306200  0.5864501  0.4414838 0.21202248  0.1740536
+##             hdl        tch        ltg        glu          y
+## age -0.07518097  0.2038409  0.2707768  0.3017310  0.1878888
+## sex -0.37908963  0.3321151  0.1499176  0.2081332  0.0430620
+## bmi -0.36681098  0.4138066  0.4461586  0.3886800  0.5864501
+## map -0.17876121  0.2576534  0.3934781  0.3904294  0.4414838
+## tc   0.05151936  0.5422073  0.5155008  0.3257168  0.2120225
+## ldl -0.19645512  0.6598169  0.3183534  0.2906004  0.1740536
+## hdl  1.00000000 -0.7384927 -0.3985770 -0.2736973 -0.3947893
+## tch -0.73849273  1.0000000  0.6178574  0.4172121  0.4304529
+## ltg -0.39857700  0.6178574  1.0000000  0.4646705  0.5658834
+## glu -0.27369730  0.4172121  0.4646705  1.0000000  0.3824835
+## y   -0.39478925  0.4304529  0.5658834  0.3824835  1.0000000</code></pre>
+</section><section id="crossvalidation-plan" class="slide level2">
+<h2>Crossvalidation plan</h2>
+<ol type="1">
+<li><p>Put aside 20% of the data for <em>testing</em>.</p></li>
+<li><p>Refit the model.</p></li>
+<li><p>Predict the test data; compute <span class="math display">\[\begin{aligned}
+ S = \sqrt{\frac{1}{M} \sum_{k=1}^M (\hat y_i - y_i)^2}
+\end{aligned}\]</span></p></li>
+</ol>
+<div class="fragment">
+<p>To be more thorough, we’d:</p>
+<ol start="4" type="1">
+<li><p>Repeat for the other four 20%s.</p></li>
+<li><p>Compare.</p></li>
+</ol>
+</div>
+</section><section id="crossvalidation" class="slide level2">
+<h2>Crossvalidation</h2>
+<p>First let’s split the data into testing and training just once:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">test_indices &lt;-<span class="st"> </span>(<span class="kw">rbinom</span>(<span class="kw">length</span>(diabetes<span class="op">$</span>y), <span class="dt">size=</span><span class="dv">1</span>, <span class="dt">prob=</span><span class="fl">0.2</span>) <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb7-2" title="2">test_d &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">data.frame</span>(<span class="dt">y=</span>diabetes<span class="op">$</span>y[test_indices]),</a>
+<a class="sourceLine" id="cb7-3" title="3">                diabetes<span class="op">$</span>x2[test_indices,])</a>
+<a class="sourceLine" id="cb7-4" title="4">training_d &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">data.frame</span>(<span class="dt">y=</span>diabetes<span class="op">$</span>y[<span class="op">!</span>test_indices]),</a>
+<a class="sourceLine" id="cb7-5" title="5">                diabetes<span class="op">$</span>x2[<span class="op">!</span>test_indices,])</a></code></pre></div>
+</section><section id="ordinary-linear-regression" class="slide level2">
+<h2>Ordinary linear regression</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">ols &lt;-<span class="st"> </span><span class="kw">lm</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">data=</span>training_d)</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw">summary</span>(ols)</a></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ ., data = training_d)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -144.317  -32.470   -1.103   30.758  150.394 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   150.6877     2.9522  51.042  &lt; 2e-16 ***
+## age            84.9492    76.8683   1.105 0.270040    
+## sex          -269.6337    74.6079  -3.614 0.000357 ***
+## bmi           472.7822    95.1685   4.968 1.17e-06 ***
+## map           360.8680    83.4249   4.326 2.11e-05 ***
+## tc          -5344.1362 61836.3128  -0.086 0.931190    
+## ldl          4723.0002 54348.5345   0.087 0.930811    
+## hdl          1680.5383 23107.3258   0.073 0.942074    
+## tch           -85.1837   310.2802  -0.275 0.783871    
+## ltg          2350.5648 20327.5502   0.116 0.908024    
+## glu            89.6525    82.3631   1.089 0.277296    
+## `age^2`        66.3267    81.7182   0.812 0.417671    
+## `bmi^2`       -15.8074    98.0763  -0.161 0.872070    
+## `map^2`       -52.3897    81.9032  -0.640 0.522914    
+## `tc^2`       4501.3147  7881.9786   0.571 0.568391    
+## `ldl^2`      1315.3476  5909.8058   0.223 0.824030    
+## `hdl^2`      1030.4184  1782.5832   0.578 0.563690    
+## `tch^2`      1153.5056   714.6967   1.614 0.107642    
+## `ltg^2`      1092.0803  1792.2811   0.609 0.542797    
+## `glu^2`       128.3360   105.6485   1.215 0.225472    
+## `age:sex`     148.1955    90.6594   1.635 0.103232    
+## `age:bmi`       0.2615    91.8545   0.003 0.997731    
+## `age:map`      20.5937    92.2566   0.223 0.823524    
+## `age:tc`     -381.4352   724.3415  -0.527 0.598885    
+## `age:ldl`     210.2182   572.3353   0.367 0.713670    
+## `age:hdl`     200.9052   332.3158   0.605 0.545953    
+## `age:tch`      61.3932   261.2022   0.235 0.814346    
+## `age:ltg`     226.9634   253.9241   0.894 0.372173    
+## `age:glu`     123.5654    97.0127   1.274 0.203810    
+## `sex:bmi`     151.2508    90.5864   1.670 0.096083 .  
+## `sex:map`      34.8983    92.5784   0.377 0.706485    
+## `sex:tc`      710.4735   742.2003   0.957 0.339254    
+## `sex:ldl`    -583.0899   593.5042  -0.982 0.326713    
+## `sex:hdl`     -89.0422   339.1340  -0.263 0.793082    
+## `sex:tch`     -61.9876   232.1990  -0.267 0.789694    
+## `sex:ltg`    -210.1018   273.3948  -0.768 0.442833    
+## `sex:glu`       2.2142    83.6948   0.026 0.978913    
+## `bmi:map`     232.7827   105.2676   2.211 0.027809 *  
+## `bmi:tc`     -449.8107   783.8370  -0.574 0.566518    
+## `bmi:ldl`     449.7137   655.6107   0.686 0.493307    
+## `bmi:hdl`     123.4574   381.2367   0.324 0.746302    
+## `bmi:tch`    -132.9843   266.2289  -0.500 0.617806    
+## `bmi:ltg`     132.1058   300.4831   0.440 0.660529    
+## `bmi:glu`      88.7750   100.3718   0.884 0.377195    
+## `map:tc`      164.8893   829.9828   0.199 0.842666    
+## `map:ldl`     -35.3650   692.9898  -0.051 0.959335    
+## `map:hdl`     -84.9267   384.1101  -0.221 0.825173    
+## `map:tch`    -114.1544   239.7704  -0.476 0.634370    
+## `map:ltg`       3.8403   326.8067   0.012 0.990633    
+## `map:glu`    -244.4812   107.7053  -2.270 0.023963 *  
+## `tc:ldl`    -4837.7578 13111.3994  -0.369 0.712422    
+## `tc:hdl`    -2183.9679  4297.1963  -0.508 0.611686    
+## `tc:tch`    -2109.4859  1982.6917  -1.064 0.288255    
+## `tc:ltg`    -2127.4764 13625.9468  -0.156 0.876038    
+## `tc:glu`      950.9385   944.0604   1.007 0.314655    
+## `ldl:hdl`     750.6735  3596.1704   0.209 0.834799    
+## `ldl:tch`     685.7207  1687.0469   0.406 0.684709    
+## `ldl:ltg`    1301.0314 11332.1780   0.115 0.908678    
+## `ldl:glu`    -997.1770   828.4152  -1.204 0.229702    
+## `hdl:tch`    1423.4284  1141.8773   1.247 0.213583    
+## `hdl:ltg`     579.6892  4796.1460   0.121 0.903883    
+## `hdl:glu`    -207.1879   418.5042  -0.495 0.620935    
+## `tch:ltg`     231.5833   710.8052   0.326 0.744812    
+## `tch:glu`     195.2469   265.2168   0.736 0.462230    
+## `ltg:glu`    -262.9689   369.0101  -0.713 0.476658    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 53.11 on 284 degrees of freedom
+## Multiple R-squared:  0.6273, Adjusted R-squared:  0.5433 
+## F-statistic: 7.469 on 64 and 284 DF,  p-value: &lt; 2.2e-16</code></pre>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">ols_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(ols, <span class="dt">newdata=</span>test_d)</a>
+<a class="sourceLine" id="cb10-2" title="2">ols_mse &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">mean</span>((ols_pred <span class="op">-</span><span class="st"> </span>test_d<span class="op">$</span>y)<span class="op">^</span><span class="dv">2</span>))</a></code></pre></div>
+<p>With ordinary linear regression, we got a root-mean-square-prediction-error of 61.3508494 (on the <em>test</em> data), compared to a root-mean-square-error of 47.9132317 for the <em>training</em> data.</p>
+<div class="fragment">
+<p>This suggests there’s some overfitting going on.</p>
+</div>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">layout</span>(<span class="kw">t</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="kw">plot</span>(training_d<span class="op">$</span>y, <span class="kw">predict</span>(ols), <span class="dt">xlab=</span><span class="st">&quot;true values&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;OLS predicted&quot;</span>, <span class="dt">main=</span><span class="st">&quot;training data&quot;</span>)</a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb11-4" title="4"><span class="kw">plot</span>(test_d<span class="op">$</span>y, ols_pred, <span class="dt">xlab=</span><span class="st">&quot;true values&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;OLS predicted&quot;</span>, <span class="dt">main=</span><span class="st">&quot;test data&quot;</span>)</a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</a></code></pre></div>
+<p><img src="figure/Week_14_Lecture/plot_ols-1.png" title="plot of chunk plot_ols" alt="plot of chunk plot_ols" style="display: block; margin: auto;" /></p>
+</section><section id="a-sparsifying-prior" class="slide level2">
+<h2>A sparsifying prior</h2>
+<p>We have a lot of predictors: 64 of them. A good guess is that only a few are really useful. So, we can put a <em>sparsifying</em> prior on the coefficients, i.e., <span class="math inline">\(\beta\)</span>s in <span class="math display">\[\begin{aligned}
+    y = \beta_0 + \beta_1 x_1 + \cdots \beta_n x_n + \epsilon
+\end{aligned}\]</span></p>
+</section></section>
+<section><section id="interlude" class="title-slide slide level1"><h1>Interlude</h1></section><section id="section-2" class="slide level2">
+<h2></h2>
+<!-- from https://www.tandfonline.com/doi/full/10.1080/24749508.2018.1481633 -->
+<figure>
+<img data-src="infiltration_title.png" alt="Estimation of infiltration rate from soil properties using regression model for cultivated land" style="width:50.0%" /><figcaption>Estimation of infiltration rate from soil properties using regression model for cultivated land</figcaption>
+</figure>
+<figure>
+<img data-src="infiltration_figure.png" alt="EIR = 14,195.35 - 141.75 (sand%) - 142.10 (silt%) - 142.56 (clay%)" /><figcaption>EIR = 14,195.35 - 141.75 (sand%) - 142.10 (silt%) - 142.56 (clay%)</figcaption>
+</figure>
+</section><section id="section-3" class="slide level2">
+<h2></h2>
+<p>Use <a href="infiltration_data.tsv">the data</a> to try to reproduce their model:</p>
+<pre><code>BIR = 14,195.35 - 141.75 (sand%) - 142.10 (silt%) - 142.56 (clay%)</code></pre>
+<p>They’re not wrong! What’s going on?</p>
+</section></section>
+<section><section id="sparseness-and-scale-mixtures" class="title-slide slide level1"><h1>Sparseness and scale mixtures</h1></section><section id="encouraging-sparseness" class="slide level2">
+<h2>Encouraging sparseness</h2>
+<p>Suppose we do regression with a <em>large</em> number of predictor variables.</p>
+<div class="fragment">
+<p>The resulting coefficients are <strong>sparse</strong> if most are zero.</p>
+</div>
+<div class="fragment">
+<p>The idea is to “encourage” all the coefficients to be zero, <strong>unless</strong> they <em>really</em> want to be nonzero, in which case we let them be whatever they want.</p>
+</div>
+<div class="fragment">
+<p>This tends to discourage overfitting.</p>
+</div>
+</section><section class="slide level2">
+
+<blockquote>
+<p>The idea is to “encourage” all the coefficients to be zero, <strong>unless</strong> they <em>really</em> want to be nonzero, in which case we let them be whatever they want.</p>
+</blockquote>
+<p>To do this, we want a prior which is very peak-ey at zero <em>but</em> flat away from zero (“spike-and-slab”).</p>
+</section><section class="slide level2">
+
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Compare the Normal</p>
+<p><span class="math display">\[\begin{aligned}
+    X \sim \Normal(0,1)
+\end{aligned}\]</span></p>
+<p>to the “exponential scale mixture of Normals”,</p>
+<p><span class="math display">\[\begin{aligned}
+    X &amp;\sim \Normal(0,\sigma) \\
+    \sigma &amp;\sim \Exp(1) .
+\end{aligned}\]</span></p>
+</div><div class="column" style="width:50%;">
+<p><img src="figure/Week_14_Lecture/scale_mixtures-1.png" title="plot of chunk scale_mixtures" alt="plot of chunk scale_mixtures" style="display: block; margin: auto;" /><img src="figure/Week_14_Lecture/scale_mixtures-2.png" title="plot of chunk scale_mixtures" alt="plot of chunk scale_mixtures" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</section><section id="why-use-a-scale-mixture" class="slide level2">
+<h2>Why use a scale mixture?</h2>
+<ol type="1">
+<li><p>Lets the data choose the appropriate scale of variation.</p></li>
+<li><p>Weakly encourages <span class="math inline">\(\sigma\)</span> to be small: so, as much variation as possible is explained by <em>signal</em> instead of <em>noise</em>.</p></li>
+<li><p>Gets you a prior that is more peaked at zero and flatter otherwise.</p></li>
+</ol>
+</section><section id="implementation" class="slide level2">
+<h2>Implementation</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Note that</p>
+<p><span class="math display">\[\begin{aligned}
+    \beta &amp;\sim \Normal(0,\sigma) \\
+    \sigma &amp;\sim \Exp(1) .
+\end{aligned}\]</span></p>
+<p>is equivalent to</p>
+<p><span class="math display">\[\begin{aligned}
+    \beta &amp;= \sigma \gamma \\
+    \gamma &amp;\sim \Normal(0,1) \\
+    \sigma &amp;\sim \Exp(1) .
+\end{aligned}\]</span></p>
+</div><div class="column" style="width:50%;">
+<pre><code>parameters {
+    real beta;
+    real&lt;lower=0&gt; sigma;
+}
+model {
+    beta ~ normal(0, sigma);
+    sigma ~ exponential(1);
+}</code></pre>
+<p>is equivalent to</p>
+<pre><code>parameters {
+    real gamma;
+    real&lt;lower=0&gt; sigma;
+}
+transformed parameters {
+    real beta;
+    beta = gamma * sigma;
+}
+model {
+    gamma ~ normal(0, 1);
+    sigma ~ exponential(1);
+}</code></pre>
+<p>The second version <strong>is better</strong> for Stan.</p>
+</div>
+</div>
+</section><section class="slide level2">
+
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Why is it better?</p>
+<pre><code>parameters {
+    real beta;
+    real&lt;lower=0&gt; sigma;
+}
+model {
+    beta ~ normal(0, sigma);
+}</code></pre>
+<p>In the first, the optimal step size <em>depends on <code>sigma</code></em>.</p>
+</div><div class="column" style="width:50%;">
+<p><img src="figure/Week_14_Lecture/sigma_phase-1.png" title="plot of chunk sigma_phase" alt="plot of chunk sigma_phase" style="display: block; margin: auto;" /><img src="figure/Week_14_Lecture/sigma_phase-2.png" title="plot of chunk sigma_phase" alt="plot of chunk sigma_phase" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</section><section id="a-strongly-sparsifying-prior" class="slide level2">
+<h2>A strongly sparsifying prior</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>The “horseshoe”:</p>
+<p><span class="math display">\[\begin{aligned}
+    \beta_j &amp;\sim \Normal(0, \lambda_j) \\
+    \lambda_j &amp;\sim \Cauchy(0, \tau) \\
+    \tau &amp;\sim \Unif(0, 1) 
+\end{aligned}\]</span></p>
+</div><div class="column" style="width:50%;">
+<pre><code>parameters {
+    vector[p] d_beta;
+    vector[p] d_lambda;
+    real&lt;lower=0, upper=1&gt; tau;
+}
+transformed parameters {
+    vector[p] beta;
+    beta = d_beta .* d_lambda * tau;
+}
+model {
+    d_beta ~ normal(0, 1);
+    d_lambda ~ cauchy(0, 1);
+    // tau ~ uniform(0, 1); // uniform
+}</code></pre>
+</div>
+</div>
+</section><section id="the-cauchy-as-a-scale-mixture" class="slide level2">
+<h2>The Cauchy as a scale mixture</h2>
+<p>Recall that if</p>
+<p><span class="math display">\[\begin{aligned}
+    \beta &amp;\sim \Normal(0, 1/\sqrt{\lambda}) \\
+    \lambda &amp;\sim \Gam(1/2, 1/2)
+\end{aligned}\]</span></p>
+<p>then</p>
+<p><span class="math display">\[\begin{aligned}
+    \beta &amp;\sim \Cauchy(0, 1).
+\end{aligned}\]</span></p>
+</section></section>
+<section><section id="using-the-horseshoe" class="title-slide slide level1"><h1>Using the horseshoe</h1></section><section id="whats-an-appropriate-noise-distribution" class="slide level2">
+<h2>What’s an appropriate noise distribution?</h2>
+<p><img src="figure/Week_14_Lecture/show_y-1.png" title="plot of chunk show_y" alt="plot of chunk show_y" style="display: block; margin: auto;" /></p>
+</section><section id="aside-quantile-quantile-plots" class="slide level2">
+<h2>Aside: quantile-quantile plots</h2>
+<p>The idea is to plot the <em>quantiles</em> of each distribution against each other.</p>
+<p>If these are <em>datasets</em>, this means just plotting their <em>sorted values</em> against each other.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="fl">1e4</span>)</a>
+<a class="sourceLine" id="cb17-2" title="2">y &lt;-<span class="st"> </span><span class="kw">rbeta</span>(<span class="fl">1e4</span>, <span class="dv">2</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb17-3" title="3"><span class="kw">plot</span>(<span class="kw">sort</span>(x), <span class="kw">sort</span>(y)); <span class="kw">qqplot</span>(x, y, <span class="dt">main=</span><span class="st">&quot;qqplot&quot;</span>); <span class="kw">qqnorm</span>(y, <span class="dt">main=</span><span class="st">&quot;qnorm&quot;</span>)</a></code></pre></div>
+<p><img src="figure/Week_14_Lecture/qq-1.png" title="plot of chunk qq" alt="plot of chunk qq" style="display: block; margin: auto;" /></p>
+</section><section id="regression-with-a-horseshoe-prior" class="slide level2">
+<h2>Regression with a horseshoe prior</h2>
+<p>Uses a <a href="https://betanalpha.github.io/assets/case_studies/fitting_the_cauchy.html">reparameterization</a> of the Cauchy as a scale mixture of normals.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">horseshoe_block &lt;-<span class="st"> &quot;</span></a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="st">data {</span></a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="st">    int N;</span></a>
+<a class="sourceLine" id="cb18-4" title="4"><span class="st">    int p;</span></a>
+<a class="sourceLine" id="cb18-5" title="5"><span class="st">    vector[N] y;</span></a>
+<a class="sourceLine" id="cb18-6" title="6"><span class="st">    matrix[N,p] x;</span></a>
+<a class="sourceLine" id="cb18-7" title="7"><span class="st">}</span></a>
+<a class="sourceLine" id="cb18-8" title="8"><span class="st">parameters {</span></a>
+<a class="sourceLine" id="cb18-9" title="9"><span class="st">    real b0;</span></a>
+<a class="sourceLine" id="cb18-10" title="10"><span class="st">    vector[p] d_beta;</span></a>
+<a class="sourceLine" id="cb18-11" title="11"><span class="st">    vector[p] d_a;</span></a>
+<a class="sourceLine" id="cb18-12" title="12"><span class="st">    vector&lt;lower=0&gt;[p] d_b;</span></a>
+<a class="sourceLine" id="cb18-13" title="13"><span class="st">    real&lt;lower=0, upper=1&gt; tau;</span></a>
+<a class="sourceLine" id="cb18-14" title="14"><span class="st">    real&lt;lower=0&gt; sigma;</span></a>
+<a class="sourceLine" id="cb18-15" title="15"><span class="st">}</span></a>
+<a class="sourceLine" id="cb18-16" title="16"><span class="st">transformed parameters {</span></a>
+<a class="sourceLine" id="cb18-17" title="17"><span class="st">    vector[p] beta;</span></a>
+<a class="sourceLine" id="cb18-18" title="18"><span class="st">    vector[N] f;</span></a>
+<a class="sourceLine" id="cb18-19" title="19"><span class="st">    beta = d_beta .* d_a .* sqrt(d_b) * tau;</span></a>
+<a class="sourceLine" id="cb18-20" title="20"><span class="st">    f = b0 + x * beta;</span></a>
+<a class="sourceLine" id="cb18-21" title="21"><span class="st">}</span></a>
+<a class="sourceLine" id="cb18-22" title="22"><span class="st">model {</span></a>
+<a class="sourceLine" id="cb18-23" title="23"><span class="st">    y ~ normal(f, sigma);</span></a>
+<a class="sourceLine" id="cb18-24" title="24"><span class="st">    // HORSESHOE PRIOR:</span></a>
+<a class="sourceLine" id="cb18-25" title="25"><span class="st">    d_beta ~ normal(0, 1);</span></a>
+<a class="sourceLine" id="cb18-26" title="26"><span class="st">    d_a ~ normal(0, 1);</span></a>
+<a class="sourceLine" id="cb18-27" title="27"><span class="st">    d_b ~ inv_gamma(0.5, 0.5);</span></a>
+<a class="sourceLine" id="cb18-28" title="28"><span class="st">    // tau ~ uniform(0, 1); // uniform</span></a>
+<a class="sourceLine" id="cb18-29" title="29"><span class="st">    // priors on noise distribution:</span></a>
+<a class="sourceLine" id="cb18-30" title="30"><span class="st">    sigma ~ normal(0, 10);</span></a>
+<a class="sourceLine" id="cb18-31" title="31"><span class="st">}&quot;</span></a></code></pre></div>
+</section><section class="slide level2">
+
+<p>Note the data have already been normalized, with the exception of <span class="math inline">\(y\)</span>:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">summary</span>(training_d)</a></code></pre></div>
+<pre><code>##        y              age                 sex            
+##  Min.   : 25.0   Min.   :-0.107226   Min.   :-0.0446416  
+##  1st Qu.: 84.0   1st Qu.:-0.038207   1st Qu.:-0.0446416  
+##  Median :141.0   Median : 0.005383   Median :-0.0446416  
+##  Mean   :151.9   Mean   :-0.001133   Mean   : 0.0001514  
+##  3rd Qu.:214.0   3rd Qu.: 0.034443   3rd Qu.: 0.0506801  
+##  Max.   :341.0   Max.   : 0.110727   Max.   : 0.0506801  
+##       bmi                  map                   tc            
+##  Min.   :-0.0891975   Min.   :-0.1089567   Min.   :-1.089e-01  
+##  1st Qu.:-0.0342291   1st Qu.:-0.0332136   1st Qu.:-3.322e-02  
+##  Median :-0.0072838   Median :-0.0056706   Median :-4.321e-03  
+##  Mean   : 0.0007334   Mean   :-0.0009289   Mean   : 4.355e-05  
+##  3rd Qu.: 0.0336731   3rd Qu.: 0.0322010   3rd Qu.: 2.733e-02  
+##  Max.   : 0.1705552   Max.   : 0.1320442   Max.   : 1.539e-01  
+##       ldl                  hdl                 tch           
+##  Min.   :-0.1156131   Min.   :-0.102307   Min.   :-0.076395  
+##  1st Qu.:-0.0294972   1st Qu.:-0.036038   1st Qu.:-0.039493  
+##  Median :-0.0038191   Median :-0.006584   Median :-0.002592  
+##  Mean   : 0.0006148   Mean   :-0.001146   Mean   : 0.001683  
+##  3rd Qu.: 0.0312536   3rd Qu.: 0.026550   3rd Qu.: 0.034309  
+##  Max.   : 0.1987880   Max.   : 0.181179   Max.   : 0.185234  
+##       ltg                  glu                age^2           
+##  Min.   :-0.1260974   Min.   :-0.137767   Min.   :-0.0413003  
+##  1st Qu.:-0.0345237   1st Qu.:-0.034215   1st Qu.:-0.0365111  
+##  Median :-0.0042199   Median : 0.003064   Median :-0.0196705  
+##  Mean   :-0.0003819   Mean   : 0.001320   Mean   :-0.0009618  
+##  3rd Qu.: 0.0336568   3rd Qu.: 0.032059   3rd Qu.: 0.0167284  
+##  Max.   : 0.1335990   Max.   : 0.135612   Max.   : 0.1827574  
+##      bmi^2               map^2                tc^2           
+##  Min.   :-0.032976   Min.   :-0.039369   Min.   :-0.0319463  
+##  1st Qu.:-0.029289   1st Qu.:-0.034915   1st Qu.:-0.0293480  
+##  Median :-0.015899   Median :-0.020173   Median :-0.0176317  
+##  Mean   : 0.001105   Mean   :-0.001515   Mean   :-0.0007156  
+##  3rd Qu.: 0.015956   3rd Qu.: 0.017791   3rd Qu.: 0.0049295  
+##  Max.   : 0.391017   Max.   : 0.264034   Max.   : 0.3025598  
+##      ldl^2                hdl^2                tch^2          
+##  Min.   :-0.0296059   Min.   :-0.0276538   Min.   :-0.030537  
+##  1st Qu.:-0.0263734   1st Qu.:-0.0247218   1st Qu.:-0.029197  
+##  Median :-0.0177320   Median :-0.0135994   Median :-0.009485  
+##  Mean   : 0.0002449   Mean   :-0.0001651   Mean   : 0.002614  
+##  3rd Qu.: 0.0069595   3rd Qu.: 0.0085816   3rd Qu.:-0.009485  
+##  Max.   : 0.4875149   Max.   : 0.3736758   Max.   : 0.432612  
+##      ltg^2                glu^2               age:sex          
+##  Min.   :-0.0349354   Min.   :-0.0319022   Min.   :-0.1206953  
+##  1st Qu.:-0.0298674   1st Qu.:-0.0293459   1st Qu.:-0.0308881  
+##  Median :-0.0174442   Median :-0.0174185   Median : 0.0013654  
+##  Mean   : 0.0008941   Mean   : 0.0007775   Mean   : 0.0004204  
+##  3rd Qu.: 0.0166527   3rd Qu.: 0.0106420   3rd Qu.: 0.0350096  
+##  Max.   : 0.2406822   Max.   : 0.2358489   Max.   : 0.1116139  
+##     age:bmi              age:map               age:tc         
+##  Min.   :-0.1473126   Min.   :-1.664e-01   Min.   :-0.136218  
+##  1st Qu.:-0.0218929   1st Qu.:-2.038e-02   1st Qu.:-0.021240  
+##  Median :-0.0066103   Median :-8.808e-03   Median :-0.009841  
+##  Mean   : 0.0002062   Mean   : 9.330e-06   Mean   :-0.002694  
+##  3rd Qu.: 0.0194927   3rd Qu.: 2.064e-02   3rd Qu.: 0.015148  
+##  Max.   : 0.1702584   Max.   : 2.276e-01   Max.   : 0.184848  
+##     age:ldl             age:hdl             age:tch          
+##  Min.   :-0.155477   Min.   :-0.180044   Min.   :-0.2012887  
+##  1st Qu.:-0.021123   1st Qu.:-0.024535   1st Qu.:-0.0176798  
+##  Median :-0.008090   Median : 0.001289   Median :-0.0085659  
+##  Mean   :-0.001742   Mean   :-0.002890   Mean   : 0.0003425  
+##  3rd Qu.: 0.014305   3rd Qu.: 0.016814   3rd Qu.: 0.0210437  
+##  Max.   : 0.206119   Max.   : 0.179882   Max.   : 0.2841256  
+##     age:ltg              age:glu            sex:bmi          
+##  Min.   :-0.1600509   Min.   :-0.11978   Min.   :-0.1259500  
+##  1st Qu.:-0.0224627   1st Qu.:-0.02097   1st Qu.:-0.0363986  
+##  Median :-0.0084704   Median :-0.01028   Median :-0.0016333  
+##  Mean   :-0.0001848   Mean   : 0.00226   Mean   : 0.0002993  
+##  3rd Qu.: 0.0201877   3rd Qu.: 0.01687   3rd Qu.: 0.0343105  
+##  Max.   : 0.1870968   Max.   : 0.18437   Max.   : 0.1791461  
+##     sex:map              sex:tc            sex:ldl          
+##  Min.   :-0.140436   Min.   :-0.12103   Min.   :-0.1296905  
+##  1st Qu.:-0.033378   1st Qu.:-0.03234   1st Qu.:-0.0320472  
+##  Median : 0.000867   Median :-0.00149   Median :-0.0005132  
+##  Mean   :-0.001420   Mean   :-0.00164   Mean   :-0.0008842  
+##  3rd Qu.: 0.035112   3rd Qu.: 0.03065   3rd Qu.: 0.0286961  
+##  Max.   : 0.103602   Max.   : 0.16157   Max.   : 0.2061352  
+##     sex:hdl             sex:tch             sex:ltg         
+##  Min.   :-0.165982   Min.   :-0.159990   Min.   :-0.142948  
+##  1st Qu.:-0.033930   1st Qu.:-0.019548   1st Qu.:-0.034382  
+##  Median :-0.003747   Median : 0.007811   Median : 0.004080  
+##  Mean   :-0.001073   Mean   : 0.000675   Mean   :-0.001447  
+##  3rd Qu.: 0.030209   3rd Qu.: 0.022402   3rd Qu.: 0.031844  
+##  Max.   : 0.161942   Max.   : 0.191242   Max.   : 0.136396  
+##     sex:glu             bmi:map              bmi:tc          
+##  Min.   :-0.140447   Min.   :-0.125357   Min.   :-0.2932071  
+##  1st Qu.:-0.032982   1st Qu.:-0.021323   1st Qu.:-0.0193874  
+##  Median :-0.005120   Median :-0.010593   Median :-0.0081623  
+##  Mean   :-0.001826   Mean   : 0.001654   Mean   : 0.0004349  
+##  3rd Qu.: 0.033874   3rd Qu.: 0.016837   3rd Qu.: 0.0196646  
+##  Max.   : 0.133283   Max.   : 0.228483   Max.   : 0.2269828  
+##     bmi:ldl              bmi:hdl              bmi:tch          
+##  Min.   :-0.2865770   Min.   :-0.2683161   Min.   :-0.1318179  
+##  1st Qu.:-0.0220924   1st Qu.:-0.0192972   1st Qu.:-0.0240342  
+##  Median :-0.0081638   Median : 0.0114850   Median :-0.0162773  
+##  Mean   : 0.0005709   Mean   :-0.0001998   Mean   : 0.0005282  
+##  3rd Qu.: 0.0160003   3rd Qu.: 0.0257027   3rd Qu.: 0.0212457  
+##  Max.   : 0.2320688   Max.   : 0.1464774   Max.   : 0.2764597  
+##     bmi:ltg              bmi:glu               map:tc         
+##  Min.   :-0.1850927   Min.   :-0.1543918   Min.   :-0.202259  
+##  1st Qu.:-0.0242869   1st Qu.:-0.0243900   1st Qu.:-0.020118  
+##  Median :-0.0120359   Median :-0.0145264   Median :-0.009291  
+##  Mean   : 0.0004121   Mean   : 0.0002221   Mean   :-0.001904  
+##  3rd Qu.: 0.0224404   3rd Qu.: 0.0187559   3rd Qu.: 0.017553  
+##  Max.   : 0.2188921   Max.   : 0.2246097   Max.   : 0.189747  
+##     map:ldl             map:hdl              map:tch          
+##  Min.   :-0.203862   Min.   :-0.2827677   Min.   :-0.1448773  
+##  1st Qu.:-0.020139   1st Qu.:-0.0195326   1st Qu.:-0.0176903  
+##  Median :-0.007217   Median : 0.0052223   Median :-0.0103528  
+##  Mean   :-0.001439   Mean   :-0.0009419   Mean   :-0.0003524  
+##  3rd Qu.: 0.017901   3rd Qu.: 0.0195291   3rd Qu.: 0.0210655  
+##  Max.   : 0.191608   Max.   : 0.1411591   Max.   : 0.2294877  
+##     map:ltg              map:glu              tc:ldl          
+##  Min.   :-0.1458925   Min.   :-0.143393   Min.   :-0.0417981  
+##  1st Qu.:-0.0241548   1st Qu.:-0.023305   1st Qu.:-0.0271710  
+##  Median :-0.0115420   Median :-0.012891   Median :-0.0167630  
+##  Mean   :-0.0007273   Mean   :-0.001198   Mean   :-0.0000399  
+##  3rd Qu.: 0.0243220   3rd Qu.: 0.010728   3rd Qu.: 0.0061787  
+##  Max.   : 0.1871399   Max.   : 0.222465   Max.   : 0.3976457  
+##      tc:hdl              tc:tch              tc:ltg          
+##  Min.   :-0.210843   Min.   :-0.122355   Min.   :-0.1048969  
+##  1st Qu.:-0.020049   1st Qu.:-0.022213   1st Qu.:-0.0258507  
+##  Median :-0.003359   Median :-0.015596   Median :-0.0147751  
+##  Mean   :-0.002995   Mean   : 0.001508   Mean   : 0.0003344  
+##  3rd Qu.: 0.011968   3rd Qu.: 0.011853   3rd Qu.: 0.0169747  
+##  Max.   : 0.318951   Max.   : 0.469153   Max.   : 0.2231252  
+##      tc:glu             ldl:hdl             ldl:tch         
+##  Min.   :-0.120530   Min.   :-0.256471   Min.   :-0.111508  
+##  1st Qu.:-0.020704   1st Qu.:-0.017056   1st Qu.:-0.023581  
+##  Median :-0.010736   Median : 0.004701   Median :-0.014035  
+##  Mean   : 0.001909   Mean   :-0.002493   Mean   : 0.001698  
+##  3rd Qu.: 0.014115   3rd Qu.: 0.017148   3rd Qu.: 0.011949  
+##  Max.   : 0.237370   Max.   : 0.160773   Max.   : 0.555129  
+##     ldl:ltg             ldl:glu             hdl:tch         
+##  Min.   :-0.182594   Min.   :-0.122560   Min.   :-0.234890  
+##  1st Qu.:-0.020687   1st Qu.:-0.020314   1st Qu.:-0.019367  
+##  Median :-0.007486   Median :-0.009531   Median : 0.014418  
+##  Mean   : 0.001251   Mean   : 0.001666   Mean   :-0.002127  
+##  3rd Qu.: 0.024513   3rd Qu.: 0.015106   3rd Qu.: 0.030898  
+##  Max.   : 0.203381   Max.   : 0.299032   Max.   : 0.060843  
+##     hdl:ltg             hdl:glu             tch:ltg         
+##  Min.   :-0.254685   Min.   :-0.223255   Min.   :-0.160745  
+##  1st Qu.:-0.018987   1st Qu.:-0.014712   1st Qu.:-0.026638  
+##  Median : 0.007072   Median : 0.009179   Median :-0.011590  
+##  Mean   :-0.002375   Mean   : 0.001057   Mean   : 0.002223  
+##  3rd Qu.: 0.021259   3rd Qu.: 0.023064   3rd Qu.: 0.017732  
+##  Max.   : 0.163067   Max.   : 0.209905   Max.   : 0.375845  
+##     tch:glu              ltg:glu          
+##  Min.   :-0.1289188   Min.   :-0.0921654  
+##  1st Qu.:-0.0209368   1st Qu.:-0.0234429  
+##  Median :-0.0155472   Median :-0.0127174  
+##  Mean   : 0.0003502   Mean   : 0.0002222  
+##  3rd Qu.: 0.0208725   3rd Qu.: 0.0140169  
+##  Max.   : 0.3181041   Max.   : 0.1953000</code></pre>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">horseshoe_fit &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">model_code=</span>horseshoe_block,</a>
+<a class="sourceLine" id="cb21-2" title="2">                      <span class="dt">data=</span><span class="kw">list</span>(<span class="dt">N=</span><span class="kw">nrow</span>(training_d),</a>
+<a class="sourceLine" id="cb21-3" title="3">                                <span class="dt">p=</span><span class="kw">ncol</span>(training_d)<span class="op">-</span><span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb21-4" title="4">                                <span class="dt">y=</span>(training_d<span class="op">$</span>y </a>
+<a class="sourceLine" id="cb21-5" title="5">                                   <span class="op">-</span><span class="st"> </span><span class="kw">median</span>(training_d<span class="op">$</span>y))</a>
+<a class="sourceLine" id="cb21-6" title="6">                                  <span class="op">/</span><span class="kw">mad</span>(training_d<span class="op">$</span>y),</a>
+<a class="sourceLine" id="cb21-7" title="7">                                <span class="dt">x=</span><span class="kw">as.matrix</span>(training_d[,<span class="op">-</span><span class="dv">1</span>])),</a>
+<a class="sourceLine" id="cb21-8" title="8">                      <span class="dt">iter=</span><span class="dv">1000</span>,</a>
+<a class="sourceLine" id="cb21-9" title="9">                      <span class="dt">control=</span><span class="kw">list</span>(<span class="dt">adapt_delta=</span><span class="fl">0.999</span>,</a>
+<a class="sourceLine" id="cb21-10" title="10">                                   <span class="dt">max_treedepth=</span><span class="dv">15</span>))</a></code></pre></div>
+<pre><code>## Warning: There were 10 divergent transitions after warmup. Increasing adapt_delta above 0.999 may help. See
+## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
+<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">(hs_summary &lt;-<span class="st"> </span>rstan<span class="op">::</span><span class="kw">summary</span>(horseshoe_fit, <span class="dt">pars=</span><span class="kw">c</span>(<span class="st">&quot;b0&quot;</span>, <span class="st">&quot;sigma&quot;</span>, <span class="st">&quot;beta&quot;</span>)))</a></code></pre></div>
+<pre><code>## $summary
+##                   mean      se_mean         sd        2.5%          25%
+## b0        0.1171386679 0.0004781465 0.03268656  0.05123352  0.095954334
+## sigma     0.5939505706 0.0004895491 0.02510540  0.54754339  0.575928625
+## beta[1]   0.2067720870 0.0116973375 0.45500667 -0.43095590 -0.032993312
+## beta[2]  -1.3267070644 0.0308211425 1.01191219 -3.31036790 -2.089888447
+## beta[3]   5.9469514755 0.0239646656 0.94286301  4.08058479  5.321273444
+## beta[4]   3.4058534548 0.0271413270 0.96979626  1.39867143  2.806153360
+## beta[5]  -0.2195246520 0.0192556278 0.63705136 -2.02446851 -0.298823254
+## beta[6]  -0.0005838563 0.0146438565 0.49601186 -0.95172400 -0.157314779
+## beta[7]  -1.4217090432 0.0403492258 1.27040913 -4.09534885 -2.370132340
+## beta[8]   0.2912977580 0.0229274336 0.79077567 -0.82881493 -0.058932017
+## beta[9]   5.6916311352 0.0228957643 0.95970360  3.71162190  5.079233774
+## beta[10]  0.2839667992 0.0126317887 0.51306992 -0.38549293 -0.011734618
+## beta[11]  0.2239066703 0.0122525145 0.46776754 -0.42295417 -0.030382625
+## beta[12]  0.1408198497 0.0126733816 0.45630207 -0.66402209 -0.048620150
+## beta[13]  0.0390482818 0.0106256284 0.38020217 -0.80319411 -0.092919631
+## beta[14] -0.0673891285 0.0155806106 0.49909484 -1.21539377 -0.193572703
+## beta[15] -0.0743043028 0.0130341601 0.46316098 -1.17004832 -0.192681374
+## beta[16]  0.0444917219 0.0125864525 0.43701819 -0.88801853 -0.100961027
+## beta[17]  0.0549449770 0.0133163259 0.49358182 -0.91606532 -0.104742147
+## beta[18] -0.2684959442 0.0134224162 0.52454512 -1.75910424 -0.417963524
+## beta[19]  0.7440743795 0.0232191682 0.84893795 -0.24298590  0.041535252
+## beta[20]  1.4988432145 0.0270918819 0.94033655 -0.04685249  0.763412650
+## beta[21]  0.2184550080 0.0130569909 0.48154862 -0.44089418 -0.030705911
+## beta[22]  0.2915542247 0.0129977529 0.52060886 -0.39570366 -0.010667235
+## beta[23] -0.0041695605 0.0122879353 0.48031163 -1.04273030 -0.139768654
+## beta[24] -0.1410223534 0.0135062895 0.50480443 -1.43150933 -0.249069445
+## beta[25]  0.0352698171 0.0102745834 0.37780923 -0.71924328 -0.101232493
+## beta[26]  0.0550076269 0.0120620113 0.43427943 -0.78664136 -0.096375309
+## beta[27]  0.3347528799 0.0155304380 0.59571132 -0.43329814 -0.007684928
+## beta[28]  0.2992498630 0.0146263667 0.55536789 -0.40932136 -0.015935502
+## beta[29]  0.5194072205 0.0163355642 0.66172946 -0.25043241  0.014438776
+## beta[30]  0.1612223956 0.0123912082 0.43503119 -0.48405230 -0.042471904
+## beta[31]  0.0879988942 0.0113313049 0.44248044 -0.67323338 -0.076145621
+## beta[32] -0.1227032184 0.0127238228 0.44356419 -1.24075877 -0.245610924
+## beta[33]  0.3875082091 0.0168286572 0.63660852 -0.36044824 -0.001413730
+## beta[34] -0.1551703861 0.0117478716 0.48468544 -1.46916868 -0.265495769
+## beta[35]  0.0580899192 0.0114590655 0.39051887 -0.67422679 -0.093446760
+## beta[36]  0.0061457359 0.0093049230 0.34289701 -0.73081003 -0.113548186
+## beta[37]  0.8393014351 0.0235712372 0.87656251 -0.21391343  0.084195847
+## beta[38] -0.0067733462 0.0117104253 0.40537738 -0.97576731 -0.130374321
+## beta[39]  0.0291835117 0.0126277473 0.41103391 -0.78899058 -0.108616944
+## beta[40] -0.0362189763 0.0112156048 0.39343131 -0.99160185 -0.155681301
+## beta[41]  0.0395752320 0.0120113744 0.41125254 -0.83778583 -0.109785377
+## beta[42]  0.0265325481 0.0103610931 0.36102124 -0.78008829 -0.092488052
+## beta[43]  0.3173534369 0.0170864534 0.58976646 -0.37800536 -0.019909938
+## beta[44]  0.1212078105 0.0107852776 0.42661479 -0.52290468 -0.061163915
+## beta[45]  0.0687655053 0.0113090741 0.39192909 -0.68984913 -0.073972882
+## beta[46]  0.1609415140 0.0115134285 0.44061652 -0.57777384 -0.036343880
+## beta[47] -0.1269082628 0.0113697868 0.43058220 -1.28907430 -0.239303063
+## beta[48]  0.0427466073 0.0113489200 0.39975453 -0.81425903 -0.091415154
+## beta[49] -0.1843254871 0.0161911072 0.50507323 -1.69701472 -0.295827324
+## beta[50] -0.0149311764 0.0137449892 0.47079056 -1.02541218 -0.152907786
+## beta[51]  0.0855073292 0.0118470130 0.45521366 -0.72472117 -0.078010116
+## beta[52] -0.3918323523 0.0221778625 0.82406625 -2.66278049 -0.517832963
+## beta[53] -0.1170604064 0.0128936987 0.47770884 -1.38203954 -0.222942283
+## beta[54]  0.0586391947 0.0121317551 0.43439120 -0.82568780 -0.091002900
+## beta[55] -0.0811017433 0.0121072823 0.44655911 -1.25504976 -0.177711031
+## beta[56] -0.0281827085 0.0142767043 0.51639048 -1.21032070 -0.178067186
+## beta[57]  0.2540292719 0.0164884812 0.59825389 -0.56211277 -0.037751602
+## beta[58]  0.0350466741 0.0126992590 0.40695819 -0.78107453 -0.110777325
+## beta[59] -0.1647790867 0.0154203899 0.51993278 -1.54200922 -0.290014668
+## beta[60]  0.0928386210 0.0124650314 0.43140247 -0.66812170 -0.079143578
+## beta[61]  0.0514490181 0.0108544923 0.40491733 -0.71203294 -0.100112430
+## beta[62] -0.1514022120 0.0137719081 0.49740021 -1.48318071 -0.270146256
+## beta[63]  0.1330557437 0.0126310080 0.47118959 -0.68400098 -0.063335686
+## beta[64]  0.1725288709 0.0146560075 0.50016905 -0.56829006 -0.053460297
+##                    50%         75%     97.5%     n_eff      Rhat
+## b0        0.1174633780  0.13781756 0.1808598 4673.2223 0.9981943
+## sigma     0.5930541177  0.61117174 0.6436862 2629.9148 0.9987985
+## beta[1]   0.0583527175  0.33987376 1.4739125 1513.0786 1.0008314
+## beta[2]  -1.2828790932 -0.41150590 0.1034230 1077.9241 1.0012010
+## beta[3]   5.9544680853  6.56571502 7.7604595 1547.9412 1.0004329
+## beta[4]   3.4409193977  4.07777118 5.1797714 1276.7294 1.0014067
+## beta[5]  -0.0457712145  0.04849509 0.5723654 1094.5448 1.0002889
+## beta[6]  -0.0004106395  0.13171404 1.0338783 1147.2900 1.0040715
+## beta[7]  -1.2512015232 -0.21611167 0.1810439  991.3267 1.0023848
+## beta[8]   0.0558930462  0.41495668 2.5989737 1189.5856 1.0008905
+## beta[9]   5.6915589934  6.34557242 7.4872792 1756.9684 0.9996373
+## beta[10]  0.1092051779  0.46726719 1.6495121 1649.7700 0.9984770
+## beta[11]  0.0725696047  0.38677401 1.4809376 1457.5038 0.9994269
+## beta[12]  0.0274844589  0.24952640 1.4085508 1296.3428 0.9995646
+## beta[13]  0.0130628300  0.16520307 0.9326926 1280.3242 1.0003070
+## beta[14] -0.0108535116  0.09568344 0.8033613 1026.1178 1.0013503
+## beta[15] -0.0161101211  0.08077664 0.8399055 1262.6932 0.9998143
+## beta[16]  0.0092266119  0.16220637 1.0713291 1205.5698 1.0021387
+## beta[17]  0.0040313052  0.16695667 1.3020137 1373.8822 1.0005258
+## beta[18] -0.0846294775  0.02245941 0.3639800 1527.2295 1.0014334
+## beta[19]  0.4765655755  1.28989698 2.7428290 1336.7758 1.0024413
+## beta[20]  1.5429237040  2.18120745 3.2236885 1204.7260 1.0003347
+## beta[21]  0.0627110254  0.38852775 1.5523038 1360.1728 1.0021517
+## beta[22]  0.1064555246  0.47065111 1.6994627 1604.3036 1.0025897
+## beta[23] -0.0019479333  0.11661139 1.0085449 1527.8769 1.0032812
+## beta[24] -0.0278686346  0.06359624 0.5781162 1396.9286 1.0035052
+## beta[25]  0.0064990426  0.15699202 0.9038176 1352.1245 1.0004284
+## beta[26]  0.0089800845  0.17404053 1.1109759 1296.2807 0.9996915
+## beta[27]  0.1185590780  0.54104941 2.0132696 1471.3104 1.0010922
+## beta[28]  0.1063858059  0.50734148 1.7682516 1441.7455 1.0015606
+## beta[29]  0.2860054887  0.87638353 2.1176654 1640.9399 0.9999925
+## beta[30]  0.0378664746  0.27569830 1.3909351 1232.5753 1.0015505
+## beta[31]  0.0168137944  0.19710559 1.1085428 1524.8541 1.0000316
+## beta[32] -0.0333525880  0.05642478 0.5911748 1215.2838 1.0028163
+## beta[33]  0.1436673696  0.60733150 2.1410353 1431.0209 0.9985586
+## beta[34] -0.0416249280  0.04938128 0.6179006 1702.1646 1.0003856
+## beta[35]  0.0105197741  0.17930276 1.0225941 1161.4102 1.0020227
+## beta[36] -0.0002245339  0.11180802 0.8107868 1358.0065 0.9997001
+## beta[37]  0.6156491878  1.38687684 2.8762906 1382.9326 1.0011229
+## beta[38]  0.0019643105  0.12956612 0.8398895 1198.3224 0.9998495
+## beta[39]  0.0042697884  0.15895878 1.0188405 1059.5063 0.9991121
+## beta[40] -0.0052469627  0.11985874 0.6963084 1230.5307 1.0022412
+## beta[41]  0.0056298431  0.17165634 1.0433936 1172.2811 0.9989847
+## beta[42]  0.0090162747  0.14879940 0.8744792 1214.0997 1.0009150
+## beta[43]  0.1048639201  0.50973973 1.9416476 1191.3964 1.0005611
+## beta[44]  0.0221466020  0.22347520 1.2542605 1564.6210 1.0012062
+## beta[45]  0.0144928031  0.18402312 0.9963205 1201.0495 1.0032669
+## beta[46]  0.0470453257  0.27976144 1.3133182 1464.5770 1.0018140
+## beta[47] -0.0288901833  0.05034511 0.5585635 1434.1927 0.9999906
+## beta[48]  0.0059956443  0.16306798 1.0438491 1240.7313 1.0045796
+## beta[49] -0.0417027809  0.04734276 0.5095879  973.0958 1.0058077
+## beta[50] -0.0050903209  0.11216976 1.0384733 1173.1855 1.0004226
+## beta[51]  0.0175645083  0.20007810 1.1728645 1476.4299 0.9988689
+## beta[52] -0.0963741978  0.02394005 0.5040144 1380.6541 0.9996173
+## beta[53] -0.0239994834  0.07732414 0.6398979 1372.6870 1.0007044
+## beta[54]  0.0116726396  0.18632172 1.0973609 1282.0790 1.0014237
+## beta[55] -0.0150495709  0.08134117 0.6828430 1360.3936 1.0013230
+## beta[56] -0.0091164060  0.11294121 1.0792873 1308.2795 1.0009403
+## beta[57]  0.0630178237  0.38769091 2.0075926 1316.4663 0.9997943
+## beta[58]  0.0042205694  0.14978491 0.9799270 1026.9347 1.0027372
+## beta[59] -0.0323090092  0.06191273 0.6600763 1136.8514 1.0012400
+## beta[60]  0.0146268575  0.20927384 1.2056526 1197.7840 1.0023166
+## beta[61]  0.0118951797  0.17347609 1.0403938 1391.5977 0.9995883
+## beta[62] -0.0283632948  0.06229181 0.6616868 1304.4388 0.9995702
+## beta[63]  0.0275670646  0.25021383 1.2977763 1391.6030 1.0060722
+## beta[64]  0.0309454843  0.28404940 1.4884209 1164.6683 1.0020854
+## 
+## $c_summary
+## , , chains = chain:1
+## 
+##           stats
+## parameter          mean         sd        2.5%          25%           50%
+##   b0        0.116819591 0.03260293  0.05452339  0.094853183  1.171957e-01
+##   sigma     0.594475216 0.02465153  0.54972330  0.577426347  5.937568e-01
+##   beta[1]   0.192300326 0.49590429 -0.49950256 -0.053018405  4.746219e-02
+##   beta[2]  -1.202346708 1.01944679 -3.20038904 -2.037633825 -1.125308e+00
+##   beta[3]   6.034651404 0.92196628  4.28768476  5.391851855  6.034356e+00
+##   beta[4]   3.301180670 1.00367958  1.01886274  2.753966389  3.347926e+00
+##   beta[5]  -0.212634029 0.63954521 -2.26335097 -0.308201282 -2.912796e-02
+##   beta[6]  -0.032592175 0.48335470 -1.02723839 -0.155346323 -7.064470e-03
+##   beta[7]  -1.281542909 1.29734297 -4.18815711 -2.171811102 -9.748373e-01
+##   beta[8]   0.316772315 0.84459958 -0.80508305 -0.064825493  5.511235e-02
+##   beta[9]   5.702639240 0.96108448  3.73206404  5.082532550  5.737076e+00
+##   beta[10]  0.263922659 0.48596602 -0.45735061 -0.006287027  1.228802e-01
+##   beta[11]  0.234782619 0.49597748 -0.49517009 -0.038140056  6.298256e-02
+##   beta[12]  0.148106963 0.46317989 -0.66406719 -0.043714944  2.358228e-02
+##   beta[13]  0.045429709 0.34151128 -0.71761207 -0.080194910  1.889652e-02
+##   beta[14] -0.099946700 0.54083966 -1.36975654 -0.234132650 -1.225931e-02
+##   beta[15] -0.096076825 0.50469988 -1.30572623 -0.215568255 -2.572397e-02
+##   beta[16]  0.060906785 0.45291994 -0.84094301 -0.076778848  1.712506e-02
+##   beta[17]  0.088714068 0.49593193 -0.75402125 -0.098786880  3.824426e-03
+##   beta[18] -0.283723250 0.53921489 -1.77290567 -0.451019163 -7.495942e-02
+##   beta[19]  0.824793548 0.89269590 -0.18062124  0.056482346  5.218833e-01
+##   beta[20]  1.516465371 0.93431147 -0.01730351  0.792688985  1.508457e+00
+##   beta[21]  0.233349795 0.51241061 -0.46561726 -0.023596053  4.698829e-02
+##   beta[22]  0.279048797 0.49204422 -0.38240615 -0.008553342  1.077269e-01
+##   beta[23]  0.001632467 0.50269504 -1.13408468 -0.126121886  2.109839e-03
+##   beta[24] -0.164527183 0.48692117 -1.33239696 -0.324312620 -5.158198e-02
+##   beta[25]  0.017944999 0.40776659 -0.92082618 -0.129553762  2.909115e-03
+##   beta[26]  0.038759021 0.43047739 -0.77761237 -0.131942215  9.557057e-03
+##   beta[27]  0.368824904 0.61327942 -0.48686084 -0.004907004  1.725301e-01
+##   beta[28]  0.311889962 0.56034611 -0.38549194 -0.009039699  9.669412e-02
+##   beta[29]  0.558173295 0.66578052 -0.22840462  0.037673571  3.528444e-01
+##   beta[30]  0.166543487 0.44041193 -0.40221432 -0.038919036  2.836617e-02
+##   beta[31]  0.060999784 0.41932589 -0.70847091 -0.092498273  6.765288e-03
+##   beta[32] -0.126869908 0.40867208 -1.19129169 -0.260702635 -3.857450e-02
+##   beta[33]  0.407790351 0.64230552 -0.35181535  0.008069043  1.600046e-01
+##   beta[34] -0.138160112 0.47464096 -1.40628044 -0.251083987 -4.713581e-02
+##   beta[35]  0.065928600 0.40754029 -0.69639030 -0.089504971  9.322716e-03
+##   beta[36]  0.013581491 0.35360216 -0.64642415 -0.132299237  6.891629e-06
+##   beta[37]  0.840588022 0.90129992 -0.20306218  0.065876775  6.125669e-01
+##   beta[38] -0.018028013 0.38379719 -0.88036704 -0.143125332  1.350567e-03
+##   beta[39]  0.035125813 0.45634281 -0.85521101 -0.072351493  1.210635e-02
+##   beta[40] -0.013639827 0.35985219 -0.86568847 -0.117662374  4.549731e-03
+##   beta[41]  0.057125015 0.42434857 -0.86910638 -0.092546674  1.671171e-02
+##   beta[42]  0.007695474 0.35059543 -0.84605518 -0.088185733  6.387712e-03
+##   beta[43]  0.321910068 0.54838220 -0.33973865 -0.016265314  1.175390e-01
+##   beta[44]  0.133746534 0.43163236 -0.57801503 -0.053180816  4.057357e-02
+##   beta[45]  0.069382791 0.38647793 -0.70323252 -0.072877632  1.469192e-02
+##   beta[46]  0.166918993 0.41127587 -0.47479629 -0.027153254  5.770905e-02
+##   beta[47] -0.141028562 0.42465049 -1.18576386 -0.288470050 -2.882831e-02
+##   beta[48]  0.087272014 0.39959590 -0.63344413 -0.080778904  1.521632e-02
+##   beta[49] -0.274523481 0.53143733 -1.74614935 -0.438629961 -1.069056e-01
+##   beta[50]  0.023123967 0.48639248 -0.90593295 -0.119823883 -4.427334e-03
+##   beta[51]  0.074065226 0.38697473 -0.57984738 -0.063775545  1.882819e-02
+##   beta[52] -0.366908960 0.77522631 -2.54731466 -0.445454227 -1.019552e-01
+##   beta[53] -0.107271774 0.44577454 -1.17969738 -0.218954663 -3.243512e-02
+##   beta[54]  0.047581235 0.45583813 -0.79681374 -0.114053140  2.303990e-03
+##   beta[55] -0.054977848 0.41662215 -1.13166696 -0.189376918 -5.832832e-03
+##   beta[56] -0.072076473 0.49556561 -1.26583040 -0.245948401 -1.993747e-02
+##   beta[57]  0.239532597 0.61798631 -0.57445762 -0.048942877  4.626406e-02
+##   beta[58]  0.050735630 0.43313327 -0.79759280 -0.116309401  3.158778e-03
+##   beta[59] -0.130081047 0.54106665 -1.60495078 -0.214157132 -1.079634e-02
+##   beta[60]  0.107090007 0.46600979 -0.77498968 -0.080258030  2.575756e-02
+##   beta[61]  0.048328295 0.38121913 -0.66414197 -0.099853696  1.291490e-02
+##   beta[62] -0.153323337 0.51457405 -1.73541732 -0.280619916 -2.449540e-02
+##   beta[63]  0.098612521 0.41716382 -0.65382184 -0.074201304  2.312085e-02
+##   beta[64]  0.147297376 0.54983105 -0.76710362 -0.072247380  2.480682e-02
+##           stats
+## parameter           75%     97.5%
+##   b0        0.138055670 0.1790165
+##   sigma     0.611222774 0.6423486
+##   beta[1]   0.276653642 1.6368107
+##   beta[2]  -0.219480156 0.1359879
+##   beta[3]   6.753539723 7.6918565
+##   beta[4]   3.958222260 5.1256928
+##   beta[5]   0.048715373 0.6263669
+##   beta[6]   0.123970373 0.8158556
+##   beta[7]  -0.108916631 0.2396658
+##   beta[8]   0.462749833 2.6190701
+##   beta[9]   6.262879770 7.5699975
+##   beta[10]  0.452775990 1.4821986
+##   beta[11]  0.386104985 1.4796341
+##   beta[12]  0.239860128 1.4721086
+##   beta[13]  0.183870987 0.8661887
+##   beta[14]  0.085981820 0.8293149
+##   beta[15]  0.079104414 0.7672477
+##   beta[16]  0.176755078 1.2008877
+##   beta[17]  0.166958617 1.5469094
+##   beta[18]  0.023980797 0.3547857
+##   beta[19]  1.444030259 2.7699559
+##   beta[20]  2.221146338 3.1955100
+##   beta[21]  0.405801184 1.5934931
+##   beta[22]  0.427770522 1.5264643
+##   beta[23]  0.133454834 1.2057563
+##   beta[24]  0.052363405 0.5142723
+##   beta[25]  0.163283436 1.1070839
+##   beta[26]  0.171119789 0.9861635
+##   beta[27]  0.569746754 1.9486539
+##   beta[28]  0.495476000 1.8359045
+##   beta[29]  0.915932460 2.1086850
+##   beta[30]  0.245488904 1.4748635
+##   beta[31]  0.141521493 1.1060428
+##   beta[32]  0.033750074 0.5725048
+##   beta[33]  0.637599060 2.1788309
+##   beta[34]  0.047570696 0.6775789
+##   beta[35]  0.173489868 1.1258985
+##   beta[36]  0.114929918 0.9035003
+##   beta[37]  1.442753639 2.9184586
+##   beta[38]  0.107406178 0.7405671
+##   beta[39]  0.182156512 0.9006361
+##   beta[40]  0.131999766 0.6813869
+##   beta[41]  0.210202588 1.0826572
+##   beta[42]  0.126821678 0.7956051
+##   beta[43]  0.494667980 1.6654642
+##   beta[44]  0.256563058 1.2208613
+##   beta[45]  0.185328260 1.0157769
+##   beta[46]  0.251881373 1.4516300
+##   beta[47]  0.049968428 0.4965543
+##   beta[48]  0.167598331 1.2014494
+##   beta[49]  0.006673464 0.3849180
+##   beta[50]  0.139547981 1.1774987
+##   beta[51]  0.175404390 1.0068335
+##   beta[52]  0.024020548 0.5023666
+##   beta[53]  0.062279336 0.6131920
+##   beta[54]  0.161521640 1.0709493
+##   beta[55]  0.112323031 0.7027262
+##   beta[56]  0.076417423 1.1266927
+##   beta[57]  0.346198860 2.1056311
+##   beta[58]  0.161877150 1.1830645
+##   beta[59]  0.082222116 0.7283482
+##   beta[60]  0.238494171 1.1725869
+##   beta[61]  0.158928347 1.0112642
+##   beta[62]  0.068269690 0.6864417
+##   beta[63]  0.220449521 1.1065933
+##   beta[64]  0.287554847 1.5175220
+## 
+## , , chains = chain:2
+## 
+##           stats
+## parameter         mean         sd        2.5%          25%           50%
+##   b0        0.11700368 0.03353602  0.05334356  0.093464483  0.1171334869
+##   sigma     0.59437031 0.02565391  0.54977346  0.576303140  0.5931940490
+##   beta[1]   0.21574604 0.45507440 -0.39333388 -0.026221112  0.0651109976
+##   beta[2]  -1.37796022 1.03200276 -3.33921693 -2.178884880 -1.3431104809
+##   beta[3]   5.90711163 0.89702148  4.06890132  5.300921511  5.9371418130
+##   beta[4]   3.42006518 0.93397321  1.62511001  2.846094441  3.4593885517
+##   beta[5]  -0.20293207 0.66339464 -2.10009133 -0.232774311 -0.0348956834
+##   beta[6]  -0.02594325 0.53581105 -1.20278930 -0.188091402 -0.0025857400
+##   beta[7]  -1.48918197 1.28105147 -3.96014194 -2.535965313 -1.4132037908
+##   beta[8]   0.29168559 0.81804153 -0.87424558 -0.061466218  0.0440691561
+##   beta[9]   5.63145794 0.96133017  3.64650702  4.957251790  5.6264804383
+##   beta[10]  0.28576845 0.51084171 -0.36520014 -0.010889851  0.0961004768
+##   beta[11]  0.21410558 0.44052059 -0.37111091 -0.020696404  0.0738838506
+##   beta[12]  0.14017289 0.44304383 -0.60099932 -0.065608470  0.0254963686
+##   beta[13]  0.03711877 0.35662895 -0.73621498 -0.085916304  0.0094787110
+##   beta[14] -0.02114432 0.42145561 -1.01389916 -0.149061740 -0.0001306631
+##   beta[15] -0.07928484 0.43451986 -1.06498206 -0.201455057 -0.0156984465
+##   beta[16]  0.04691448 0.42431412 -0.82479684 -0.096021373  0.0078611856
+##   beta[17]  0.02691705 0.51583370 -1.11830441 -0.102089376  0.0084959870
+##   beta[18] -0.22329225 0.52621435 -1.68356678 -0.340398866 -0.0770407492
+##   beta[19]  0.63902939 0.76441473 -0.24456534  0.025826999  0.3557242937
+##   beta[20]  1.46333968 0.95443161 -0.06568333  0.657754433  1.5913957181
+##   beta[21]  0.20473152 0.44808457 -0.36128334 -0.034436462  0.0549946737
+##   beta[22]  0.31888269 0.53005031 -0.28406273 -0.013147766  0.1163277680
+##   beta[23]  0.04158009 0.51627973 -0.87302948 -0.117148458 -0.0004828796
+##   beta[24] -0.18852216 0.58715435 -1.98370123 -0.260416806 -0.0296248058
+##   beta[25]  0.05991372 0.37912122 -0.58481929 -0.082407630  0.0085045638
+##   beta[26]  0.04076668 0.40514812 -0.77041421 -0.086490606  0.0084384085
+##   beta[27]  0.31831665 0.61448749 -0.43106648 -0.011184015  0.0934383814
+##   beta[28]  0.32277741 0.56495674 -0.35570687 -0.005936266  0.1180529007
+##   beta[29]  0.47251723 0.68935988 -0.33452366  0.001657081  0.2056432231
+##   beta[30]  0.13055830 0.40569448 -0.48564289 -0.048208547  0.0271278701
+##   beta[31]  0.11491135 0.47648051 -0.64708262 -0.043996483  0.0331833140
+##   beta[32] -0.14140679 0.45127243 -1.20812815 -0.273725399 -0.0440435403
+##   beta[33]  0.36559151 0.60762037 -0.31976801 -0.001799520  0.1458983274
+##   beta[34] -0.11960839 0.46988491 -1.37509330 -0.198497835 -0.0192697708
+##   beta[35]  0.04487698 0.36759699 -0.62152123 -0.106832071  0.0038268191
+##   beta[36]  0.00149953 0.36074943 -0.80378462 -0.131770923 -0.0019368929
+##   beta[37]  0.85279999 0.84149863 -0.19897903  0.146734648  0.6879734760
+##   beta[38] -0.01255656 0.42905045 -1.06348762 -0.118487978 -0.0026974741
+##   beta[39]  0.01428739 0.43782762 -0.87786520 -0.161371222 -0.0004855222
+##   beta[40] -0.04511237 0.40157181 -1.08377620 -0.167397041 -0.0053258459
+##   beta[41]  0.03570077 0.40506371 -0.69186437 -0.119303416  0.0018596333
+##   beta[42]  0.03938623 0.33256834 -0.69745548 -0.072538580  0.0079608455
+##   beta[43]  0.33689049 0.61895164 -0.38704730 -0.015653830  0.1132787248
+##   beta[44]  0.08334928 0.43763292 -0.60279161 -0.076046821  0.0058204884
+##   beta[45]  0.08394594 0.41478585 -0.61080853 -0.071781898  0.0153479975
+##   beta[46]  0.20940871 0.48548527 -0.60121487 -0.014599919  0.0723689519
+##   beta[47] -0.11294496 0.43028643 -1.37678299 -0.170373456 -0.0198373148
+##   beta[48]  0.01695269 0.36403207 -0.83949809 -0.099172498 -0.0019284308
+##   beta[49] -0.12952727 0.45147295 -1.36091610 -0.250194691 -0.0328722607
+##   beta[50] -0.02617809 0.43203212 -0.96839743 -0.188654107 -0.0065458175
+##   beta[51]  0.07801673 0.48567025 -0.74463816 -0.070774948  0.0107994132
+##   beta[52] -0.39025870 0.91192825 -2.83363506 -0.505118031 -0.0898187987
+##   beta[53] -0.13741642 0.52385910 -1.53542706 -0.222670580 -0.0192929656
+##   beta[54]  0.04372149 0.41717610 -0.77175139 -0.085998644  0.0099002810
+##   beta[55] -0.06545479 0.43368701 -1.14885142 -0.119447404 -0.0021880892
+##   beta[56] -0.01194014 0.49052193 -1.17674261 -0.142048505 -0.0005135052
+##   beta[57]  0.29426496 0.60800431 -0.43710052 -0.026523814  0.0707825115
+##   beta[58]  0.02128643 0.37719926 -0.73546554 -0.127529669 -0.0003893808
+##   beta[59] -0.16130618 0.51602130 -1.62951943 -0.282060267 -0.0329736202
+##   beta[60]  0.06359052 0.38392254 -0.59250223 -0.086919024  0.0017131526
+##   beta[61]  0.04810718 0.40786928 -0.84328004 -0.076984896  0.0171186421
+##   beta[62] -0.17020347 0.51933078 -1.51862262 -0.261761037 -0.0333879173
+##   beta[63]  0.14200684 0.48832525 -0.64366383 -0.060248081  0.0257597714
+##   beta[64]  0.21202104 0.50673222 -0.54264563 -0.036577064  0.0397056742
+##           stats
+## parameter          75%     97.5%
+##   b0        0.14009363 0.1808023
+##   sigma     0.61172726 0.6440250
+##   beta[1]   0.34279494 1.4346590
+##   beta[2]  -0.47585422 0.0976789
+##   beta[3]   6.49406429 7.5896978
+##   beta[4]   4.06234392 5.1624355
+##   beta[5]   0.07336626 0.6063572
+##   beta[6]   0.12154870 1.0001408
+##   beta[7]  -0.24939128 0.1964458
+##   beta[8]   0.47205463 2.3980500
+##   beta[9]   6.30827596 7.3955558
+##   beta[10]  0.45976877 1.6147688
+##   beta[11]  0.39062558 1.3465506
+##   beta[12]  0.26291096 1.4010626
+##   beta[13]  0.16149849 0.9528715
+##   beta[14]  0.11135825 0.7930066
+##   beta[15]  0.07229454 0.6238302
+##   beta[16]  0.19105181 0.9584164
+##   beta[17]  0.16380217 1.2501508
+##   beta[18]  0.03795068 0.5247262
+##   beta[19]  1.12235127 2.4747398
+##   beta[20]  2.13836759 3.1728710
+##   beta[21]  0.38110577 1.4097932
+##   beta[22]  0.51689043 1.8007014
+##   beta[23]  0.13041111 1.1059266
+##   beta[24]  0.03954035 0.5004477
+##   beta[25]  0.15938727 1.0436599
+##   beta[26]  0.15350066 0.8718489
+##   beta[27]  0.48168865 2.1787504
+##   beta[28]  0.53734353 1.8817121
+##   beta[29]  0.82960948 2.1291190
+##   beta[30]  0.21642111 1.2589602
+##   beta[31]  0.21273154 1.2184840
+##   beta[32]  0.03682028 0.4503352
+##   beta[33]  0.57112951 1.8744222
+##   beta[34]  0.05490169 0.5961484
+##   beta[35]  0.15926106 0.9211402
+##   beta[36]  0.10408326 0.8934775
+##   beta[37]  1.35962251 2.7269444
+##   beta[38]  0.10416500 0.9515588
+##   beta[39]  0.18328095 1.0435342
+##   beta[40]  0.09880046 0.6902301
+##   beta[41]  0.14235787 0.9330629
+##   beta[42]  0.13575256 0.8873242
+##   beta[43]  0.50556808 2.1163137
+##   beta[44]  0.15664301 1.1572616
+##   beta[45]  0.19718956 0.9244804
+##   beta[46]  0.38601304 1.4100361
+##   beta[47]  0.05918640 0.5337084
+##   beta[48]  0.13435911 0.8776842
+##   beta[49]  0.06017663 0.5853681
+##   beta[50]  0.09200781 1.0427907
+##   beta[51]  0.15548214 1.3092389
+##   beta[52]  0.02073028 0.5875628
+##   beta[53]  0.07059298 0.6533243
+##   beta[54]  0.16517352 0.9084686
+##   beta[55]  0.07618251 0.6368469
+##   beta[56]  0.11837569 1.0173015
+##   beta[57]  0.46153271 2.0124076
+##   beta[58]  0.13000613 0.9224123
+##   beta[59]  0.05727591 0.6530307
+##   beta[60]  0.16254185 1.0952350
+##   beta[61]  0.16222772 0.9245533
+##   beta[62]  0.05151175 0.5890174
+##   beta[63]  0.23478181 1.3308912
+##   beta[64]  0.32159327 1.5616917
+## 
+## , , chains = chain:3
+## 
+##           stats
+## parameter          mean         sd        2.5%           25%           50%
+##   b0        0.117211930 0.03421689  0.04228873  0.0980048854  0.1179155125
+##   sigma     0.593016443 0.02488992  0.54903352  0.5747841926  0.5920583722
+##   beta[1]   0.239426190 0.45055601 -0.33874947 -0.0173997797  0.0723917713
+##   beta[2]  -1.384782069 0.97687706 -3.28628028 -2.0568001852 -1.3709135863
+##   beta[3]   5.925733971 0.92945034  4.06027577  5.3527563262  5.9560949015
+##   beta[4]   3.461777697 0.91386840  1.52893097  2.8957085508  3.5260861153
+##   beta[5]  -0.223365946 0.61915879 -1.80903416 -0.3260037407 -0.0556012328
+##   beta[6]   0.032789453 0.49321139 -0.77231822 -0.1206952685  0.0005430309
+##   beta[7]  -1.451428954 1.16605311 -3.86103814 -2.2967377009 -1.2980626738
+##   beta[8]   0.287041710 0.71296628 -0.77738008 -0.0349350380  0.0696519889
+##   beta[9]   5.728237854 0.91450374  3.78202878  5.1338840549  5.7286242442
+##   beta[10]  0.303835500 0.52713677 -0.34404284 -0.0095969307  0.1125213046
+##   beta[11]  0.206649161 0.46687833 -0.46293851 -0.0383195101  0.0654404618
+##   beta[12]  0.115569933 0.45548445 -0.73200612 -0.0611382884  0.0244132944
+##   beta[13]  0.051133267 0.40707200 -0.85349652 -0.0856841218  0.0223165463
+##   beta[14] -0.062130133 0.53143386 -1.28323009 -0.2135466090 -0.0171076233
+##   beta[15] -0.066508896 0.43391616 -1.13087622 -0.1485173725 -0.0070090301
+##   beta[16]  0.064915571 0.44891892 -0.86481885 -0.0980074264  0.0151369812
+##   beta[17]  0.070134780 0.46542348 -0.63819455 -0.1016143065  0.0024716048
+##   beta[18] -0.310934791 0.54662216 -1.97998995 -0.4645669810 -0.0896923501
+##   beta[19]  0.744161145 0.86546695 -0.33110028  0.0158057404  0.5211671705
+##   beta[20]  1.567717005 0.96060041 -0.03800707  0.8324687838  1.6011561493
+##   beta[21]  0.233200329 0.48739749 -0.41320456 -0.0261063737  0.0781771687
+##   beta[22]  0.304089441 0.53732073 -0.38088316 -0.0049959529  0.1095242294
+##   beta[23] -0.024562143 0.43253956 -0.86014279 -0.1564972778 -0.0043593648
+##   beta[24] -0.075904021 0.48899941 -1.21690568 -0.1695990261 -0.0068475826
+##   beta[25]  0.050835088 0.34003020 -0.55889222 -0.0855222924  0.0091261736
+##   beta[26]  0.076469629 0.46752735 -0.79435520 -0.0994832256  0.0096722884
+##   beta[27]  0.301557885 0.54281324 -0.40834959 -0.0042886766  0.1187882690
+##   beta[28]  0.276882895 0.55883274 -0.54311707 -0.0206120739  0.1108792639
+##   beta[29]  0.523720525 0.66465738 -0.23751045  0.0128877942  0.2916295696
+##   beta[30]  0.152986111 0.40556957 -0.48218227 -0.0501979814  0.0485275968
+##   beta[31]  0.075513896 0.45539464 -0.64904807 -0.0800772923  0.0090700494
+##   beta[32] -0.118887018 0.45520452 -1.32053050 -0.2225378354 -0.0314238517
+##   beta[33]  0.385882951 0.62899502 -0.36740388 -0.0009280956  0.1280267663
+##   beta[34] -0.190687669 0.51865860 -1.66410364 -0.2923272395 -0.0345046994
+##   beta[35]  0.062069865 0.38028888 -0.70398626 -0.0999426614  0.0137684621
+##   beta[36]  0.006640492 0.30927277 -0.65290669 -0.0911018821  0.0018792850
+##   beta[37]  0.851220775 0.89995367 -0.25052070  0.0866024204  0.6143281858
+##   beta[38] -0.001305088 0.42534711 -0.99176220 -0.1482712575  0.0092514428
+##   beta[39]  0.047655458 0.36654260 -0.65900029 -0.0781453989  0.0054973294
+##   beta[40] -0.061206919 0.41663239 -0.99894685 -0.1830049355 -0.0292476846
+##   beta[41]  0.033133015 0.40929750 -0.88147679 -0.1177346000  0.0031928372
+##   beta[42]  0.038709008 0.38168446 -0.74759618 -0.0992509137  0.0112587825
+##   beta[43]  0.298725496 0.57653191 -0.29233256 -0.0157960483  0.0748123000
+##   beta[44]  0.119931964 0.40423814 -0.48168406 -0.0606400032  0.0209954384
+##   beta[45]  0.049180333 0.35665785 -0.62322581 -0.0823850780  0.0147972508
+##   beta[46]  0.138577413 0.39480982 -0.37528456 -0.0605096845  0.0317198607
+##   beta[47] -0.110046004 0.44241266 -1.29788738 -0.1792553958 -0.0243404194
+##   beta[48]  0.013633809 0.41946556 -0.98062287 -0.0950265425  0.0026828589
+##   beta[49] -0.152218022 0.50652527 -1.56889151 -0.2985141274 -0.0248721388
+##   beta[50] -0.049314558 0.44537674 -1.08661077 -0.1548265816 -0.0071259080
+##   beta[51]  0.086272852 0.48607940 -0.82870068 -0.1086786227  0.0203827180
+##   beta[52] -0.412718098 0.81169287 -2.64807084 -0.6102113284 -0.1084338349
+##   beta[53] -0.086092133 0.47368743 -1.39198698 -0.1981969349 -0.0163199706
+##   beta[54]  0.085869637 0.47083275 -0.95574501 -0.0928784133  0.0282911822
+##   beta[55] -0.108320858 0.49890818 -1.39476812 -0.1924503287 -0.0325615404
+##   beta[56] -0.006704827 0.54449616 -1.19435237 -0.1323200163  0.0014778714
+##   beta[57]  0.222779863 0.58308156 -0.63985923 -0.0409921092  0.0605777382
+##   beta[58]  0.060121528 0.40340179 -0.63517553 -0.0828992774  0.0194292082
+##   beta[59] -0.157899071 0.46234468 -1.30060688 -0.2888640620 -0.0296772720
+##   beta[60]  0.079515816 0.42310027 -0.75259512 -0.0592294535  0.0089476843
+##   beta[61]  0.048482942 0.40713299 -0.70970575 -0.1297859183  0.0067506640
+##   beta[62] -0.123349385 0.49028962 -1.28754890 -0.2724040384 -0.0218665867
+##   beta[63]  0.079466408 0.42853479 -0.79624467 -0.0863342117  0.0139482050
+##   beta[64]  0.199827444 0.49507917 -0.42305869 -0.0586137218  0.0364478214
+##           stats
+## parameter           75%     97.5%
+##   b0        0.137630862 0.1846683
+##   sigma     0.610484911 0.6410159
+##   beta[1]   0.382680020 1.4576994
+##   beta[2]  -0.559023886 0.0656651
+##   beta[3]   6.519073225 7.7507841
+##   beta[4]   4.079900949 5.1284161
+##   beta[5]   0.039249769 0.5301274
+##   beta[6]   0.138544120 1.2209746
+##   beta[7]  -0.398621833 0.1322502
+##   beta[8]   0.387673029 2.1859544
+##   beta[9]   6.376723120 7.4362379
+##   beta[10]  0.489581405 1.7525013
+##   beta[11]  0.360093042 1.4409621
+##   beta[12]  0.230585161 1.2023046
+##   beta[13]  0.168365720 1.0018304
+##   beta[14]  0.092685696 0.8448011
+##   beta[15]  0.087220708 0.7589274
+##   beta[16]  0.154030683 1.0873559
+##   beta[17]  0.168035475 1.1461920
+##   beta[18]  0.007768468 0.2579907
+##   beta[19]  1.292048352 2.8026648
+##   beta[20]  2.255672591 3.2760538
+##   beta[21]  0.407905523 1.5875672
+##   beta[22]  0.470076690 1.8152382
+##   beta[23]  0.095670886 0.7407418
+##   beta[24]  0.098893803 0.6771375
+##   beta[25]  0.149919607 0.8665751
+##   beta[26]  0.205547600 1.2210816
+##   beta[27]  0.513373528 1.6869136
+##   beta[28]  0.511393700 1.6673772
+##   beta[29]  0.854333346 2.1831297
+##   beta[30]  0.294544341 1.2829564
+##   beta[31]  0.198079283 1.0941303
+##   beta[32]  0.060739060 0.6591190
+##   beta[33]  0.614183645 2.0686089
+##   beta[34]  0.054019941 0.4973491
+##   beta[35]  0.211492515 0.8785518
+##   beta[36]  0.118815971 0.6551909
+##   beta[37]  1.364272562 2.9993450
+##   beta[38]  0.176288406 0.8757562
+##   beta[39]  0.144109521 1.0410310
+##   beta[40]  0.092170197 0.7138132
+##   beta[41]  0.158036228 1.0031430
+##   beta[42]  0.181884990 0.9483663
+##   beta[43]  0.471561713 1.9179321
+##   beta[44]  0.206823335 1.1093639
+##   beta[45]  0.170205735 0.9557815
+##   beta[46]  0.250824796 1.0633499
+##   beta[47]  0.048856839 0.6848795
+##   beta[48]  0.153046180 0.9969507
+##   beta[49]  0.068858159 0.6385081
+##   beta[50]  0.110694158 0.7815792
+##   beta[51]  0.244110976 1.2070675
+##   beta[52]  0.025072709 0.5412989
+##   beta[53]  0.103516586 0.6693265
+##   beta[54]  0.241300505 1.2269507
+##   beta[55]  0.060695467 0.6877377
+##   beta[56]  0.143390045 0.9015386
+##   beta[57]  0.326473986 1.9449162
+##   beta[58]  0.173277101 0.9442381
+##   beta[59]  0.069215058 0.5697033
+##   beta[60]  0.179290435 1.2279574
+##   beta[61]  0.167315885 1.1121824
+##   beta[62]  0.073123871 0.7567029
+##   beta[63]  0.212703742 1.0866923
+##   beta[64]  0.331235884 1.4637496
+## 
+## , , chains = chain:4
+## 
+##           stats
+## parameter          mean         sd        2.5%         25%           50%
+##   b0        0.117519469 0.03035432  0.05525244  0.09856493  0.1184914781
+##   sigma     0.593940309 0.02526376  0.54541130  0.57550953  0.5926558757
+##   beta[1]   0.179615793 0.41383157 -0.44249348 -0.04168520  0.0450986989
+##   beta[2]  -1.341739263 1.01079001 -3.43359214 -2.06443508 -1.2726641106
+##   beta[3]   5.920308897 1.01602193  3.91894702  5.24383326  5.9198101098
+##   beta[4]   3.440390270 1.01849382  1.36660875  2.73082890  3.4421125659
+##   beta[5]  -0.239166559 0.62656578 -1.86462890 -0.29837404 -0.0570408501
+##   beta[6]   0.023410550 0.46716548 -0.81604497 -0.15586629  0.0027756213
+##   beta[7]  -1.464682336 1.32461538 -4.38053913 -2.45808462 -1.2724755340
+##   beta[8]   0.269691418 0.78298562 -0.85390691 -0.07096664  0.0604022469
+##   beta[9]   5.704189503 1.00012740  3.69248322  5.08440897  5.6835886180
+##   beta[10]  0.282340584 0.52796416 -0.42571745 -0.01833501  0.1090340619
+##   beta[11]  0.240089320 0.46662439 -0.32612307 -0.01934673  0.0894592898
+##   beta[12]  0.159429617 0.46343183 -0.59066010 -0.02976330  0.0389276211
+##   beta[13]  0.022511382 0.41121425 -0.94427574 -0.10836127  0.0027725883
+##   beta[14] -0.086335357 0.49166403 -1.19496882 -0.17887674 -0.0177686637
+##   beta[15] -0.055346655 0.47605515 -1.13223575 -0.22096687 -0.0135936038
+##   beta[16]  0.005230051 0.41969305 -0.96036006 -0.12925795  0.0013862497
+##   beta[17]  0.034014010 0.49467654 -0.99747521 -0.12711643  0.0029343327
+##   beta[18] -0.256033490 0.48120102 -1.63470912 -0.42343611 -0.0955341129
+##   beta[19]  0.768313436 0.85946064 -0.24175026  0.07412252  0.5192398816
+##   beta[20]  1.447850807 0.90922154 -0.04904268  0.76987261  1.4918425670
+##   beta[21]  0.202538391 0.47662038 -0.53148476 -0.03770957  0.0682784352
+##   beta[22]  0.264195975 0.52170578 -0.45966592 -0.02122369  0.0739829482
+##   beta[23] -0.035328660 0.46295355 -1.17635742 -0.15896096 -0.0047886236
+##   beta[24] -0.135136051 0.43906860 -1.36726267 -0.24923418 -0.0378694976
+##   beta[25]  0.012385462 0.38014944 -0.85667368 -0.11587662  0.0038956300
+##   beta[26]  0.064035182 0.43183308 -0.75949794 -0.07823593  0.0077186089
+##   beta[27]  0.350312081 0.60867730 -0.35710391 -0.00931301  0.1072947646
+##   beta[28]  0.285449183 0.53732996 -0.34675260 -0.03362351  0.0983562721
+##   beta[29]  0.523217834 0.62464697 -0.17252727  0.03676941  0.3116126918
+##   beta[30]  0.194801686 0.48263923 -0.57783609 -0.03149360  0.0531216685
+##   beta[31]  0.100570542 0.41510237 -0.70360677 -0.06093187  0.0273609800
+##   beta[32] -0.103649155 0.45777995 -1.22690337 -0.21503308 -0.0208595893
+##   beta[33]  0.390768029 0.66724635 -0.41510284 -0.01143072  0.1374526547
+##   beta[34] -0.172225375 0.47211975 -1.33738927 -0.34096434 -0.0632531099
+##   beta[35]  0.059484228 0.40601259 -0.63591925 -0.07223196  0.0156495183
+##   beta[36]  0.002861430 0.34656595 -0.73388072 -0.11736268 -0.0004250478
+##   beta[37]  0.812596954 0.86408767 -0.19603471  0.06538405  0.5391568825
+##   beta[38]  0.004796273 0.38168308 -0.81383979 -0.09857990  0.0061500344
+##   beta[39]  0.019665390 0.37659734 -0.77802615 -0.12088100 -0.0011956530
+##   beta[40] -0.024916788 0.39294222 -0.87973793 -0.15010590 -0.0009477866
+##   beta[41]  0.032342127 0.40674437 -0.80076078 -0.10900027  0.0042900809
+##   beta[42]  0.020339485 0.37711929 -0.77646749 -0.13429645  0.0106823733
+##   beta[43]  0.311887698 0.61351033 -0.54374047 -0.03904227  0.1277179108
+##   beta[44]  0.147803465 0.43075899 -0.49206164 -0.04582191  0.0231304029
+##   beta[45]  0.072552956 0.40756571 -0.73925143 -0.06524679  0.0128334215
+##   beta[46]  0.128860940 0.46162575 -0.61034761 -0.06892541  0.0211067515
+##   beta[47] -0.143613525 0.42491843 -1.20302114 -0.28996648 -0.0428493940
+##   beta[48]  0.053127912 0.41038703 -0.77189941 -0.09326946  0.0174537413
+##   beta[49] -0.181033172 0.51662708 -1.67892347 -0.24814857 -0.0339255774
+##   beta[50] -0.007356024 0.51332035 -1.13816492 -0.13913158 -0.0019693840
+##   beta[51]  0.103674507 0.45574859 -0.64930173 -0.06340935  0.0249000288
+##   beta[52] -0.397443647 0.79239864 -2.59605504 -0.51515906 -0.0985691353
+##   beta[53] -0.137461294 0.46344648 -1.34258521 -0.25796484 -0.0369704677
+##   beta[54]  0.057384413 0.38899804 -0.80840079 -0.07331096  0.0135601413
+##   beta[55] -0.095653482 0.43174941 -1.19589584 -0.20162925 -0.0237182072
+##   beta[56] -0.022009398 0.53185646 -1.24520768 -0.20008477 -0.0195061798
+##   beta[57]  0.259539663 0.58256378 -0.52450971 -0.03406319  0.0749261368
+##   beta[58]  0.008043106 0.41114697 -0.96423673 -0.11294262  0.0004317950
+##   beta[59] -0.209830045 0.55394259 -1.54396388 -0.36323334 -0.0575785625
+##   beta[60]  0.121158146 0.44713940 -0.61550858 -0.07975137  0.0316162707
+##   beta[61]  0.060877653 0.42338685 -0.69692464 -0.09756042  0.0081115693
+##   beta[62] -0.158732655 0.46372426 -1.38733954 -0.27279831 -0.0441388195
+##   beta[63]  0.212137206 0.53185626 -0.62384274 -0.03049782  0.0605691206
+##   beta[64]  0.130969624 0.43966716 -0.51687821 -0.05678928  0.0224606878
+##           stats
+## parameter          75%      97.5%
+##   b0        0.13627885 0.17931244
+##   sigma     0.61127831 0.64406679
+##   beta[1]   0.33779499 1.23489559
+##   beta[2]  -0.43914097 0.07779334
+##   beta[3]   6.55787708 7.93099186
+##   beta[4]   4.19204558 5.24484418
+##   beta[5]   0.04207556 0.50546463
+##   beta[6]   0.14077929 1.15724627
+##   beta[7]  -0.20032525 0.16556770
+##   beta[8]   0.37491545 2.51860493
+##   beta[9]   6.43599375 7.47834519
+##   beta[10]  0.47536002 1.65628191
+##   beta[11]  0.40512069 1.60918191
+##   beta[12]  0.26441674 1.58236688
+##   beta[13]  0.15856691 0.97897495
+##   beta[14]  0.09628888 0.66648204
+##   beta[15]  0.08888243 0.94087006
+##   beta[16]  0.12853374 1.01245940
+##   beta[17]  0.16738211 1.24575104
+##   beta[18]  0.02334925 0.33250434
+##   beta[19]  1.28854722 2.84955142
+##   beta[20]  2.07469906 3.14761257
+##   beta[21]  0.36308810 1.46978394
+##   beta[22]  0.44370961 1.56429405
+##   beta[23]  0.10872034 0.78248625
+##   beta[24]  0.05373450 0.56320552
+##   beta[25]  0.15294060 0.79279435
+##   beta[26]  0.16167270 1.10009806
+##   beta[27]  0.57330324 2.06397330
+##   beta[28]  0.46754986 1.71829294
+##   beta[29]  0.88454198 2.09269610
+##   beta[30]  0.33684811 1.45945814
+##   beta[31]  0.22031567 1.05562920
+##   beta[32]  0.09059306 0.56521703
+##   beta[33]  0.58679816 2.16443877
+##   beta[34]  0.03156464 0.72155363
+##   beta[35]  0.17182639 1.03560172
+##   beta[36]  0.10848173 0.74909167
+##   beta[37]  1.38622861 2.67476397
+##   beta[38]  0.13253639 0.81234241
+##   beta[39]  0.14055588 0.98786354
+##   beta[40]  0.14213463 0.69374729
+##   beta[41]  0.16582284 1.09339846
+##   beta[42]  0.16888339 0.81354933
+##   beta[43]  0.54657710 1.97314785
+##   beta[44]  0.26648612 1.36381340
+##   beta[45]  0.18219956 1.19497699
+##   beta[46]  0.23469159 1.31558393
+##   beta[47]  0.04451061 0.55862822
+##   beta[48]  0.18974100 1.04333768
+##   beta[49]  0.05449825 0.43208694
+##   beta[50]  0.12650881 1.14729784
+##   beta[51]  0.21927304 1.15329573
+##   beta[52]  0.02453860 0.41752836
+##   beta[53]  0.06204604 0.59342842
+##   beta[54]  0.17099439 1.02455804
+##   beta[55]  0.07514839 0.71364120
+##   beta[56]  0.08868690 1.19522880
+##   beta[57]  0.42094299 1.91395086
+##   beta[58]  0.13763922 0.95952793
+##   beta[59]  0.04002773 0.62946734
+##   beta[60]  0.24787389 1.32430368
+##   beta[61]  0.21405362 1.09432388
+##   beta[62]  0.05200005 0.50004587
+##   beta[63]  0.36938600 1.59020944
+##   beta[64]  0.22727702 1.22459846</code></pre>
+</section><section class="slide level2">
+
+<p>First compare the resulting regression parameters to OLS values.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">hs_samples &lt;-<span class="st"> </span><span class="kw">extract</span>(horseshoe_fit, <span class="dt">pars=</span><span class="kw">c</span>(<span class="st">&quot;b0&quot;</span>, <span class="st">&quot;sigma&quot;</span>, <span class="st">&quot;beta&quot;</span>))</a>
+<a class="sourceLine" id="cb26-2" title="2"><span class="co"># rescale to real units</span></a>
+<a class="sourceLine" id="cb26-3" title="3">post_med_intercept &lt;-<span class="st"> </span><span class="kw">median</span>(hs_samples<span class="op">$</span>b0) <span class="op">*</span><span class="st"> </span><span class="kw">mad</span>(training_d<span class="op">$</span>y) <span class="op">+</span><span class="st"> </span><span class="kw">median</span>(training_d<span class="op">$</span>y)</a>
+<a class="sourceLine" id="cb26-4" title="4">post_med_sigma &lt;-<span class="st"> </span><span class="kw">median</span>(hs_samples<span class="op">$</span>sigma) <span class="op">*</span><span class="st"> </span><span class="kw">mad</span>(training_d<span class="op">$</span>y)</a>
+<a class="sourceLine" id="cb26-5" title="5">post_med_slopes &lt;-<span class="st"> </span><span class="kw">colMedians</span>(hs_samples<span class="op">$</span>beta) <span class="op">*</span><span class="st"> </span><span class="kw">mad</span>(training_d<span class="op">$</span>y)</a></code></pre></div>
+<p><img src="figure/Week_14_Lecture/compare_betas-1.png" title="plot of chunk compare_betas" alt="plot of chunk compare_betas" style="display: block; margin: auto;" /></p>
+</section><section class="slide level2">
+
+<p>The coefficient estimates from OLS are <em>wierd</em>.</p>
+<pre><code>##                       ols          stan
+## (Intercept)   150.6877158  151.62322346
+## tc          -5344.1362146   -4.13948456
+## `tc:ldl`    -4837.7577691   -0.46036150
+## ldl          4723.0001852   -0.03713766
+## `tc^2`       4501.3147154   -0.98157640
+## ltg          2350.5648361  514.73662718
+## `tc:hdl`    -2183.9679154    1.58850954
+## `tc:ltg`    -2127.4763989   -2.17047968
+## `tc:tch`    -2109.4859422   -8.71594752
+## hdl          1680.5383464 -113.15691407
+## `hdl:tch`    1423.4283796   -2.92198156
+## `ldl^2`      1315.3475569   -1.45697679
+## `ldl:ltg`    1301.0314400    5.69924375
+## `tch^2`      1153.5055778    0.36458560
+## `ltg^2`      1092.0802627   -7.65377146
+## `hdl^2`      1030.4183629    0.83444186
+## `ldl:glu`    -997.1769908    0.38170238
+## `tc:glu`      950.9385270    1.05565719
+## `ldl:hdl`     750.6734763   -1.36106213
+## `sex:tc`      710.4735493    1.52061602
+## `ldl:tch`     685.7207365   -0.82447499
+## `sex:ldl`    -583.0899124   -3.01636137
+## `hdl:ltg`     579.6892310    1.32283252
+## bmi           472.7822071  538.51375738
+## `bmi:tc`     -449.8107181    0.17764949
+## `bmi:ldl`     449.7137136    0.38615369
+## `age:tc`     -381.4352029   -0.17616836
+## map           360.8679843  311.19193304
+## sex          -269.6337058 -116.02178916
+## `ltg:glu`    -262.9689424    2.79866627
+## `map:glu`    -244.4812374   -3.77154112
+## `bmi:map`     232.7826663   55.67845064
+## `tch:ltg`     231.5833277   -2.56513667
+## `age:ltg`     226.9633990   10.72231703
+## `age:ldl`     210.2181540   -2.52040030
+## `sex:ltg`    -210.1018253    0.95139364
+## `hdl:glu`    -207.1878927    1.07578340
+## `age:hdl`     200.9051940    0.58776431
+## `tch:glu`     195.2469288    2.49312673
+## `map:tc`      164.8892506    2.00290768
+## `sex:bmi`     151.2507925   25.86593599
+## `age:sex`     148.1955348  139.53985970
+## `bmi:tch`    -132.9842910    0.50915513
+## `bmi:ltg`     132.1057723    0.81541926
+## `glu^2`       128.3359803   43.09992346
+## `age:glu`     123.5654440    9.62138335
+## `bmi:hdl`     123.4574377   -0.47452796
+## `map:tch`    -114.1544438   -2.61278773
+## glu            89.6525363    9.87636341
+## `sex:hdl`     -89.0422237   12.99307577
+## `bmi:glu`      88.7749691    9.48374612
+## tch           -85.1837399    5.05488885
+## age            84.9492352    5.27733808
+## `map:hdl`     -84.9267162    4.25471339
+## `age^2`        66.3266859    6.56309345
+## `sex:tch`     -61.9876132   -3.76450021
+## `age:tch`      61.3931988    0.81214627
+## `map^2`       -52.3896842    1.18138406
+## `map:ldl`     -35.3650443    1.31070882
+## `sex:map`      34.8982815    3.42459095
+## `age:map`      20.5936704    9.62768861
+## `bmi^2`       -15.8074138    2.48565599
+## `map:ltg`       3.8402792    0.54223768
+## `sex:glu`       2.2141893   -0.02030653
+## `age:bmi`       0.2614859    5.67149734</code></pre>
+</section><section class="slide level2">
+
+<p>And, quite different than what Stan gets.</p>
+<pre><code>##                       ols          stan
+## (Intercept)   150.6877158  151.62322346
+## bmi           472.7822071  538.51375738
+## ltg          2350.5648361  514.73662718
+## map           360.8679843  311.19193304
+## `age:sex`     148.1955348  139.53985970
+## sex          -269.6337058 -116.02178916
+## hdl          1680.5383464 -113.15691407
+## `bmi:map`     232.7826663   55.67845064
+## `glu^2`       128.3359803   43.09992346
+## `sex:bmi`     151.2507925   25.86593599
+## `sex:hdl`     -89.0422237   12.99307577
+## `age:ltg`     226.9633990   10.72231703
+## glu            89.6525363    9.87636341
+## `age:map`      20.5936704    9.62768861
+## `age:glu`     123.5654440    9.62138335
+## `bmi:glu`      88.7749691    9.48374612
+## `tc:tch`    -2109.4859422   -8.71594752
+## `ltg^2`      1092.0802627   -7.65377146
+## `age^2`        66.3266859    6.56309345
+## `ldl:ltg`    1301.0314400    5.69924375
+## `age:bmi`       0.2614859    5.67149734
+## age            84.9492352    5.27733808
+## tch           -85.1837399    5.05488885
+## `map:hdl`     -84.9267162    4.25471339
+## tc          -5344.1362146   -4.13948456
+## `map:glu`    -244.4812374   -3.77154112
+## `sex:tch`     -61.9876132   -3.76450021
+## `sex:map`      34.8982815    3.42459095
+## `sex:ldl`    -583.0899124   -3.01636137
+## `hdl:tch`    1423.4283796   -2.92198156
+## `ltg:glu`    -262.9689424    2.79866627
+## `map:tch`    -114.1544438   -2.61278773
+## `tch:ltg`     231.5833277   -2.56513667
+## `age:ldl`     210.2181540   -2.52040030
+## `tch:glu`     195.2469288    2.49312673
+## `bmi^2`       -15.8074138    2.48565599
+## `tc:ltg`    -2127.4763989   -2.17047968
+## `map:tc`      164.8892506    2.00290768
+## `tc:hdl`    -2183.9679154    1.58850954
+## `sex:tc`      710.4735493    1.52061602
+## `ldl^2`      1315.3475569   -1.45697679
+## `ldl:hdl`     750.6734763   -1.36106213
+## `hdl:ltg`     579.6892310    1.32283252
+## `map:ldl`     -35.3650443    1.31070882
+## `map^2`       -52.3896842    1.18138406
+## `hdl:glu`    -207.1878927    1.07578340
+## `tc:glu`      950.9385270    1.05565719
+## `tc^2`       4501.3147154   -0.98157640
+## `sex:ltg`    -210.1018253    0.95139364
+## `hdl^2`      1030.4183629    0.83444186
+## `ldl:tch`     685.7207365   -0.82447499
+## `bmi:ltg`     132.1057723    0.81541926
+## `age:tch`      61.3931988    0.81214627
+## `age:hdl`     200.9051940    0.58776431
+## `map:ltg`       3.8402792    0.54223768
+## `bmi:tch`    -132.9842910    0.50915513
+## `bmi:hdl`     123.4574377   -0.47452796
+## `tc:ldl`    -4837.7577691   -0.46036150
+## `bmi:ldl`     449.7137136    0.38615369
+## `ldl:glu`    -997.1769908    0.38170238
+## `tch^2`      1153.5055778    0.36458560
+## `bmi:tc`     -449.8107181    0.17764949
+## `age:tc`     -381.4352029   -0.17616836
+## ldl          4723.0001852   -0.03713766
+## `sex:glu`       2.2141893   -0.02030653</code></pre>
+</section><section class="slide level2">
+
+<p>Now let’s look at out-of-sample prediction error, using the posterior median coefficient estimates:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1">pred_stan &lt;-<span class="st"> </span><span class="cf">function</span> (x) {</a>
+<a class="sourceLine" id="cb29-2" title="2">    post_med_intercept <span class="op">+</span><span class="st"> </span><span class="kw">as.matrix</span>(x) <span class="op">%*%</span><span class="st"> </span>post_med_slopes</a>
+<a class="sourceLine" id="cb29-3" title="3">}</a>
+<a class="sourceLine" id="cb29-4" title="4">pred_y &lt;-<span class="st"> </span><span class="kw">pred_stan</span>(test_d[,<span class="op">-</span><span class="dv">1</span>])</a>
+<a class="sourceLine" id="cb29-5" title="5">stan_pred_error &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">mean</span>((test_d<span class="op">$</span>y <span class="op">-</span><span class="st"> </span>pred_y)<span class="op">^</span><span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb29-6" title="6">stan_mse_resid &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">mean</span>((training_d<span class="op">$</span>y <span class="op">-</span><span class="st"> </span><span class="kw">pred_stan</span>(training_d[,<span class="op">-</span><span class="dv">1</span>]))<span class="op">^</span><span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb29-7" title="7"></a>
+<a class="sourceLine" id="cb29-8" title="8"><span class="kw">plot</span>(test_d<span class="op">$</span>y, pred_y, <span class="dt">xlab=</span><span class="st">&quot;true values&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;predicted values&quot;</span>, <span class="dt">main=</span><span class="st">&quot;test data&quot;</span>)</a>
+<a class="sourceLine" id="cb29-9" title="9"><span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</a></code></pre></div>
+<p><img src="figure/Week_14_Lecture/pred_stan-1.png" title="plot of chunk pred_stan" alt="plot of chunk pred_stan" style="display: block; margin: auto;" /></p>
+</section><section id="conclusions" class="slide level2">
+<h2>Conclusions?</h2>
+<ol type="1">
+<li><p>Our “sparse” model is certainly more sparse, and arguably more interpretable.</p></li>
+<li><p>It has a root-mean-square prediction error of 52.3500261 on the <em>test</em> data, and 52.8630837 on the training data.</p></li>
+<li><p>This is substantially better than ordinary linear regression, which had a root-mean-square prediction error of 61.3508494 on the test data, and a root-mean-square-error of 47.9132317 on the training data.</p></li>
+</ol>
+<div class="fragment">
+<p>The sparse model is more interpretable, and more generalizable.</p>
+</div>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'reveal.js/plugin/math/math.js', async: true },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
