@@ -3119,6 +3119,25 @@ model {
 <li><p>Presence or absence of <em>Wolbachia</em> parasites in fifty flies are sampled from each of 100 populations, along with the sex and transcription levels of ten immune-related genes of each fly.</p></li>
 <li><p>HW1/2: exponential regression</p></li>
 </ol>
+</section><section id="mosquitos-variables" class="slide level2">
+<h2>Mosquitos: variables</h2>
+<p><strong>Big picture:</strong> We’re sampling mosquitos in a few separate (replicate) traps once, in the day and at night, each month, at each of four locations.</p>
+<p><strong>Main question:</strong> How do mosquito populations vary seasonally and by time of day, after controlling for temperature and rainfall?</p>
+</section><section id="mosquitos-story" class="slide level2">
+<h2>Mosquitos: story</h2>
+<p>We’ve chosen locations to have similar rainfall and temperature means (so that location and rain/temp aren’t confounded).</p>
+<p>There are more mosquitos out at night than during the day, and more when it is warmer and wetter, but there is no effect of month given temperature and rainfall. There is an overall mean difference in abundance by location, due to unmeasured factors.</p>
+</section><section id="mosquitos-variables-1" class="slide level2">
+<h2>Mosquitos: variables</h2>
+<ul>
+<li><code>count</code> : number of mosquitos caught (0-1000)</li>
+<li><code>rainfall</code> : cm of rain in the last 12 hours (<span class="math inline">\(&lt; 10\)</span>cm)</li>
+<li><code>temperature</code> : average degrees C last 12 hours (25–35 C)</li>
+<li><code>location</code> : factor with four levels</li>
+<li><code>time</code> : day or night</li>
+<li><code>month</code> : categorical, 1–12 <em>(note: could be numeric/sinusoidal!)</em></li>
+<li><code>replicate</code> : which trap number within the month/time/location combination <em>(unused in the model)</em></li>
+</ul>
 </section></section>
     </div>
   </div>

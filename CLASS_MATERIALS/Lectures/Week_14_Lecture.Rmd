@@ -635,3 +635,39 @@ and more generalizable.
 4. HW1/2: exponential regression
 
 
+## Mosquitos: variables
+
+**Big picture:**
+We're sampling mosquitos
+in a few separate (replicate) traps
+once, in the day and at night, each month, 
+at each of four locations.
+
+**Main question:**
+How do mosquito populations vary seasonally
+and by time of day,
+after controlling for temperature and rainfall?
+
+## Mosquitos: story
+
+We've chosen locations to have similar rainfall and temperature means
+(so that location and rain/temp aren't confounded).
+
+There are more mosquitos out at night than during the day,
+and more when it is warmer and wetter,
+but there is no effect of month given temperature and rainfall.
+There is an overall mean difference in abundance
+by location, due to unmeasured factors.
+
+## Mosquitos: variables
+
+- `count` : number of mosquitos caught (0-1000)
+- `rainfall` : cm of rain in the last 12 hours ($< 10$cm)
+- `temperature` : average degrees C last 12 hours (25--35 C)
+- `location` : factor with four levels
+- `time` : day or night
+- `month` : categorical, 1--12 *(note: could be numeric/sinusoidal!)*
+- `replicate` : which trap number within the month/time/location combination
+  *(unused in the model)*
+
+
