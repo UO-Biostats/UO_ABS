@@ -672,3 +672,42 @@ by location, due to unmeasured factors.
 
 *Note:* we'll have around 480 observations and 20 variables (without interactions).
 
+## Model:
+
+```{r moz_model}
+moz_model <- stan_model(model_code="
+data {
+    int N;                         // number of obs
+    int nmonths;                   // = 12
+    int nlocs;                     // number of locs
+    int counts[N];
+    vector[N] temp;                // temperature
+    vector[N] rain;                // rainfall
+    int month[N];                  // month index
+    vector<lower=0, upper=1>[N] time; // 0 = night, 1 = day
+    int location[N];               // location index
+}
+parameters {
+    real b0;
+    real bT;
+    real bR;
+    vector[nmonths] bM;
+    real bD; // effect of 'daytime'
+    vector[nlocs] bL;
+}
+transformed parameters {
+    vector[N] lambda;
+    lambda = b0 + bT * temp + bR * rain + bM[month] + bD * time + bL[location];
+}
+model {
+    counts ~ poisson(exp(lambda));
+    b0 ~ normal(0, 1000);
+    bT ~ normal(0, 10);
+    bR ~ normal(0, 10);
+    bM ~ normal(0, 10);
+    bD ~ normal(0, 10);
+    bL ~ normal(0, 10);
+}
+")
+```
+
