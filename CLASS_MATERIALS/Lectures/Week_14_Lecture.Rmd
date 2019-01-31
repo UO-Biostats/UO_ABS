@@ -667,7 +667,8 @@ by location, due to unmeasured factors.
 - `location` : factor with four levels
 - `time` : day or night
 - `month` : categorical, 1--12 *(note: could be numeric/sinusoidal!)*
-- `replicate` : which trap number within the month/time/location combination
+- `replicate` : which trap number within the month/time/location combination (up to 5)
   *(unused in the model)*
 
+*Note:* we'll have around 480 observations and 20 variables (without interactions).
 
