@@ -40,6 +40,7 @@ Week 14 (*1/28, Peter*)
 
     * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_14_Lecture.slides.html)
     - Reading: **(Kruschke, ch 19, 20)**
+    - [Homework 4](../CLASS_MATERIALS/Homework_Solutions/HW4_W19.html), due 2/7.
 
 Week 15 (*2/4, Bill*)
 
