@@ -42,3 +42,12 @@ I will only report the information shared to the university administration when 
 Please note also that I am required to report all other forms of prohibited discrimination or harassment to the university administration. Specific details about confidentiality of information and reporting obligations of employees can be found at titleix.uoregon.edu.
 
 UO employees, including faculty, staff, and GEs, are mandatory reporters of child abuse (pertaining to individuals under age 18). This statement is to advise you that your disclosure of information about child abuse to the instructor may trigger a legal duty to report that information to the designated authorities.
+
+
+## GE involvement and conflict of interest
+
+This course has a graduate student GE,
+who will be involved in evaluating (grading homeworks) and instructing (office hours).
+If you have any privacy, conflict of interest, or other concerns about their role,
+then please contact us (the instructors) and we will address them
+(for instance, by grading your work ourselves).
