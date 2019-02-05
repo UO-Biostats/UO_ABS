@@ -48,7 +48,7 @@ Week 15 (*2/4, Bill*)
 
     * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_15_Lecture.slides.html)
     - Reading: **(Otto and Day, Linear Algebra Primer; Kruschke, ch 15)**
-    - [Homework 4](../CLASS_MATERIALS/Homework_Solutions/HW4_W19.html), due 2/7.
+    - [Homework 5](), due 2/14.
 
 Week 16 (*2/11, Bill*)
 
