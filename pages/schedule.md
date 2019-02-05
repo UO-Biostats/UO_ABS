@@ -44,7 +44,11 @@ Week 14 (*1/28, Peter*)
 
 Week 15 (*2/4, Bill*)
 
-: Linear algebra, latent factor analysis.
+: Linear algebra, latent factor analysis, intro to multivariate
+
+    * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_15_Lecture.slides.html)
+    - Reading: **(Otto and Day, Linear Algebra Primer; Kruschke, ch 15)**
+    - [Homework 4](../CLASS_MATERIALS/Homework_Solutions/HW4_W19.html), due 2/7.
 
 Week 16 (*2/11, Bill*)
 
@@ -119,4 +123,3 @@ Week 10 -
 
     * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_10_Lecture.slides.html)
     * reading: Kruschke, chapters 16, 17, and 13
-
