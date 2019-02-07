@@ -1,0 +1,402 @@
+---
+title: "Week 15 - Multivariate Statistics"
+author: ""
+date: "February 7, 2019"
+output: revealjs::revealjs_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Goals for today
+
+## {}
+
+**WE WILL COVER TODAY**
+
+- Primer on matrix algebra
+- Latent roots of matrices
+- Eigenvalues and eigenvectors
+- Principal Component Analysis (PCA)
+
+__________________________________
+
+
+
+# Multivariate Statistics
+
+## Conceptual overview of multivariate statistics
+
+<br>
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.007.jpeg")
+```
+
+## Conceptual overview of multivariate statistics
+
+<br>
+
+```{r, echo=FALSE, out.width='65%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.008.jpeg")
+```
+
+## Conceptual overview of multivariate statistics
+
+<br>
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.009.jpeg")
+```
+
+
+## Multivariate statitistics definitions
+
+<br>
+
+- Some definitions first
+- `i = 1 to n` objects and `j = 1 to p` variables
+- Measure of center of a multivariate distribution = the centroid
+- Multivariate statistics uses eigenanalysis of either matrices of covariances of variables (`p-by-p`), or dissimilarities of objects (`n-by-n`)
+
+# Primer on Matrix Algebra
+
+
+
+
+# Matrix algebra applied to multivariate statistics
+
+## Example data
+
+```{r, echo=FALSE, out.width='50%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.011.jpeg")
+```
+
+## Example data
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.012.jpeg")
+```
+
+## Different Matrices
+
+- S = sum of squares and sum of cross products
+- C = p-by-p matrix of variances and covariances
+- R = p-by-p matrix of correlations
+- Two ways to summarize the variability of a multivariate data set
+    - The determinant of a square matrix
+    - The trace of a square matrix
+- If we have groups, we can calculate determinant and trace for within and among groups and use that to partition multivariate variance
+
+
+## Sums of squares and cross products
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.013.jpeg")
+```
+
+## Variance-covariance matrix
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.014.jpeg")
+```
+
+## Correlation matrix
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.015.jpeg")
+```
+
+## Eigenanalysis of systems of linear equations
+
+<br>
+
+$$F_{ik} = c_1y_{i1} + c_2y_{i1} + c_3y_{i2} + c_1y_{i3} + ... + c_py_{ip}$$
+
+<br>
+
+- Derives linear combinations of the original variables that best summarize the total variation in the data
+- These new linear combinations become new variables themselves
+- Each object can now have a score for the new variables
+
+## R-mode vs. Q-mode analysis
+
+```{r, echo=FALSE, out.width='90%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.003.jpeg")
+```
+
+## Eigenvalues
+
+<br>
+
+- Also called 
+  - **characteristic** or **latent roots** or 
+  - **factors**
+- Rearranging the variance in the association matrix so that the first few derived variables explain most of the variation that was present between objects in the original variables
+- The **eigenvalues** can also be expressed as proportions or percents of the original variance
+
+
+## Scree plots of eigenvalues
+
+```{r, echo=FALSE, out.width='90%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.004.jpeg")
+```
+
+## Eigenvectors
+
+<br>
+
+- Lists of the **coefficients or  weights** showing how much each original variable contributes to each new derived variable
+- The linear combination `s` can be solved to provide a score ($F_{ik}$) for each object
+- There are the same number of derived variables as there are original variables (`p`)
+- The newly derived variables are extracted sequentially so that they are **uncorrelated with each other**
+- The eigenvalues and eigenvectors can be derived using either **spectral decomposition of the `p-by-p` matrix** or **singular value decomposition of the original matrix**
+
+## How many PC's or PCo's should I examine?
+
+<br>
+
+```{r, echo=FALSE, out.width='75%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.004.jpeg")
+```
+
+## What else can I do with the values of the new **PCs and metric PCoAs**?
+
+<br>
+
+- They’re nice **new variables** that you can use in any analysis you’ve learned previously!!
+- You can perform single or multiple regression of your PCs on other continuous variables 
+- For example, ask whether they correlate with an environmental gradient or body mass index.
+- If you have one or more grouping variables you can use ANOVA on each newly derived PC.
+- **NOTE** - non-metric PCoA or NMDS values _**cannot**_ just be put into linear models!!
+
+# Principal Component Analysis (PCA)
+
+## Two primary aims of PCA
+
+- Variable reduction - reduce a lot of variables to a smaller number of new derived variables that adequately summarize the original information (aka data reduction). 
+- Ordination - Reveal patterns in the data - especially among variables or objects - that could not be found by analyzing each variable separately. A good way to do this is to plot the first few derived variables (this is also called multidimensional scaling).
+- General approach - use eigenanalysis on a large dataset of continuous variables.
+
+## Running a PCA analysis
+
+- Start by ignoring any grouping variables
+- Perform Eigenanalysis on the entire data set
+- After the ordination is complete analyze the objects in the new ordination
+- This includes ANOVA using the newly derived PC’s and any grouping variables
+
+## Data standardization for PCA
+
+- Covariances and correlations measure the linear relationships among variables and therefore assumptions of normality and homogeneity of variance are important in multivariate statistics
+- Transformations to achieve linearity might be important
+- Data on very different scales can also be a problem
+- Centering the data subtracts the mean from all variable values so the mean becomes zero
+- Ranging divides each variable by its standard deviation so that all variables have a mean of zero and a unit s.d.
+- Some variables cannot be standardized (e.g.highly skewed abundance data)
+- In this case converting to presence or absence (binary) data might be the most appropriate (MDS - next week)
+
+## PCA overview with example data
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.017.jpeg")
+```
+
+
+## Which association matrix to use?
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.018.jpeg")
+```
+
+
+## How many PCs should I concern myself with?
+
+- The full, original variance-covariance pattern is encapsulated in all PCs.
+- PCA will extract the same number of PCs as original variables.
+- How many to retain? - really just a question of what to pay attention to. 
+- Eigenvalue equals one rule (correlation matrix)
+- Scree plot shows an obvious break
+- Formal tests of eigenvalue equality
+- Significant amount of the original variance
+- Most of the time first few PCs are enough.
+- If not, PCA might not be appropriate!
+
+## How many PCs should I concern myself with?
+
+```{r, echo=FALSE, out.width='75%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.016.jpeg")
+```
+
+## How do I interpret the PCs?
+
+- One of the most difficult problems - what are the latent variables captured by the PCs??
+- The eigenvectors provide the coefficients (cj’s) for each variable in the linear combination for each component.
+- The farther each coefficient is from zero, the greater the contribution that variable makes to that component.
+- Component loadings are simple correlations (using Pearson’s r) between the components and the original variables
+
+
+## How do I interpret the PCs?
+
+- High loadings indicate that a variable is strongly correlated with a particular component (can be either positive or negative).
+- The loadings and the coefficients will show a similar patterns, but different values.
+- Ideally, we would like to have each variable load strongly on only one component, and the rest of the loadings are close to plus or minus one, or zero.
+- Usually this ideal situation is not met initially and another rotation may be needed to aid in interpretation.
+
+## How do I interpret the PCs?
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.019.jpeg")
+```
+
+
+## Secondary rotation of PCs
+
+- A common scenario is where numerous variables load moderately on each component.
+- This can be sometimes alleviated by a secondary rotation of the components after the initial PCA.
+- The aim of this additional rotation is to obtain a more simple structure, with the coefficients within a component as close to |one| or zero as possible.
+- Rotation often improves the interpretability of the PCA extracted components.
+
+## Secondary rotation of PCs
+
+- Orthogonal and oblique rotation methods are both possible.
+- orthogonal - keeps the PCs completely independent of one another
+- oblique - deviates from orthogonality just slightly if it helps with the rotation
+- varimax, quartimax, equimax are all orthogonal methods.
+- Note - orthogonal rotation doesn’t change the relationship of variables or objects to one another in any way.
+
+## Assumptions of PCs
+
+- Linear relationships among variables - transformations help!
+- ML estimation of eigenvalues and eigenvectors don’t have any distributional assumptions, but the confidence intervals do assume normality of residuals.
+- Multivariate outliers can be a problem, and can be identified via Mahalanobis distances as before.
+- Missing data are a real problem (as with all multivariate analyses), and one of the approaches (removal, imputation, EM) is required.
+
+## Assumptions of PCs
+- ROBUST PCA - use Spearman’s rank to form a robust correlation matrix.
+- We’ll learn other robust approaches next week with multidimensional scaling.
+- Mahalanobis Distance: the square root of the distance in multivariate space of the observation from the centroid. 
+- Standardized by the “width” of the distribution in the same direction as the observation.
+
+## Mahalanobis Distance
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.020.jpeg")
+```
+
+# R Interlude
+
+## R Interlude
+- First, read in the raw data set of wine samples.
+- Note that there are 14 variables, the first column is a grouping variable for vineyard.
+- The rest of the variables are chemical concentrations measured from the wine.
+
+```{r, echo=TRUE, eval=FALSE}
+wine_raw <- read.table('wine.tsv', header = T, sep = ‘\t')
+head (wine_raw)
+```
+
+## R Interlude
+- Step one: examine some pairwise plots to see if there is any correlation structure.
+- You can even do individual bivariate plots and label points by vineyard grouping.
+
+```{r, echo=TRUE, eval=FALSE}
+plot(wine_raw$C3, wine_raw$C4)
+text(wine_raw$C3, wine_raw$C4, wine_raw$Vineyard, cex=0.7, pos=4, col=“blue")
+```
+
+```{r, echo=TRUE, eval=FALSE}
+Or label the different vineyards by color (or shape if you want).
+plot(wine_raw$C3, wine_raw$C4, pch=19, col=ifelse(wine_raw$Vineyard==1, "blue",
+                                       ifelse(wine_raw$Vineyard==2,"green","darkred")))
+```
+
+## R Interlude
+
+- Now calculate the summary statistics for the multivariate data.
+- This allows you to grasp quickly whether they have the similar means and variances.
+
+```{r, echo=TRUE, eval=FALSE}
+sapply(wine_raw[,2:14], mean)
+sapply(wine_raw[,2:14], sd)
+```
+
+## R Interlude
+
+- Since they don’t, we can standardize the data.
+
+```{r, echo=TRUE, eval=FALSE}
+wine_stand <- as.data.frame(scale(wine_raw[,2:14]))
+head(wine_stand)
+sapply(wine_stand[,1:13], mean)
+sapply(wine_stand[,1:13], sd)
+```
+
+## R Interlude
+- OK, time to run the principal component analysis:
+
+```{r, echo=TRUE, eval=FALSE}
+wine_PCA <- princomp(wine_raw, scores = T, cor = T)
+```
+
+- After the PCA is run, you need to save the results to a new object in which you can find the new data.
+- Look at the wine_PCA file. What new types of data are in this file, and how do you index them?
+- Make sure that you know what the 'scores' and 'cor' arguments mean.
+- Try running the analysis with cor = F. What happens?
+- Compare this result to running the PCA on the standardized data.
+
+## R Interlude
+- Next, let's analyze the data using a scree plot
+.
+```{r, echo=TRUE, eval=FALSE}
+plot(wine_PCA)
+```
+
+- We can now print the loadings of the new PCs.
+
+```{r, echo=TRUE, eval=FALSE}
+wine_PCA$loadings
+```
+
+And, let's print the biplot of the data.
+```{r, echo=TRUE, eval=FALSE}
+biplot(wine_PCA)
+```
+
+
+## R Interlude
+
+Lastly, let's look at the scores of the original objects based on our new variables.
+
+```{r, echo=TRUE, eval=FALSE}
+y <- wine_PCA$scores
+head(y)
+```
+
+- Could write these to a file if we wanted.
+- Note - here is a different function for performing the PCA, but run it on both the raw and standardized data.
+
+```{r, echo=TRUE, eval=FALSE}
+wine_PCA_2 <- prcomp(wine_raw)
+plot (wine_PCA_2)
+wine_PCA_3 <- prcomp(wine_stand)
+plot (wine_PCA_3)
+```
+
+
+## R Interlude
+If you have time - 
+
+- First, think of a good way to visualize the loadings and scores.
+- hints: 
+    - Want to compare loadings within a given PC.
+    - Want to compare scores among observations, usually for just 1 or 2 PCs at a time.
+
+- Go back to your single-factor ANOVA examples, and run this type of analysis for the first 2 PCs. Because you have 3 factor levels, set up contrasts as you see fit.
+
+- OK, now practice by performing a PCA on one of the RNAseq.tsv files.
+
+
+
+
+
