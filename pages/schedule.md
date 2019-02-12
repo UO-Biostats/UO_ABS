@@ -47,12 +47,14 @@ Week 15 (*2/4, Bill*)
 : Linear algebra, latent factor analysis, intro to multivariate
 
     * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_15_Lecture.slides.html)
-    - Reading: **(Otto and Day, Linear Algebra Primer; Kruschke, ch 15)**
+    - Reading: **(Otto and Day, Linear Algebra Primer; Quinn & Keogh, ch 15)**
     - [Homework 5](), due 2/14.
 
 Week 16 (*2/11, Bill*)
 
-: Factor/PCA/PCoA.
+: Factor/PCA/PCoA/MDS
+    * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_16a_Lecture.slides.html)
+    - Reading: **(Quinn & Keogh, ch 17, 18)**
 
 Week 17 (*2/18, Bill*)
 
