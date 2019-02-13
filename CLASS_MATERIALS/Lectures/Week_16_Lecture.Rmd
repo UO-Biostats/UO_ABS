@@ -233,11 +233,9 @@ $$F_{ik} = c_{1k}y_{i1} + c_{2k}y_{i2} + c_{3k}y_{i3} + c_{4k}y_{i4} + ... + c_{
 
 
 
-
-
 # R Interlude - Finish PCA Analysis
 
-## R Interlude
+## R Interlude - Principal Components Analysis
 - First, read in the raw data set of wine samples.
 - Note that there are 14 variables, the first column is a grouping variable for vineyard.
 - The rest of the variables are chemical concentrations measured from the wine.
@@ -348,7 +346,6 @@ If you have time -
 - OK, now practice by performing a PCA on one of the RNAseq.tsv files.
 
 
-____________________
 
 # Principal Coordinate Analysis (PCoA) and Multidimensional Scaling (MDS)
 
@@ -362,26 +359,28 @@ ____________________
     - because we’re using linear models as we did in PCA
 - For example, the data are normally distributed, equal variances, etc….
 
-## Multivariate distance and dissimilarity indices and metrics
+## Multivariate distance and dissimilarity measures and metrics
 
 - Numerous dissimilarity measures exist, and the preferred ones are those that **most closely represent** biologically meaningful differences between objects.
 - The dissimilarities are often represented by an n-by-n dissimilarity matrix.
 - Difficulties arise when variables are measured on very different scales or when some of the variables include a lot of zero values.
     - Some dissimilarity indices are metric (the distance scale has meaning)
     - non metric (only the ordering matters).
+    
+## Multivariate distance and dissimilarity measures and metrics
 - PCoA is also called **classical multidimensional scaling** or **metric multidimensional scaling**. 
 - The major benefit of PCoA is the ability to choose a different distance measure. 
 - When Euclidean distance is used, PCoA is the same as PCA.
 
 ## Dissimilarity indices for continuous variables
 
-```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+```{r, echo=FALSE, out.width='50%', fig.asp=.75, fig.align='center'}
 knitr::include_graphics("images/multi.021.jpeg")
 ```
 
 ## Example of Euclidean distances among objects
 
-```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+```{r, echo=FALSE, out.width='50%', fig.asp=.75, fig.align='center'}
 knitr::include_graphics("images/multi.022.jpeg")
 ```
 
@@ -394,7 +393,7 @@ knitr::include_graphics("images/multi.022.jpeg")
 ## PCoA Analysis steps
 
 - Closely related to PCA by using a **metric dissimilarity**
-- Difference is that it starts with an **n-by-n matrix** of object dissimilarities
+- Starts with an **n-by-n matrix** of object dissimilarities
 - The n-by-n matrix is transformed and then subjected to eigenanalysis 
 - As in PCA, 
     - **most of the information** will be in the first few dimensions
@@ -404,22 +403,26 @@ knitr::include_graphics("images/multi.022.jpeg")
 
 __________________________
 
-# R Interlude
+# R Interlude - Principal Coordinate Analysis (PCoA)
 
 ## R Interlude
 
-- PCoA is a distance-based ordination method that can be performed via the capscale() function in VEGAN. 
-- You can also use cmdscale() in the base installation, but you will need to produce a distance matrix from the original data. 
-- PCoA is also called classical multidimensional scaling or metric multidimensional scaling. 
-- The major benefit of PCoA is the ability to choose a different distance measure. When Euclidean distance is used, PCoA is the same as PCA.
+- Download the VEGAN Package
+- We will use this package to reanalyze the ‘Wine’ dataset using PCoA instead of PCA
+- If you have time, go back to some of the earlier RNAseq datasets in the term and analyze them using both PCA and PCoA in VEGAN
+
 
 ## R Interlude
-The capscale() function is designed for another purpose, so the syntax is a bit different than the other ordination methods, but it can be used to perform PCoA:
+
+- PCoA is a distance-based ordination method that can be performed via the `capscale()` function in the package `VEGAN`. 
+- You can also use `cmdscale()` in the base installation, but you will need to produce a distance matrix from the original data. 
+- The `capscale()` function is designed for another purpose, so the syntax is a bit different than the other ordination methods, but it can be used to perform PCoA:
 
 ```{r, eval=FALSE, echo=TRUE}
 PCoA.res<-capscale(dataframe~1,distance="bray")
 ```
 
+## R Interlude
 - must specify dataframe~1 (where dataframe is the sample/variable data matrix) to perform PCoA
 - must specify a distance from distances provided in vegdist()
 
@@ -430,45 +433,27 @@ plot(PCoA.res)
 ```
 
 ## R Interlude
+
+- The `vegdist()` function has more distances, including some more applicable to (paleo)ecological data:
+- Distances available in `vegdist()` are: "manhattan", "euclidean", "canberra", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup" , "binomial" or "chao" and the default is bray or Bray-Curtis.
+- Try using the different distances in `vegdist` to see how it affects your results
+
+
+## R Interlude
 - This function is part of the basic R installation. 
 - Before you run the function, you will need to have a data frame containing only numerical data (there can be row names). 
 - The default arrangement is to have the samples (or sites) in rows and the measured variables (or counts) in columns. 
 - You can transpose a data frame (or matrix)  swap the rows to columns and vice versa  using the transpose function t():
 
 ```{r, eval=FALSE, echo=TRUE}
-transposed.frame<-t(dataframe)
+transposed.frame <- t(dataframe)
 ```
 - transposes data frame so rows become columns and vice versa
 
-## R Interlude
 
-- The default setting for the PCA prcomp() function performs ordination using the covariance matrix, for example:
+# Multidimensional Scaling (MDS)
 
-```{r, eval=FALSE, echo=TRUE}
-PCA.res<-prcomp(data.frame) 
-```
-
-- where data.frame is the name of the data frame variable
-- If you want to use the correlation matrix (for example, when the variables are measured in different units or when differences in their variances are not important for interpretation), specify:
-
-```{r, eval=FALSE, echo=TRUE}
-PCA.res<-prcomp(data.frame, scale.=T)
-```
-
-
-## R Interlude
-- You should store the results as a variable, an object of class prcomp (dont worry about what class means) that contains specific items. 
-- Most of the time you will want to plot the results manually using the values provided, to customize the sample colors and other parameters, but to get a quick plot you can use the biplot() command:
-
-```{r, eval=FALSE, echo=TRUE}
-biplot(PCA.res)
-names(PCA.res)
-summary(PCA.res)
-```
-__________________________
-
-# Multidimensional Scaling (MDS and nMDS)
-## Multidimensional Scaling (MDS and nMDS)
+## Multidimensional Scaling (MDS)
 
 - Dissimilarity indices measure how different objects are and represent multivariate distance - how far apart they are in multidimensional space.
 - Principal Component Analysis (PCA), Principal Coordinate Analysis (PCoA) and Correspondence Analysis (CA) use some form of resemblance measure.
@@ -543,13 +528,13 @@ knitr::include_graphics("images/multi.025.jpeg")
 
 ## Scaling plots or ordinations
 
-```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+```{r, echo=FALSE, out.width='70%', fig.asp=.75, fig.align='center'}
 knitr::include_graphics("images/multi.026.jpeg")
 ```
 
 ## Testing hypotheses in MDS
 
-What if we have factor variables that we’d like to use in an analysis?
+- What if we have factor variables that we’d like to use in an analysis?
 
 - ANOVA on PC scores
 - MANOVA on the original variables
@@ -580,23 +565,7 @@ ____________________
 
 ## R Interlude
 
-- VEGAN is a very useful package written for R
-- Primarily designed for ecological data analysis
-- We actually use it quite a bit for genomic data such as RNA-seq data.
-- Analyzing the distribution and abundance of species in space and time is surprisingly similar to the distribution of gene transcripts in space and time.
-- As a reference, find the full VEGAN manual in our course Repo 
-- PCoA is a distance-based ordination method that can be performed via the `capscale()` function in VEGAN. 
-- You can also use `cmdscale()` in the base installation, but you will need to produce a distance matrix from the original data. 
-
-## R Interlude
-
-- First off, make sure you installed the vegan package with all dependencies.
-
-```{r, eval=FALSE, echo=TRUE}
-install.packages(“vegan”)
-library(vegan)
-```
-
+- Use VEGAN again
 - We'll analyze a yeast RNAseq dataset with samples as rows and genes as columns.
 
 ```{r, eval=FALSE, echo=TRUE}
@@ -614,7 +583,7 @@ head(yeast_data)
 
 ## R Interlude
 
-1. We'll first turn the raw data matrix into a dissimilarity matrix for all samples. The `decostand` function is a form of normalization.
+- We'll first turn the raw data matrix into a dissimilarity matrix for all samples. The `decostand` function is a form of normalization.
 
 ```{r, eval=FALSE, echo=TRUE}
 vare.dis <- vegdist(decostand(yeast_data, "hell"), "euclidean")
@@ -623,7 +592,7 @@ print (vare.dis)
 
 ## R Interlude
 
-2. Now we'll perform the clustering of the samples using multidimensional scaling. The goal of this is to represent complex data in lower dimensions without losing too much information. Take a look at the 'stress' values of moving from a higher to lower dimensionality of the data. Usually a value of 0.15 or lower is considered acceptable and indicates a good model fit.
+- Now we'll perform the clustering of the samples using multidimensional scaling. The goal of this is to represent complex data in lower dimensions without losing too much information. Take a look at the 'stress' values of moving from a higher to lower dimensionality of the data. Usually a value of 0.15 or lower is considered acceptable and indicates a good model fit.
 
 ```{r, eval=FALSE, echo=TRUE}
 vare.mds0 <- monoMDS(vare.dis)
@@ -632,7 +601,7 @@ print (vare.mds0)
 
 ## R Interlude
 
-3. Let's take a look at how the dissimilarities among samples maps onto the ordination distance. Notice that there is a fit with the data, but we're no longer assuming consistent linearity over the entire data set.
+- Let's take a look at how the dissimilarities among samples maps onto the ordination distance. Notice that there is a fit with the data, but we're no longer assuming consistent linearity over the entire data set.
 
 ```{r, eval=FALSE, echo=TRUE}
 stressplot(vare.mds0, vare.dis)
@@ -642,7 +611,7 @@ stressplot(vare.mds0, vare.dis)
 
 ## R Interlude
 
-4. Now let's look at the grouping of the samples in this lower dimensional space. 
+- Now let's look at the grouping of the samples in this lower dimensional space. 
 
 ```{r, eval=FALSE, echo=TRUE}
 ordiplot (vare.mds0, type = "t")
@@ -652,7 +621,7 @@ ordiplot (vare.mds0, type = "t")
 
 ## R Interlude
 
-5. Now we can rerun the ordination and add all of the data (genes) as well to the plot.
+- Now we can rerun the ordination and add all of the data (genes) as well to the plot.
 
 ```{r, eval=FALSE, echo=TRUE}
 vare.mds <- metaMDS(yeast_data, trace = F)
@@ -663,7 +632,7 @@ plot (vare.mds, type = "t")
 
 ## R Interlude
 
-6. We can run a PCA on our data as well, which is a *metric* analysis that utilizes Euclidean distances
+- We can run a PCA on our data as well, which is a *metric* analysis that utilizes Euclidean distances
 
 ```{r, eval=FALSE, echo=TRUE}
 vare.pca <- rda(yeast_data, scale = TRUE)
@@ -693,7 +662,7 @@ biplot (vare.pca, scaling = 1)
 
 ## R Interlude
 
-We can use the dissimilarity matrices to perform hierarchical clustering. Try both the non-normalized (clus.dis1) and normalized (clus.dis2) distances.
+- We can use the dissimilarity matrices to perform hierarchical clustering. Try both the non-normalized (clus.dis1) and normalized (clus.dis2) distances.
 
 ```{r, eval=FALSE, echo=TRUE}
 clus.dis1 <- vegdist(yeast_data)
@@ -707,7 +676,7 @@ plot(cluster1)
 
 ## R Interlude
 
-Now, try these different versions of clustering. What is different about them?
+- Now, try these different versions of clustering. What is different about them?
 
 ```{r, eval=FALSE, echo=TRUE}
 cluster_complete <- hclust(clus.dis1, "complete")
@@ -721,7 +690,7 @@ plot(cluster_average)
 
 ## R Interlude
 
-Lastly, let's ask R to cut the tree into several clusters for us. I've written it as three. Try it with different numbers of clusters and the different types of clustering from above.
+- Lastly, let's ask R to cut the tree into several clusters for us. I've written it as three. Try it with different numbers of clusters and the different types of clustering from above.
 
 ```{r, eval=FALSE, echo=TRUE}
 grp <- cutree(cluster1, 4)
