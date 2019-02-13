@@ -423,8 +423,9 @@ PCoA.res<-capscale(dataframe~1,distance="bray")
 ```
 
 ## R Interlude
+
 - must specify dataframe~1 (where dataframe is the sample/variable data matrix) to perform PCoA
-- must specify a distance from distances provided in vegdist()
+- must specify a distance from distances provided in `vegdist()`
 
 ```{r, eval=FALSE, echo=TRUE}
 summary(PCoA.res)
@@ -436,12 +437,10 @@ plot(PCoA.res)
 
 - The `vegdist()` function has more distances, including some more applicable to (paleo)ecological data:
 - Distances available in `vegdist()` are: "manhattan", "euclidean", "canberra", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup" , "binomial" or "chao" and the default is bray or Bray-Curtis.
-- Try using the different distances in `vegdist` to see how it affects your results
-
+- Try using the different distances in `vegdist()` to see how it affects your results
 
 ## R Interlude
-- This function is part of the basic R installation. 
-- Before you run the function, you will need to have a data frame containing only numerical data (there can be row names). 
+- If you use the `cmdscale` functions as part of the basic R installation you will need to have a data frame containing only numerical data (there can be row names). 
 - The default arrangement is to have the samples (or sites) in rows and the measured variables (or counts) in columns. 
 - You can transpose a data frame (or matrix)  swap the rows to columns and vice versa  using the transpose function t():
 
@@ -449,6 +448,9 @@ plot(PCoA.res)
 transposed.frame <- t(dataframe)
 ```
 - transposes data frame so rows become columns and vice versa
+
+
+
 
 
 # Multidimensional Scaling (MDS)

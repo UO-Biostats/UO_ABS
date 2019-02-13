@@ -2230,30 +2230,29 @@ document.getElementsByTagName('head')[0].appendChild(style);
 </section><section id="r-interlude-9" class="slide level2">
 <h2>R Interlude</h2>
 <ul>
-<li>must specify dataframe~1 (where dataframe is the sample/variable data matrix) to perform PCoA</li>
-<li>must specify a distance from distances provided in vegdist()</li>
+<li>If you use the <code>cmdscale</code> functions as part of the basic R installation you will need to have a data frame containing only numerical data (there can be row names).</li>
+<li>The default arrangement is to have the samples (or sites) in rows and the measured variables (or counts) in columns.</li>
+<li>You can transpose a data frame (or matrix) swap the rows to columns and vice versa using the transpose function t():</li>
 </ul>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">summary</span>(PCoA.res)</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">scores</span>(PCoA.res,<span class="dt">display=</span>sites)</a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="kw">plot</span>(PCoA.res)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">transposed.frame &lt;-<span class="st"> </span><span class="kw">t</span>(dataframe)</a></code></pre></div>
+<ul>
+<li>transposes data frame so rows become columns and vice versa</li>
+</ul>
 </section><section id="r-interlude-10" class="slide level2">
+<h2>R Interlude</h2>
+<ul>
+<li>must specify dataframe~1 (where dataframe is the sample/variable data matrix) to perform PCoA</li>
+<li>must specify a distance from distances provided in <code>vegdist()</code></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">summary</span>(PCoA.res)</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw">scores</span>(PCoA.res,<span class="dt">display=</span>sites)</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="kw">plot</span>(PCoA.res)</a></code></pre></div>
+</section><section id="r-interlude-11" class="slide level2">
 <h2>R Interlude</h2>
 <ul>
 <li>The <code>vegdist()</code> function has more distances, including some more applicable to (paleo)ecological data:</li>
 <li>Distances available in <code>vegdist()</code> are: “manhattan”, “euclidean”, “canberra”, “bray”, “kulczynski”, “jaccard”, “gower”, “altGower”, “morisita”, “horn”, “mountford”, “raup” , “binomial” or “chao” and the default is bray or Bray-Curtis.</li>
-<li>Try using the different distances in <code>vegdist</code> to see how it affects your results</li>
-</ul>
-</section><section id="r-interlude-11" class="slide level2">
-<h2>R Interlude</h2>
-<ul>
-<li>This function is part of the basic R installation.</li>
-<li>Before you run the function, you will need to have a data frame containing only numerical data (there can be row names).</li>
-<li>The default arrangement is to have the samples (or sites) in rows and the measured variables (or counts) in columns.</li>
-<li>You can transpose a data frame (or matrix) swap the rows to columns and vice versa using the transpose function t():</li>
-</ul>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">transposed.frame &lt;-<span class="st"> </span><span class="kw">t</span>(dataframe)</a></code></pre></div>
-<ul>
-<li>transposes data frame so rows become columns and vice versa</li>
+<li>Try using the different distances in <code>vegdist()</code> to see how it affects your results</li>
 </ul>
 </section></section>
 <section><section id="multidimensional-scaling-mds" class="title-slide slide level1"><h1>Multidimensional Scaling (MDS)</h1></section><section id="multidimensional-scaling-mds-1" class="slide level2">
