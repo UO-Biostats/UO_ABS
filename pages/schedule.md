@@ -55,13 +55,14 @@ Week 16 (*2/11, Bill*)
 : Factor/PCA/PCoA/MDS
     * [Slides](../CLASS_MATERIALS/Lectures/Week_16_Lecture.slides.html)
     - Reading: **(Quinn & Keogh, ch 17, 18)**
-    - [Homework 6](), due 2/22.
+    - [Homework 6](), due 2/23.
 
 Week 17 (*2/18, Bill*)
 
-: Linear discriminant analysis and/or MANOVA.
-	* [Slides](../CLASS_MATERIALS/Lectures/Week_16_Lecture.slides.html)
+: MANOVA and Discriminant Function Analysis (DFA)
+	* [Slides](../CLASS_MATERIALS/Lectures/Week_17_Lecture.slides.html)
 	- Reading: **(Quinn & Keogh, ch 16)**
+  - [Homework 7](), due 3/2.
 
 Week 18 (*2/25, Peter*)
 

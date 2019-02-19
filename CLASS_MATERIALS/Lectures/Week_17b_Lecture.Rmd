@@ -1,0 +1,403 @@
+---
+title: "Week 17 - MANOVA and DFA"
+author: ""
+date: "February 19 & 21, 2019"
+output: revealjs::revealjs_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Goals for this week
+
+- Finish PCoA and NMDS
+- Introduce Clustering
+- Multiple Analysis of Variance (MANOVA)
+- Discriminant Function Analysis (DFA)
+
+
+# Multivariate Analysis of Variance (MANOVA) and Discriminant Function Analysis (DFA)
+
+## Conceptual overview of MANOVA & DFA
+
+- Both focus on the analysis of a factor variable, but now using multiple continuous variables
+
+- **MANOVA** - explicitly test the difference between levels of a factor(s) using the first discriminant function
+
+- **DFA** - defines the set of linear discriminant functions that most clearly differentiate the levels of a factor variable in multivariate space 
+
+## Conceptual overview of MANOVA & DFA
+
+image
+
+## Why use MANOVA?
+
+- When we’re interested in the relationship of two or more response variables and one or more predictor variables
+- If we’re interested in each of the responses, then univariate ANOVA is probably more appropriate
+- However, if we are interested whether there is a difference between the groups when all of the response variables are considered simultaneously, MANOVA is more appropriate
+
+## Why use MANOVA?
+
+- Two research questions
+    - Are there differences between groups based on all the response variables taken together?
+    - Can we successfully classify new observations?
+- The Hypothesis is now that there are group effects on the combinations of variables by comparing group centroids for two or more variables
+
+## MANOVA - Main utility is for hypothesis testing
+
+- Ask whether specific predictor variables influence the average position of observations in multi-dimensional space. 
+- This means we compare group centroids, as opposed to group means (as in ANOVA).
+- Care about the overall effect on all response variables considered simultaneously, not one by one.
+- MANOVA framework retains study design flexibility
+- single-factor, multi-factor, nested-factor, factorial
+
+## Single Factor MANOVA
+
+- The MANOVA uses the linear combination (z) of the p response variables which maximizes the ratio of between and within group variances of z
+- Remember - we now need to use a multivariate measure of within and among group variances
+- This linear combination is also called a Discriminant Function
+- Remember that each ‘c’ is a coefficient that is a weighting of the original variable
+- In the case of MANOVA, it uses the first Discriminant Function (DF1)
+- Each z is now a new score for each object, and thus each DF is a new variable
+
+## Single Factor MANOVA
+
+- The determination of this linear combination occurs through the maximization of the ratio of between-group and within-group variances
+- The between-groups, within-groups and total SS used in ANOVA are replaced by sums-of-squares and sums-of-cross-products matrices (S)
+- One matrix is formed for between groups (the H matrix)
+- Another matrix is formed within groups (the E matrix)
+- And the final matrix is the total (the T matrix)
+
+## Single Factor MANOVA
+
+- Use matrix algebra to divide the H matrix by the E matrix
+- The resulting matrix product is decomposed into eigenvalues and eigenvectors to determine how much of the between group variation is explained by the new variables
+- The linear combination that produces the largest eigenvalue is the combination that maximizes the ratio of between-group and within-group variance
+- The eigenvector is the vector of coefficients or weights for that linear combination
+
+## Single Factor MANOVA - linear model notation
+
+EQUATIONS FROM SLIDE
+
+## Single Factor MANOVA - hypothesis tests
+
+- The null hypothesis is that the effect of the group variable is zero with respect to the linear combination of original variables that are encapsulated in the new derived variable
+- The null can be tested using test statistics based on one of the measures of variance in the matrix (either the determinant or the trace)
+- Like in ANOVA we use the ratio of “between-groups” variance matrix to “within-groups” variance matrix.
+- If this ratio is high, the variance explained by grouping according to the factor levels of our predictor variable is meaningful. If low, we’re not explaining additional variation in our latent variable by including the predictor in the model.
+
+## Single Factor MANOVA - Statistics
+
+- Wilk’s lambda
+- Hotelling-Lawley trace
+- Pillai’s Trace
+- Roy’s Largest root
+- All of these are interpreted the same way as other statistics - larger statistic values and smaller p-values are more significant
+- Wilk’s, Hotelling’s and Pillai’s produce identical F tests when there are only two groups and become Hotelling’s T2 statistic
+
+## MANOVA results table
+
+FIGURE
+
+## MANOVA results table
+
+FIGURE
+
+## MANOVA contrasts
+
+- a priori contrasts can be performed as before - analogous to planned contrasts in single factor ANOVA
+- Unplanned, post-hoc comparisons of group means can be more difficult
+- Univariate ANOVA
+- Step-down analysis
+- Discriminant Function investigation (look at the coefficients)
+
+## Single Factor MANOVA - Assumptions
+
+- normality - less important, especially for Pillai’s trace test statistic
+- homogeneity of variance (and covariance) - important, but tricky
+- outliers - multivariate tests are very sensitive to these
+
+- Pillai’s trace is the most robust to deviation of homogeneity of variance
+- Can use Mahalanobis distance to detect outliers
+
+## Data standardization
+
+- Covariances and correlations measure the linear relationships among variables and therefore assumptions of normality and homogeneity of variance are important in multivariate statistics
+- These can be tested quite readily as you’ve learned previously and transformations might be important
+- Data on very different scales can also be a problem
+- Centering the data subtracts the mean from all variable values so the mean becomes zero
+- Ranging divides each variable by its standard deviation so that all variables have a mean of zero and a unit s.d.
+- Some variables cannot be standardized (e.g.highly skewed abundance data). In this case converting to presence or absence (binary) data might be the most appropriate
+
+## Data Standardization (pg 67-68)
+
+FIGURE
+
+## Outliers and Missing Data
+
+- Outliers in multivariate space can be particularly misleading but difficult to detect
+- Can use Mahalanobis Distance, which is the square root of the distance in multivariate space of the object from the centroid
+- Options - transform or remove
+
+## Single Factor MANOVA - Assumptions
+
+- Mahalanobis Distance: the square root of the distance in multivariate space of the observation from the centroid. 
+- Standardized by the “width” of the distribution in the same direction as the observation.
+
+## Single Factor MANOVA - Assumptions
+
+FIGURE
+
+## Single Factor MANOVA - Assumptions
+
+FIGURE
+
+## Outliers and Missing Data
+
+- Missing observations are particularly vexing for multivariate analyses
+    - MCAR - missing completely at random
+    - MAR - missing at random
+    - MBC - missing but correlated
+- Three approaches
+- Deletion - just remove the entire object from the data set
+- Imputation - infer the value based upon other values (mean from other values, prediction from regression line, hot deck - replace the value with the value from another object with other values for other variables)
+- Maximum Likelihood and Expectation Maximization
+
+## R interlude - MANOVA
+
+clay_data <- read.table('Clays_RNAseq.tsv', header=T, sep=‘\t')
+head(clay_data)
+
+Continuous response variables 
+geneA <- clay_data$Gene110 
+geneB <- clay_data$Gene147 
+geneC <- clay_data$Gene292 
+
+Do these variables co-vary??? (try some scatterplots)
+
+Detect outliers based on Mahalanobis distances
+install.packages('mvoutlier')
+library(mvoutlier)
+
+outliers <- aq.plot(clay_data[c("Gene110","Gene147","Gene292")])
+outliers # show list of outliers
+
+
+Test for multivariate normality
+install.packages('mvnormtest')
+library(mvnormtest)
+
+three_genes <- t(as.matrix(cbind(clay_data$Gene110,clay_data$Gene147,
+ clay_data$Gene292)))
+mshapiro.test(three_genes)#Are our data multivariate normal?
+
+specify main effect 1 
+microbiota <- clay_data$Microbiota
+
+
+Fit the MANOVA model
+clay_manova <- manova(cbind(geneA, geneB, geneC) ~ microbiota)
+
+summary(clay_manova, test = "Pillai")
+summary(clay_manova, test = "Wilks")
+summary(clay_manova, test = "Hotelling-Lawley")
+summary(clay_manova, test = “Roy")
+
+Are the F-ratios and p-values different?
+
+
+summary.aov(clay_manova)
+
+What does summary.aov() do, and what does this tell you about the data?
+
+Now change the main effect variable around so that it has the four microbiota&genotype levels.
+
+
+New effect (“genotype-microbiota combination”): 
+geno_micro <- clay_data$Geno.Micro
+
+Fit the MANOVA model
+clay_manova <- manova(cbind(geneA, geneB, geneC) ~ geno_micro)
+
+summary(clay_manova, test = "Pillai")
+summary(clay_manova, test = "Wilks")
+summary(clay_manova, test = "Hotelling-Lawley")
+summary(clay_manova, test = "Roy")
+
+summary.aov(clay_manova)
+
+
+Any differences relative to before?
+
+Now change the model around so that it is a factorial ANOVA with microbiota ## and genotype as separate factors.
+
+
+Keep factors separate: 
+2 main effects 
+microbiota <- clay_data$Microbiota
+genotype <- clay_data$Genotype
+
+Fit the factorial MANOVA model
+clay_manova <- manova(cbind(geneA, geneB, geneC) ~ genotype*microbiota)
+
+summary(clay_manova, test = "Pillai")
+summary(clay_manova, test = "Wilks")
+summary(clay_manova, test = "Hotelling-Lawley")
+summary(clay_manova, test = "Roy")
+
+summary.aov(clay_manova)
+
+
+Any differences relative to before?
+
+Now include 10 response variables, re-evaluate assumptions, and re-fit the ## factorial model.
+
+
+
+Fit the MANOVA model
+clay_manova <- manova(cbind(clay_data$Gene5,clay_data$Gene6,
+clay_data$Gene7,clay_data$Gene8,clay_data$Gene9,
+clay_data$Gene10,clay_data$Gene11,clay_data$Gene12,
+                clay_data$Gene13,clay_data$Gene14)~genotype*microbiota)
+
+
+summary(clay_manova, test = "Pillai")
+summary(clay_manova, test = "Wilks")
+summary(clay_manova, test = "Hotelling-Lawley")
+summary(clay_manova, test = "Roy")
+
+
+summary.aov(clay_manova)
+
+
+# Discriminant Function Analysis (DFA)
+
+## Conceptual overview of MANOVA & DFA
+
+- Both focus on the analysis of a factor variable
+
+- MANOVA - explicitly test the difference between levels of the factor using the first discriminant function
+
+- DFA - defines the set of linear discriminant functions that most clearly differentiate two groups in multivariate space (also called Linear Discriminant Analysis - LDA)
+
+## Conceptual overview of MANOVA & DFA
+
+FIGURE
+
+## Steps involved in Discriminant Function Analysis (DFA)
+
+- 1. Run MANOVA to test for a group difference (If no sig. difference, DFA will not be useful for separating groups)
+- 2. Calculate Linear Discriminant Functions (LDF) scores (Evaluate the distributions of these scores for different factor levels)
+- 3. Classification of observations into groups
+    - Generate conditional probabilities for each observation belonging to  a given group.
+    - Possible to “train” LDF with one data set, and then assign individuals from a new data set to factor levels.
+
+## Steps involved in Discriminant Function Analysis (DFA)
+
+FIGURE
+
+## Discriminant Function Scores
+
+FIGURE
+
+## Pairwise latent variable plots
+
+FIGURE
+
+## R INTERLUDE - Linear Discriminant Analysis (LDA) (Using the same RNA-seq data)
+
+## Linear Discriminant Analysis (LDA or also known as DFA)
+clay_data <- read.table('Clays_RNAseq.tsv', header=T, sep=‘\t')
+
+## Continuous response variables 
+geneA <- clay_data$Gene110 
+geneB <- clay_data$Gene147 
+geneC <- clay_data$Gene292 
+
+## New effect (“genotype-microbiota combination”): 
+geno_micro <- clay_data$Geno.Micro
+
+library(MASS)
+clay_lda <- lda(geno_micro ~ geneA + geneB + geneC)
+clay_lda
+## What information do the different components of clay_lda contain? 
+
+## Show results focused on first column of the DFA weightings
+clay_lda$scaling[,1]
+
+## Now, repeat the analysis but use the first 100 genes instead of just 3
+clay_data_100 <- clay_data[,6:105]
+clay_lda_100 <- lda(geno_micro~., clay_data_100)
+clay_lda_100
+#Don't worry about the warning
+
+## Now, Let's predict the DF scores for the original objects, based on the 100 genes. 
+predict(clay_lda_100)
+
+## What information does the predict() output contain?
+
+Here we have 200 patients and their prior histology-based diagnoses. There are three diagnoses (“benign,” “sarcoma 1,” and “sarcoma 2”). Also included are data from a panel of 6 qPCR-based biomarkers. 
+
+This set of biomarkers is considered largely congruent with histology for cancer diagnosis, but more accurate. Specifically, the histology approach incorrectly leads to a sarcoma diagnosis (when the tumor is actually benign) about 2% of the time, whereas the biomarker approach has no such problem. 
+
+The goal here is to use DFA to separate sarcoma from benign diagnoses via the 6 biomarkers, but using the prior histology diagnosis as an informative grouping variable. This way we can evaluate whether any of the prior diagnoses may be erroneous.    
+
+## Read in the data
+biomarkers <- read.table('biomarkers.tsv', header=T, sep='\t')
+
+## Specify our 6 response variables
+mark1 <- biomarkers$marker1
+##etc… 
+
+## Specify “diagnosis” as our categorical predictor variable 
+diag <- biomarkers$diagnosis
+
+## First, run a quick MANOVA on the data (as before) to test the hypothesis that 
+## prior diagnosis significantly affects where patients lie in multi-dimensional
+## (biomarker) space…   
+
+
+## Next, use the lda() function to find the discriminant functions.
+## Remember, the algorithm is deriving the “latent” variable(s) that best separate our
+## samples (based on the prior diagnosis) in 6-dimensional space. 
+
+library(MASS)
+diag_lda <- lda(diag ~ mark1 + mark2 + mark3 + mark4 + mark5 + mark6)
+diag_lda
+
+## Show results focused on first column of the LDA weightings
+diag_lda$scaling[,1]
+## Why are there only 2 Linear Discriminant Variables?
+
+## Now, let's predict the LD scores for the original objects (our patients)
+predict(diag_lda)
+## What other information does diag_lda contain?
+
+
+## Now store the LD1 and LD2 scores (the last item in diag_lda) as a new data frame.  
+LD_scores <- as.data.frame(predict(diag_lda)$x)
+
+
+## Make a histogram of the LD scores for the different diagnosis groups.
+ldahist(LD_scores$LD1, biomarkers$diagnosis)#For LD1 
+ldahist(LD_scores$LD2, biomarkers$diagnosis)#For LD2
+## Do you notice anything strange about any of the distributions? 
+
+
+
+## Now make a bivariate plot for DF1 and DF2 with diagnosis groups labeled uniquely.
+LD_scores$diag <- diag#This adds the original diagnosis variable to the LD data frame
+
+plot(LD_scores$LD2~LD_scores$LD1, main="Prior diagnosis groups in 6-D biomarker space”)
+
+## Labeling by group is up to you! (Hint: can set col and/or pch params using ifelse() 
+## functional statements).
+
+
+## Notice anything weird about any observations in the plot???
+## What do they mean???
+
+Let’s say you had a handful of new patients with no prior diagnosis and only the qPCR data from the six biomarkers. Could re-running the LDA with those samples help you make the appropriate diagnoses?
+
+
