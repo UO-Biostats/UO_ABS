@@ -2,12 +2,18 @@
 title: "Week 17 - MANOVA and DFA"
 author: ""
 date: "February 19 & 21, 2019"
-output: revealjs::revealjs_presentation
+output: 
+  revealjs::revealjs_presentation:
+    center: true
+    reveal_options:
+      slideNumber: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+
+# THURSDAY - Finish PCoA and NMDS
 
 ## Goals for this week
 
@@ -91,7 +97,7 @@ __________________________
 
 # R Interlude - Principal Coordinate Analysis (PCoA)
 
-## R Interlude
+## R Interlude - PCoA
 
 - Download the VEGAN Package
     - https://cran.r-project.org/web/packages/vegan/vegan.pdf
@@ -100,7 +106,7 @@ __________________________
 - If you have time, go back to some of the earlier RNAseq datasets in the term and analyze them using both PCA and PCoA in VEGAN
 
 
-## R Interlude
+## R Interlude - PCoA
 
 - PCoA is a distance-based ordination method that can be performed via the `capscale()` function in the package `VEGAN`. 
 - You can also use `cmdscale()` in the base installation, but you would need to produce a distance matrix from the original data. 
@@ -110,7 +116,7 @@ __________________________
 PCoA.res<-capscale(dataframe~1,distance="euclidean")
 ```
 
-## R Interlude
+## R Interlude - PCoA
 
 - must specify dataframe~1 (where dataframe is the sample/variable data matrix) to perform PCoA
 - must specify a distance from distances provided in `vegdist()`
@@ -121,13 +127,14 @@ scores(PCoA.res,display=sites)
 plot(PCoA.res)
 ```
 
-## R Interlude
+## R Interlude - PCoA
 
 - The `vegdist()` function has more distances, including some more applicable to (paleo)ecological data:
 - Distances available in `vegdist()` are: "manhattan", "euclidean", "canberra", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup" , "binomial" or "chao" and the default is bray or Bray-Curtis.
 - Try using the different distances in `vegdist()` to see how it affects your results
 
-## R Interlude
+## R Interlude - PCoA
+
 - If you use the `cmdscale` functions as part of the basic R installation you will need to have a data frame containing only numerical data (there can be row names). 
 - The default arrangement is to have the samples (or sites) in rows and the measured variables (or counts) in columns. 
 - You can transpose a data frame (or matrix)  swap the rows to columns and vice versa  using the transpose function t():
@@ -141,31 +148,30 @@ transposed.frame <- t(dataframe)
 
 # Multidimensional Scaling (MDS)
 
-## MDS goals
+## MDS goals and benefits
 
 - **Data reduction** - reduce a lot of variables to a smaller number of axes that group objects that adequately summarize the original information. 
 - **Scaling** - Reveal patterns in the data - especially among objects - that could not be found by analyzing each variable separately. Directly scales objects based on dissimilarities between them.
 - **Ordination plots** can show these multivariate dissimilarities in lower dimensional space.
 - However, specifically designed to graphically represent relationships **between objects** in multidimensional space, and thus subsequent analysis is more difficult.
-
-## MDS benefits
-
 - MDS is more **flexible** than PCA in being able to use just about any dissimilarity measure among objects, not just Euclidean Distance. 
-- **Nonmetric** multidimensional scaling (NMDS or NMS)  is an ordination technique that **differs** in several ways from nearly all other ordination methods.
+
+## NMDS goals and benefits
+- **Nonmetric** multidimensional scaling (NMDS or NMS) is an ordination technique that **differs** in several ways from nearly all other ordination methods.
 - In NMDS, a small number of axes are **explicitly chosen prior** to the analysis and the data are fitted to those dimensions
-- Most other ordination methods are **analytical**, but MDS is a **numerical** technique that iteratively seeks a solution and stops computation when a solution is found.
+- Most other ordination methods are **analytical**, but NMDS is a **numerical** technique that iteratively seeks a solution and stops computation when a solution is found.
 
-## MDS benefits
+## NMDS goals and benefits
 
-- MDS is not an eigenvalue-eigenvector technique like PCA. As a result, an MDS ordination can be rotated, inverted, or centered to any desired configuration.
-- Unlike other ordination methods, **MDS makes few assumptions about the nature of the data** (e.g. PCA assumes linear relationships) so is well suited for a wide variety of data.
-- MDS also allows **the use of any distance measure** of the samples, unlike other methods which specify particular measures (e.g. Euclidean via covariance or correlation in PCA).
+- NMDS is not an eigenvalue-eigenvector technique like PCA. As a result, an MDS ordination can be rotated, inverted, or centered to any desired configuration.
+- Unlike other ordination methods, **NMDS makes few assumptions about the nature of the data** (e.g. PCA assumes linear relationships) so is well suited for a wide variety of data.
+- NMDS also allows **the use of any distance measure** of the samples, unlike other methods which specify particular measures (e.g. Euclidean via covariance or correlation in PCA).
 
-## MDS drawbacks
+## NMDS goals and benefits
 
-- MDS does suffer from **two principal drawbacks**, although these are becoming less important as computational power increases. 
-- First, MDS is **slow**, particularly for large data sets.
-- Second, because MDS is a **numerical optimization technique**, it can fail to find the true best solution because it can **become stuck on local minima**.
+- NMDS does suffer from **two principal drawbacks**, although these are becoming less important as computational power increases. 
+- First, NMDS is **slow**, particularly for large data sets.
+- Second, because NMDS is a **numerical optimization technique**, it can fail to find the true best solution because it can **become stuck on local minima**.
 
 ## MDS - one big ordination family
 
@@ -336,9 +342,9 @@ knitr::include_graphics("images/multi.031.jpeg")
 
 ____________________
 
-# R Interlude
+# R Interlude - MultiDimensional Scaling
 
-## R Interlude
+## R Interlude - MDS
 
 - Use VEGAN again
 - We'll analyze the yeast RNAseq dataset again with samples as rows and genes as columns.
@@ -348,7 +354,7 @@ yeast_data <- read.table('yeast.tsv', row.names = 1, header = T, sep = '\t')
 head(yeast_data)
 ```
 
-## R Interlude
+## R Interlude - MDS
 
 - Generate a dissimilarity matrix for all samples using `vegdist()`.
 - We use `decostand()` to “normalize,” which accounts for differing total read #s per sample.
@@ -356,7 +362,7 @@ head(yeast_data)
 - The `vegdist()` function has more distances
 - Distances available in vegdist() are: "manhattan", "euclidean", "canberra", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup" , "binomial" or "chao" and the default is bray or Bray-Curtis.
 
-## R Interlude
+## R Interlude - MDS
 
 - Turn the raw data matrix into a dissimilarity matrix
 - The `decostand` function is a form of normalization
@@ -375,7 +381,7 @@ vare.mds0 <- monoMDS(vare.dis)
 print (vare.mds0)
 ```
 
-## R Interlude
+## R Interlude - MDS
 
 - Let's take a look at how the dissimilarities among samples maps onto the ordination distance. Notice that there is a fit with the data, but we're no longer assuming consistent linearity over the entire data set.
 
@@ -385,7 +391,7 @@ stressplot(vare.mds0, vare.dis)
 
 - What does the `R^2` value tell you? Is the model accurately predicting the observed dissimilarity?
 
-## R Interlude
+## R Interlude - MDS
 
 - Now let's look at the grouping of the samples in this lower dimensional space. Any Clustering
 
@@ -400,7 +406,7 @@ vare.mds <- metaMDS(yeast_data, trace = F)
 plot (vare.mds, type = "t")
 ```
 
-## R Interlude
+## R Interlude - MDS
 
 - We can run a PCA on our data as well, which is a *metric* analysis that utilizes Euclidean distances
 
@@ -414,7 +420,7 @@ print (vare.pca)
 - Showing both the locations of the samples and the variables. 
 
 
-## R Interlude
+## R Interlude - MDS
 
 - Try different plots that show one or the other or both
 
@@ -432,7 +438,7 @@ biplot (vare.pca, scaling = -1)
 biplot (vare.pca, scaling = 1)
 ```
 
-## R Interlude
+## R Interlude - MDS
 
 - We can use the dissimilarity matrices to perform hierarchical clustering. 
 - Try both the non-normalized (clus.dis1) and normalized (clus.dis2) distances.
@@ -447,7 +453,7 @@ cluster1 <- hclust(clus.dis1, "single")
 plot(cluster1)
 ```
 
-## R Interlude
+## R Interlude - MDS
 
 - Now, try these different versions of clustering. What is different about them?
 
@@ -461,7 +467,7 @@ cluster_average <- hclust(clus.dis1, "average")
 plot(cluster_average)
 ```
 
-## R Interlude
+## R Interlude - MDS
 
 - Lastly, let's ask R to cut the tree into several clusters for us. 
 - Try it with different numbers of clusters and the different types of clustering from above.
@@ -471,4 +477,470 @@ grp <- cutree(cluster1, 4)
 print (grp)
 ```
 
+
+# THURSDAY - MANOVA and DFA
+
+## Goals for this week
+
+<br>
+
+- Finish PCoA and NMDS
+- Introduce Clustering
+- Multiple Analysis of Variance (MANOVA)
+- Discriminant Function Analysis (DFA)
+
+
+# Multivariate Analysis of Variance (MANOVA) and Discriminant Function Analysis (DFA)
+
+## Conceptual overview of MANOVA & DFA
+
+- Both focus on the analysis of a factor variable but with **multiple continuous response variables**
+
+- **MANOVA** - explicitly test the difference between levels of a factor(s) using the first discriminant function
+
+- **DFA** - defines the set of linear discriminant functions that most clearly differentiate the levels of a factor variable in multivariate space 
+
+- MANOVA focuses on hypothesis testing and DFA is used more for classification
+
+## Conceptual overview of MANOVA & DFA
+
+<br>
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.032.jpeg")
+```
+
+# Multivariate Analysis of Variance (MANOVA)
+
+## Why use MANOVA?
+
+- When we’re interested in the relationship of two or more response variables and one or more predictor variables
+    - If we’re interested in each of the responses, then univariate ANOVA is more appropriate
+    - If we are interested in group differences when all of the response variables are considered simultaneously, MANOVA is more appropriate
+- The Hypothesis is now that there are **group effects** on the combinations of variables by comparing **group centroids** for two or more variables
+
+## Single Factor MANOVA
+
+$$ z_{ik} = constant + c_1y_{i1} + c_2y_{i2} + c_3y_{i3} + ... + c_py_{ip}$$
+
+- MANOVA uses the linear combination (z) of the p response variables that maximizes the ratio of between and within group variances of z
+- This linear combination is also called a Discriminant Function (MANOVA uses DF1)
+- The between-groups, within-groups and total SS used in ANOVA are replaced by sums-of-squares and sums-of-cross-products matrices (**S**)
+- One matrix is formed for between groups (the **H** matrix), nother matrix is formed within groups (the **E** matrix), and the final matrix is the total (the **T** matrix)
+
+## Single Factor MANOVA
+
+- Multiple linear response variables and one predictor factor variable with two or more levels
+- Use matrix algebra to divide the **H** matrix by the **E** matrix
+- The resulting matrix product is decomposed into eigenvalues and eigenvectors to determine how much of the between group variation is explained by the new variables
+- The linear combination that produces the **largest eigenvalue** is the **eigenvector** that maximizes the ratio of between-group and within-group variance
+
+## Single Factor MANOVA - linear model notation
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.034.jpeg")
+```
+
+## Single Factor MANOVA - hypothesis tests
+
+- The null hypothesis is that factor variable effect is zero with respect to the linear combination of response variables
+- The null can be tested using test statistics based on one of the measures of variance in the matrix (either the determinant or the trace)
+- Like in ANOVA we use the ratio of “between-groups” variance matrix to “within-groups” variance matrix.
+- If this ratio is high, the variance explained by grouping according to the factor levels is meaningful. 
+- If low, we’re not explaining additional variation in our latent variable by including the predictor in the model.
+
+## Single Factor MANOVA - Statistics
+
+- Common statistics 
+    - Wilk’s lambda
+    - Hotelling-Lawley trace
+    - Pillai’s Trace
+    - Roy’s Largest root
+- All of these are interpreted the same way as other statistics 
+- Larger statistic values and smaller p-values are more significant
+- Wilk’s, Hotelling’s and Pillai’s produce identical F tests when there are only two groups and become Hotelling’s T2 statistic
+
+## MANOVA results table
+
+<br>
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.035.jpeg")
+```
+
+## MANOVA results table
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.036.jpeg")
+```
+
+## MANOVA contrasts
+
+- A priori contrasts can be performed as before 
+    - analogous to planned contrasts in single factor ANOVA
+- Unplanned, post-hoc comparisons of group means are much more difficult
+- What can you do?
+    - Perform univariate ANOVA on each factor (or pseudofactor of combined factors)
+    - Step-down analysis for model selection
+    - Discriminant Function investigation by looking at the first eigenvector
+
+## Single Factor MANOVA - Assumptions
+
+- **Normality** - less important, especially for Pillai’s trace test statistic
+- **Homogeneity of variance** (and covariance) - important, but tricky
+- Data on very **different scales** can also be a problem - standardize
+- **Outliers** - multivariate tests are very sensitive to these
+    - Pillai’s trace is the most robust to deviation of homogeneity of variance
+    - Can use Mahalanobis distance to detect and do something with outliers
+
+
+## Outliers and Missing Data
+
+- Outliers in multivariate space can be particularly misleading but difficult to detect
+- Can use **Mahalanobis Distance**, which is the square root of the distance in multivariate space of the object from the centroid
+- Options 
+    - transform
+    - remove
+- As with univariate analyses the removal of outliers should be justified, or both analyses should be presented
+
+
+## Identifying Outliers
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.038.jpeg")
+```
+
+## Identifying Outliers
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.039.jpeg")
+```
+
+## Outliers and Missing Data
+
+<br>
+
+- Missing observations are particularly vexing for multivariate analyses
+    - **MCAR** - missing completely at random
+    - **MAR** - missing at random
+    - **MBC** - missing but correlated
+- Three approaches
+    - **Deletion** - remove the entire object from the data set
+    - **Imputation** - infer the value based upon other values
+    - **Maximum Likelihood** and **Expectation Maximization**
+
+# R interlude - MANOVA using stickleback RNAseq data
+
+## R interlude | MANOVA stickleback RNAseq
+
+- This is the same dataset as you've used previously but with a few modifications
+- FACTORS - Genotype, microbiota, a combined genotype and microbiota 
+- RESPONSE - 600 genes as counts
+
+```{r, eval=FALSE, echo=TRUE}
+clay_data <- read.table('Clays_RNAseq.tsv', header=T, sep=‘\t')
+head(clay_data)
+geneA <- clay_data$Gene110 
+geneB <- clay_data$Gene147 
+geneC <- clay_data$Gene292
+```
+
+- Do these variables co-vary??? (try some scatterplots)
+
+## R interlude | MANOVA stickleback RNAseq
+
+<br>
+
+- Detect and then show list of outliers based on Mahalanobis distances
+
+```{r, eval=FALSE, echo=TRUE}
+install.packages('mvoutlier')
+library(mvoutlier)
+outliers <- aq.plot(clay_data[c("Gene110","Gene147","Gene292")])
+outliers 
+```
+
+## R interlude | MANOVA stickleback RNAseq
+
+<br>
+
+- Test for multivariate normality
+
+```{r, eval=FALSE, echo=TRUE}
+install.packages('mvnormtest')
+library(mvnormtest)
+three_genes <- t(as.matrix(cbind(clay_data$Gene110,clay_data$Gene147,
+ clay_data$Gene292)))
+mshapiro.test(three_genes)
+```
+
+- Are our data multivariate normal?
+- specify main effect 1 
+
+## R interlude | MANOVA stickleback RNAseq
+
+<br>
+
+- Fit the MANOVA model
+
+```{r, eval=FALSE, echo=TRUE}
+microbiota <- clay_data$Microbiota
+clay_manova <- manova(cbind(geneA, geneB, geneC) ~ microbiota)
+summary(clay_manova, test = "Pillai")
+summary(clay_manova, test = "Wilks")
+summary(clay_manova, test = "Hotelling-Lawley")
+summary(clay_manova, test = “Roy")
+summary.aov(clay_manova)
+```
+
+- Are the F-ratios and p-values different?
+- What does `summary.aov()` do, and what does this tell you about the data?
+- Now change the main effect variable around so that it has the four microbiota&genotype levels.
+
+## R interlude | MANOVA stickleback RNAseq
+
+<br>
+
+- Fit the MANOVA model with a new combined effect (“genotype-microbiota combination”): 
+
+```{r, eval=FALSE, echo=TRUE}
+geno_micro <- clay_data$Geno.Micro
+clay_manova <- manova(cbind(geneA, geneB, geneC) ~ geno_micro)
+summary(clay_manova, test = "Pillai")
+summary(clay_manova, test = "Wilks")
+summary(clay_manova, test = "Hotelling-Lawley")
+summary(clay_manova, test = "Roy")
+summary.aov(clay_manova)
+```
+
+- Any differences relative to before?
+
+## R interlude | MANOVA stickleback RNAseq
+
+<br>
+
+- Now change the model around so that it is a factorial MANOVA with microbiota and genotype as separate factors.
+
+```{r, eval=FALSE, echo=TRUE} 
+microbiota <- clay_data$Microbiota
+genotype <- clay_data$Genotype
+clay_manova <- manova(cbind(geneA, geneB, geneC) ~ genotype*microbiota)
+summary(clay_manova, test = "Pillai")
+summary(clay_manova, test = "Wilks")
+summary(clay_manova, test = "Hotelling-Lawley")
+summary(clay_manova, test = "Roy")
+summary.aov(clay_manova)
+```
+
+- Any differences relative to before?
+
+## R interlude | MANOVA stickleback RNAseq
+
+<br>
+
+- Now include 10 response variables, re-evaluate assumptions, and re-fit the factorial model.
+
+```{r, eval=FALSE, echo=TRUE}
+Fit the MANOVA model
+clay_manova <- manova(cbind(clay_data$Gene5,clay_data$Gene6,
+clay_data$Gene7,clay_data$Gene8,clay_data$Gene9,
+clay_data$Gene10,clay_data$Gene11,clay_data$Gene12,
+                clay_data$Gene13,clay_data$Gene14)~genotype*microbiota)
+
+
+summary(clay_manova, test = "Pillai")
+summary(clay_manova, test = "Wilks")
+summary(clay_manova, test = "Hotelling-Lawley")
+summary(clay_manova, test = "Roy")
+summary.aov(clay_manova)
+```
+
+- Now include 100 response variables and re-fit the factorial model.
+
+
+# Discriminant Function Analysis (DFA)
+
+## Conceptual overview of MANOVA & DFA
+
+- Both focus on the analysis of a factor variable but with **multiple continuous response variables**
+
+- **MANOVA** - explicitly test the difference between levels of a factor(s) using the first discriminant function
+
+- **DFA** - defines the set of linear discriminant functions that most clearly differentiate the levels of a factor variable in multivariate space 
+
+- MANOVA focuses on hypothesis testing and DFA is used more for classification
+
+## Conceptual overview of MANOVA & DFA
+
+<br>
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.032.jpeg")
+```
+
+## Steps involved in Discriminant Function Analysis (DFA)
+
+1. Run MANOVA to test for a group difference
+    - If no significant difference, DFA is not be useful
+    - Single factor ANOVA on each response variable
+2. Calculate Linear Discriminant Functions (LDF) scores
+    - Evaluate the distributions of these scores
+    - Do they have separate distributions for the groups?
+3. Classify observations into groups
+    - Generate conditional probabilities for each observation belonging to a given group
+    - Determine the percentage of 'correct' assignments
+    - Possible to “train” LDF with one data set, and then assign individuals from a new data set to factor levels
+
+## Steps involved in Discriminant Function Analysis (DFA)
+
+<br>
+
+```{r, echo=FALSE, out.width='100%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.040.jpeg")
+```
+
+## Discriminant Function Scores
+
+```{r, echo=FALSE, out.width='80%', fig.asp=.75, fig.align='center'}
+knitr::include_graphics("images/multi.041.jpeg")
+```
+
+
+# R INTERLUDE - Discriminant Function Analysis (using the same RNA-seq data)
+
+## R INTERLUDE - DFA stickleback RNAseq
+
+<br>
+
+- This is the same dataset as you've used previously but with a few modifications
+- FACTORS - Genotype, microbiota, a combined genotype and microbiota 
+- RESPONSE - 600 genes as counts
+
+```{r, eval=FALSE, echo=TRUE}
+clay_data <- read.table('Clays_RNAseq.tsv', header=T, sep=‘\t')
+geneA <- clay_data$Gene110 
+geneB <- clay_data$Gene147 
+geneC <- clay_data$Gene292 
+geno_micro <- clay_data$Geno.Micro
+```
+
+## R INTERLUDE - DFA stickleback RNAseq
+
+<br>
+
+```{r, eval=FALSE, echo=TRUE}
+library(MASS)
+clay_lda <- lda(geno_micro ~ geneA + geneB + geneC)
+clay_lda
+```
+
+- What information do the different components of clay_lda contain? 
+- Show results focused on first column of the DFA weightings
+
+```{r, eval=FALSE, echo=TRUE}
+clay_lda$scaling[,1]
+```
+
+## R INTERLUDE - DFA stickleback RNAseq
+
+<br>
+
+- Now, repeat the analysis but use the first 100 genes instead of just 3
+- Don't worry about the warning
+
+```{r, eval=FALSE, echo=TRUE}
+clay_data_100 <- clay_data[,6:105]
+clay_lda_100 <- lda(geno_micro~., clay_data_100)
+clay_lda_100
+```
+
+## R INTERLUDE - DFA stickleback RNAseq
+
+<br>
+
+- Now, Let's predict the DF scores for the original objects, based on the 100 genes. 
+
+```{r, eval=FALSE, echo=TRUE}
+predict(clay_lda_100)
+```
+
+- What information does the `predict()` output contain?
+
+# R INTERLUDE | Prediction using biomarker data
+
+## R INTERLUDE | Biomarker DFA
+
+- Here we have 200 patients and their prior histology-based diagnoses. There are three diagnoses (“benign,” “sarcoma 1,” and “sarcoma 2”). Also included are data from a panel of 6 qPCR-based biomarkers. This set of biomarkers is considered largely congruent with histology for cancer diagnosis, but more accurate. Specifically, the histology approach incorrectly leads to a sarcoma diagnosis (when the tumor is actually benign) about 2% of the time, whereas the biomarker approach has no such problem. 
+
+- The goal here is to use DFA to separate sarcoma from benign diagnoses via the 6 biomarkers, but using the prior histology diagnosis as an informative grouping variable. This way we can evaluate whether any of the prior diagnoses may be erroneous.    
+
+
+## R INTERLUDE | Biomarker DFA
+
+- Read in the data and specify our 6 response variables
+
+```{r, eval=FALSE, echo=TRUE}
+biomarkers <- read.table('biomarkers.tsv', header=T, sep='\t')
+mark1 <- biomarkers$marker1
+##etc… 
+```
+
+- Specify “diagnosis” as our categorical predictor variable 
+- First, run a quick MANOVA on the data (as before) to test the hypothesis that prior diagnosis significantly affects where patients lie in multi-dimensional (biomarker) space…   
+- Next, use the `lda()` function to find the discriminant functions.
+- Remember, the algorithm is deriving the “latent” variable(s) that best separate our samples (based on the prior diagnosis) in 6-dimensional space. 
+
+## R INTERLUDE | Biomarker DFA
+
+```{r, eval=FALSE, echo=TRUE}
+diag <- biomarkers$diagnosis
+library(MASS)
+diag_lda <- lda(diag ~ mark1 + mark2 + mark3 + mark4 + mark5 + mark6)
+diag_lda
+```
+
+- Show results focused on first column of the LDA weightings
+
+```{r, eval=FALSE, echo=TRUE}
+diag_lda$scaling[,1]
+```
+- Why are there only 2 Linear Discriminant Variables?
+
+## R INTERLUDE | Biomarker DFA
+
+- Now, let's predict the LD scores for the original objects (our patients)
+```{r, eval=FALSE, echo=TRUE}
+predict(diag_lda)
+```
+
+- What other information does diag_lda contain?
+
+## R INTERLUDE | Biomarker DFA
+
+- Now store the LD1 and LD2 scores (the last item in diag_lda) as a new data frame.
+- Make a histogram of the LD scores for the different diagnosis groups.
+
+```{r, eval=FALSE, echo=TRUE}   
+LD_scores <- as.data.frame(predict(diag_lda)$x)
+ldahist(LD_scores$LD1, biomarkers$diagnosis)#For LD1 
+ldahist(LD_scores$LD2, biomarkers$diagnosis)#For LD2
+```
+
+- Do you notice anything strange about any of the distributions? 
+
+## R INTERLUDE | Biomarker DFA
+
+- Now make a bivariate plot for DF1 and DF2 with diagnosis groups labeled uniquely.
+
+```{r, eval=FALSE, echo=TRUE}
+LD_scores$diag <- diag
+#Adds the original diagnosis variable to the LD data frame
+plot(LD_scores$LD2~LD_scores$LD1, 
+    main="Prior diagnosis groups in 6-D biomarker space”)
+```
+
+- Labeling by group is up to you! (Hint: can set col and/or pch params using `ifelse()` functional statements).
+- Notice anything weird about any observations in the plot??? What do they mean???
+- Let’s say you had a handful of new patients with no prior diagnosis and only the qPCR data from the six biomarkers. 
+- Could re-running the LDA with those samples help you make the appropriate diagnoses?
 
