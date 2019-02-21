@@ -13,7 +13,7 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-# THURSDAY - Finish PCoA and NMDS
+# TUESDAY - Finish PCoA and NMDS
 
 ## Goals for this week
 
