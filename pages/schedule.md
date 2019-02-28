@@ -15,14 +15,14 @@ Week 11 (*1/7, Peter*)
 
 : Robust multiple linear regression; scale mixtures; model selection with crossvalidation; introduction to Generalized Linear Models (GLM).
 
-    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_11_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_11_Lecture.slides.html)
     - Reading: **(Kruschke, ch 15, 16, 17)**
 
 Week 12 (*1/14, Peter*)
 
 : More GLMs; Poisson regression; detecting and modeling overdispersion; quantifying goodness-of-fit.
 
-    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_12_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_12_Lecture.slides.html)
     - Reading: **(Kruschke, ch 24)**
     - [Homework 2](../CLASS_MATERIALS/Homework_Solutions/HW2_W19.html), due 1/24.
 
@@ -30,7 +30,7 @@ Week 13 (*1/21, Peter*)
 
 : Categorical data: chi-square for contingency tables, permutation tests; categorical prediction.
 
-    * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_13_Lecture.slides.html)
+    - [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_13_Lecture.slides.html)
     - Reading: **(Kruschke, ch 22, 24)**
     - [Homework 3](../CLASS_MATERIALS/Homework_Solutions/HW3_W19.html), due 1/31.
 
@@ -38,7 +38,7 @@ Week 14 (*1/28, Peter*)
 
 : Sparsifying priors and variable selection.
 
-    * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_14_Lecture.slides.html)
+    - [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_14_Lecture.slides.html)
     - Reading: **(Kruschke, ch 19, 20)**
     - [Homework 4](../CLASS_MATERIALS/Homework_Solutions/HW4_W19.html), due 2/7.
 
@@ -46,27 +46,31 @@ Week 15 (*2/4, Bill*)
 
 : Linear algebra, latent factor analysis, intro to multivariate
 
-    * [Slides](../CLASS_MATERIALS/Lectures/Week_15_Lecture.slides.html)
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_15_Lecture.slides.html)
     - Reading: **(Otto and Day, Linear Algebra Primer; Quinn & Keogh, ch 15)**
     - [Homework 5](), due 2/15.
 
 Week 16 (*2/11, Bill*)
 
 : Factor/PCA/PCoA/MDS
-    * [Slides](../CLASS_MATERIALS/Lectures/Week_16_Lecture.slides.html)
+
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_16_Lecture.slides.html)
     - Reading: **(Quinn & Keogh, ch 17, 18)**
     - [Homework 6](), due 2/23.
 
 Week 17 (*2/18, Bill*)
 
 : MANOVA and Discriminant Function Analysis (DFA)
-	* [Slides](../CLASS_MATERIALS/Lectures/Week_17_Lecture.slides.html)
-	- Reading: **(Quinn & Keogh, ch 16)**
-  - [Homework 7](), due 3/2.
+
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_17_Lecture.slides.html)
+    - Reading: **(Quinn & Keogh, ch 16)**
+    - [Homework 7](), due 3/2.
 
 Week 18 (*2/25, Peter*)
 
-: Visualization: clustering, t-SNE, penalized PCA.
+: Visualization: nonnegative matrix factorization, constrained PCA, and t-SNE.
+
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
 
 Week 19 (*2/32, Peter*)
 

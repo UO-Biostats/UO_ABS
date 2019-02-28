@@ -1,0 +1,877 @@
+---
+title: "Clustering and dimension reduction"
+author: "Peter Ralph"
+date: "25 February 2019 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(lars)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+```
+
+
+# Visualizing expression space
+
+## A conceptual model
+
+Let's build a *conceptual* model for
+descriptive analysis of "mixture" expression data.
+
+. . .
+
+**Data:** expression data from tissue samples
+that consist of various *mixtures* of different cell types.
+
+. . .
+
+**Goal:** identify shared coexpression patterns
+corresponding to *cell type*.
+
+. . .
+
+*Similar situations:* 
+identify different developmental stages from whole-organism expression;
+common community structures from metagenomic data.
+
+----------------
+
+
+1. Each cell type has a typical set of *mean* expression levels.
+
+2. Each sample is composed of a mixture of cell types,
+   defined by the proportions that come from each type.
+
+
+------------------
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+
+1. Mean expression by cell type.
+
+2. Cell type proportions by sample.
+
+
+:::
+:::::::::::::: {.column width=50%}
+
+
+1. $x_{kj}$ : Mean expression of gene $j$ in cell type $k$.
+
+2. $w_{ik}$ : Proportion of sample $i$ of cell type $k$.
+
+$Z_{ij}$ : expression level in sample $i$ of gene $j$.
+
+   $$\begin{aligned}
+        Z_{ij} \approx \sum_{k=1}^K w_{ik} x_{kj} .
+   \end{aligned}$$
+
+
+:::
+:::::::::::::: 
+
+
+
+# Nonnegative matrix factorization
+
+## ... aka "NMF"
+
+
+We are *decomposing* $Z$ into the product of two lower-dimensional,
+nonnegative factors:
+
+$$\begin{aligned}
+    Z_{ij} &\approx \sum_k w_{ik} x_{kj} \\
+    w_{ik} &\ge 0 \\
+    x_{kj} &\ge 0 .
+\end{aligned}$$
+
+## A simple NMF model
+
+```{r simple_nmf, cache=TRUE}
+simple_nmf <- stan_model(model_code="
+data {
+    int N; // samples
+    int L; // variables
+    int K; // factors
+    real Z[L,N];
+}
+parameters {
+    matrix<lower=0>[L,K] x;
+    matrix<lower=0>[K,N] w;
+    real<lower=0> sigma;
+}
+model {
+    for (j in 1:L) {
+        Z[j] ~ normal(x[j] * w, sigma);
+    }
+}
+")
+```
+
+## Relationship to PCA
+
+PCA finds $w$ and $z$ to minimize
+$$\begin{aligned}
+    \sum_{ij} \| Z_{ij} - \sum_k w_{ik} x_{kj} \|^2 .
+\end{aligned}$$
+
+In other words, it is the maximum-likelihood solution to
+$$\begin{aligned}
+    Z_{ij} &\sim \Normal(\sum_k w_{ik} x_{kj}, \sigma^2) .
+\end{aligned}$$
+(The eigenvectors are the columns of $x$,
+and the eigenvectors are related to the size of $w$ and $x$.)
+
+## PCA, in Stan
+
+```{r stan_pca, cache=TRUE}
+stan_pca <- stan_model(model_code="
+data {
+    int N; // samples
+    int L; // variables
+    int K; // factors
+    real Z[L,N];
+}
+parameters {
+    matrix[L,K] x;
+    matrix[K,N] w;
+    real<lower=0> sigma;
+}
+model {
+    for (j in 1:L) {
+        Z[j] ~ normal(x[j] * w, sigma);
+    }
+}
+")
+```
+*(note: needs some priors to work well; see [here](https://arxiv.org/abs/1603.00788).)*
+
+<!--
+## PCA in Stan
+
+```{r pca_in_stan, cache=TRUE, dependson="stan_pca"}
+nvars <- 20
+nsamp <- 200
+xy <- matrix(rnorm(2*nvars), nrow=2)
+z <- matrix(rnorm(2*nsamp), ncol=2) %*% xy
+stpca <- optimizing(stan_pca, data=list(N=nsamp, L=nvars, K=2, Z=t(z)))
+stan_x <- t(matrix(stpca$par[grepl("^w",names(stpca$par))], nrow=2))
+```
+
+----------------
+
+```{r plot_pcas, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+usual_pca <- eigen(cov(t(z)))
+layout(t(1:2))
+plot(usual_pca$vectors[,1:2], cex=2,
+     col=rainbow(10)[as.numeric(cut(xy[1,], 10))], 
+     pch=as.numeric(cut(xy[2,], 6)),
+     xlab="PC 1", ylab="PC 2")
+plot(stan_x, cex=2,
+     col=rainbow(10)[as.numeric(cut(xy[1,], 10))], 
+     pch=as.numeric(cut(xy[2,], 6)),
+     xlab="Stan PC 1", ylab="Stan PC 2")
+```
+-->
+
+# Stochastic minute
+
+## the Dirichlet distribution
+
+A random set of $k$ *proportions* $0 \le P_i \le 1$
+has a $\Dirichlet(\alpha_1, \ldots, \alpha_k)$ if it has probability density
+$$\begin{aligned}
+    \frac{1}{B(\alpha)} \prod_{i=1}^k p_i^{\alpha_i} 
+\end{aligned}$$
+over the set of possible values
+$$\begin{aligned}
+    P_1 + \cdots + P_k = 1 .
+\end{aligned}$$
+
+. . .
+
+1. This is useful as a prior on *proportions*.
+
+2. This generalized the Beta: if $X \sim \Beta(a, b)$ then $(X, 1-X) \sim \Dirichlet(a, b)$.
+
+3. Marginal distributions are Beta distributed: $P_i \sim \Beta(\alpha_i, \sum_{j=1}^k \alpha_j - \alpha_i)$.
+
+-----------------
+
+4. If $X_i \sim \Exp(\alpha_i)$, and
+   $$\begin{aligned}
+    P_i = X_i / \sum_{j=1}^k X_j
+   \end{aligned}$$
+   then $P \sim \Dirichlet(\alpha)$.
+
+## "Simplex" parameters
+
+"The $k$-simplex" is the set of *proportions*,
+i.e., nonnegative numbers $p$ satisfying
+$$\begin{aligned}
+    p_1 + \cdots p_k = 1 .
+\end{aligned}$$
+
+```
+parameters {
+    simplex[K] w[N];
+}
+model {
+    w ~ dirichlet(d_alpha * alpha);
+}
+```
+
+
+# Back to expression space
+
+----------------
+
+
+1. Each cell type has a typical set of *mean* expression levels.
+
+2. Each sample is composed of a mixture of cell types,
+   defined by the proportions that come from each type.
+
+3. Mean expression levels differ between cell types
+   for only some of the genes.
+
+4. Some samples are *noisier* than others.
+
+
+
+------------------
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+
+1. Mean expression by cell type.
+
+2. Cell type proportions by sample.
+
+
+:::
+:::::::::::::: {.column width=50%}
+
+
+1. $x_{kj}$ : Mean expression of gene $j$ in cell type $k$.
+
+2. $w_{ik}$ : Proportion of sample $i$ of cell type $k$.
+
+$Z_{ij}$ : expression in sample $i$ of gene $j$.
+
+   $$\begin{aligned}
+        Z_{ij} \approx \sum_{k=1}^K w_{ik} x_{kj} .
+   \end{aligned}$$
+
+
+:::
+:::::::::::::: 
+
+------------------
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+
+1. Mean expression by cell type.
+
+2. Cell type proportions by sample.
+
+3. Mean expression levels differ between cell types
+   for only some of the genes.
+
+4. Some samples are *noisier* than others.
+
+:::
+:::::::::::::: {.column width=50%}
+
+
+$Z_{ij}$ : expression level in sample $i$ of gene $j$.
+
+   $$\begin{aligned}
+        Z_{ij} \approx \sum_{k=1}^K w_{ik} x_{kj} .
+   \end{aligned}$$
+
+3. $y_j$, $\eta_j$ : mean and SD of expression of gene $j$ across *all* cell types;
+   shrink $x_{kj}$ towards $y_j$.
+
+4. *(omit this)*
+
+:::
+:::::::::::::: 
+
+----------------------
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+```
+```{r nmf1, echo=FALSE, results="asis", cache=TRUE}
+cat(nmf1 <- "data {
+  int N; // # samples
+  int L; // # genes
+  int K; // # cell types
+  int Z[N,L];
+}")
+```
+```
+```
+```{r nmf2, echo=FALSE, results="asis", cache=TRUE}
+cat(nmf2 <- "parameters {
+  matrix<lower=0>[L,K] x;
+  vector[L] y;
+  simplex[K] w[N];
+  vector<lower=0>[L] eta;
+  vector<lower=0>[K] alpha;
+  real<lower=0> d_alpha;
+}")
+```
+```
+```
+```{r nmf3, echo=FALSE, results="asis", cache=TRUE}
+cat(nmf3 <- "model {
+  for (i in 1:N) {
+      Z[i] ~ poisson(eta .* (x * w[i]));
+      w[i] ~ dirichlet(d_alpha * alpha);
+  }
+  for (j in 1:K) 
+      { x[,j] ~ normal(y ./ eta, 1); }
+  y ~ normal(0, 20);
+  alpha ~ normal(0, 1);
+  d_alpha ~ exponential(0.2);
+  eta ~ cauchy(0, 10);
+}")
+```
+```
+
+
+:::
+:::::::::::::: {.column width=50%}
+
+
+1. $x_{kj}$ : Mean expression of gene $j$ in cell type $k$.
+
+2. $w_{ik}$ : Proportion of sample $i$ of cell type $k$.
+
+$$\begin{aligned}
+    Z_{ij} \approx \sum_k w_{ik} x_{kj} .
+\end{aligned}$$
+
+3. $y_j$, $\eta_j$ : mean and SD of expression of gene $j$ across *all* cell types;
+   shrink $x_{kj}$ towards $y_j$.
+
+
+:::
+:::::::::::::: 
+
+## Testing: compiles?
+
+```{r model_compiles, echo=-1, cache=TRUE, dependson=c("nmf1", "nmf2", "nmf3")}
+nmf_block <- paste(nmf1, nmf2, nmf3, sep='\n')
+nmf_model <- stan_model(model_code=nmf_block)
+```
+
+## Testing: runs?
+
+```{r test_runs}
+sampling(nmf_model,
+         data=list(N=10,
+                   L=5,
+                   K=2,
+                   Z=matrix(rpois(50, 100), ncol=5)),
+         chains=1, iter=100)
+```
+
+# Simulate data
+
+## Outline
+
+1. How many cell types?
+
+2. How many genes?
+
+3. How many samples?
+
+4. How much noise in expression?
+
+5. How many genes distinguish cell types,
+   and by how much relative to expression?
+
+6. How many "noisy" genes?  How many "noisy" samples?
+
+
+# An easy case
+
+## Parameters:
+
+```{r sim_data, cache=TRUE}
+ntypes <- 3
+ngenes <- 1000
+nsamples <- 1000
+ninf <- 0.6 * ngenes # number of informative genes
+```
+
+-----------
+
+Determine expression profiles per cell type
+```{r sim_data_2, cache=TRUE, dependson="sim_data"}
+mu <- rexp(ngenes, .01)
+# copy mu into five columns
+type_mu <- do.call(cbind, list(mu)[rep(1,ntypes)])
+
+# simulate how differnt mu is across cell types
+diff_sigma <- matrix(rlnorm(ntypes * ninf, log(0.5), 1), ncol=ntypes)
+type_mu[1:ninf,] <- type_mu[1:ninf,] * diff_sigma
+
+m_list <- lapply(1:ntypes, function (ct) {
+                    matrix(pmax(0, rnorm(ngenes*nsamples, 
+                                         type_mu[,ct], type_mu[,ct])),
+                           ncol=ngenes, byrow=TRUE) })
+```
+
+---------
+
+Simulate proportions per sample, and construct expected expression levels
+```{r sim_data_3, cache=TRUE, dependson="sim_data_2"}
+# simulate proportions per sample
+w <- matrix( rexp(nsamples*ntypes), ncol=ntypes)
+w <- sweep(w, 1, rowSums(w), "/")
+stopifnot(all(abs(rowSums(w) - 1) < 1e-15))
+
+# construct expected expression levels:
+m <- matrix(0, nrow=nsamples, ncol=ngenes)
+for (ct in 1:ntypes) {
+    m <- m + (w[,ct] * m_list[[ct]])
+}
+```
+
+-------------
+
+```{r sim_data_4, cache=TRUE, dependson="sim_data_3"}
+# simulate expression
+Z <- matrix(rpois(length(m), m), ncol=ncol(m))
+
+# add noisy indivs, genes??
+
+```
+
+## Point estimates with `optimizing`
+
+```{r optim_nmf, cache=TRUE, dependson=c("model_compiles", "sim_data_4")}
+system.time(nmf_optim <- optimizing(nmf_model,
+                                    data=list(N=nsamples,
+                                              L=ngenes,
+                                              K=ntypes,
+                                              Z=Z)))
+```
+
+## Can we infer mixture proportions?
+
+```{r optim_results}
+results <- list(x=nmf_optim$par[grepl("^x", names(nmf_optim$par))],
+                y=nmf_optim$par[grepl("^y", names(nmf_optim$par))],
+                w=nmf_optim$par[grepl("^w", names(nmf_optim$par))],
+                eta=nmf_optim$par[grepl("^eta", names(nmf_optim$par))],
+                alpha=nmf_optim$par[grepl("^alpha", names(nmf_optim$par))],
+                d_alpha=nmf_optim$par[grepl("^d_alpha", names(nmf_optim$par))])
+dim(results$x) <- c(ngenes, ntypes)
+dim(results$w) <- c(nsamples, ntypes)
+
+cor(results$w, w)
+```
+
+------------------
+
+```{r show_optim, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+w_pos <- svd(w)$u[,1]
+w_cols <- rainbow(64)[ceiling(64*(w_pos - min(w_pos))/diff(range(w_pos)))]
+layout(matrix(1:ntypes^2, nrow=ntypes))
+for (i in 1:ntypes) {
+    for (j in 1:ntypes) {
+        plot(w[,i], results$w[,j], col=w_cols, pch=20,
+             xlab="true w", ylab="inferred w", main=paste(i, j))
+        abline(0,1)
+    }
+}
+```
+
+------------------
+
+```{r match_w, echo=FALSE}
+wij <- apply(cor(results$w, w), 2, which.max)
+mean_abs_err <- mean(abs(w - results$w[,wij]))
+```
+
+The mean absolute error in inference of mixture proportions ($w$)
+is `r mean_abs_err`.
+
+
+## Can we infer expression profiles?
+
+```{r x_results}
+cor(results$x, type_mu)
+```
+
+----------------
+
+
+```{r x_plot_res, fig.width=4*fig.dim}
+xij <- apply(cor(results$x, type_mu), 2, which.max)
+x_ord <- apply(type_mu, 2, order)
+layout(t(1:ntypes))
+for (i in 1:ntypes) {
+    plot(type_mu[x_ord[,i],i], pch=20,
+         main=paste("expression profile", i))
+    points((results$eta * results$x[,xij[i]])[x_ord[,i]], pch=20, col='red')
+}
+legend("topleft", pch=20, col=c("black", "red"),
+       legend=c("truth", "inferred"))
+```
+
+
+# t-SNE
+
+## t-SNE
+
+![http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf](images/t-sne_abstract.png)
+
+----------------
+
+[t-SNE](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding) 
+is a recently published method for dimension reduction
+(visualization of struture in high-dimensional data).
+
+-----------------
+
+It [makes very nice visualizations](https://distill.pub/2016/misread-tsne/).
+
+------------
+
+The *generic idea* is to find a low dimensional representation
+(i.e., a *picture*)
+in which *proximity* of points
+reflects *similarity* of the corresponding (high dimensional) observations.
+
+-------------
+
+Suppose we have $n$ data points, $x_1, \ldots, x_n$
+and each one has $p$ variables: $x_1 = (x_{11}, \ldots, x_{1p})$.
+
+. . .
+
+For each, we want to find a low-dimensional point $y$:
+$$\begin{aligned}
+    x_i \mapsto y_i
+\end{aligned}$$
+similarity of $x_i$ and $x_j$
+is (somehow) reflected by proximity of $y_i$ and $y_j$
+
+. . .
+
+We need to define:
+
+0. "low dimension" (usually, $k=2$ or $3$)
+1. "similarity" of $x_i$ and $x_j$
+2. "reflected by proximity" of $y_i$ and $y_j$
+
+## Similarity
+
+To measure similarity, we just use (Euclidean) distance:
+$$\begin{aligned}
+    d(x_i, x_j) = \sqrt{\sum_{\ell=1}^n (x_{i\ell} - x_{j\ell})^2} ,
+\end{aligned}$$
+after first normalizing variables to vary on comparable scales.
+
+
+## Proximity
+
+A natural choice is to require distances in the new space ($d(y_i, y_j)$) 
+to be as close as possible to distances in the original space ($d(x_i, x_j)$).
+
+. . .
+
+That's a *pairwise* condition.
+t-SNE instead tries to measure how faithfully
+*relative distances* are represented in each point's *neighborhood*.
+
+
+## Neighborhoods 
+
+For each data point $x_i$, define 
+$$\begin{aligned}
+    p_{ij} = \frac{ e^{-d(x_i, x_j)^2 / (2\sigma^2)} 
+                  }{ \sum_{\ell \neq i} e^{-d(x_i, x_\ell)^2 / (2 \sigma^2)} } ,
+\end{aligned}$$
+and $p_{ii} =  0$.
+
+This is the probability that point $i$ would pick point $j$ as a neighbor
+if these are chosen according to the Gaussian density centered at $x_i$.
+
+
+--------------
+
+Similarly, in the output space, define
+$$\begin{aligned}
+    q_{ij} = \frac{ (1 + d(y_i, y_j)^2)^{-1} 
+                  }{ \sum_{\ell \neq i} (1 + d(y_i, y_\ell)^2)^{-1} }
+\end{aligned}$$
+and $q_{ii} =  0$.
+
+
+This is the probability that point $i$ would pick point $j$ as a neighbor
+if these are chosen according to the Cauchy centered at $x_i$.
+
+
+## Similiarity of neighborhoods
+
+We want neighborhoods to look similar, i.e.,
+choose $y$ so that 
+$q$ looks like $p$.
+
+To do this, we minimize
+$$\begin{aligned}
+    \text{KL}(p \given q)
+    &=
+    \sum_{i} \sum_{j} p_{ij} \log\left(\frac{p_{ij}}{q_{ij}}\right) .
+\end{aligned}$$
+
+. . .
+
+*What's KL()?*
+
+## Kullback-Leibler divergence
+
+$$\begin{aligned}
+    \text{KL}(p \given q)
+    &=
+    \sum_{i} \sum_{j} p_{ij} \log\left(\frac{p_{ij}}{q_{ij}}\right) .
+\end{aligned}$$
+
+This is the average log-likelihood ratio between $p$ and $q$
+for a single observation drawn from $p$.
+
+It is a measure of how "surprised" you would be by a sequence of samples from $p$
+that you think should be coming from $q$.
+
+
+. . .
+
+**Facts:**
+
+1. $\text{KL}(p \given q) \ge 0$
+
+2. $\text{KL}(p \given q) = 0$ only if $p_i = q_i$ for all $i$.
+
+
+
+# Simulate data
+
+## A high-dimensional donut
+
+Let's first make some data.
+This will be some points distributed around a ellipse in $n$ dimensions.
+
+```{r tsim_data, cache=TRUE}
+n <- 20
+npts <- 1e3
+xy <- matrix(rnorm(n*npts), ncol=n)
+theta <- runif(npts) * 2 * pi
+ab <- matrix(rnorm(2*n), nrow=2)
+ab[,2] <- ab[,2] - ab[,1] * sum(ab[,1] * ab[,2]) / sqrt(sum(ab[,1]^2))
+ab <- sweep(ab, 1, sqrt(rowSums(ab^2)), "/")
+for (k in 1:npts) {
+    dxy <- 4 * c(cos(theta[k]), sin(theta[k])) %*% ab
+    xy[k,] <- xy[k,] + dxy
+}
+```
+
+---------------------
+
+Here's what the data look like:
+```{r plot_data, fig.width=6*fig.dim, fig.height=4*fig.dim, echo=FALSE}
+pairs(xy, pch=20)
+```
+
+---------------------
+
+But there is hidden, two-dimensional structure:
+```{r plot_ring, fig.height=2*fig.dim, echo=FALSE}
+plot(xy %*% t(ab), xlab='dimension 1', ylab='dimension 2', 
+     pch=20, col=rainbow(nrow(xy))[rank(theta)])
+```
+
+---------------------
+
+Now let's build the distance matrix.
+
+```{r dist_mat}
+dmat <- as.matrix(dist(xy)) 
+```
+
+# Implementation
+
+The quantity to be minimized is Kullback-Leibler distance between $p$ and $q$,
+defined as
+$$\begin{aligned}
+    \text{KL}(p|q) 
+        &= \sum_x p_x \log(p_x/q_x) .
+\end{aligned}$$
+
+---------------------
+
+## A Stan block
+
+```{r stan_tsne, cache=TRUE}
+tsne_block <- '
+data {
+    int N; // number of points
+    int n; // input dimension
+    int k; // output dimension
+    matrix[N,N] dsq;  // distance matrix, squared
+}
+parameters {
+    real<lower=0> sigma_sq; // in kernel for p 
+    matrix[N-2,k] y1;
+    real<lower=0> y21;
+}
+transformed parameters {
+    matrix[N,k] y;
+    y[1,] = rep_row_vector(0.0, k);
+    y[3:N,] = y1;
+    y[2,] = rep_row_vector(0.0, k);
+    y[2,1] = y21;
+}
+model {
+    matrix[N,N] q;
+    real dt;
+    matrix[N,N] p;
+    q[N,N] = 0.0;
+    for (i in 1:(N-1)) {
+        q[i,i] = 0.0;
+        for (j in (i+1):N) {
+            q[i,j] = 1 / (1 + squared_distance(y[i], y[j]));
+            q[j,i] = q[i,j];
+        }
+    }
+    for (i in 1:N) {
+        q[i] = q[i] / sum(q[i]);
+    }
+    // create p matrix
+    p = exp(-dsq/(2*sigma_sq));
+    for (i in 1:N) {
+        p[i,i] = 0.0;
+        p[i] = p[i] / sum(p[i]);
+    }
+    // compute the target
+    for (i in 1:(N-1)) {
+        for (j in (i+1):N) {
+            target += (-1) * (p[i,j] .* log(p[i,j] ./ q[i,j]));
+            target += (-1) * (p[j,i] .* log(p[j,i] ./ q[j,i]));
+        }
+    }
+    sigma_sq ~ normal(0, 10);
+}'
+
+
+tk <- 2
+tsne_model <- stan_model(model_code=tsne_block)
+```
+
+## Run the model with `optimizing`
+
+```{r run_tsne, cache=TRUE, dependson=c("stan_tsne", "tsim_data")}
+runtime <- system.time(tsne_optim <- optimizing(tsne_model,
+                                 data=list(N=nrow(xy),
+                                           n=ncol(xy),
+                                           k=tk,
+                                           dsq=(dmat/max(dmat))^2)))
+runtime
+```
+
+## It works!
+
+```{r plot_tsne, fig.width=4*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+out_y <- do.call(cbind, lapply(1:tk, function (k) {
+                                   tsne_optim$par[sprintf("y[%d,%d]", 1:nrow(xy), k)]
+                           } ) )
+layout(t(1:2))
+plot(out_y, xlab='t-sne 1', ylab='t-sne 2', main="t-SNE",
+     pch=20, col=rainbow(nrow(xy))[rank(theta)])
+plot(xy %*% t(ab), xlab='input 1', ylab='input 2', main="'truth'",
+     pch=20, col=rainbow(nrow(xy))[rank(theta)])
+
+```
+
+
+# Another case
+
+## High-dimensional random walk
+
+
+```{r sim_rw, cache=TRUE}
+n <- 40
+npts <- 1e2
+# rw <- colCumsums(matrix(rnorm(n*npts), ncol=n))
+rw <- matrix(rnorm(n*npts), ncol=n)
+for (i in 2:npts) {
+    rw[i,] <- sqrt(.9) * rw[i-1,] + sqrt(.1) * rw[i,]
+}
+```
+
+-----------------
+
+Here's what the data look like:
+```{r plot_rw, fig.width=6*fig.dim, fig.height=5*fig.dim, echo=FALSE}
+pairs(rw, col=rainbow(npts), pch=20)
+```
+
+--------------------------
+
+```{r plot_rw_sub, fig.width=6*fig.dim, fig.height=5*fig.dim, echo=FALSE}
+pairs(rw[,1:10], col=rainbow(npts), pch=20)
+```
+
+-----------------
+
+Now let's build the distance matrix.
+
+```{r dist_mat_rw}
+rw_dmat <- as.matrix(dist(rw)) 
+```
+
+## Run again
+
+```{r run_tsne_rw, cache=TRUE, dependson=c("stan_tsne", "sim_rw")}
+rw_runtime <- system.time(
+     rw_tsne_optim <- optimizing(tsne_model,
+                                 data=list(N=nrow(rw),
+                                           n=ncol(rw),
+                                           k=tk,
+                                           dsq=(rw_dmat/max(rw_dmat))^2),
+                                 tol_rel_grad=1e5))
+rw_runtime
+```
+
+## It works!
+
+```{r plot_rw_tsne, fig.width=2*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+rw_y <- do.call(cbind, lapply(1:tk, function (k) {
+                                   rw_tsne_optim$par[sprintf("y[%d,%d]", 1:nrow(xy), k)]
+                           } ) )
+plot(rw_y, xlab='t-sne 1', ylab='t-sne 2', main="t-SNE",
+     pch=20, col=rainbow(nrow(rw)))
+
+```
+
