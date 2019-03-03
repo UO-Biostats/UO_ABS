@@ -68,17 +68,21 @@ Week 17 (*2/18, Bill*)
 
 Week 18 (*2/25, Peter*)
 
-: Visualization: nonnegative matrix factorization, constrained PCA, and t-SNE.
+: Visualization: nonnegative matrix factorization and constrained PCA
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
 
 Week 19 (*2/32, Peter*)
 
-: Spatial statistics and network models.
+: Modeling mixtures of expression data; clustering in Stan (t-SNE)
+
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
 
 Week 20 (*2/39, Peter*)
 
-: Time series.
+: Introduction to time series and spatial statistics.
+
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_19_Lecture.slides.html)
 
 
 

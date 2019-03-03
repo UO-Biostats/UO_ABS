@@ -203,13 +203,16 @@ $$\begin{aligned}
 
 1. This is useful as a prior on *proportions*.
 
-2. This generalized the Beta: if $X \sim \Beta(a, b)$ then $(X, 1-X) \sim \Dirichlet(a, b)$.
+2. The *mean* is
+   $$ \left( \frac{\alpha_1}{\sum_j \alpha_j}, \frac{\alpha_2}{\sum_j \alpha_j}, \cdots, \frac{\alpha_k}{\sum_j \alpha_j} \right) . $$
 
-3. Marginal distributions are Beta distributed: $P_i \sim \Beta(\alpha_i, \sum_{j=1}^k \alpha_j - \alpha_i)$.
+3. This generalized the Beta: if $X \sim \Beta(a, b)$ then $(X, 1-X) \sim \Dirichlet(a, b)$.
+
+4. Marginal distributions are Beta distributed: $P_i \sim \Beta(\alpha_i, \sum_{j=1}^k \alpha_j - \alpha_i)$.
 
 -----------------
 
-4. If $X_i \sim \Exp(\alpha_i)$, and
+5. If $X_i \sim \Gamma(\text{shape}=\alpha_i)$, and
    $$\begin{aligned}
     P_i = X_i / \sum_{j=1}^k X_j
    \end{aligned}$$
@@ -225,10 +228,10 @@ $$\begin{aligned}
 
 ```
 parameters {
-    simplex[K] w[N];
+    simplex[K] p;
 }
 model {
-    w ~ dirichlet(d_alpha * alpha);
+    p ~ dirichlet(alpha);
 }
 ```
 
