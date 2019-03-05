@@ -48,7 +48,7 @@ Week 15 (*2/4, Bill*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_15_Lecture.slides.html)
     - Reading: **(Otto and Day, Linear Algebra Primer; Quinn & Keogh, ch 15)**
-    - [Homework 5](), due 2/15.
+    - Homework 5, due 2/15.
 
 Week 16 (*2/11, Bill*)
 
@@ -56,7 +56,7 @@ Week 16 (*2/11, Bill*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_16_Lecture.slides.html)
     - Reading: **(Quinn & Keogh, ch 17, 18)**
-    - [Homework 6](), due 2/23.
+    - Homework 6, due 2/23.
 
 Week 17 (*2/18, Bill*)
 
@@ -64,7 +64,7 @@ Week 17 (*2/18, Bill*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_17_Lecture.slides.html)
     - Reading: **(Quinn & Keogh, ch 16)**
-    - [Homework 7](), due 3/2.
+    - Homework 7, due 3/2.
 
 Week 18 (*2/25, Peter*)
 
@@ -72,13 +72,14 @@ Week 18 (*2/25, Peter*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
 
-Week 19 (*2/32, Peter*)
+Week 19 (*3/4, Peter*)
 
 : Modeling mixtures of expression data; clustering in Stan (t-SNE)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
+    - [Homework 8](../CLASS_MATERIALS/Homework_Solutions/HW8_W19.html), due 3/14, $\pi$ day.
 
-Week 20 (*2/39, Peter*)
+Week 20 (*3/11, Peter*)
 
 : Introduction to time series and spatial statistics.
 
