@@ -416,8 +416,191 @@ sampling(nmf_model,
 
 7. How much variation in mixture proportions?
 
+# Easier case
 
-## Implementation
+```{r ezparameters, cache=TRUE}
+ntypes <- 3
+ngenes <- 100
+nsamples <- 1000
+ndiff_genes <- 30
+noisy_genes <- 0
+num_noisy_samples <- 0
+mean_props <- rep(1/ntypes, ntypes)
+diff_size <- 100
+indiv_sd <- 0.02 # individual-level variation
+```
+
+-----------
+
+Sample mixture proportions (the rows of `w`), from the Dirichlet distribution
+with parameters $\alpha = `r mean_props` $.
+```{r ezsim_w, cache=TRUE, dependson="ezparameters"}
+w <- matrix(rgamma(nsamples * ntypes, rate=1, 
+                   shape=rep(mean_props, each=nsamples)), 
+            ncol=ntypes)
+w <- w / rowSums(w)
+stopifnot(all(abs(rowSums(w) - 1) < 1e-8))
+```
+
+-----------
+
+Sample cell type expression levels:
+```{r ezsim_x, cache=TRUE, dependson="ezsim_w"}
+mean_x <- abs(100 * rnorm(ngenes))
+x <- matrix(rep(mean_x, each=ntypes), nrow=ntypes)
+stopifnot(all(colMeans(x) == mean_x))
+for (k in 1:ntypes) {
+    diff_genes <- sample.int(ngenes, ndiff_genes)
+    x[k, diff_genes] <- rgamma(ndiff_genes, shape=0.5, scale=2) * x[k, diff_genes]
+}
+```
+
+-----------
+
+Simulate expression:
+```{r ezsim_z, cache=TRUE, dependson="ezsim_x"}
+mean_z <- w %*% x
+noisy_samples <- sample.int(nsamples, num_noisy_samples)
+mean_z[noisy_samples,] <- (mean_z[noisy_samples,] 
+                           * exp(rnorm(noisy_samples * ngenes, mean=0, sd=0.1)))
+noisy_mean_z <- mean_z * exp(rnorm(nsamples * ngenes, mean=0, sd=indiv_sd))
+Z <- matrix(rpois(nsamples * ngenes, lambda=noisy_mean_z), ncol=ngenes)
+```
+
+-----------
+
+Run Stan:
+```{r ezstanit, cache=TRUE, dependson="ezsim_z"}
+ez_results <- optimizing(nmf_model,
+                          data=list(N=nsamples,
+                                    L=ngenes,
+                                    K=ntypes,
+                                    Z=Z))
+```
+
+
+Look at output:
+```{r ezestims}
+est_w <- matrix(ez_results$par[grepl("^w", names(ez_results$par))], nrow=nsamples)
+est_x <- t(matrix(ez_results$par[grepl("^x", names(ez_results$par))], nrow=ngenes))
+est_x <- sweep(est_x, 2, ez_results$par[grepl("^eta", names(ez_results$par))], "*")
+```
+
+-----------
+
+Here is the correlation between estimated `w` and observed `w`:
+```{r ezcorw}
+cor(est_w, w)
+```
+This is **very** good! We are estimating relative mixtures very well.
+(But, note they are not in the same order.)
+
+-----------
+
+Here is the correlation between estimated `x` and observed `x`:
+```{r ezcorx}
+cor(t(est_x), t(x))
+```
+This is also very good!
+
+
+
+# In-class implementation (harder case)
+
+```{r parameters, cache=TRUE}
+ntypes <- 8
+ngenes <- 750
+nsamples <- 1000
+ndiff_genes <- 100
+noisy_genes <- 7
+num_noisy_samples <- 20
+mean_props <- (1:8)/sum(1:8)
+diff_size <- 100
+indiv_sd <- 0.2 # individual-level variation
+```
+
+-----------
+
+Sample mixture proportions (the rows of `w`), from the Dirichlet distribution
+with parameters $\alpha = `r mean_props` $.
+```{r sim_w, cache=TRUE, dependson="parameters"}
+w <- matrix(rgamma(nsamples * ntypes, rate=1, 
+                   shape=rep(mean_props, each=nsamples)), 
+            ncol=ntypes)
+w <- w / rowSums(w)
+stopifnot(all(abs(rowSums(w) - 1) < 1e-8))
+```
+
+-----------
+
+Sample cell type expression levels:
+```{r sim_x, cache=TRUE, dependson="sim_w"}
+mean_x <- abs(100 * rcauchy(ngenes))
+x <- matrix(rep(mean_x, each=ntypes), nrow=ntypes)
+stopifnot(all(colMeans(x) == mean_x))
+for (k in 1:ntypes) {
+    diff_genes <- sample.int(ngenes, ndiff_genes)
+    x[k, diff_genes] <- rgamma(ndiff_genes, shape=0.5, scale=diff_size) * x[k, diff_genes]
+}
+```
+
+-----------
+
+Simulate expression:
+```{r sim_z, cache=TRUE, dependson="sim_x"}
+mean_z <- w %*% x
+noisy_samples <- sample.int(nsamples, num_noisy_samples)
+mean_z[noisy_samples,] <- (mean_z[noisy_samples,] 
+                           * exp(rnorm(noisy_samples * ngenes, mean=0, sd=0.1)))
+noisy_mean_z <- mean_z * exp(rnorm(nsamples * ngenes, mean=0, sd=indiv_sd))
+Z <- matrix(rpois(nsamples * ngenes, lambda=noisy_mean_z), ncol=ngenes)
+```
+
+-------------
+
+Is there signal? It looks like there is.
+```{r image, cache=TRUE, dependson="sim_z"}
+diff8 <- x[8,] - matrixStats::colMedians(x)
+image(log(t(Z[order(w[,8]),order(abs(diff8))])))
+```
+
+-----------
+
+Run Stan:
+```{r stanit, cache=TRUE, cache=TRUE, dependson="sim_z"}
+opt_results <- optimizing(nmf_model,
+                          data=list(N=nsamples,
+                                    L=ngenes,
+                                    K=ntypes,
+                                    Z=Z))
+```
+
+
+Look at output:
+```{r estims}
+est_w <- matrix(opt_results$par[grepl("^w", names(opt_results$par))], nrow=nsamples)
+est_x <- t(matrix(opt_results$par[grepl("^x", names(opt_results$par))], nrow=ngenes))
+est_x <- sweep(est_x, 2, opt_results$par[grepl("^eta", names(opt_results$par))], "*")
+```
+
+-----------
+
+Here is the correlation between estimated `w` and observed `w`:
+```{r corw}
+cor(est_w, w)
+```
+This is **very** good! We are estimating relative mixtures very well.
+
+-----------
+
+Here is the correlation between estimated `x` and observed `x`:
+```{r corx}
+cor(t(est_x), t(x), method='spearman')
+```
+This is also amazingly good!
+We can reconstruct gene expression profiles almost perfectly,
+despite the substantial overdispersion in expression
+that we didn't model using Stan.
 
 
 # t-SNE

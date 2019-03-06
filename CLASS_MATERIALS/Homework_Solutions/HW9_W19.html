@@ -113,12 +113,12 @@ img {
 
 <section id="community-structure" class="level1">
 <h1>Community structure</h1>
-<p>We have a dataset of abundances of 40 microbial taxa, measured at 100 times (by 16S transcript counts) throughout a decomposition experiment. We are interested in whether there are communities that change in abundance together.</p>
+<p>We have a dataset of abundances of 40 microbial taxa, measured at 100 times (by 16S transcript counts) throughout a decomposition experiment. We are interested in whether there are groups of taxa that change in abundance together, perhaps because they depend on each others’ metabolic byproducts, or perhaps because they are all responding to some common underlying variables that we can’t observe (e.g., amount of sugar left in the substrate as it decomposes).</p>
 <p>Here is the dataset: <a href="taxon_counts.csv">taxon_counts.csv</a></p>
 <p>The first column has the sample number. The second column (labeled “time”) has the time that the dataset was recorded at. The remaining columns have the transcript counts for each taxon.</p>
 <section id="section" class="level2">
 <h2>1.</h2>
-<p>Use <code>optimizing( )</code> to find a maximum posterior estimate of the parameters in the following Stan model, with <span class="math inline">\(K=3\)</span> communities. In this model, <code>w</code> contains the proportions of each community in each sample, and <code>eta .* x</code> contains the mean abundance in each community.</p>
+<p>Use <code>optimizing( )</code> to find a maximum posterior estimate of the parameters in the following Stan model, with <span class="math inline">\(K=3\)</span> communities. In this model, <code>w[i][j]</code> contains the proportion sample <code>i</code> that is made up of community <code>j</code>, and <code>(eta .* x)[i,j]</code> contains the mean abundance of taxon <code>i</code> in community <code>j</code>. Note that in this model, a given taxon may belong to more than one community (although with different relative abundances). (Also: this is the <em>same</em> model that we used in analyzing the transcription data in class.)</p>
 <pre class="r"><code>nmf_model &lt;- stan_model(model_code=&quot;
     data {
       int N; // # samples
@@ -149,11 +149,11 @@ img {
 </section>
 <section id="section-1" class="level2">
 <h2>2.</h2>
-<p>Are there communities changing over time? Make a plot showing estimated abundances of each cluster of taxa against time.</p>
+<p>Do the relative contributions of the three communities change over time? Make a plot showing estimated abundances of each cluster of taxa against time.</p>
 </section>
 <section id="section-2" class="level2">
 <h2>3.</h2>
-<p>How do the communities differ? Make a plot showing how much each taxon differs between communities.</p>
+<p>How do the communities differ? Make a plot showing the abundances of each taxon in the three communities.</p>
 </section>
 </section>
 
