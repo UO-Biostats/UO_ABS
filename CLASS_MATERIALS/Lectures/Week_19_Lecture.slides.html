@@ -251,8 +251,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Here’s what this looks like.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">true_osc2 &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">alpha=</span>.<span class="dv">1</span>,</a>
 <a class="sourceLine" id="cb8-2" title="2">                 <span class="dt">beta=</span>.<span class="dv">05</span>,</a>
-<a class="sourceLine" id="cb8-3" title="3">                 <span class="dt">sigma_xy=</span>.<span class="dv">05</span>,</a>
-<a class="sourceLine" id="cb8-4" title="4">                 <span class="dt">sigma_eps=</span>.<span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb8-3" title="3">                 <span class="dt">sigma_xy=</span><span class="fl">2.0</span>,</a>
+<a class="sourceLine" id="cb8-4" title="4">                 <span class="dt">sigma_eps=</span><span class="fl">4.0</span>)</a>
 <a class="sourceLine" id="cb8-5" title="5">xy2 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">nrow=</span>N, <span class="dt">ncol=</span><span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb8-6" title="6">xy2[<span class="dv">1</span>,] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">0</span>)</a>
 <a class="sourceLine" id="cb8-7" title="7"><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>(N<span class="dv">-1</span>)) {</a>
@@ -273,23 +273,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb9-4" title="4">                              <span class="dt">Y=</span>XY2[,<span class="dv">2</span>]),</a>
 <a class="sourceLine" id="cb9-5" title="5">                    <span class="dt">iter=</span><span class="dv">1000</span>, <span class="dt">chains=</span><span class="dv">3</span>,</a>
 <a class="sourceLine" id="cb9-6" title="6">                    <span class="dt">control=</span><span class="kw">list</span>(<span class="dt">max_treedepth=</span><span class="dv">12</span>))</a></code></pre></div>
-<pre><code>## Warning: There were 3 chains where the estimated Bayesian Fraction of Missing Information was low. See
-## http://mc-stan.org/misc/warnings.html#bfmi-low</code></pre>
-<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
 </section><section id="howd-we-do-1" class="slide level2">
 <h2>How’d we do?</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">cbind</span>(rstan<span class="op">::</span><span class="kw">summary</span>(osc_fit2, <span class="dt">pars=</span><span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;beta&quot;</span>, <span class="st">&quot;sigma_xy&quot;</span>, <span class="st">&quot;sigma_eps&quot;</span>))<span class="op">$</span>summary, </a>
-<a class="sourceLine" id="cb12-2" title="2">      <span class="dt">truth=</span><span class="kw">c</span>(true_osc2<span class="op">$</span>alpha, true_osc2<span class="op">$</span>beta, true_osc2<span class="op">$</span>sigma_xy, true_osc2<span class="op">$</span>sigma_eps))</a></code></pre></div>
-<pre><code>##                 mean      se_mean           sd       2.5%        25%
-## alpha     0.10007303 2.174188e-05 0.0008372415 0.09848371 0.09949273
-## beta      0.04972666 1.369708e-05 0.0005003846 0.04880269 0.04938376
-## sigma_xy  0.05080318 1.385191e-03 0.0080213121 0.03727691 0.04515550
-## sigma_eps 0.48905894 4.549692e-04 0.0121916639 0.46563369 0.48080803
-##                  50%        75%      97.5%      n_eff      Rhat truth
-## alpha     0.10008042 0.10064111 0.10178886 1482.88417 0.9991202  0.10
-## beta      0.04971800 0.05006896 0.05069889 1334.60153 1.0004848  0.05
-## sigma_xy  0.04980686 0.05520905 0.07020970   33.53294 1.0249819  0.05
-## sigma_eps 0.48886468 0.49675796 0.51370241  718.06213 1.0006619  0.50</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">cbind</span>(rstan<span class="op">::</span><span class="kw">summary</span>(osc_fit2, <span class="dt">pars=</span><span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;beta&quot;</span>, <span class="st">&quot;sigma_xy&quot;</span>, <span class="st">&quot;sigma_eps&quot;</span>))<span class="op">$</span>summary, </a>
+<a class="sourceLine" id="cb10-2" title="2">      <span class="dt">truth=</span><span class="kw">c</span>(true_osc2<span class="op">$</span>alpha, true_osc2<span class="op">$</span>beta, true_osc2<span class="op">$</span>sigma_xy, true_osc2<span class="op">$</span>sigma_eps))</a></code></pre></div>
+<pre><code>##                 mean      se_mean          sd       2.5%       25%
+## alpha     0.09925617 4.724549e-05 0.001717109 0.09593935 0.0981511
+## beta      0.04970374 3.216722e-05 0.001206304 0.04734602 0.0489135
+## sigma_xy  1.99814829 9.902054e-03 0.129356587 1.77100800 1.9054479
+## sigma_eps 3.80498755 3.673693e-03 0.114023989 3.57860640 3.7322661
+##                  50%        75%      97.5%     n_eff      Rhat truth
+## alpha     0.09925923 0.10038771 0.10268081 1320.9152 0.9992772  0.10
+## beta      0.04970460 0.05048102 0.05216207 1406.3281 1.0049509  0.05
+## sigma_xy  1.98774263 2.07987470 2.27249638  170.6580 1.0272251  2.00
+## sigma_eps 3.80491454 3.88077384 4.02587845  963.3561 1.0000248  4.00</code></pre>
 </section><section class="slide level2">
 
 <p>Here is a density plot of 100 estimated trajectories (of <code>x</code> and <code>y</code>) from the Stan fit.</p>
@@ -299,81 +296,81 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>Even more realism?</h2>
 <p>Now what if we actually <em>don’t observe</em> most of the <span class="math inline">\(Y\)</span> values?</p>
 <p>Here’s what this looks like.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">true_osc3 &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">alpha=</span>.<span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb14-2" title="2">                 <span class="dt">beta=</span>.<span class="dv">05</span>,</a>
-<a class="sourceLine" id="cb14-3" title="3">                 <span class="dt">sigma_xy=</span>.<span class="dv">05</span>,</a>
-<a class="sourceLine" id="cb14-4" title="4">                 <span class="dt">sigma_eps=</span>.<span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb14-5" title="5">xy3 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">nrow=</span>N, <span class="dt">ncol=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb14-6" title="6">xy3[<span class="dv">1</span>,] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb14-7" title="7"><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>(N<span class="dv">-1</span>)) {</a>
-<a class="sourceLine" id="cb14-8" title="8">    xy3[k<span class="op">+</span><span class="dv">1</span>,] &lt;-<span class="st"> </span>(xy3[k,] </a>
-<a class="sourceLine" id="cb14-9" title="9">                <span class="op">+</span><span class="st"> </span><span class="kw">c</span>(true_osc3<span class="op">$</span>alpha <span class="op">*</span><span class="st"> </span>xy3[k,<span class="dv">2</span>],</a>
-<a class="sourceLine" id="cb14-10" title="10">                    (<span class="op">-</span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span>true_osc3<span class="op">$</span>beta <span class="op">*</span><span class="st"> </span>xy3[k,<span class="dv">1</span>])</a>
-<a class="sourceLine" id="cb14-11" title="11">                <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">2</span>, <span class="dv">0</span>, true_osc3<span class="op">$</span>sigma_xy))</a>
-<a class="sourceLine" id="cb14-12" title="12">}</a>
-<a class="sourceLine" id="cb14-13" title="13">XY3 &lt;-<span class="st"> </span>xy3 <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(N<span class="op">*</span><span class="dv">2</span>, <span class="dv">0</span>, true_osc3<span class="op">$</span>sigma_eps)</a>
-<a class="sourceLine" id="cb14-14" title="14">obs_y &lt;-<span class="st"> </span><span class="kw">floor</span>(<span class="kw">seq</span>(<span class="dv">1</span>, N, <span class="dt">length.out=</span><span class="dv">5</span>))</a>
-<a class="sourceLine" id="cb14-15" title="15">XY3[<span class="kw">setdiff</span>(<span class="dv">1</span><span class="op">:</span>N, obs_y), <span class="dv">2</span>] &lt;-<span class="st"> </span><span class="ot">NA</span></a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">true_osc3 &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">alpha=</span>.<span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb12-2" title="2">                 <span class="dt">beta=</span>.<span class="dv">05</span>,</a>
+<a class="sourceLine" id="cb12-3" title="3">                 <span class="dt">sigma_xy=</span>.<span class="dv">05</span>,</a>
+<a class="sourceLine" id="cb12-4" title="4">                 <span class="dt">sigma_eps=</span>.<span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb12-5" title="5">xy3 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">nrow=</span>N, <span class="dt">ncol=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb12-6" title="6">xy3[<span class="dv">1</span>,] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb12-7" title="7"><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>(N<span class="dv">-1</span>)) {</a>
+<a class="sourceLine" id="cb12-8" title="8">    xy3[k<span class="op">+</span><span class="dv">1</span>,] &lt;-<span class="st"> </span>(xy3[k,] </a>
+<a class="sourceLine" id="cb12-9" title="9">                <span class="op">+</span><span class="st"> </span><span class="kw">c</span>(true_osc3<span class="op">$</span>alpha <span class="op">*</span><span class="st"> </span>xy3[k,<span class="dv">2</span>],</a>
+<a class="sourceLine" id="cb12-10" title="10">                    (<span class="op">-</span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span>true_osc3<span class="op">$</span>beta <span class="op">*</span><span class="st"> </span>xy3[k,<span class="dv">1</span>])</a>
+<a class="sourceLine" id="cb12-11" title="11">                <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">2</span>, <span class="dv">0</span>, true_osc3<span class="op">$</span>sigma_xy))</a>
+<a class="sourceLine" id="cb12-12" title="12">}</a>
+<a class="sourceLine" id="cb12-13" title="13">XY3 &lt;-<span class="st"> </span>xy3 <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(N<span class="op">*</span><span class="dv">2</span>, <span class="dv">0</span>, true_osc3<span class="op">$</span>sigma_eps)</a>
+<a class="sourceLine" id="cb12-14" title="14">obs_y &lt;-<span class="st"> </span><span class="kw">sample.int</span>(N, <span class="dt">size=</span><span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb12-15" title="15">XY3[<span class="kw">setdiff</span>(<span class="dv">1</span><span class="op">:</span>N, obs_y), <span class="dv">2</span>] &lt;-<span class="st"> </span><span class="ot">NA</span></a></code></pre></div>
 </section><section class="slide level2">
 
 <p><img src="figure/Week_19_Lecture/plot_osc3-1.png" title="plot of chunk plot_osc3" alt="plot of chunk plot_osc3" style="display: block; margin: auto;" /></p>
 </section><section id="a-new-stan-block" class="slide level2">
 <h2>A new Stan block</h2>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">osc_block_missing &lt;-<span class="st"> &quot;</span></a>
-<a class="sourceLine" id="cb15-2" title="2"><span class="st">data {</span></a>
-<a class="sourceLine" id="cb15-3" title="3"><span class="st">    int N;</span></a>
-<a class="sourceLine" id="cb15-4" title="4"><span class="st">    vector[N] X;</span></a>
-<a class="sourceLine" id="cb15-5" title="5"><span class="st">    int k; // number of observed Y</span></a>
-<a class="sourceLine" id="cb15-6" title="6"><span class="st">    int obs_y[k]; // which Y values are observed</span></a>
-<a class="sourceLine" id="cb15-7" title="7"><span class="st">    vector[k] Y;</span></a>
-<a class="sourceLine" id="cb15-8" title="8"><span class="st">}</span></a>
-<a class="sourceLine" id="cb15-9" title="9"><span class="st">parameters {</span></a>
-<a class="sourceLine" id="cb15-10" title="10"><span class="st">    real alpha;</span></a>
-<a class="sourceLine" id="cb15-11" title="11"><span class="st">    real beta;</span></a>
-<a class="sourceLine" id="cb15-12" title="12"><span class="st">    real&lt;lower=0&gt; sigma_xy;</span></a>
-<a class="sourceLine" id="cb15-13" title="13"><span class="st">    real&lt;lower=0&gt; sigma_eps;</span></a>
-<a class="sourceLine" id="cb15-14" title="14"><span class="st">    vector[N] x;</span></a>
-<a class="sourceLine" id="cb15-15" title="15"><span class="st">    vector[N] y;</span></a>
-<a class="sourceLine" id="cb15-16" title="16"><span class="st">}</span></a>
-<a class="sourceLine" id="cb15-17" title="17"><span class="st">model {</span></a>
-<a class="sourceLine" id="cb15-18" title="18"><span class="st">    x[2:N] ~ normal(x[1:(N-1)] + alpha * y[1:(N-1)], sigma_xy);</span></a>
-<a class="sourceLine" id="cb15-19" title="19"><span class="st">    y[2:N] ~ normal(y[1:(N-1)] - beta * x[1:(N-1)], sigma_xy);</span></a>
-<a class="sourceLine" id="cb15-20" title="20"><span class="st">    X ~ normal(x, sigma_eps);</span></a>
-<a class="sourceLine" id="cb15-21" title="21"><span class="st">    Y ~ normal(y[obs_y], sigma_eps);</span></a>
-<a class="sourceLine" id="cb15-22" title="22"><span class="st">    alpha ~ normal(0, 1);</span></a>
-<a class="sourceLine" id="cb15-23" title="23"><span class="st">    beta ~ normal(0, 1);</span></a>
-<a class="sourceLine" id="cb15-24" title="24"><span class="st">    sigma_xy ~ normal(0, 1);</span></a>
-<a class="sourceLine" id="cb15-25" title="25"><span class="st">    sigma_eps ~ normal(0, 1);</span></a>
-<a class="sourceLine" id="cb15-26" title="26"><span class="st">}</span></a>
-<a class="sourceLine" id="cb15-27" title="27"><span class="st">&quot;</span></a>
-<a class="sourceLine" id="cb15-28" title="28">osc_model_missing &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="dt">model_code=</span>osc_block_missing)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">osc_block_missing &lt;-<span class="st"> &quot;</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="st">data {</span></a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="st">    int N;</span></a>
+<a class="sourceLine" id="cb13-4" title="4"><span class="st">    vector[N] X;</span></a>
+<a class="sourceLine" id="cb13-5" title="5"><span class="st">    int k; // number of observed Y</span></a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="st">    int obs_y[k]; // which Y values are observed</span></a>
+<a class="sourceLine" id="cb13-7" title="7"><span class="st">    vector[k] Y;</span></a>
+<a class="sourceLine" id="cb13-8" title="8"><span class="st">}</span></a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="st">parameters {</span></a>
+<a class="sourceLine" id="cb13-10" title="10"><span class="st">    real alpha;</span></a>
+<a class="sourceLine" id="cb13-11" title="11"><span class="st">    real beta;</span></a>
+<a class="sourceLine" id="cb13-12" title="12"><span class="st">    real&lt;lower=0&gt; sigma_xy;</span></a>
+<a class="sourceLine" id="cb13-13" title="13"><span class="st">    real&lt;lower=0&gt; sigma_eps;</span></a>
+<a class="sourceLine" id="cb13-14" title="14"><span class="st">    vector[N] x;</span></a>
+<a class="sourceLine" id="cb13-15" title="15"><span class="st">    vector[N] y;</span></a>
+<a class="sourceLine" id="cb13-16" title="16"><span class="st">}</span></a>
+<a class="sourceLine" id="cb13-17" title="17"><span class="st">model {</span></a>
+<a class="sourceLine" id="cb13-18" title="18"><span class="st">    x[2:N] ~ normal(x[1:(N-1)] + alpha * y[1:(N-1)], sigma_xy);</span></a>
+<a class="sourceLine" id="cb13-19" title="19"><span class="st">    y[2:N] ~ normal(y[1:(N-1)] - beta * x[1:(N-1)], sigma_xy);</span></a>
+<a class="sourceLine" id="cb13-20" title="20"><span class="st">    X ~ normal(x, sigma_eps);</span></a>
+<a class="sourceLine" id="cb13-21" title="21"><span class="st">    Y ~ normal(y[obs_y], sigma_eps);</span></a>
+<a class="sourceLine" id="cb13-22" title="22"><span class="st">    alpha ~ normal(0, 1);</span></a>
+<a class="sourceLine" id="cb13-23" title="23"><span class="st">    beta ~ normal(0, 1);</span></a>
+<a class="sourceLine" id="cb13-24" title="24"><span class="st">    sigma_xy ~ normal(0, 1);</span></a>
+<a class="sourceLine" id="cb13-25" title="25"><span class="st">    sigma_eps ~ normal(0, 1);</span></a>
+<a class="sourceLine" id="cb13-26" title="26"><span class="st">}</span></a>
+<a class="sourceLine" id="cb13-27" title="27"><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb13-28" title="28">osc_model_missing &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="dt">model_code=</span>osc_block_missing)</a></code></pre></div>
 </section><section class="slide level2">
 
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">osc_fit3 &lt;-<span class="st"> </span><span class="kw">sampling</span>(osc_model_missing,</a>
-<a class="sourceLine" id="cb16-2" title="2">                    <span class="dt">data=</span><span class="kw">list</span>(N,</a>
-<a class="sourceLine" id="cb16-3" title="3">                              <span class="dt">X=</span>XY3[,<span class="dv">1</span>],</a>
-<a class="sourceLine" id="cb16-4" title="4">                              <span class="dt">k=</span><span class="kw">length</span>(obs_y),</a>
-<a class="sourceLine" id="cb16-5" title="5">                              <span class="dt">obs_y=</span>obs_y,</a>
-<a class="sourceLine" id="cb16-6" title="6">                              <span class="dt">Y=</span>XY3[obs_y,<span class="dv">2</span>]),</a>
-<a class="sourceLine" id="cb16-7" title="7">                    <span class="dt">iter=</span><span class="dv">1000</span>, <span class="dt">chains=</span><span class="dv">3</span>,</a>
-<a class="sourceLine" id="cb16-8" title="8">                    <span class="dt">control=</span><span class="kw">list</span>(<span class="dt">max_treedepth=</span><span class="dv">12</span>))</a></code></pre></div>
-<pre><code>## Warning: There were 2 chains where the estimated Bayesian Fraction of Missing Information was low. See
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">osc_fit3 &lt;-<span class="st"> </span><span class="kw">sampling</span>(osc_model_missing,</a>
+<a class="sourceLine" id="cb14-2" title="2">                    <span class="dt">data=</span><span class="kw">list</span>(N,</a>
+<a class="sourceLine" id="cb14-3" title="3">                              <span class="dt">X=</span>XY3[,<span class="dv">1</span>],</a>
+<a class="sourceLine" id="cb14-4" title="4">                              <span class="dt">k=</span><span class="kw">length</span>(obs_y),</a>
+<a class="sourceLine" id="cb14-5" title="5">                              <span class="dt">obs_y=</span>obs_y,</a>
+<a class="sourceLine" id="cb14-6" title="6">                              <span class="dt">Y=</span>XY3[obs_y,<span class="dv">2</span>]),</a>
+<a class="sourceLine" id="cb14-7" title="7">                    <span class="dt">iter=</span><span class="dv">1000</span>, <span class="dt">chains=</span><span class="dv">3</span>,</a>
+<a class="sourceLine" id="cb14-8" title="8">                    <span class="dt">control=</span><span class="kw">list</span>(<span class="dt">max_treedepth=</span><span class="dv">12</span>))</a></code></pre></div>
+<pre><code>## Warning: There were 3 chains where the estimated Bayesian Fraction of Missing Information was low. See
 ## http://mc-stan.org/misc/warnings.html#bfmi-low</code></pre>
 <pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
 </section><section id="howd-we-do-2" class="slide level2">
 <h2>How’d we do?</h2>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">cbind</span>(rstan<span class="op">::</span><span class="kw">summary</span>(osc_fit3, <span class="dt">pars=</span><span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;beta&quot;</span>, <span class="st">&quot;sigma_xy&quot;</span>, <span class="st">&quot;sigma_eps&quot;</span>))<span class="op">$</span>summary, </a>
-<a class="sourceLine" id="cb19-2" title="2">      <span class="dt">truth=</span><span class="kw">c</span>(true_osc3<span class="op">$</span>alpha, true_osc3<span class="op">$</span>beta, true_osc3<span class="op">$</span>sigma_xy, true_osc3<span class="op">$</span>sigma_eps))</a></code></pre></div>
-<pre><code>##                 mean    se_mean         sd        2.5%         25%
-## alpha     0.05657262 0.05612037 0.06902567 -0.05031812 -0.03565282
-## beta      0.01040912 0.04274907 0.05273551 -0.08033271 -0.05642344
-## sigma_xy  0.22019409 0.20889610 0.25655841  0.02854037  0.03613473
-## sigma_eps 0.44386407 0.05872939 0.07442993  0.29996365  0.36280981
-##                  50%        75%      97.5%    n_eff      Rhat truth
-## alpha     0.10037464 0.10673918 0.11831862 1.512795 11.163451  0.10
-## beta      0.04530389 0.04841413 0.05256316 1.521784  8.746449  0.05
-## sigma_xy  0.04434578 0.55964039 0.62660771 1.508384 15.104395  0.05
-## sigma_eps 0.48260145 0.49935823 0.52490386 1.606143  3.809382  0.50</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">cbind</span>(rstan<span class="op">::</span><span class="kw">summary</span>(osc_fit3, <span class="dt">pars=</span><span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;beta&quot;</span>, <span class="st">&quot;sigma_xy&quot;</span>, <span class="st">&quot;sigma_eps&quot;</span>))<span class="op">$</span>summary, </a>
+<a class="sourceLine" id="cb17-2" title="2">      <span class="dt">truth=</span><span class="kw">c</span>(true_osc3<span class="op">$</span>alpha, true_osc3<span class="op">$</span>beta, true_osc3<span class="op">$</span>sigma_xy, true_osc3<span class="op">$</span>sigma_eps))</a></code></pre></div>
+<pre><code>##                 mean      se_mean          sd       2.5%        25%
+## alpha     0.09837269 0.0003071355 0.004059668 0.09078325 0.09538488
+## beta      0.05050801 0.0001564655 0.002129560 0.04666067 0.04894983
+## sigma_xy  0.04729925 0.0024937453 0.008426499 0.03349628 0.04133138
+## sigma_eps 0.49186276 0.0004783760 0.016373508 0.46161371 0.48035741
+##                  50%        75%      97.5%     n_eff     Rhat truth
+## alpha     0.09815145 0.10140005 0.10649604  174.7113 1.018519  0.10
+## beta      0.05050416 0.05203376 0.05473013  185.2434 1.016627  0.05
+## sigma_xy  0.04583014 0.05206181 0.06643551   11.4180 1.256032  0.05
+## sigma_eps 0.49091696 0.50272201 0.52451703 1171.5064 1.002037  0.50</code></pre>
 </section><section class="slide level2">
 
 <p>Here is a density plot of 100 estimated trajectories (of <code>x</code> and <code>y</code>) from the Stan fit.</p>
@@ -386,7 +383,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section><section id="the-data" class="slide level2">
 <h2>The data</h2>
 <p><code>(x,y)</code> : spatial coords; <code>z</code> : abundance</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">xy</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">xy</a></code></pre></div>
 <pre><code>##              x         y        z
 ## 1  0.003958299 0.2644094 5.678441
 ## 2  0.075767130 0.6980934 7.311474
@@ -436,17 +433,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section><section id="in-stan" class="slide level2">
 <h2>In Stan</h2>
 <figure>
-<img data-src="cov_exp_quad.png" alt="cov_exp_quad() documentation" /><figcaption>cov_exp_quad() documentation</figcaption>
+<img data-src="images/cov_exp_quad.png" alt="cov_exp_quad() documentation" /><figcaption>cov_exp_quad() documentation</figcaption>
 </figure>
 </section><section class="slide level2">
 
 <p>Here’s an <code>R</code> function that takes a set of locations (<code>xy</code>), a variance scaling <code>alpha</code>, and a spatial scale <code>rho</code>:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1">cov_exp_quad &lt;-<span class="st"> </span><span class="cf">function</span> (xy, alpha, rho) {</a>
-<a class="sourceLine" id="cb23-2" title="2">    <span class="co"># return the &#39;quadratic exponential&#39; covariance matrix</span></a>
-<a class="sourceLine" id="cb23-3" title="3">    <span class="co"># for spatial positions xy</span></a>
-<a class="sourceLine" id="cb23-4" title="4">    dxy &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">dist</span>(xy))</a>
-<a class="sourceLine" id="cb23-5" title="5">    <span class="kw">return</span>( alpha<span class="op">^</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>( <span class="op">-</span><span class="st"> </span>(<span class="dv">1</span><span class="op">/</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>dxy<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span>rho<span class="op">^</span><span class="dv">2</span> ) )</a>
-<a class="sourceLine" id="cb23-6" title="6">}</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">cov_exp_quad &lt;-<span class="st"> </span><span class="cf">function</span> (xy, alpha, rho) {</a>
+<a class="sourceLine" id="cb21-2" title="2">    <span class="co"># return the &#39;quadratic exponential&#39; covariance matrix</span></a>
+<a class="sourceLine" id="cb21-3" title="3">    <span class="co"># for spatial positions xy</span></a>
+<a class="sourceLine" id="cb21-4" title="4">    dxy &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">dist</span>(xy))</a>
+<a class="sourceLine" id="cb21-5" title="5">    <span class="kw">return</span>( alpha<span class="op">^</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>( <span class="op">-</span><span class="st"> </span>(<span class="dv">1</span><span class="op">/</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>dxy<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span>rho<span class="op">^</span><span class="dv">2</span> ) )</a>
+<a class="sourceLine" id="cb21-6" title="6">}</a></code></pre></div>
 <div class="fragment">
 <p><strong>Challenge:</strong> simulate spatially autocorrelated random Gaussian values, and plot them, in space. Pick parameters so you can tell they are autocorrelated.</p>
 </div>
@@ -456,11 +453,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section><section id="simulation" class="slide level2">
 <h2>Simulation</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="kw">library</span>(mvtnorm)</a>
+<a class="sourceLine" id="cb23-2" title="2">N &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb23-3" title="3"><span class="co"># spatial extent of order 1</span></a>
+<a class="sourceLine" id="cb23-4" title="4">xy &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">y=</span><span class="kw">runif</span>(N),</a>
+<a class="sourceLine" id="cb23-5" title="5">                 <span class="dt">x=</span><span class="kw">rnorm</span>(N))</a>
+<a class="sourceLine" id="cb23-6" title="6">rho &lt;-<span class="st"> </span><span class="fl">.25</span></a>
+<a class="sourceLine" id="cb23-7" title="7">alpha &lt;-<span class="st"> </span><span class="fl">1.0</span></a>
+<a class="sourceLine" id="cb23-8" title="8"><span class="co"># compute covariance matrix</span></a>
+<a class="sourceLine" id="cb23-9" title="9">K &lt;-<span class="st"> </span><span class="kw">cov_exp_quad</span>(xy, alpha, rho)</a>
+<a class="sourceLine" id="cb23-10" title="10"><span class="co"># simulate z&#39;s</span></a>
+<a class="sourceLine" id="cb23-11" title="11">xy<span class="op">$</span>z &lt;-<span class="st"> </span><span class="kw">as.vector</span>(<span class="kw">rmvnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="kw">rep</span>(<span class="dv">0</span>,N),</a>
+<a class="sourceLine" id="cb23-12" title="12">                          <span class="dt">sigma=</span>K))</a></code></pre></div>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="kw">plot</span>(xy<span class="op">$</span>x, xy<span class="op">$</span>y, <span class="dt">xlab=</span><span class="st">&#39;x spatial coord&#39;</span>, </a>
+<a class="sourceLine" id="cb24-2" title="2">     <span class="dt">ylab=</span><span class="st">&#39;y spatial coord&#39;</span>, <span class="dt">pch=</span><span class="dv">20</span>, <span class="dt">asp=</span><span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb24-3" title="3">     <span class="dt">cex=</span><span class="kw">as.numeric</span>(<span class="kw">cut</span>(xy<span class="op">$</span>z, <span class="dt">breaks=</span><span class="dv">10</span>))<span class="op">/</span><span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb24-4" title="4">     <span class="dt">col=</span><span class="kw">colorRampPalette</span>(<span class="kw">c</span>(<span class="st">&#39;blue&#39;</span>, <span class="st">&#39;red&#39;</span>))(<span class="dv">24</span>)[<span class="kw">cut</span>(xy<span class="op">$</span>z, <span class="dt">breaks=</span><span class="dv">24</span>)])</a></code></pre></div>
+<p><img src="figure/Week_19_Lecture/plot_pts-1.png" title="plot of chunk plot_pts" alt="plot of chunk plot_pts" style="display: block; margin: auto;" /></p>
+</section><section id="simulation-number-2" class="slide level2">
+<h2>Simulation number 2</h2>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">library</span>(mvtnorm)</a>
-<a class="sourceLine" id="cb25-2" title="2">N &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb25-2" title="2">N &lt;-<span class="st"> </span><span class="dv">1000</span></a>
 <a class="sourceLine" id="cb25-3" title="3"><span class="co"># spatial extent of order 1</span></a>
-<a class="sourceLine" id="cb25-4" title="4">xy &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">y=</span><span class="kw">runif</span>(N),</a>
-<a class="sourceLine" id="cb25-5" title="5">                 <span class="dt">x=</span><span class="kw">rnorm</span>(N))</a>
+<a class="sourceLine" id="cb25-4" title="4">xy &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="kw">runif</span>(N),</a>
+<a class="sourceLine" id="cb25-5" title="5">                 <span class="dt">y=</span><span class="kw">rnorm</span>(N))</a>
 <a class="sourceLine" id="cb25-6" title="6">rho &lt;-<span class="st"> </span><span class="fl">.25</span></a>
 <a class="sourceLine" id="cb25-7" title="7">alpha &lt;-<span class="st"> </span><span class="fl">1.0</span></a>
 <a class="sourceLine" id="cb25-8" title="8"><span class="co"># compute covariance matrix</span></a>
@@ -470,31 +488,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb25-12" title="12">                          <span class="dt">sigma=</span>K))</a></code></pre></div>
 </section><section class="slide level2">
 
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">plot</span>(xy<span class="op">$</span>x, xy<span class="op">$</span>y, <span class="dt">xlab=</span><span class="st">&#39;x spatial coord&#39;</span>, </a>
-<a class="sourceLine" id="cb26-2" title="2">     <span class="dt">ylab=</span><span class="st">&#39;y spatial coord&#39;</span>, <span class="dt">pch=</span><span class="dv">20</span>, <span class="dt">asp=</span><span class="dv">1</span>,</a>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">plot</span>(xy<span class="op">$</span>y, xy<span class="op">$</span>x, <span class="dt">xlab=</span><span class="st">&#39;y spatial coord&#39;</span>, </a>
+<a class="sourceLine" id="cb26-2" title="2">     <span class="dt">ylab=</span><span class="st">&#39;x spatial coord&#39;</span>, <span class="dt">pch=</span><span class="dv">20</span>, <span class="dt">asp=</span><span class="dv">1</span>,</a>
 <a class="sourceLine" id="cb26-3" title="3">     <span class="dt">cex=</span><span class="kw">as.numeric</span>(<span class="kw">cut</span>(xy<span class="op">$</span>z, <span class="dt">breaks=</span><span class="dv">10</span>))<span class="op">/</span><span class="dv">2</span>,</a>
 <a class="sourceLine" id="cb26-4" title="4">     <span class="dt">col=</span><span class="kw">colorRampPalette</span>(<span class="kw">c</span>(<span class="st">&#39;blue&#39;</span>, <span class="st">&#39;red&#39;</span>))(<span class="dv">24</span>)[<span class="kw">cut</span>(xy<span class="op">$</span>z, <span class="dt">breaks=</span><span class="dv">24</span>)])</a></code></pre></div>
-<p><img src="figure/Week_19_Lecture/plot_pts-1.png" title="plot of chunk plot_pts" alt="plot of chunk plot_pts" style="display: block; margin: auto;" /></p>
-</section><section id="simulation-number-2" class="slide level2">
-<h2>Simulation number 2</h2>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">library</span>(mvtnorm)</a>
-<a class="sourceLine" id="cb27-2" title="2">N &lt;-<span class="st"> </span><span class="dv">1000</span></a>
-<a class="sourceLine" id="cb27-3" title="3"><span class="co"># spatial extent of order 1</span></a>
-<a class="sourceLine" id="cb27-4" title="4">xy &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="kw">runif</span>(N),</a>
-<a class="sourceLine" id="cb27-5" title="5">                 <span class="dt">y=</span><span class="kw">rnorm</span>(N))</a>
-<a class="sourceLine" id="cb27-6" title="6">rho &lt;-<span class="st"> </span><span class="fl">.25</span></a>
-<a class="sourceLine" id="cb27-7" title="7">alpha &lt;-<span class="st"> </span><span class="fl">1.0</span></a>
-<a class="sourceLine" id="cb27-8" title="8"><span class="co"># compute covariance matrix</span></a>
-<a class="sourceLine" id="cb27-9" title="9">K &lt;-<span class="st"> </span><span class="kw">cov_exp_quad</span>(xy, alpha, rho)</a>
-<a class="sourceLine" id="cb27-10" title="10"><span class="co"># simulate z&#39;s</span></a>
-<a class="sourceLine" id="cb27-11" title="11">xy<span class="op">$</span>z &lt;-<span class="st"> </span><span class="kw">as.vector</span>(<span class="kw">rmvnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="kw">rep</span>(<span class="dv">0</span>,N),</a>
-<a class="sourceLine" id="cb27-12" title="12">                          <span class="dt">sigma=</span>K))</a></code></pre></div>
-</section><section class="slide level2">
-
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">plot</span>(xy<span class="op">$</span>y, xy<span class="op">$</span>x, <span class="dt">xlab=</span><span class="st">&#39;y spatial coord&#39;</span>, </a>
-<a class="sourceLine" id="cb28-2" title="2">     <span class="dt">ylab=</span><span class="st">&#39;x spatial coord&#39;</span>, <span class="dt">pch=</span><span class="dv">20</span>, <span class="dt">asp=</span><span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb28-3" title="3">     <span class="dt">cex=</span><span class="kw">as.numeric</span>(<span class="kw">cut</span>(xy<span class="op">$</span>z, <span class="dt">breaks=</span><span class="dv">10</span>))<span class="op">/</span><span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb28-4" title="4">     <span class="dt">col=</span><span class="kw">colorRampPalette</span>(<span class="kw">c</span>(<span class="st">&#39;blue&#39;</span>, <span class="st">&#39;red&#39;</span>))(<span class="dv">24</span>)[<span class="kw">cut</span>(xy<span class="op">$</span>z, <span class="dt">breaks=</span><span class="dv">24</span>)])</a></code></pre></div>
 <p><img src="figure/Week_19_Lecture/plot_pts2-1.png" title="plot of chunk plot_pts2" alt="plot of chunk plot_pts2" style="display: block; margin: auto;" /></p>
 </section></section>
 <section><section id="back-to-the-data" class="title-slide slide level1"><h1>Back to the data</h1></section><section id="goals" class="slide level2">
@@ -507,27 +504,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ol>
 </section><section id="a-basic-stan-block" class="slide level2">
 <h2>A basic Stan block</h2>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1">sp_block &lt;-<span class="st"> &quot;</span></a>
-<a class="sourceLine" id="cb29-2" title="2"><span class="st">data {</span></a>
-<a class="sourceLine" id="cb29-3" title="3"><span class="st">    int N; // number of obs</span></a>
-<a class="sourceLine" id="cb29-4" title="4"><span class="st">    vector[2] xy[N]; // spatial pos</span></a>
-<a class="sourceLine" id="cb29-5" title="5"><span class="st">    vector[N] z;</span></a>
-<a class="sourceLine" id="cb29-6" title="6"><span class="st">}</span></a>
-<a class="sourceLine" id="cb29-7" title="7"><span class="st">parameters {</span></a>
-<a class="sourceLine" id="cb29-8" title="8"><span class="st">    real&lt;lower=0&gt; alpha;</span></a>
-<a class="sourceLine" id="cb29-9" title="9"><span class="st">    real&lt;lower=0&gt; rho;</span></a>
-<a class="sourceLine" id="cb29-10" title="10"><span class="st">}</span></a>
-<a class="sourceLine" id="cb29-11" title="11"><span class="st">model {</span></a>
-<a class="sourceLine" id="cb29-12" title="12"><span class="st">    matrix[N, N] K;</span></a>
-<a class="sourceLine" id="cb29-13" title="13"><span class="st">    K = cov_exp_quad(xy, alpha, rho);</span></a>
-<a class="sourceLine" id="cb29-14" title="14"></a>
-<a class="sourceLine" id="cb29-15" title="15"><span class="st">    z ~ multi_normal(rep_vector(0.0, N), K);</span></a>
-<a class="sourceLine" id="cb29-16" title="16"><span class="st">    alpha ~ normal(0, 5);</span></a>
-<a class="sourceLine" id="cb29-17" title="17"><span class="st">    rho ~ normal(0, 5);</span></a>
-<a class="sourceLine" id="cb29-18" title="18"><span class="st">}</span></a>
-<a class="sourceLine" id="cb29-19" title="19"><span class="st">&quot;</span></a>
-<a class="sourceLine" id="cb29-20" title="20"><span class="co"># check this compiles</span></a>
-<a class="sourceLine" id="cb29-21" title="21">sp_model &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="dt">model_code=</span>sp_block)</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1">sp_block &lt;-<span class="st"> &quot;</span></a>
+<a class="sourceLine" id="cb27-2" title="2"><span class="st">data {</span></a>
+<a class="sourceLine" id="cb27-3" title="3"><span class="st">    int N; // number of obs</span></a>
+<a class="sourceLine" id="cb27-4" title="4"><span class="st">    vector[2] xy[N]; // spatial pos</span></a>
+<a class="sourceLine" id="cb27-5" title="5"><span class="st">    vector[N] z;</span></a>
+<a class="sourceLine" id="cb27-6" title="6"><span class="st">}</span></a>
+<a class="sourceLine" id="cb27-7" title="7"><span class="st">parameters {</span></a>
+<a class="sourceLine" id="cb27-8" title="8"><span class="st">    real&lt;lower=0&gt; alpha;</span></a>
+<a class="sourceLine" id="cb27-9" title="9"><span class="st">    real&lt;lower=0&gt; rho;</span></a>
+<a class="sourceLine" id="cb27-10" title="10"><span class="st">}</span></a>
+<a class="sourceLine" id="cb27-11" title="11"><span class="st">model {</span></a>
+<a class="sourceLine" id="cb27-12" title="12"><span class="st">    matrix[N, N] K;</span></a>
+<a class="sourceLine" id="cb27-13" title="13"><span class="st">    K = cov_exp_quad(xy, alpha, rho);</span></a>
+<a class="sourceLine" id="cb27-14" title="14"></a>
+<a class="sourceLine" id="cb27-15" title="15"><span class="st">    z ~ multi_normal(rep_vector(0.0, N), K);</span></a>
+<a class="sourceLine" id="cb27-16" title="16"><span class="st">    alpha ~ normal(0, 5);</span></a>
+<a class="sourceLine" id="cb27-17" title="17"><span class="st">    rho ~ normal(0, 5);</span></a>
+<a class="sourceLine" id="cb27-18" title="18"><span class="st">}</span></a>
+<a class="sourceLine" id="cb27-19" title="19"><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb27-20" title="20"><span class="co"># check this compiles</span></a>
+<a class="sourceLine" id="cb27-21" title="21">sp_model &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="dt">model_code=</span>sp_block)</a></code></pre></div>
 </section><section class="slide level2">
 
 <p><strong>Challenge:</strong> we would like to estimate the abundance at the <code>k</code> locations <code>new_xy</code>. Add this feature to the Stan block.</p>
@@ -551,82 +548,82 @@ model {
 }</code></pre>
 </section><section id="a-solution" class="slide level2">
 <h2>A solution</h2>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">sp_block &lt;-<span class="st"> &quot;</span></a>
-<a class="sourceLine" id="cb31-2" title="2"><span class="st">data {</span></a>
-<a class="sourceLine" id="cb31-3" title="3"><span class="st">    int N; // number of obs</span></a>
-<a class="sourceLine" id="cb31-4" title="4"><span class="st">    vector[2] old_xy[N]; // spatial pos</span></a>
-<a class="sourceLine" id="cb31-5" title="5"><span class="st">    vector[N] old_z;</span></a>
-<a class="sourceLine" id="cb31-6" title="6"><span class="st">    int n;</span></a>
-<a class="sourceLine" id="cb31-7" title="7"><span class="st">    vector[2] new_xy[n]; // new locs</span></a>
-<a class="sourceLine" id="cb31-8" title="8"><span class="st">}</span></a>
-<a class="sourceLine" id="cb31-9" title="9"><span class="st">transformed data {</span></a>
-<a class="sourceLine" id="cb31-10" title="10"><span class="st">    vector[2] xy[N+n];</span></a>
-<a class="sourceLine" id="cb31-11" title="11"><span class="st">    xy[1:N] = old_xy;</span></a>
-<a class="sourceLine" id="cb31-12" title="12"><span class="st">    xy[(N+1):(N+n)] = new_xy;</span></a>
-<a class="sourceLine" id="cb31-13" title="13"><span class="st">    print(dims(old_z));</span></a>
-<a class="sourceLine" id="cb31-14" title="14"><span class="st">}</span></a>
-<a class="sourceLine" id="cb31-15" title="15"><span class="st">parameters {</span></a>
-<a class="sourceLine" id="cb31-16" title="16"><span class="st">    real&lt;lower=0&gt; alpha;</span></a>
-<a class="sourceLine" id="cb31-17" title="17"><span class="st">    real&lt;lower=0&gt; rho;</span></a>
-<a class="sourceLine" id="cb31-18" title="18"><span class="st">    vector[n] new_z;</span></a>
-<a class="sourceLine" id="cb31-19" title="19"><span class="st">    real&lt;lower=0&gt; delta;</span></a>
-<a class="sourceLine" id="cb31-20" title="20"><span class="st">    real mu;</span></a>
-<a class="sourceLine" id="cb31-21" title="21"><span class="st">}</span></a>
-<a class="sourceLine" id="cb31-22" title="22"><span class="st">model {</span></a>
-<a class="sourceLine" id="cb31-23" title="23"><span class="st">    matrix[N+n, N+n] K;</span></a>
-<a class="sourceLine" id="cb31-24" title="24"><span class="st">    vector[N+n] z;</span></a>
-<a class="sourceLine" id="cb31-25" title="25"><span class="st">    K = cov_exp_quad(xy, alpha, rho);</span></a>
-<a class="sourceLine" id="cb31-26" title="26"><span class="st">    for (k in 1:(N+n)) {</span></a>
-<a class="sourceLine" id="cb31-27" title="27"><span class="st">        K[k,k] += delta;</span></a>
-<a class="sourceLine" id="cb31-28" title="28"><span class="st">    }</span></a>
-<a class="sourceLine" id="cb31-29" title="29"><span class="st">    z[1:N] = old_z;</span></a>
-<a class="sourceLine" id="cb31-30" title="30"><span class="st">    z[(N+1):(N+n)] = new_z;</span></a>
-<a class="sourceLine" id="cb31-31" title="31"><span class="st">    z ~ multi_normal(rep_vector(mu, N+n), K);</span></a>
-<a class="sourceLine" id="cb31-32" title="32"><span class="st">    alpha ~ normal(0, 5);</span></a>
-<a class="sourceLine" id="cb31-33" title="33"><span class="st">    rho ~ normal(0, 5);</span></a>
-<a class="sourceLine" id="cb31-34" title="34"><span class="st">    delta ~ normal(0, 5);</span></a>
-<a class="sourceLine" id="cb31-35" title="35"><span class="st">    mu ~ normal(0, 5);</span></a>
-<a class="sourceLine" id="cb31-36" title="36"><span class="st">}</span></a>
-<a class="sourceLine" id="cb31-37" title="37"><span class="st">&quot;</span></a>
-<a class="sourceLine" id="cb31-38" title="38"></a>
-<a class="sourceLine" id="cb31-39" title="39">new_sp &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="dt">model_code=</span>sp_block)</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1">sp_block &lt;-<span class="st"> &quot;</span></a>
+<a class="sourceLine" id="cb29-2" title="2"><span class="st">data {</span></a>
+<a class="sourceLine" id="cb29-3" title="3"><span class="st">    int N; // number of obs</span></a>
+<a class="sourceLine" id="cb29-4" title="4"><span class="st">    vector[2] old_xy[N]; // spatial pos</span></a>
+<a class="sourceLine" id="cb29-5" title="5"><span class="st">    vector[N] old_z;</span></a>
+<a class="sourceLine" id="cb29-6" title="6"><span class="st">    int n;</span></a>
+<a class="sourceLine" id="cb29-7" title="7"><span class="st">    vector[2] new_xy[n]; // new locs</span></a>
+<a class="sourceLine" id="cb29-8" title="8"><span class="st">}</span></a>
+<a class="sourceLine" id="cb29-9" title="9"><span class="st">transformed data {</span></a>
+<a class="sourceLine" id="cb29-10" title="10"><span class="st">    vector[2] xy[N+n];</span></a>
+<a class="sourceLine" id="cb29-11" title="11"><span class="st">    xy[1:N] = old_xy;</span></a>
+<a class="sourceLine" id="cb29-12" title="12"><span class="st">    xy[(N+1):(N+n)] = new_xy;</span></a>
+<a class="sourceLine" id="cb29-13" title="13"><span class="st">    print(dims(old_z));</span></a>
+<a class="sourceLine" id="cb29-14" title="14"><span class="st">}</span></a>
+<a class="sourceLine" id="cb29-15" title="15"><span class="st">parameters {</span></a>
+<a class="sourceLine" id="cb29-16" title="16"><span class="st">    real&lt;lower=0&gt; alpha;</span></a>
+<a class="sourceLine" id="cb29-17" title="17"><span class="st">    real&lt;lower=0&gt; rho;</span></a>
+<a class="sourceLine" id="cb29-18" title="18"><span class="st">    vector[n] new_z;</span></a>
+<a class="sourceLine" id="cb29-19" title="19"><span class="st">    real&lt;lower=0&gt; delta;</span></a>
+<a class="sourceLine" id="cb29-20" title="20"><span class="st">    real mu;</span></a>
+<a class="sourceLine" id="cb29-21" title="21"><span class="st">}</span></a>
+<a class="sourceLine" id="cb29-22" title="22"><span class="st">model {</span></a>
+<a class="sourceLine" id="cb29-23" title="23"><span class="st">    matrix[N+n, N+n] K;</span></a>
+<a class="sourceLine" id="cb29-24" title="24"><span class="st">    vector[N+n] z;</span></a>
+<a class="sourceLine" id="cb29-25" title="25"><span class="st">    K = cov_exp_quad(xy, alpha, rho);</span></a>
+<a class="sourceLine" id="cb29-26" title="26"><span class="st">    for (k in 1:(N+n)) {</span></a>
+<a class="sourceLine" id="cb29-27" title="27"><span class="st">        K[k,k] += delta;</span></a>
+<a class="sourceLine" id="cb29-28" title="28"><span class="st">    }</span></a>
+<a class="sourceLine" id="cb29-29" title="29"><span class="st">    z[1:N] = old_z;</span></a>
+<a class="sourceLine" id="cb29-30" title="30"><span class="st">    z[(N+1):(N+n)] = new_z;</span></a>
+<a class="sourceLine" id="cb29-31" title="31"><span class="st">    z ~ multi_normal(rep_vector(mu, N+n), K);</span></a>
+<a class="sourceLine" id="cb29-32" title="32"><span class="st">    alpha ~ normal(0, 5);</span></a>
+<a class="sourceLine" id="cb29-33" title="33"><span class="st">    rho ~ normal(0, 5);</span></a>
+<a class="sourceLine" id="cb29-34" title="34"><span class="st">    delta ~ normal(0, 5);</span></a>
+<a class="sourceLine" id="cb29-35" title="35"><span class="st">    mu ~ normal(0, 5);</span></a>
+<a class="sourceLine" id="cb29-36" title="36"><span class="st">}</span></a>
+<a class="sourceLine" id="cb29-37" title="37"><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb29-38" title="38"></a>
+<a class="sourceLine" id="cb29-39" title="39">new_sp &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="dt">model_code=</span>sp_block)</a></code></pre></div>
 </section><section id="simulate-data" class="slide level2">
 <h2>Simulate data</h2>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">library</span>(mvtnorm)</a>
-<a class="sourceLine" id="cb32-2" title="2">N &lt;-<span class="st"> </span><span class="dv">20</span></a>
-<a class="sourceLine" id="cb32-3" title="3">xy &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="kw">runif</span>(N), <span class="dt">y=</span><span class="kw">runif</span>(N))</a>
-<a class="sourceLine" id="cb32-4" title="4">dxy &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">dist</span>(xy))</a>
-<a class="sourceLine" id="cb32-5" title="5">ut &lt;-<span class="st"> </span><span class="kw">upper.tri</span>(dxy, <span class="dt">diag=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb32-6" title="6">truth &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">rho=</span>.<span class="dv">6</span>,</a>
-<a class="sourceLine" id="cb32-7" title="7">              <span class="dt">delta=</span>.<span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb32-8" title="8">              <span class="dt">alpha=</span><span class="fl">2.5</span>,</a>
-<a class="sourceLine" id="cb32-9" title="9">              <span class="dt">mu=</span><span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb32-10" title="10">truth<span class="op">$</span>covmat &lt;-<span class="st"> </span>(truth<span class="op">$</span>delta <span class="op">*</span><span class="st"> </span><span class="kw">diag</span>(N) </a>
-<a class="sourceLine" id="cb32-11" title="11">                 <span class="op">+</span><span class="st"> </span>truth<span class="op">$</span>alpha<span class="op">^</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span>(dxy<span class="op">/</span>truth<span class="op">$</span>rho)<span class="op">^</span><span class="dv">2</span>))</a>
-<a class="sourceLine" id="cb32-12" title="12">xy<span class="op">$</span>z &lt;-<span class="st"> </span><span class="kw">as.vector</span>(<span class="kw">rmvnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="kw">rep</span>(truth<span class="op">$</span>mu,N), <span class="dt">sigma=</span>truth<span class="op">$</span>covmat))</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">library</span>(mvtnorm)</a>
+<a class="sourceLine" id="cb30-2" title="2">N &lt;-<span class="st"> </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb30-3" title="3">xy &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="kw">runif</span>(N), <span class="dt">y=</span><span class="kw">runif</span>(N))</a>
+<a class="sourceLine" id="cb30-4" title="4">dxy &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">dist</span>(xy))</a>
+<a class="sourceLine" id="cb30-5" title="5">ut &lt;-<span class="st"> </span><span class="kw">upper.tri</span>(dxy, <span class="dt">diag=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb30-6" title="6">truth &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">rho=</span>.<span class="dv">6</span>,</a>
+<a class="sourceLine" id="cb30-7" title="7">              <span class="dt">delta=</span>.<span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb30-8" title="8">              <span class="dt">alpha=</span><span class="fl">2.5</span>,</a>
+<a class="sourceLine" id="cb30-9" title="9">              <span class="dt">mu=</span><span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb30-10" title="10">truth<span class="op">$</span>covmat &lt;-<span class="st"> </span>(truth<span class="op">$</span>delta <span class="op">*</span><span class="st"> </span><span class="kw">diag</span>(N) </a>
+<a class="sourceLine" id="cb30-11" title="11">                 <span class="op">+</span><span class="st"> </span>truth<span class="op">$</span>alpha<span class="op">^</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span>(dxy<span class="op">/</span>truth<span class="op">$</span>rho)<span class="op">^</span><span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb30-12" title="12">xy<span class="op">$</span>z &lt;-<span class="st"> </span><span class="kw">as.vector</span>(<span class="kw">rmvnorm</span>(<span class="dv">1</span>, <span class="dt">mean=</span><span class="kw">rep</span>(truth<span class="op">$</span>mu,N), <span class="dt">sigma=</span>truth<span class="op">$</span>covmat))</a></code></pre></div>
 </section><section id="it-runs." class="slide level2">
 <h2>It runs.</h2>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1">new_xy &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">x=</span><span class="kw">runif</span>(<span class="dv">5</span>), <span class="dt">y=</span><span class="kw">runif</span>(<span class="dv">5</span>))</a>
-<a class="sourceLine" id="cb33-2" title="2">sp_data &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">N=</span><span class="kw">nrow</span>(xy),</a>
-<a class="sourceLine" id="cb33-3" title="3">                <span class="dt">old_xy=</span><span class="kw">cbind</span>(xy<span class="op">$</span>x, xy<span class="op">$</span>y),</a>
-<a class="sourceLine" id="cb33-4" title="4">                <span class="dt">old_z=</span>xy<span class="op">$</span>z,</a>
-<a class="sourceLine" id="cb33-5" title="5">                <span class="dt">n=</span><span class="kw">nrow</span>(new_xy),</a>
-<a class="sourceLine" id="cb33-6" title="6">                <span class="dt">new_xy=</span><span class="kw">as.matrix</span>(new_xy))</a>
-<a class="sourceLine" id="cb33-7" title="7"></a>
-<a class="sourceLine" id="cb33-8" title="8">(sp_time &lt;-<span class="st"> </span><span class="kw">system.time</span>(</a>
-<a class="sourceLine" id="cb33-9" title="9">    sp_fit &lt;-<span class="st"> </span><span class="kw">sampling</span>(new_sp,</a>
-<a class="sourceLine" id="cb33-10" title="10">                       <span class="dt">data=</span>sp_data,</a>
-<a class="sourceLine" id="cb33-11" title="11">                       <span class="dt">iter=</span><span class="dv">1000</span>,</a>
-<a class="sourceLine" id="cb33-12" title="12">                       <span class="dt">chains=</span><span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb33-13" title="13">                       <span class="dt">control=</span><span class="kw">list</span>(<span class="dt">adapt_delta=</span><span class="fl">0.99</span>,</a>
-<a class="sourceLine" id="cb33-14" title="14">                                    <span class="dt">max_treedepth=</span><span class="dv">12</span>))))</a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">new_xy &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">x=</span><span class="kw">runif</span>(<span class="dv">5</span>), <span class="dt">y=</span><span class="kw">runif</span>(<span class="dv">5</span>))</a>
+<a class="sourceLine" id="cb31-2" title="2">sp_data &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">N=</span><span class="kw">nrow</span>(xy),</a>
+<a class="sourceLine" id="cb31-3" title="3">                <span class="dt">old_xy=</span><span class="kw">cbind</span>(xy<span class="op">$</span>x, xy<span class="op">$</span>y),</a>
+<a class="sourceLine" id="cb31-4" title="4">                <span class="dt">old_z=</span>xy<span class="op">$</span>z,</a>
+<a class="sourceLine" id="cb31-5" title="5">                <span class="dt">n=</span><span class="kw">nrow</span>(new_xy),</a>
+<a class="sourceLine" id="cb31-6" title="6">                <span class="dt">new_xy=</span><span class="kw">as.matrix</span>(new_xy))</a>
+<a class="sourceLine" id="cb31-7" title="7"></a>
+<a class="sourceLine" id="cb31-8" title="8">(sp_time &lt;-<span class="st"> </span><span class="kw">system.time</span>(</a>
+<a class="sourceLine" id="cb31-9" title="9">    sp_fit &lt;-<span class="st"> </span><span class="kw">sampling</span>(new_sp,</a>
+<a class="sourceLine" id="cb31-10" title="10">                       <span class="dt">data=</span>sp_data,</a>
+<a class="sourceLine" id="cb31-11" title="11">                       <span class="dt">iter=</span><span class="dv">1000</span>,</a>
+<a class="sourceLine" id="cb31-12" title="12">                       <span class="dt">chains=</span><span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb31-13" title="13">                       <span class="dt">control=</span><span class="kw">list</span>(<span class="dt">adapt_delta=</span><span class="fl">0.99</span>,</a>
+<a class="sourceLine" id="cb31-14" title="14">                                    <span class="dt">max_treedepth=</span><span class="dv">12</span>))))</a></code></pre></div>
 <pre><code>## [20,1]</code></pre>
 <pre><code>##    user  system elapsed 
 ##   1.227   0.390   1.628</code></pre>
 </section><section id="does-it-work" class="slide level2">
 <h2>Does it work?</h2>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1"><span class="kw">cbind</span>(<span class="dt">truth=</span>truth[<span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;rho&quot;</span>, <span class="st">&quot;delta&quot;</span>, <span class="st">&quot;mu&quot;</span>)],</a>
-<a class="sourceLine" id="cb36-2" title="2">      rstan<span class="op">::</span><span class="kw">summary</span>(sp_fit, <span class="dt">pars=</span><span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;rho&quot;</span>, <span class="st">&quot;delta&quot;</span>, <span class="st">&quot;mu&quot;</span>))<span class="op">$</span>summary)</a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1"><span class="kw">cbind</span>(<span class="dt">truth=</span>truth[<span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;rho&quot;</span>, <span class="st">&quot;delta&quot;</span>, <span class="st">&quot;mu&quot;</span>)],</a>
+<a class="sourceLine" id="cb34-2" title="2">      rstan<span class="op">::</span><span class="kw">summary</span>(sp_fit, <span class="dt">pars=</span><span class="kw">c</span>(<span class="st">&quot;alpha&quot;</span>, <span class="st">&quot;rho&quot;</span>, <span class="st">&quot;delta&quot;</span>, <span class="st">&quot;mu&quot;</span>))<span class="op">$</span>summary)</a></code></pre></div>
 <pre><code>##       truth mean      se_mean    sd        2.5%      25%       50%      
 ## alpha 2.5   4.303943  0.1384752  2.541937  1.029734  2.319803  3.722202 
 ## rho   0.6   1.020236  0.05192881 0.9218245 0.2887417 0.5443574 0.7868639

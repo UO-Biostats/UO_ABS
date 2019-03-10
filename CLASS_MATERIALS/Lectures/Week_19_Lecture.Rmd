@@ -158,11 +158,11 @@ for (k in 1:100) {
 Let's try that again, with more noise.
 
 Here's what this looks like.
-```{r sim_osc2}
+```{r sim_osc2, cache=TRUE}
 true_osc2 <- list(alpha=.1,
                  beta=.05,
-                 sigma_xy=.05,
-                 sigma_eps=.5)
+                 sigma_xy=2.0,
+                 sigma_eps=4.0)
 xy2 <- matrix(nrow=N, ncol=2)
 xy2[1,] <- c(3,0)
 for (k in 1:(N-1)) {
@@ -185,7 +185,7 @@ legend("topright", lty=c(1, NA), pch=c(NA,1), col=c("red","black"),
 
 -------------------
 
-```{r run_osc2, cache=TRUE, dependson="osc_block"}
+```{r run_osc2, cache=TRUE, dependson=c("osc_block", "sim_osc2")}
 osc_fit2 <- sampling(osc_model,
                     data=list(N,
                               X=XY2[,1],
@@ -221,7 +221,7 @@ for (k in 1:100) {
 Now what if we actually *don't observe* most of the $Y$ values?
 
 Here's what this looks like.
-```{r sim_osc3}
+```{r sim_osc3, cache=TRUE}
 true_osc3 <- list(alpha=.1,
                  beta=.05,
                  sigma_xy=.05,
@@ -235,7 +235,7 @@ for (k in 1:(N-1)) {
                 + rnorm(2, 0, true_osc3$sigma_xy))
 }
 XY3 <- xy3 + rnorm(N*2, 0, true_osc3$sigma_eps)
-obs_y <- floor(seq(1, N, length.out=5))
+obs_y <- sample.int(N, size=10)
 XY3[setdiff(1:N, obs_y), 2] <- NA
 ```
 
@@ -281,7 +281,7 @@ osc_model_missing <- stan_model(model_code=osc_block_missing)
 
 -------------------
 
-```{r run_osc3, cache=TRUE, dependson="osc_block"}
+```{r run_osc3, cache=TRUE, dependson=c("osc_stan3", "sim_osc3")}
 osc_fit3 <- sampling(osc_model_missing,
                     data=list(N,
                               X=XY3[,1],
