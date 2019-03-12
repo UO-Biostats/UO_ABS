@@ -1,7 +1,7 @@
 ---
 title: "Temporal and spatial data"
 author: "Peter Ralph"
-date: "March Fourth 2019 -- Advanced Biological Statistics"
+date: "12 March 2019 -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
