@@ -433,12 +433,6 @@ K <- cov_exp_quad(xy, alpha, rho)
 # simulate z's
 xy$z <- as.vector(rmvnorm(1, mean=rep(0,N),
                           sigma=K))
-
-```
-
--------------
-
-```{r plot_pts}
 plot(xy$x, xy$y, xlab='x spatial coord', 
      ylab='y spatial coord', pch=20, asp=1,
      cex=as.numeric(cut(xy$z, breaks=10))/2,
@@ -639,5 +633,32 @@ legend("topright", pch=1, pt.cex=8,
     These are
 ```{r new_z_summary, echo=FALSE}
 cbind(new_xy, rstan::summary(sp_fit, pars="new_z")$summary[,c(1,3)])
+```
+
+## Interpolating to a grid
+
+
+```{r ineterp, cache=TRUE, dependson=c("new_spstan","sim_data")}
+grid_xy <- expand.grid(x=seq(0,1,length.out=11), y=seq(0,1,length.out=11))
+grid_data <- list(N=nrow(xy),
+                old_xy=cbind(xy$x, xy$y),
+                old_z=xy$z,
+                n=nrow(grid_xy),
+                new_xy=as.matrix(grid_xy))
+
+(grid_time <- system.time(
+    grid_fit <- sampling(new_sp, data=grid_data,
+                         iter=100)))
+```
+
+---------
+
+```{r plot_interp}
+# grid_z <- grid_fit$par[grepl("new_z", names(grid_fit$par))]
+grid_z <- colMeans(extract(grid_fit)$new_z)
+plot(c(xy$x,grid_xy[,1]), c(xy$y,grid_xy[,2]), xlab='x spatial coord', 
+     ylab='y spatial coord', pch=20, 
+     cex=as.numeric(cut(c(xy$z,grid_z), breaks=0:10)),
+     col=colorRampPalette(c('blue', 'red'))(11)[cut(c(xy$z,grid_z), breaks=0:10)])
 ```
 
