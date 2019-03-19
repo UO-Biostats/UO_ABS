@@ -77,7 +77,7 @@ Week 19 (*3/4, Peter*)
 : Modeling mixtures of expression data; clustering in Stan (t-SNE)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
-    - [Homework 8](../CLASS_MATERIALS/Homework_Solutions/HW8_W19.html), due 3/14, $\pi$ day.
+    - [Homework 9](../CLASS_MATERIALS/Homework_Solutions/HW9_W19.html)
 
 Week 20 (*3/11, Peter*)
 
