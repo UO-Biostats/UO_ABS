@@ -8,14 +8,18 @@ See [the schedule](schedule.html) for topics by week and links to slides.
 
 ## Description of the course
 
-This two-quarter graduate course aims to provide students with an understanding
-of the core concepts and approaches for the analysis of biological data,
-particularly large data sets. This is meant as a first, foundational course for
-graduate students. It is advanced in that we will move through the material
-quickly with the goal of covering all major topics in univariate data analysis,
-forming a foundation for subsequent learning. Students will learn to use the
+This two-quarter graduate course aims to provide students with practical
+understanding of and experience with core concepts and methods in modern data
+analysis. The focus is on biological data, but skills will be transferable to
+other disciplines. Students will become familiar with major topics in
+univariate and multivariate statistics, analysis of large data sets, and
+Bayesian analysis. There is a particular emphasis on modeling and conceptual
+understanding of statistical noise and uncertainty. The course is advanced in
+that we will move through the material quickly with the goal of providing
+a solid foundation for subsequent learning. Students will learn to use the
 powerful statistical programming language [R](https://r-project.org), and the
-flexible modeling package [Stan](https://mc-stan.org).
+flexible modeling package [Stan](https://mc-stan.org). *Prerequisites:*
+some (basic) programming.
 
 ## Instructors:
 
