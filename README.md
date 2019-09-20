@@ -17,6 +17,8 @@ by way of [Cécile Ané](http://cecileane.github.io/computingtools/).
 
 - To view a local version run `jekyll serve`.
 
+- The skeleton can by modified by editing `config.yml` and `_includes/themes/twitter/default.html`.
+
 - To get this to build locally with Debian, I had to `aptitude remove jekyll`; `bundle update`; 
     then find where the executable is using `bundle info jekyll`; 
     and finally make a symlink for the `jekyll` executable to somewhere in my `PATH`.

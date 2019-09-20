@@ -23,15 +23,14 @@ some (basic) programming.
 
 ## Instructors:
 
-- [Peter Ralph](https://pages.uoregon.edu/plr/), plr@uoregon.edu
+- [Peter Ralph](https://pages.uoregon.edu/plr/), main instructor: plr@uoregon.edu
     * office hours: Monday 2-3pm or by appointment, 270 Onyx Bridge
 
-- [Bill Cresko](https://creskolab.uoregon.edu/), wcresko@uoregon.edu
-    * office hours: TBA or by appointment, 312 Pacific Hall
+- [Matt Lukac](https://ie2.uoregon.edu/people/lukac/), graduate teaching assistant: mlukac@uoregon.edu
+    * office hours: TBA
 
-- [Matt Lukac](https://ie2.uoregon.edu/people/lukac/), mlukac@uoregon.edu
-    * office hours: Wednesdays: 2-3:30 in Onyx 276 and Fridays: 2-3:30 in Science Library B009
-
+- [Bill Cresko](https://creskolab.uoregon.edu/), supporting instructor: wcresko@uoregon.edu
+    * office hours: by appointment, 312 Pacific Hall
 
 ## Course Information
 
@@ -60,7 +59,7 @@ some (basic) programming.
 ## Prerequisites:
 
 None, but students should be comfortable with algebra and the basics of calculus,
-and either have some experience with programming or be ready to jump in with both feet.
+and have some experience with programming.
 
 ## Inclusion and accessibility
 
