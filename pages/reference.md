@@ -4,6 +4,7 @@ title: Useful links
 description: useful links for Advanced Biological Statistics
 ---
 
+A page of [example datasets](datasets.html)
 
 ### Stan
 
@@ -30,6 +31,10 @@ description: useful links for Advanced Biological Statistics
 
 * How to [print the source code](https://stackoverflow.com/questions/19226816/how-can-i-view-the-source-code-for-a-function/19226817#19226817) 
     for functions that don't show it to you when you type their names. (tldr; `showMethods(fun); getMethod(fun, c(x='class1', y='class2'))`)
+
+### ggplotting
+
+* [practical ggplot2](https://wilkelab.org/practicalgg/) an annotated website of examples by Claus Wilke
 
 ### Rstudio
 
