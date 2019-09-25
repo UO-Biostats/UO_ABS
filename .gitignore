@@ -6,3 +6,5 @@
 .*.swp
 _site
 *.local.slides.html
+cache/
+figure/

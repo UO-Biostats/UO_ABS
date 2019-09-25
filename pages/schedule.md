@@ -7,134 +7,116 @@ description: schedule, with links to slides and homeworks
 The (Rmarkdown) source code for these lectures is available at [the github repository](https://github.com/petrelharp/UO_ABS),
 or by replacing the `.slides.html` suffix to `.Rmd` in the link below;
 the slides are made using [reveal.js](https://github.com/hakimel/reveal.js/).
+Here are the [slides from previous years](2018_schedule.html).
 
 # Fall 2019
 
 Week 1 (*10/1*)
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.html)
+: Overview of data science - description and estimation, uncertainty and simulation,
+    with examples for comparing means and linear regression; smoothing.
+
+    - Introductory workshop to R, by Hannah: date/time TBD
 
 Week 2 (*10/7*)
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_02_Lecture.html)
+: Analysis of Variance (ANOVA) and experimental design; tidy data; power and false positives
 
 Week 3 (*10/14*)
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_03_Lecture.html)
+: Multifactor ANOVA, plotting/visualization, and permutation/bootstrapping
 
 Week 4 (*10/21*)
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_04_Lecture.html)
+: Multivariate regression, likelihood, model selection
 
 Week 5 (*10/28*)
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_05_Lecture.html)
+: Random effects and mixed models - a first look.
 
 Week 6 (*11/4*)
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_06_Lecture.html)
+: Bayesian statistics - prior distributions and uncertainty - using [Stan](https://mc-stan.org))
 
 Week 7 (*11/11*)
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_07_Lecture.html)
+: Bayesian hierarchical modeling - shrinkage, and sharing power
 
 Week 8 (*11/18*)
 
-: Bayesian statistics - prior distributions and uncertainty - using [Stan](https://mc-stan.org))
-
-    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_08_Lecture.slides.html)
-    * [in-class demo](../CLASS_MATERIALS/Demos/beta_binomial/beta_binom_demo.html) - Beta-Binomial analysis
-    * reading: Kruschke, chapters 5 and 6 (and: install and test [rstan](https://mc-stan.org))
+: Logistic regression - simulation, posterior predictive sampling - robust regression
 
 Week 9 (*11/25*)
 
-: Bayesian hierarchical modeling - shrinkage, and sharing power
+: Robust multiple linear regression; scale mixtures; model selection with crossvalidation; introduction to Generalized Linear Models (GLM).
 
-    * [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_09_Lecture.slides.html)
-    * reading: Kruschke, chapters 7, 9, and 14
-    * no class 11/28 (holiday)
+    - Reading: **(Kruschke, ch 15, 16, 17)**
 
 Week 10 (*12/2*)
 
-: Logistic regression - simulation, posterior predictive sampling - robust regression
+: More GLMs; Poisson regression; detecting and modeling overdispersion; quantifying goodness-of-fit.
 
-    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_10_Lecture.slides.html)
-    * reading: Kruschke, chapters 16, 17, and 13
+    - Reading: **(Kruschke, ch 24)**
+
 
 # Winter 2020
 
+*Note:* The schedule below is tentative.
+
 Week 11 (*1/7*)
-
-: Robust multiple linear regression; scale mixtures; model selection with crossvalidation; introduction to Generalized Linear Models (GLM).
-
-    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_11_Lecture.slides.html)
-    - Reading: **(Kruschke, ch 15, 16, 17)**
-
-Week 12 (*1/14*)
-
-: More GLMs; Poisson regression; detecting and modeling overdispersion; quantifying goodness-of-fit.
-
-    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/Week_12_Lecture.slides.html)
-    - Reading: **(Kruschke, ch 24)**
-    - [Homework 2](../CLASS_MATERIALS/Homework_Solutions/HW2_W19.html), due 1/24.
-
-Week 13 (*1/21*)
 
 : Categorical data: chi-square for contingency tables, permutation tests; categorical prediction.
 
-    - [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_13_Lecture.slides.html)
     - Reading: **(Kruschke, ch 22, 24)**
-    - [Homework 3](../CLASS_MATERIALS/Homework_Solutions/HW3_W19.html), due 1/31.
 
-Week 14 (*1/28*)
+Week 12 (*1/14*)
 
 : Sparsifying priors and variable selection.
 
-    - [Tuesday Slides](../CLASS_MATERIALS/Lectures/Week_14_Lecture.slides.html)
     - Reading: **(Kruschke, ch 19, 20)**
-    - [Homework 4](../CLASS_MATERIALS/Homework_Solutions/HW4_W19.html), due 2/7.
 
-Week 15 (*2/4*)
+
+Week 13 (*1/21*)
 
 : Linear algebra, latent factor analysis, intro to multivariate
 
-    - [Slides](../CLASS_MATERIALS/Lectures/Week_15_Lecture.slides.html)
     - Reading: **(Otto and Day, Linear Algebra Primer; Quinn & Keogh, ch 15)**
-    - Homework 5, due 2/15.
 
-Week 16 (*2/11*)
+
+Week 14 (*1/28*)
 
 : Factor/PCA/PCoA/MDS
 
-    - [Slides](../CLASS_MATERIALS/Lectures/Week_16_Lecture.slides.html)
     - Reading: **(Quinn & Keogh, ch 17, 18)**
-    - Homework 6, due 2/23.
 
-Week 17 (*2/18*)
+Week 15 (*2/4*)
 
 : MANOVA and Discriminant Function Analysis (DFA)
 
-    - [Slides](../CLASS_MATERIALS/Lectures/Week_17_Lecture.slides.html)
     - Reading: **(Quinn & Keogh, ch 16)**
-    - Homework 7, due 3/2.
 
-Week 18 (*2/25*)
+Week 16 (*2/11*)
 
 : Visualization: nonnegative matrix factorization and constrained PCA
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
 
-Week 19 (*3/3*)
+Week 17 (*2/18*)
 
 : Modeling mixtures of expression data; clustering in Stan (t-SNE)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
-    - [Homework 9](../CLASS_MATERIALS/Homework_Solutions/HW9_W19.html)
 
-Week 20 (*3/10*)
+Week 18 (*2/25*)
 
 : Introduction to time series and spatial statistics.
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_19_Lecture.slides.html)
 
+Week 19 (*3/3*)
 
+: TBD
+
+Week 20 (*3/10*)
+
+: TBD
