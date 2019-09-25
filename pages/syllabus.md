@@ -40,21 +40,32 @@ some (basic) programming.
 
 ## Textbooks
 
+We will use these books in the course:
+
 * Kruschke, J. 2018. *Doing Bayesian Data Analysis, 2nd ed.* Academic Press. ([website with data and code](https://sites.google.com/site/doingbayesiandataanalysis/))
-* Wickham, H. & G. Grolemund. 2016. *R for Data Science.* O'Reilly Publishers. ([web version](https://r4ds.had.co.nz/))
-* Quinn, G. & M. Keough. 2002. *Experimental Design and Data Analysis for Biologists.* Cambridge Univ. Press.
 * Logan, M. 2010. *Biostatistical Design and Analysis Using R.* Wiley-Blackwell.
-* *(recommended)* Wickham, H. 2009. *GGPlot2: Elegant Graphics for Data Analysis.* Springer. ([text on github](https://github.com/hadley/ggplot2-book))
-* *(recommended)* Haddock, S. and C. Dunn. 2011. *Practical Computing for Biologists.* Sinauer and Associates. 
-* *(recommended)* Logan, M. 2010. *Biostatistical Design and Analysis Using R.* Wiley-Blackwell.
+
+
+If you are looking for more reference or reading material, these are also good:
+
+* Wickham, H. & G. Grolemund. 2016. *R for Data Science.* O'Reilly Publishers. (free [web version](https://r4ds.had.co.nz/))
+    How to do many common data analysis tasks in R, specifically in the [tidyverse](http://www.tidyverse.org).
+
+* Wilke, Claus O. *Fundamentals of Data Visualization.*. O'Reilly Publishers. (free [web version](https://serialmentor.com/dataviz/))
+    How to plot things, well, in ggplot2.
+
+* Quinn, G. & M. Keough. 2002. *Experimental Design and Data Analysis for Biologists.* Cambridge Univ. Press.
+    A very good overview of statistics: gives some more background and justification for the more "how to do it in R" focus of Logan.
+
+* Haddock, S. and C. Dunn. 2011. *Practical Computing for Biologists.* Sinauer and Associates. 
 
 ## Software:
 
 * Latest version of R ([install here](https://www.r-project.org))
 * A working version of [RStan](https://mc-stan.org/users/interfaces/rstan.html)
-* An R scripting environment such as [RStudio](https://www.rstudio.org) & TextWrangler (free version of BBEdit)
-* [Git](https://jvns.ca/blog/2018/10/27/new-zine--oh-shit--git-/) and a [GitHub](https://github.com) account
-* A good code editor like [Atom](https://atom.io)
+* An R scripting environment such as [RStudio](https://www.rstudio.org)
+* [Git](https://git-scm.com/downloads) (here is an [intro](https://jvns.ca/blog/2018/10/27/new-zine--oh-shit--git-/))
+* A good code editor like [Atom](https://atom.io) or [BBEdit](https://www.barebones.com/products/bbedit/) or [https://www.vim.org](vim)
 
 ## Prerequisites:
 
