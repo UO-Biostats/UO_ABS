@@ -17,7 +17,7 @@ Week 1 (*10/1*)
     with examples for comparing means and linear regression; smoothing.
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.html)
-    - Reading: Logan, chapters 1, 2, 3, 6, and 7
+    - Reading: Quinn & Keough chapters 1-4
     - Introductory workshop to R and Rmarkdown, by Hannah: date/time TBD
 
 Week 2 (*10/7*)
@@ -25,43 +25,55 @@ Week 2 (*10/7*)
 : Analysis of Variance (ANOVA) and experimental design; tidy data; power and false positives
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_02_Lecture.html)
-    - Reading: Logan, chapters 8, 10
+    - Reading: Quinn & Keough chapters 5, 7, 8
 
 Week 3 (*10/14*)
 
 : Multifactor ANOVA, plotting/visualization, and permutation/bootstrapping
 
+    - Reading: Quinn & Keough chapter 6
+
 Week 4 (*10/21*)
 
 : Multivariate regression, likelihood, model selection
+
+    - Reading: Quinn & Keough chapter 9
 
 Week 5 (*10/28*)
 
 : Random effects and mixed models - a first look.
 
+    - Reading: Quinn & Keough chapter 13
+
 Week 6 (*11/4*)
 
 : Bayesian statistics - prior distributions and uncertainty - using [Stan](https://mc-stan.org))
+
+    - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
 
 Week 7 (*11/11*)
 
 : Bayesian hierarchical modeling - shrinkage, and sharing power
 
+    - Reading: Kruschke, chapters 9, 10
+
 Week 8 (*11/18*)
 
 : Logistic regression - simulation, posterior predictive sampling - robust regression
+
+    Reading: Kruschke, chapters 13, 21
 
 Week 9 (*11/25*)
 
 : Robust multiple linear regression; scale mixtures; model selection with crossvalidation; introduction to Generalized Linear Models (GLM).
 
-    - Reading: **(Kruschke, ch 15, 16, 17)**
+    - Reading: Kruschke, chapters 15, 16, 17
 
 Week 10 (*12/2*)
 
 : More GLMs; Poisson regression; detecting and modeling overdispersion; quantifying goodness-of-fit.
 
-    - Reading: **(Kruschke, ch 24)**
+    - Reading: Kruschke, chapter 24
 
 
 # Winter 2020
@@ -72,33 +84,33 @@ Week 11 (*1/7*)
 
 : Categorical data: chi-square for contingency tables, permutation tests; categorical prediction.
 
-    - Reading: **(Kruschke, ch 22, 24)**
+    - Reading: Kruschke, chapters 22, 24
 
 Week 12 (*1/14*)
 
 : Sparsifying priors and variable selection.
 
-    - Reading: **(Kruschke, ch 19, 20)**
+    - Reading: Kruschke, chapters 19, 20
 
 
 Week 13 (*1/21*)
 
 : Linear algebra, latent factor analysis, intro to multivariate
 
-    - Reading: **(Otto and Day, Linear Algebra Primer; Quinn & Keogh, ch 15)**
+    - Reading: Otto and Day, Linear Algebra Primer; Quinn & Keough, chapter 15
 
 
 Week 14 (*1/28*)
 
 : Factor/PCA/PCoA/MDS
 
-    - Reading: **(Quinn & Keogh, ch 17, 18)**
+    - Reading: Quinn & Keough, chapters 17, 18
 
 Week 15 (*2/4*)
 
 : MANOVA and Discriminant Function Analysis (DFA)
 
-    - Reading: **(Quinn & Keogh, ch 16)**
+    - Reading: Quinn & Keough, chapter 16
 
 Week 16 (*2/11*)
 

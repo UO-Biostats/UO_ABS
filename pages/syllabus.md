@@ -44,11 +44,15 @@ some (basic) programming.
 
 We will use these books in the course:
 
+* Quinn, G. & M. Keough. 2002. *Experimental Design and Data Analysis for Biologists.* Cambridge Univ. Press.
+
 * Kruschke, J. 2018. *Doing Bayesian Data Analysis, 2nd ed.* Academic Press. ([website with data and code](https://sites.google.com/site/doingbayesiandataanalysis/))
-* Logan, M. 2010. *Biostatistical Design and Analysis Using R.* Wiley-Blackwell.
 
 
 If you are looking for more reference or reading material, these are also good:
+
+* Logan, M. 2010. *Biostatistical Design and Analysis Using R.* Wiley-Blackwell.
+    A fairly comprehensive book that covers how to use R to do many of the topics in Quinn and Keough.
 
 * Wickham, H. & G. Grolemund. 2016. *R for Data Science.* O'Reilly Publishers. (free [web version](https://r4ds.had.co.nz/))
     How to do many common data analysis tasks in R, specifically in the [tidyverse](http://www.tidyverse.org).
@@ -60,9 +64,6 @@ If you are looking for more reference or reading material, these are also good:
 
 * Wilke, Claus O. *Fundamentals of Data Visualization.*. O'Reilly Publishers. (free [web version](https://serialmentor.com/dataviz/))
     How to think about visualization (with source code for plots available!).
-
-* Quinn, G. & M. Keough. 2002. *Experimental Design and Data Analysis for Biologists.* Cambridge Univ. Press.
-    A very good overview of statistics: gives some more background and justification for the more "how to do it in R" focus of Logan.
 
 * Haddock, S. and C. Dunn. 2011. *Practical Computing for Biologists.* Sinauer and Associates. 
 
