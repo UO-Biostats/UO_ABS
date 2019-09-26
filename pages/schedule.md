@@ -16,11 +16,16 @@ Week 1 (*10/1*)
 : Overview of data science - description and estimation, uncertainty and simulation,
     with examples for comparing means and linear regression; smoothing.
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.html)
+    - Reading: Logan, chapters 1, 2, 3, 6, and 7
     - Introductory workshop to R, by Hannah: date/time TBD
 
 Week 2 (*10/7*)
 
 : Analysis of Variance (ANOVA) and experimental design; tidy data; power and false positives
+
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_02_Lecture.html)
+    - Reading: Logan, chapters 8, 10
 
 Week 3 (*10/14*)
 

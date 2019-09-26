@@ -1,0 +1,158 @@
+---
+title: "Homework, week 9"
+author: "Peter Ralph"
+date: "7 March 2019 -- Advanced Biological Statistics"
+---
+
+# Community structure
+
+We have a dataset of abundances of 40 microbial taxa,
+measured at 100 times (by 16S transcript counts)
+throughout a decomposition experiment.
+We are interested in whether there are groups of taxa that change in abundance together,
+perhaps because they depend on each others' metabolic byproducts,
+or perhaps because they are all responding to some common underlying variables that we can't observe
+(e.g., amount of sugar left in the substrate as it decomposes).
+
+Here is the dataset: [taxon_counts.csv](taxon_counts.csv)
+
+The first column has the sample number.
+The second column (labeled "time") has the time that the dataset was recorded at.
+The remaining columns have the transcript counts for each taxon.
+
+```{r setup, include=FALSE}
+library(rstan)
+library(matrixStats)
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+```
+
+## 1.
+
+Use `optimizing( )` to find a maximum posterior estimate of the parameters
+in the following Stan model, with $K=3$ communities.
+In this model, `w[i][j]` contains the proportion sample `i` that is made up of community `j`,
+and `(eta .* x)[i,j]` contains the mean abundance of taxon `i` in community `j`.
+Note that in this model, a given taxon may belong to more than one community 
+(although with different relative abundances).
+(Also: this is the *same* model that we used in analyzing the transcription data in class.)
+
+```{r nmf, cache=TRUE}
+nmf_model <- stan_model(model_code="
+    data {
+      int N; // # samples
+      int L; // # taxa
+      int K; // # clusters
+      int Z[N,L];
+    }
+    parameters {
+      matrix<lower=0>[L,K] x;
+      vector[L] y;
+      simplex[K] w[N];
+      vector<lower=0>[L] eta;
+      vector<lower=0>[K] alpha;
+      real<lower=0> d_alpha;
+    }
+    model {
+      for (i in 1:N) {
+          Z[i] ~ poisson(eta .* (x * w[i]));
+          w[i] ~ dirichlet(d_alpha * alpha);
+      }
+      for (j in 1:K) 
+          { x[,j] ~ normal(y ./ eta, 1); }
+      y ~ normal(0, 20);
+      alpha ~ normal(0, 1);
+      d_alpha ~ exponential(0.2);
+      eta ~ cauchy(0, 10);
+    }")
+```
+
+## 2.
+
+Do the relative contributions of the three communities change over time?
+Make a plot showing 
+estimated abundances of each cluster of taxa against time.
+
+## 3.
+
+How do the communities differ?
+Make a plot showing the abundances of each taxon in the three communities.
+
+
+```{r sim_data, cache=TRUE, include=FALSE}
+nclusters <- 3
+nspp <- 40
+nsamples <- 100
+pinf <- 0.45 # number of informative species
+signal_mean <- 100
+backgr_mean <- 5.0
+noise_sd <- 5.0
+
+# time-series based proportions per sample
+tt <- sort(runif(nsamples))
+# Simulate proportions per sample
+ew <- do.call(cbind, lapply(1:nclusters, function (k) {
+                dnorm(tt, mean=(k-1)/(nclusters-1), sd=0.3)
+            } ))
+ew <- sweep(ew, 1, rowSums(ew), "/")
+w <- ew * rgamma(nsamples*nclusters, rate=1/10, shape=10)
+w <- sweep(w, 1, rowSums(w), "/")
+stopifnot(all(abs(rowSums(w) - 1) < 1e-15))
+# matplot(tt, ew, type='l')
+# matpoints(tt, w)
+
+
+# Determine mean abundances by species
+mu <- rgamma(nspp, rate=10/signal_mean, shape=10)
+# copy mu into cluster-specific columns
+type_mu <- do.call(cbind, list(mu)[rep(1,nclusters)])
+
+# simulate how different mu is across clusters
+# which cluster do species fall in?
+sp_type <- sample(0:nclusters, nspp, replace=TRUE, prob=c(pinf, (1-pinf)*c(.5, .3, .2)))
+for (j in 1:nclusters) {
+    for (k in 1:nclusters) {
+        if (j != k) {
+            type_mu[sp_type == k, j] <- rexp(sum(sp_type == k)) * backgr_mean
+        }
+    }
+}
+
+# construct expected expression levels:
+em <- matrix(0, nrow=nsamples, ncol=nspp)
+for (ct in 1:nclusters) {
+    em <- em + outer(w[,ct], type_mu[,ct])
+}
+m <- matrix(pmax(0, em + rnorm(length(em), noise_sd)), nrow=nrow(em))
+
+# simulate counts
+Z <- matrix(rpois(length(m), m), ncol=ncol(m))
+```
+```{r write_data, include=FALSE}
+colnames(Z) <- apply(matrix(sample(letters, nspp * 4, replace=TRUE), ncol=4), 1, paste, collapse='')
+
+write.csv(cbind(time=tt, Z), file="taxon_counts.csv")
+```
+
+```{r analyze, cache=TRUE, dependson=c("nmf", "sim_data"), include=FALSE}
+ot <- system.time(nmf_optim <- optimizing(nmf_model,
+                                    data=list(N=nsamples,
+                                              L=nspp,
+                                              K=nclusters,
+                                              Z=Z)))
+```
+
+
+```{r results, include=FALSE}
+results <- list(x=nmf_optim$par[grepl("^x", names(nmf_optim$par))],
+                y=nmf_optim$par[grepl("^y", names(nmf_optim$par))],
+                w=nmf_optim$par[grepl("^w", names(nmf_optim$par))],
+                eta=nmf_optim$par[grepl("^eta", names(nmf_optim$par))],
+                alpha=nmf_optim$par[grepl("^alpha", names(nmf_optim$par))],
+                d_alpha=nmf_optim$par[grepl("^d_alpha", names(nmf_optim$par))])
+dim(results$x) <- c(nspp, nclusters)
+dim(results$w) <- c(nsamples, nclusters)
+
+matplot(tt, results$w,
+        xlab='time', ylab='proportion')
+```

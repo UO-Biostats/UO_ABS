@@ -51,8 +51,13 @@ If you are looking for more reference or reading material, these are also good:
 * Wickham, H. & G. Grolemund. 2016. *R for Data Science.* O'Reilly Publishers. (free [web version](https://r4ds.had.co.nz/))
     How to do many common data analysis tasks in R, specifically in the [tidyverse](http://www.tidyverse.org).
 
+* Wickham, H. *ggplot2: Elegant Graphics for Data Analysis, 2nd edition* (free [web version](https://ggplot2-book.org/) of the in-process 3rd edition)
+    A more comprehensive reference to ggplot2 than the [chapter of *R for data science*](https://r4ds.had.co.nz/data-visualisation.html).
+    Also see [the documentation](https://ggplot2.tidyverse.org/index.html).
+
+
 * Wilke, Claus O. *Fundamentals of Data Visualization.*. O'Reilly Publishers. (free [web version](https://serialmentor.com/dataviz/))
-    How to plot things, well, in ggplot2.
+    How to think about visualization (with source code for plots available!).
 
 * Quinn, G. & M. Keough. 2002. *Experimental Design and Data Analysis for Biologists.* Cambridge Univ. Press.
     A very good overview of statistics: gives some more background and justification for the more "how to do it in R" focus of Logan.
