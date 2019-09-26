@@ -32,6 +32,8 @@ some (basic) programming.
 - [Bill Cresko](https://creskolab.uoregon.edu/), supporting instructor: wcresko@uoregon.edu
     * office hours: by appointment, 312 Pacific Hall
 
+- [Hannah Tavalire](https://creskolab.uoregon.edu/hannah), supporting instructor: tavalire@uoregon.edu
+
 ## Course Information
 
 - *Schedule:* Tue/Thur 10:00 AM - 11:50 AM, 40 Science Library

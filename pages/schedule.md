@@ -18,7 +18,7 @@ Week 1 (*10/1*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.html)
     - Reading: Logan, chapters 1, 2, 3, 6, and 7
-    - Introductory workshop to R, by Hannah: date/time TBD
+    - Introductory workshop to R and Rmarkdown, by Hannah: date/time TBD
 
 Week 2 (*10/7*)
 
