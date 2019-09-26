@@ -1,0 +1,290 @@
+---
+title: "Uncertainty: (how to) deal with it"
+author: "Peter Ralph"
+date: "1 October -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+# Course overview
+
+##
+
+* Course website
+* books
+* topics
+
+# Data science
+
+## Goals, and overview
+
+1. describe data
+2. always use the right tool for the job
+
+## Steps in data analysis
+
+1. Care, or at least think, about the data.
+
+2. Look at the data.
+
+3. Query the data.
+
+4. Sanity check.
+
+5. Communicate.
+
+
+## Statistics or parameters?
+
+A **statistic** is
+
+: a numerical description of a dataset.
+
+. . .
+
+A **parameter** is 
+
+: a numerical attribute of a model of reality.
+
+. . .
+
+Often, *statistics* are used to estimate *parameters*.
+
+
+## The two heads of classical statistics
+
+quantifying uncertainty
+
+evaluating (in-)consistency with a particular situation
+
+1. Are we wasting our time with this model?
+
+2. (if not) What's it tell us about the world?
+
+
+# Hypothesis testing: what is a $p$-value?
+
+
+## A $p$-value is
+
+. . .
+
+the probability of seeing a result at least as surprising
+as what was observed in the data,
+if the null hypothesis is true.
+
+. . .
+
+*Note:* here, "null hypothesis" means "the model we use to calculate the $p$-value".
+
+## What does a small $p$-value mean?
+
+*If* the null hypothesis *were* true,
+then you'd be really unlikely to see something like what you actually *did*.
+
+. . .
+
+So, either the "null hypothesis" is not a good description of reality
+or something surprising happened.
+
+. . .
+
+How useful this is depends on the null hypothesis.
+
+
+## Exercise:
+
+*(class survey)*
+How many people have a longer index finger on the hand they write with?
+
+. . .
+
+$$\begin{equation}
+    \theta = \P(\text{random person has writing finger longer}) .
+\end{equation}$$
+
+*(in groups)*
+Use R to make 1000 fake datasets like ours with $\theta = 1/2$, e.g.:
+```
+n <- 35
+replicate(1000, sum(rbinom(n, 1, 1/2) > 0))
+```
+Use this to estimate the $p$-value for the hypothesis that $\theta = 1/2$.
+Conclusions?
+
+
+# Stochastic minute: the Central Limit Theorem
+
+## The CLT
+
+sum of independent things
+
+eg sampling distrn of sample mean
+
+
+## The Gaussian distribution
+
+aka normal
+
+
+
+# Estimating a mean: $t$-things
+
+## Example problem
+
+```{r t_test, echo=-1}
+x <- rnorm(20)
+(tt <- t.test(x))
+```
+
+## Conclusion
+
+> The X group was higher than the Y group...
+> (P=`r format(tt$p.value, digits=2)`, t-test with df=`r tt$parameter`).
+
+. . .
+
+*Critique this conclusion.*
+
+# Communicating: effects and uncertainty
+
+## Don't forget Steps 1 and 5!
+
+1. Care, or at least think, about the data.
+
+5. Communicate.
+
+. . .
+
+How *big* is the effect? How sure are we?
+
+. . .
+
+Statistical significance does not imply real-world significance.
+
+
+
+## Revised conclusion
+
+> The sample mean was `r format(mean(x), digits=2)` (P=`r format(tt$p.value, digits=2)`, t-test with df=`r tt$parameter`).
+
+. . .
+
+*Critiques?*
+
+## Re-Revised conclusion
+
+> The sample mean was `r format(mean(x), digits=2)` (P=`r format(tt$p.value, digits=2)`, t-test with df=`r tt$parameter`),
+> with a 95% confidence interval of `r format(tt$conf.int[1], digits=2)` to `r format(tt$conf.int[2], digits=2)`.
+
+
+# Confident in confidence intervals?
+
+## Confidence intervals
+
+A *95% confidence interval* for an estimate
+is constructed so that no matter what the true value,
+the confidence interval overlaps the truth 95% of the time.
+
+. . .
+
+In other words,
+if we collect 1,000 independent samples from a population with true mean $\mu$,
+and construct confidence intervals from each,
+then about 950 of these should overlap $\mu$.
+
+## Your turn: check this.
+
+> if we collect 1,000 independent samples from a population with true mean $\mu$,
+> and construct confidence intervals from each,
+> then about 950 of these should overlap $\mu$.
+
+Let's take independent samples of size $n=20$ from a Normal distribution with $\mu = 0$.
+Example:
+```{r conf_int}
+n <- 20; mu <- 0
+t.test(rnorm(n, mean=mu))$conf.int
+```
+
+# Two variables
+
+## "Second, look at the data"
+
+```{r biplot}
+n <- 200
+tz <- data.frame(t=seq(0, 10, length.out=n))
+tz$z <- cos(tz$t) + rnorm(n)/4
+
+(ggp <- ggplot(tz, mapping=aes(x=t, y=z)) + xlab("time") + ylab("value") + 
+    geom_point())
+```
+
+## "Smooths"
+
+```{r biplot2}
+(ggp +
+    geom_smooth(method='loess', formula=y ~ x, span=0.2))
+```
+
+. . .
+
+That line is produced by `loess`, which does *local weighted regression*.
+
+
+## Lines?
+
+```{r biplot3}
+(ggp +
+    geom_smooth(method='lm', formula=y ~ x))
+```
+
+Is this a good idea?
+
+
+# Correlation and regression
+
+## Two variables
+
+Now consider the results of an experiment:
+green fluorescent protein (GFP) concentration
+at eight temperatures ([data](../Datasets/gfp_temp.tsv)):
+
+```{r twovars}
+(xy <- read.table("../Datasets/gfp_temp.tsv")
+```
+
+## Correlation?
+
+```{r cor}
+cor(xy$temp, xy$gfp)
+```
+
+. . .
+
+![xkcd:552](images/xkcd_correlation.png)
+
+*Correlation doesn't imply causation,
+but it does waggle its eyebrows suggestively and gesture furtively
+while mouthing "look over there".*
+
+## Have a look
+
+```{r xyplot, fig.width=fig.dim}
+(ggplot(xy, mapping=aes(x=temp, y=gfp)) + xlab("temperature") + ylab("GFP concentration")
+    + geom_point()
+    + geom_smooth(method='lm', se=FALSE))
+```
+
+(on board: how's least-squares regression work)
+
+

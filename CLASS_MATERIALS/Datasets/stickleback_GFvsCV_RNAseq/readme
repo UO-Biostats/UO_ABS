@@ -1,0 +1,17 @@
+Notes on 14-dpf gnotobiotic stickleback experiment data
+
+CVvsGF_development.tsv
+- contains proportion of abnormally and normally developed offspring per flask
+- the vast majority of the "abnormally developed" fish died by 14 dpf
+
+CVvsGF_RNAseq_CPM.tsv
+- contains normalized RNA-Seq data (copies per million) for 84 experimental fish
+- only contains information for genes with reliable count data in at least some libraries
+- also includes annotation information for genes
+- genes especially subject to sex-biased expression should be on "groupXIX" from 6-12 Mb
+
+CVvsGF_RNAseq_Metadata.tsv
+- contains factor level assignments for individual fish
+
+Link to paper: https://academic.oup.com/gbe/article/9/3/504/3058199
+  

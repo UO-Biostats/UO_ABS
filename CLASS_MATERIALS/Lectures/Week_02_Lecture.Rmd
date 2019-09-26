@@ -1,0 +1,65 @@
+---
+title: "TITLE HERE"
+author: "Peter Ralph"
+date: "DATE HERE -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+# Section 1
+
+## Slide 1.1
+
+To turn these slides into html, do
+```
+make Lecture_template.slides.html
+```
+
+--------------
+
+What `make` does is first get the LaTeX macros where they can be included:
+```
+(echo '<div style="display: none">'; echo '\['; cat macros.tex; echo '\]'; echo '</div>') > .pandoc.macros.tex
+```
+and then in R, using the package [templater](https://github.com/petrelharp/templater), convert to markdown:
+```
+setwd('.')
+knitr::opts_chunk$set( fig.path=file.path('figure','Lecture_template',''), 
+                      cache.path=file.path('cache','Lecture_template','') )
+knitr::opts_knit$set( root.dir="." )
+knit("/home/peter/teaching/comp_bio/UO_ABS/CLASS_MATERIALS/Lectures/Lecture_template.Rmd", output = "Lecture_template.md",  ) 
+```
+and then uses pandoc to convert from markdown to (reveal.js) html.
+```
+pandoc -o Lecture_template.slides.html -t revealjs -V theme=simple -V slideNumber=true -V transition=none -H resources/adjust-revealjs.style --slide-level 2 --standalone  -H .pandoc.macros.tex --mathjax=https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML  Lecture_template.md
+```
+
+
+# Section2
+
+## Slide 2.1
+
+Code block:
+```r
+f <- function (x)
+    return(x + 1)
+```
+
+------
+
+Slide 2.2 without a header
+
+$$\begin{aligned}
+    e^{i\pi} = -1
+\end{aligned}$$

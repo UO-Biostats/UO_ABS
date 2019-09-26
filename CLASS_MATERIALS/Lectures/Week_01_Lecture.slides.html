@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Peter Ralph">
+  <title>Uncertainty: (how to) deal with it</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="reveal.js/css/theme/simple.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+  <style type="text/css">
+  
+  .reveal { font-size: 30px; }
+  
+  .reveal h1 { font-size: 1.5em; } 
+  
+  .reveal h2 { font-size: 1.2em; } 
+  
+  .reveal .slides { text-align: left; }
+  
+  .reveal .slides figure { text-align: center; }
+  
+  .reveal figcaption { display: none; }
+  
+  </style>
+  <div style="display: none">
+  \[
+  %%
+  % Add your macros here; they'll be included in pdf and html output.
+  %%
+  
+  \newcommand{\R}{\mathbb{R}}    % reals
+  \newcommand{\E}{\mathbb{E}}    % expectation
+  \renewcommand{\P}{\mathbb{P}}  % probability
+  \DeclareMathOperator{\logit}{logit}
+  \DeclareMathOperator{\logistic}{logistic}
+  \DeclareMathOperator{\sd}{sd}
+  \DeclareMathOperator{\var}{var}
+  \DeclareMathOperator{\cov}{cov}
+  \DeclareMathOperator{\Normal}{Normal}
+  \DeclareMathOperator{\Poisson}{Poisson}
+  \DeclareMathOperator{\Beta}{Beta}
+  \DeclareMathOperator{\Binom}{Binomial}
+  \DeclareMathOperator{\Gam}{Gamma}
+  \DeclareMathOperator{\Exp}{Exponential}
+  \DeclareMathOperator{\Cauchy}{Cauchy}
+  \DeclareMathOperator{\Unif}{Unif}
+  \DeclareMathOperator{\Dirichlet}{Dirichlet}
+  \DeclareMathOperator{\Wishart}{Wishart}
+  
+  \newcommand{\given}{\;\vert\;}
+  \]
+  </div>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Uncertainty: (how to) deal with it</h1>
+  <p class="author">Peter Ralph</p>
+  <p class="date">1 October – Advanced Biological Statistics</p>
+</section>
+
+<section><section id="course-overview" class="title-slide slide level1"><h1>Course overview</h1></section><section id="section" class="slide level2">
+<h2></h2>
+<ul>
+<li>Course website</li>
+<li>books</li>
+<li>topics</li>
+</ul>
+</section></section>
+<section><section id="data-science" class="title-slide slide level1"><h1>Data science</h1></section><section id="goals-and-overview" class="slide level2">
+<h2>Goals, and overview</h2>
+<ol type="1">
+<li>describe data</li>
+<li>always use the right tool for the job</li>
+</ol>
+</section><section id="steps-in-data-analysis" class="slide level2">
+<h2>Steps in data analysis</h2>
+<ol type="1">
+<li><p>Care, or at least think, about the data.</p></li>
+<li><p>Look at the data.</p></li>
+<li><p>Query the data.</p></li>
+<li><p>Sanity check.</p></li>
+<li><p>Communicate.</p></li>
+</ol>
+</section><section id="statistics-or-parameters" class="slide level2">
+<h2>Statistics or parameters?</h2>
+<dl>
+<dt>A <strong>statistic</strong> is</dt>
+<dd><p>a numerical description of a dataset.</p>
+</dd>
+</dl>
+<div class="fragment">
+<dl>
+<dt>A <strong>parameter</strong> is</dt>
+<dd><p>a numerical attribute of a model of reality.</p>
+</dd>
+</dl>
+</div>
+<div class="fragment">
+<p>Often, <em>statistics</em> are used to estimate <em>parameters</em>.</p>
+</div>
+</section><section id="the-two-heads-of-classical-statistics" class="slide level2">
+<h2>The two heads of classical statistics</h2>
+<p>quantifying uncertainty</p>
+<p>evaluating (in-)consistency with a particular situation</p>
+<ol type="1">
+<li><p>Are we wasting our time with this model?</p></li>
+<li><p>(if not) What’s it tell us about the world?</p></li>
+</ol>
+</section></section>
+<section><section id="hypothesis-testing-what-is-a-p-value" class="title-slide slide level1"><h1>Hypothesis testing: what is a <span class="math inline">\(p\)</span>-value?</h1></section><section id="a-p-value-is" class="slide level2">
+<h2>A <span class="math inline">\(p\)</span>-value is</h2>
+<div class="fragment">
+<p>the probability of seeing a result at least as surprising as what was observed in the data, if the null hypothesis is true.</p>
+</div>
+<div class="fragment">
+<p><em>Note:</em> here, “null hypothesis” means “the model we use to calculate the <span class="math inline">\(p\)</span>-value”.</p>
+</div>
+</section><section id="what-does-a-small-p-value-mean" class="slide level2">
+<h2>What does a small <span class="math inline">\(p\)</span>-value mean?</h2>
+<p><em>If</em> the null hypothesis <em>were</em> true, then you’d be really unlikely to see something like what you actually <em>did</em>.</p>
+<div class="fragment">
+<p>So, either the “null hypothesis” is not a good description of reality or something surprising happened.</p>
+</div>
+<div class="fragment">
+<p>How useful this is depends on the null hypothesis.</p>
+</div>
+</section><section id="exercise" class="slide level2">
+<h2>Exercise:</h2>
+<p><em>(class survey)</em> How many people have a longer index finger on the hand they write with?</p>
+<div class="fragment">
+<p><span class="math display">\[\begin{equation}
+    \theta = \P(\text{random person has writing finger longer}) .
+\end{equation}\]</span></p>
+<p><em>(in groups)</em> Use R to make 1000 fake datasets like ours with <span class="math inline">\(\theta = 1/2\)</span>, e.g.:</p>
+<pre><code>n &lt;- 35
+replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
+<p>Use this to estimate the <span class="math inline">\(p\)</span>-value for the hypothesis that <span class="math inline">\(\theta = 1/2\)</span>. Conclusions?</p>
+</div>
+</section></section>
+<section><section id="stochastic-minute-the-central-limit-theorem" class="title-slide slide level1"><h1>Stochastic minute: the Central Limit Theorem</h1></section><section id="the-clt" class="slide level2">
+<h2>The CLT</h2>
+<p>sum of independent things</p>
+<p>eg sampling distrn of sample mean</p>
+</section><section id="the-gaussian-distribution" class="slide level2">
+<h2>The Gaussian distribution</h2>
+<p>aka normal</p>
+</section></section>
+<section><section id="estimating-a-mean-t-things" class="title-slide slide level1"><h1>Estimating a mean: <span class="math inline">\(t\)</span>-things</h1></section><section id="example-problem" class="slide level2">
+<h2>Example problem</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">(tt &lt;-<span class="st"> </span><span class="kw">t.test</span>(x))</a></code></pre></div>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  x
+## t = 1.3189, df = 19, p-value = 0.2029
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  -0.1502748  0.6623513
+## sample estimates:
+## mean of x 
+## 0.2560383</code></pre>
+</section><section id="conclusion" class="slide level2">
+<h2>Conclusion</h2>
+<blockquote>
+<p>The X group was higher than the Y group… (P=0.2, t-test with df=19).</p>
+</blockquote>
+<div class="fragment">
+<p><em>Critique this conclusion.</em></p>
+</div>
+</section></section>
+<section><section id="communicating-effects-and-uncertainty" class="title-slide slide level1"><h1>Communicating: effects and uncertainty</h1></section><section id="dont-forget-steps-1-and-5" class="slide level2">
+<h2>Don’t forget Steps 1 and 5!</h2>
+<ol type="1">
+<li><p>Care, or at least think, about the data.</p></li>
+<li><p>Communicate.</p></li>
+</ol>
+<div class="fragment">
+<p>How <em>big</em> is the effect? How sure are we?</p>
+</div>
+<div class="fragment">
+<p>Statistical significance does not imply real-world significance.</p>
+</div>
+</section><section id="revised-conclusion" class="slide level2">
+<h2>Revised conclusion</h2>
+<blockquote>
+<p>The sample mean was 0.26 (P=0.2, t-test with df=19).</p>
+</blockquote>
+<div class="fragment">
+<p><em>Critiques?</em></p>
+</div>
+</section><section id="re-revised-conclusion" class="slide level2">
+<h2>Re-Revised conclusion</h2>
+<blockquote>
+<p>The sample mean was 0.26 (P=0.2, t-test with df=19), with a 95% confidence interval of -0.15 to 0.66.</p>
+</blockquote>
+</section></section>
+<section><section id="confident-in-confidence-intervals" class="title-slide slide level1"><h1>Confident in confidence intervals?</h1></section><section id="confidence-intervals" class="slide level2">
+<h2>Confidence intervals</h2>
+<p>A <em>95% confidence interval</em> for an estimate is constructed so that no matter what the true value, the confidence interval overlaps the truth 95% of the time.</p>
+<div class="fragment">
+<p>In other words, if we collect 1,000 independent samples from a population with true mean <span class="math inline">\(\mu\)</span>, and construct confidence intervals from each, then about 950 of these should overlap <span class="math inline">\(\mu\)</span>.</p>
+</div>
+</section><section id="your-turn-check-this." class="slide level2">
+<h2>Your turn: check this.</h2>
+<blockquote>
+<p>if we collect 1,000 independent samples from a population with true mean <span class="math inline">\(\mu\)</span>, and construct confidence intervals from each, then about 950 of these should overlap <span class="math inline">\(\mu\)</span>.</p>
+</blockquote>
+<p>Let’s take independent samples of size <span class="math inline">\(n=20\)</span> from a Normal distribution with <span class="math inline">\(\mu = 0\)</span>. Example:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span>; mu &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">t.test</span>(<span class="kw">rnorm</span>(n, <span class="dt">mean=</span>mu))<span class="op">$</span>conf.int</a></code></pre></div>
+<pre><code>## [1] -0.4964010  0.2742785
+## attr(,&quot;conf.level&quot;)
+## [1] 0.95</code></pre>
+</section></section>
+<section><section id="two-variables" class="title-slide slide level1"><h1>Two variables</h1></section><section id="second-look-at-the-data" class="slide level2">
+<h2>“Second, look at the data”</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">n &lt;-<span class="st"> </span><span class="dv">200</span></a>
+<a class="sourceLine" id="cb6-2" title="2">tz &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">t=</span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dt">length.out=</span>n))</a>
+<a class="sourceLine" id="cb6-3" title="3">tz<span class="op">$</span>z &lt;-<span class="st"> </span><span class="kw">cos</span>(tz<span class="op">$</span>t) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n)<span class="op">/</span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb6-4" title="4"></a>
+<a class="sourceLine" id="cb6-5" title="5">(ggp &lt;-<span class="st"> </span><span class="kw">ggplot</span>(tz, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">x=</span>t, <span class="dt">y=</span>z)) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;time&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;value&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="st">    </span><span class="kw">geom_point</span>())</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/biplot-1.png" title="plot of chunk biplot" alt="plot of chunk biplot" style="display: block; margin: auto;" /></p>
+</section><section id="smooths" class="slide level2">
+<h2>“Smooths”</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">(ggp <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;loess&#39;</span>, <span class="dt">formula=</span>y <span class="op">~</span><span class="st"> </span>x, <span class="dt">span=</span><span class="fl">0.2</span>))</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/biplot2-1.png" title="plot of chunk biplot2" alt="plot of chunk biplot2" style="display: block; margin: auto;" /></p>
+<div class="fragment">
+<p>That line is produced by <code>loess</code>, which does <em>local weighted regression</em>.</p>
+</div>
+</section><section id="lines" class="slide level2">
+<h2>Lines?</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">(ggp <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;lm&#39;</span>, <span class="dt">formula=</span>y <span class="op">~</span><span class="st"> </span>x))</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/biplot3-1.png" title="plot of chunk biplot3" alt="plot of chunk biplot3" style="display: block; margin: auto;" /></p>
+<p>Is this a good idea?</p>
+</section></section>
+<section><section id="correlation-and-regression" class="title-slide slide level1"><h1>Correlation and regression</h1></section><section id="two-variables-1" class="slide level2">
+<h2>Two variables</h2>
+<p>Suppose now we have <em>two variables</em>, like so:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">(xy &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="kw">rnorm</span>(<span class="dv">20</span>), <span class="dt">y=</span><span class="kw">rnorm</span>(<span class="dv">20</span>)))</a></code></pre></div>
+<pre><code>##              x          y
+## 1   0.50356163  1.0824382
+## 2   0.40083469  1.2946636
+## 3  -1.09831839 -0.8166615
+## 4   0.13057922  0.4759993
+## 5   0.76465876  0.3731633
+## 6  -1.89485633 -1.0196005
+## 7  -0.26303828  0.2388127
+## 8  -0.20787829 -1.8744110
+## 9  -1.04187663  0.9811913
+## 10 -1.54222061  2.2401228
+## 11  0.75277806 -0.6918545
+## 12 -0.26536990  0.4053915
+## 13  1.20660580 -1.0598341
+## 14 -0.79796857 -0.4217093
+## 15  0.09586926 -1.4051704
+## 16 -0.13050400  0.3127866
+## 17  1.38843020 -0.7485361
+## 18 -0.25001931  1.6648238
+## 19 -1.36408323 -0.8868494
+## 20 -0.81056749 -0.6646478</code></pre>
+</section><section id="correlation" class="slide level2">
+<h2>Correlation?</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">cor</span>(xy<span class="op">$</span>x, xy<span class="op">$</span>y)</a></code></pre></div>
+<pre><code>## [1] -0.07778214</code></pre>
+<div class="fragment">
+<figure>
+<img data-src="images/xkcd_correlation.png" alt="xkcd:552" /><figcaption>xkcd:552</figcaption>
+</figure>
+<p><em>Correlation doesn’t imply causation, but it does waggle its eyebrows suggestively and gesture furtively while mouthing “look over there”.</em></p>
+</div>
+</section><section id="have-a-look" class="slide level2">
+<h2>Have a look</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">plot</span>(xy<span class="op">$</span>x, xy<span class="op">$</span>y, <span class="dt">xlab=</span><span class="st">&#39;x&#39;</span>, <span class="dt">ylab=</span><span class="st">&#39;y&#39;</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/xyplot-1.png" title="plot of chunk xyplot" alt="plot of chunk xyplot" style="display: block; margin: auto;" /></p>
+<p>(on board: how’s least-squares regression work)</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'reveal.js/plugin/math/math.js', async: true },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>

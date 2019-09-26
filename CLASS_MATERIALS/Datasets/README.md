@@ -48,11 +48,27 @@ Here are links to data from some studies that other people have done, and also s
 
 ## Gacu_RNAseq
 
+## GFP by temperature
+
+gfp_temp.tsv :
+
+* `gfp`: GFP protein abundance
+* `temp`: temperature
 
 ## Microbiota_RNAseq
 
 
-## Perchlorate_DataTable
+## Perchlorate Data
+
+Perchlorate_Data.tsv
+* Strain - of zebrafish
+* Perchlorate Level - treatment of perchlorate
+* T4 Hormone Level
+* Follicle Area
+* Number of Follicles
+* Age_Category
+* Testes Area
+* Testes Stage
 
 ## plant_stress
 
@@ -60,5 +76,10 @@ Here are links to data from some studies that other people have done, and also s
 
 ## wine_chemicals
 
-## zfish_diet 
+## Zebrafish diet
 
+zfish_diet_IA.tsv:
+
+* Protein - amount of protein in the diet
+* Weight - weight of the fish
+* SL - standard length of the fish

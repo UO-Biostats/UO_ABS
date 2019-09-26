@@ -1,0 +1,21 @@
+Notes on 60-dpf stickleback common garden experiment data
+
+CG_OTUtable_*.tsv
+- each of these files contains down-sampled OTU read counts
+- counts from each library were down-sampled to 53,000 total
+- OTU counts are binned by taxonomic level (these levels correspond to the 6 different files)  
+
+CG_Metadata.tsv
+- contains predictor variable information for individual libraries
+- there is one “negative control” library, which involved DNA isolation from a “blank” collection tube, and the usual library construction 
+- note that most samples are represented by 2 libraries, which are technical (library prep.) replicates
+
+CG_ExpDesign.pdf
+- schematic of the experimental design
+- one entire Bt family had 100% mortality in both tanks
+
+Other notes:
+- it will be clear that there is very little variation between technical replicates
+- preliminary analyses suggest a negative relationship between fish size and OTU richness, but only in the 2 hybrid families
+- there is quite a clear tank effect with respect to beta diversity
+- there is a possibility that OTUs belonging to the genus Delftia are contaminants, because they are very abundant in the negative control 
