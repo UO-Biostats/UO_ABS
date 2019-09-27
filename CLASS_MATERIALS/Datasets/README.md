@@ -41,7 +41,7 @@ Here are links to data from some studies that other people have done, and also s
 
 # Datasets in this directory:
 
-##Airbnb_listings_Portland.csv.gz
+## Airbnb_listings_Portland
 
 ## ant_diversity
 
