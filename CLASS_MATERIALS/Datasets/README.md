@@ -33,11 +33,17 @@ Here are links to data from some studies that other people have done, and also s
 
 -   List of links from [Statistical Science](http://www.statsci.org/datasets.html)
 
+-   [Ecology Data Wiki](https://ecologicaldata.org/home)
+
+-   [American Gut Project](https://github.com/biocore/American-Gut/tree/master/data)
+
+
 
 # Datasets in this directory:
 
-## ant_diversity
+##Airbnb_listings_Portland.csv.gz
 
+## ant_diversity
 
 ## biofilm
 
@@ -45,30 +51,13 @@ Here are links to data from some studies that other people have done, and also s
 
 ## Danio_brain_RNAseq
 
-
 ## Gacu_RNAseq
-
-## GFP by temperature
-
-gfp_temp.tsv :
-
-* `gfp`: GFP protein abundance
-* `temp`: temperature
 
 ## Microbiota_RNAseq
 
+## PanTHERIA_WR05_mammals.txt
 
-## Perchlorate Data
-
-Perchlorate_Data.tsv
-* Strain - of zebrafish
-* Perchlorate Level - treatment of perchlorate
-* T4 Hormone Level
-* Follicle Area
-* Number of Follicles
-* Age_Category
-* Testes Area
-* Testes Stage
+## Perchlorate_DataTable
 
 ## plant_stress
 
@@ -76,10 +65,5 @@ Perchlorate_Data.tsv
 
 ## wine_chemicals
 
-## Zebrafish diet
+## zfish_diet 
 
-zfish_diet_IA.tsv:
-
-* Protein - amount of protein in the diet
-* Weight - weight of the fish
-* SL - standard length of the fish
