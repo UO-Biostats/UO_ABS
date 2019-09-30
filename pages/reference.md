@@ -56,6 +56,9 @@ A page of [example datasets](datasets.html)
   [Stat 627](https://github.com/datascience-uwmadison/stat627).
 - [Jenny Bryan's stat 545](http://stat545-ubc.github.io/) at UBC
 
+### Probability and statistics
 
+- List of [common probability distributions](https://en.wikipedia.org/wiki/Probability_distribution#Common_probability_distributions)
+- [ANOVA: a short intro using R](https://stat.ethz.ch/~meier/teaching/anova/) by Lukas Meier
 
 

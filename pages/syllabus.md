@@ -24,10 +24,10 @@ some (basic) programming.
 ## Instructors:
 
 - [Peter Ralph](https://pages.uoregon.edu/plr/), main instructor: plr@uoregon.edu
-    * office hours: Monday 2-3pm or by appointment, 270 Onyx Bridge
+    * office hours: Tuesday 12:30-2pm or by appointment, 270 Onyx Bridge
 
 - [Matt Lukac](https://ie2.uoregon.edu/people/lukac/), graduate teaching assistant: mlukac@uoregon.edu
-    * office hours: TBA
+    * office hours: Wednesday 3-4:30 in 122 Pacific hall
 
 - [Bill Cresko](https://creskolab.uoregon.edu/), supporting instructor: wcresko@uoregon.edu
     * office hours: by appointment, 312 Pacific Hall
@@ -39,6 +39,7 @@ some (basic) programming.
 - *Schedule:* Tue/Thur 10:00 AM - 11:50 AM, 40 Science Library
 - *Websites:* besides [the page you are looking at](https://petrelharp.github.io/UO_ABS/),
     assignments and announcements will be distributed on the Bi 610 [canvas page](https://canvas.uoregon.edu/)
+- *Assignments:* Assigned, and due, on Thursdays.
 
 ## Textbooks
 

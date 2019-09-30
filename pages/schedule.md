@@ -82,58 +82,52 @@ Week 10 (*12/2*)
 
 Week 11 (*1/7*)
 
+: Survival analysis
+
+Week 12 (*1/14*)
+
 : Categorical data: chi-square for contingency tables, permutation tests; categorical prediction.
 
     - Reading: Kruschke, chapters 22, 24
 
-Week 12 (*1/14*)
+Week 13 (*1/21*)
 
 : Sparsifying priors and variable selection.
 
     - Reading: Kruschke, chapters 19, 20
 
 
-Week 13 (*1/21*)
+Week 14 (*1/28*)
 
 : Linear algebra, latent factor analysis, intro to multivariate
 
     - Reading: Otto and Day, Linear Algebra Primer; Quinn & Keough, chapter 15
 
 
-Week 14 (*1/28*)
+Week 15 (*2/4*)
 
 : Factor/PCA/PCoA/MDS
 
     - Reading: Quinn & Keough, chapters 17, 18
 
-Week 15 (*2/4*)
+Week 16 (*2/11*)
 
 : MANOVA and Discriminant Function Analysis (DFA)
 
     - Reading: Quinn & Keough, chapter 16
 
-Week 16 (*2/11*)
+Week 17 (*2/18*)
 
 : Visualization: nonnegative matrix factorization and constrained PCA
 
-    - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
-
-Week 17 (*2/18*)
+Week 18 (*2/25*)
 
 : Modeling mixtures of expression data; clustering in Stan (t-SNE)
 
-    - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
-
-Week 18 (*2/25*)
-
-: Introduction to time series and spatial statistics.
-
-    - [Slides](../CLASS_MATERIALS/Lectures/Week_19_Lecture.slides.html)
-
 Week 19 (*3/3*)
 
-: TBD
+: Introduction to time series
 
 Week 20 (*3/10*)
 
-: TBD
+: Introduction to spatial statistics.

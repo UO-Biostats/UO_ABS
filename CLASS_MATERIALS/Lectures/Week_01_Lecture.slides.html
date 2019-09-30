@@ -129,6 +129,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   \DeclareMathOperator{\Unif}{Unif}
   \DeclareMathOperator{\Dirichlet}{Dirichlet}
   \DeclareMathOperator{\Wishart}{Wishart}
+  \DeclareMathOperator{\StudentsT}{StudentsT}
   
   \newcommand{\given}{\;\vert\;}
   \]
@@ -146,18 +147,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <section><section id="course-overview" class="title-slide slide level1"><h1>Course overview</h1></section><section id="section" class="slide level2">
 <h2></h2>
-<ul>
-<li>Course website</li>
-<li>books</li>
-<li>topics</li>
-</ul>
-</section></section>
-<section><section id="data-science" class="title-slide slide level1"><h1>Data science</h1></section><section id="goals-and-overview" class="slide level2">
-<h2>Goals, and overview</h2>
-<ol type="1">
-<li>describe data</li>
-<li>always use the right tool for the job</li>
-</ol>
+<figure>
+<img data-src="images/toolbox.jpeg" alt="a box of tools" style="width:80.0%" /><figcaption>a box of tools</figcaption>
+</figure>
+</section><section id="section-1" class="slide level2">
+<h2></h2>
+<figure>
+<img data-src="images/using-tools.jpeg" alt="people using tools" style="width:80.0%" /><figcaption>people using tools</figcaption>
+</figure>
 </section><section id="steps-in-data-analysis" class="slide level2">
 <h2>Steps in data analysis</h2>
 <ol type="1">
@@ -167,7 +164,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Sanity check.</p></li>
 <li><p>Communicate.</p></li>
 </ol>
-</section><section id="statistics-or-parameters" class="slide level2">
+<div class="fragment">
+<p>Often “statistics” focuses on <em>querying</em>. Doing that effectively requires all the other steps, too.</p>
+</div>
+</section><section id="overview-and-mechanics" class="slide level2">
+<h2>Overview and mechanics</h2>
+<p>See <a href="https://petrelharp.github.io/UO_ABS">the course website</a>.</p>
+</section></section>
+<section><section id="some-core-statistical-concepts" class="title-slide slide level1"><h1>Some core statistical concepts</h1></section><section id="statistics-or-parameters" class="slide level2">
 <h2>Statistics or parameters?</h2>
 <dl>
 <dt>A <strong>statistic</strong> is</dt>
@@ -186,20 +190,265 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </section><section id="the-two-heads-of-classical-statistics" class="slide level2">
 <h2>The two heads of classical statistics</h2>
-<p>quantifying uncertainty</p>
-<p>evaluating (in-)consistency with a particular situation</p>
-<ol type="1">
-<li><p>Are we wasting our time with this model?</p></li>
-<li><p>(if not) What’s it tell us about the world?</p></li>
-</ol>
-</section></section>
-<section><section id="hypothesis-testing-what-is-a-p-value" class="title-slide slide level1"><h1>Hypothesis testing: what is a <span class="math inline">\(p\)</span>-value?</h1></section><section id="a-p-value-is" class="slide level2">
-<h2>A <span class="math inline">\(p\)</span>-value is</h2>
+<p>estimating parameters, with uncertainty <em>(confidence intervals)</em></p>
+<p>evaluating (in-)consistency with a particular situation <em>(<span class="math inline">\(p\)</span>-values)</em></p>
 <div class="fragment">
-<p>the probability of seeing a result at least as surprising as what was observed in the data, if the null hypothesis is true.</p>
+<ol type="1">
+<li>What do these data tell us about the world?</li>
+<li>How strongly do we believe it?</li>
+</ol>
 </div>
 <div class="fragment">
-<p><em>Note:</em> here, “null hypothesis” means “the model we use to calculate the <span class="math inline">\(p\)</span>-value”.</p>
+<p><em>This week:</em> digging in, with simple examples.</p>
+</div>
+</section></section>
+<section><section id="a-quick-look-at-some-data" class="title-slide slide level1"><h1>A quick look at some data</h1></section><section id="some-data" class="slide level2">
+<h2>Some data</h2>
+<p>AirBnB hosts in Portland, OR: <a href="http://insideairbnb.com/get-the-data.html">website</a> and <a href="http://data.insideairbnb.com/united-states/or/portland/2019-07-10/data/listings.csv.gz">download link</a>.</p>
+<p>Questions: how much does an AirBnB typically cost in Portland? Do “instant bookable” ones cost more?</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">airbnb &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../Datasets/portland-airbnb-listings.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">nrow</span>(airbnb)</a></code></pre></div>
+<pre><code>## [1] 5634</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">names</span>(airbnb)</a></code></pre></div>
+<pre><code>##   [1] &quot;id&quot;                                          
+##   [2] &quot;listing_url&quot;                                 
+##   [3] &quot;scrape_id&quot;                                   
+##   [4] &quot;last_scraped&quot;                                
+##   [5] &quot;name&quot;                                        
+##   [6] &quot;summary&quot;                                     
+##   [7] &quot;space&quot;                                       
+##   [8] &quot;description&quot;                                 
+##   [9] &quot;experiences_offered&quot;                         
+##  [10] &quot;neighborhood_overview&quot;                       
+##  [11] &quot;notes&quot;                                       
+##  [12] &quot;transit&quot;                                     
+##  [13] &quot;access&quot;                                      
+##  [14] &quot;interaction&quot;                                 
+##  [15] &quot;house_rules&quot;                                 
+##  [16] &quot;thumbnail_url&quot;                               
+##  [17] &quot;medium_url&quot;                                  
+##  [18] &quot;picture_url&quot;                                 
+##  [19] &quot;xl_picture_url&quot;                              
+##  [20] &quot;host_id&quot;                                     
+##  [21] &quot;host_url&quot;                                    
+##  [22] &quot;host_name&quot;                                   
+##  [23] &quot;host_since&quot;                                  
+##  [24] &quot;host_location&quot;                               
+##  [25] &quot;host_about&quot;                                  
+##  [26] &quot;host_response_time&quot;                          
+##  [27] &quot;host_response_rate&quot;                          
+##  [28] &quot;host_acceptance_rate&quot;                        
+##  [29] &quot;host_is_superhost&quot;                           
+##  [30] &quot;host_thumbnail_url&quot;                          
+##  [31] &quot;host_picture_url&quot;                            
+##  [32] &quot;host_neighbourhood&quot;                          
+##  [33] &quot;host_listings_count&quot;                         
+##  [34] &quot;host_total_listings_count&quot;                   
+##  [35] &quot;host_verifications&quot;                          
+##  [36] &quot;host_has_profile_pic&quot;                        
+##  [37] &quot;host_identity_verified&quot;                      
+##  [38] &quot;street&quot;                                      
+##  [39] &quot;neighbourhood&quot;                               
+##  [40] &quot;neighbourhood_cleansed&quot;                      
+##  [41] &quot;neighbourhood_group_cleansed&quot;                
+##  [42] &quot;city&quot;                                        
+##  [43] &quot;state&quot;                                       
+##  [44] &quot;zipcode&quot;                                     
+##  [45] &quot;market&quot;                                      
+##  [46] &quot;smart_location&quot;                              
+##  [47] &quot;country_code&quot;                                
+##  [48] &quot;country&quot;                                     
+##  [49] &quot;latitude&quot;                                    
+##  [50] &quot;longitude&quot;                                   
+##  [51] &quot;is_location_exact&quot;                           
+##  [52] &quot;property_type&quot;                               
+##  [53] &quot;room_type&quot;                                   
+##  [54] &quot;accommodates&quot;                                
+##  [55] &quot;bathrooms&quot;                                   
+##  [56] &quot;bedrooms&quot;                                    
+##  [57] &quot;beds&quot;                                        
+##  [58] &quot;bed_type&quot;                                    
+##  [59] &quot;amenities&quot;                                   
+##  [60] &quot;square_feet&quot;                                 
+##  [61] &quot;price&quot;                                       
+##  [62] &quot;weekly_price&quot;                                
+##  [63] &quot;monthly_price&quot;                               
+##  [64] &quot;security_deposit&quot;                            
+##  [65] &quot;cleaning_fee&quot;                                
+##  [66] &quot;guests_included&quot;                             
+##  [67] &quot;extra_people&quot;                                
+##  [68] &quot;minimum_nights&quot;                              
+##  [69] &quot;maximum_nights&quot;                              
+##  [70] &quot;minimum_minimum_nights&quot;                      
+##  [71] &quot;maximum_minimum_nights&quot;                      
+##  [72] &quot;minimum_maximum_nights&quot;                      
+##  [73] &quot;maximum_maximum_nights&quot;                      
+##  [74] &quot;minimum_nights_avg_ntm&quot;                      
+##  [75] &quot;maximum_nights_avg_ntm&quot;                      
+##  [76] &quot;calendar_updated&quot;                            
+##  [77] &quot;has_availability&quot;                            
+##  [78] &quot;availability_30&quot;                             
+##  [79] &quot;availability_60&quot;                             
+##  [80] &quot;availability_90&quot;                             
+##  [81] &quot;availability_365&quot;                            
+##  [82] &quot;calendar_last_scraped&quot;                       
+##  [83] &quot;number_of_reviews&quot;                           
+##  [84] &quot;number_of_reviews_ltm&quot;                       
+##  [85] &quot;first_review&quot;                                
+##  [86] &quot;last_review&quot;                                 
+##  [87] &quot;review_scores_rating&quot;                        
+##  [88] &quot;review_scores_accuracy&quot;                      
+##  [89] &quot;review_scores_cleanliness&quot;                   
+##  [90] &quot;review_scores_checkin&quot;                       
+##  [91] &quot;review_scores_communication&quot;                 
+##  [92] &quot;review_scores_location&quot;                      
+##  [93] &quot;review_scores_value&quot;                         
+##  [94] &quot;requires_license&quot;                            
+##  [95] &quot;license&quot;                                     
+##  [96] &quot;jurisdiction_names&quot;                          
+##  [97] &quot;instant_bookable&quot;                            
+##  [98] &quot;is_business_travel_ready&quot;                    
+##  [99] &quot;cancellation_policy&quot;                         
+## [100] &quot;require_guest_profile_picture&quot;               
+## [101] &quot;require_guest_phone_verification&quot;            
+## [102] &quot;calculated_host_listings_count&quot;              
+## [103] &quot;calculated_host_listings_count_entire_homes&quot; 
+## [104] &quot;calculated_host_listings_count_private_rooms&quot;
+## [105] &quot;calculated_host_listings_count_shared_rooms&quot; 
+## [106] &quot;reviews_per_month&quot;</code></pre>
+</section><section id="second-look-at-the-data" class="slide level2">
+<h2>Second, look at the data</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">summary</span>(airbnb<span class="op">$</span>price)</a></code></pre></div>
+<pre><code>##    $75.00   $100.00    $80.00   $125.00    $65.00    $95.00   $150.00 
+##       256       240       177       174       168       166       162 
+##    $85.00    $99.00    $60.00    $90.00   $120.00    $50.00    $70.00 
+##       159       145       144       134       129       129       120 
+##    $45.00    $55.00   $110.00   $200.00   $199.00    $89.00    $79.00 
+##       105        99        86        74        67        67        66 
+##   $115.00   $300.00    $40.00   $175.00    $59.00    $35.00   $135.00 
+##        65        65        64        63        60        59        56 
+##    $69.00   $250.00   $180.00   $130.00   $149.00   $105.00   $119.00 
+##        56        51        50        49        48        46        43 
+##   $140.00    $49.00    $68.00   $109.00   $145.00   $225.00    $72.00 
+##        40        40        37        34        34        33        33 
+##   $160.00    $78.00   $215.00    $82.00    $88.00    $98.00   $129.00 
+##        31        31        30        30        30        29        28 
+##    $30.00   $195.00    $74.00   $350.00    $73.00   $165.00    $36.00 
+##        28        26        26        25        23        21        21 
+##    $48.00    $71.00   $159.00   $169.00    $39.00    $58.00    $87.00 
+##        21        21        20        20        20        20        20 
+##   $400.00    $52.00    $64.00    $83.00   $999.00    $42.00    $54.00 
+##        19        19        19        19        19        18        18 
+##    $92.00 $1,023.00   $108.00   $275.00    $33.00    $43.00   $155.00 
+##        18        17        17        17        17        17        16 
+##   $179.00   $209.00    $44.00    $47.00    $77.00    $94.00    $97.00 
+##        16        16        16        16        16        16        16 
+##   $185.00    $38.00    $62.00    $67.00    $41.00    $84.00    $37.00 
+##        15        15        15        15        14        14        13 
+##   $375.00    $57.00   $128.00    $32.00   $139.00   $325.00    $34.00 
+##        13        13        12        12        11        11        11 
+##    $91.00   (Other) 
+##        11       663</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">summary</span>(airbnb<span class="op">$</span>instant_bookable)</a></code></pre></div>
+<pre><code>##    f    t 
+## 2960 2674</code></pre>
+</section><section id="whoops" class="slide level2">
+<h2>Whoops</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">airbnb<span class="op">$</span>price &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">gsub</span>(<span class="st">&quot;$&quot;</span>, <span class="st">&quot;&quot;</span>, airbnb<span class="op">$</span>price, <span class="dt">fixed=</span><span class="ot">TRUE</span>))</a></code></pre></div>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">airbnb<span class="op">$</span>instant_bookable &lt;-<span class="st"> </span>(airbnb<span class="op">$</span>instant_bookable <span class="op">==</span><span class="st"> &quot;t&quot;</span>)</a></code></pre></div>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">summary</span>(airbnb<span class="op">$</span>price)</a></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
+##     0.0    69.0    95.0   119.5   136.0   999.0      32</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">summary</span>(airbnb<span class="op">$</span>instant_bookable)</a></code></pre></div>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    2960    2674</code></pre>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">table</span>(airbnb<span class="op">$</span>bed_type) <span class="co"># hm</span></a></code></pre></div>
+<pre><code>## 
+##        Airbed         Couch         Futon Pull-out Sofa      Real Bed 
+##             9             7            42            21          5555</code></pre>
+</section><section id="how-much-is-a-typical-night" class="slide level2">
+<h2>How much is a typical night?</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">mean</span>(airbnb<span class="op">$</span>price, <span class="dt">na.rm=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<pre><code>## [1] 119.5396</code></pre>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">hist</span>(airbnb<span class="op">$</span>price, <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">xlab=</span><span class="st">&#39;nightly price ($)&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(.<span class="dv">8</span>), <span class="dt">xlim=</span><span class="kw">range</span>(airbnb<span class="op">$</span>price, <span class="dt">finite=</span><span class="ot">TRUE</span>), <span class="dt">main=</span><span class="st">&#39;instant bookable&#39;</span>) </a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/airbnb_hist-1.png" title="plot of chunk airbnb_hist" alt="plot of chunk airbnb_hist" style="display: block; margin: auto;" /></p>
+<div class="fragment">
+<p>Conclusion?</p>
+</div>
+</section><section id="do-instant-bookable-charge-more" class="slide level2">
+<h2>Do “instant bookable” charge more?</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">layout</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb21-2" title="2"><span class="kw">hist</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">xlab=</span><span class="st">&#39;nightly price ($)&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(.<span class="dv">8</span>), <span class="dt">xlim=</span><span class="kw">range</span>(airbnb<span class="op">$</span>price, <span class="dt">finite=</span><span class="ot">TRUE</span>), <span class="dt">main=</span><span class="st">&#39;instant bookable&#39;</span>) </a>
+<a class="sourceLine" id="cb21-3" title="3"><span class="kw">hist</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">xlab=</span><span class="st">&#39;nightly price ($)&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(.<span class="dv">8</span>), <span class="dt">main=</span><span class="st">&#39;not instant bookable&#39;</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/airbnb_hist2-1.png" title="plot of chunk airbnb_hist2" alt="plot of chunk airbnb_hist2" style="display: block; margin: auto;" /></p>
+</section><section class="slide level2">
+
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">instant &lt;-<span class="st"> </span>airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable]</a>
+<a class="sourceLine" id="cb22-2" title="2">not_instant &lt;-<span class="st"> </span>airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable]</a>
+<a class="sourceLine" id="cb22-3" title="3">(tt &lt;-<span class="st"> </span><span class="kw">t.test</span>(instant, not_instant))</a></code></pre></div>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  instant and not_instant
+## t = 3.6482, df = 5039.8, p-value = 0.0002667
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##   4.475555 14.872518
+## sample estimates:
+## mean of x mean of y 
+##  124.6409  114.9668</code></pre>
+</section><section id="conclusion" class="slide level2">
+<h2>Conclusion</h2>
+<blockquote>
+<p>Instant bookable hosts cost more than others (P=0.00027, t-test with df=5039.7695486).</p>
+</blockquote>
+<div class="fragment">
+<p><em>Critique this conclusion.</em></p>
+</div>
+</section><section id="dont-forget-steps-1-and-5" class="slide level2">
+<h2>Don’t forget Steps 1 and 5!</h2>
+<ol type="1">
+<li><p>Care, or at least think, about the data.</p></li>
+<li><p>Communicate.</p></li>
+</ol>
+<div class="fragment">
+<p>How <em>big</em> is the difference? How sure are we?</p>
+</div>
+<div class="fragment">
+<p>Statistical significance does not imply real-world significance.</p>
+</div>
+</section><section id="revised-conclusion" class="slide level2">
+<h2>Revised conclusion</h2>
+<p>The mean nightly price of Portland AirBnB hosts is <span>$ 120,</span> with a standard deviation of <span>$98</span> and a range of <span>$ 0</span> to <span>$ 999</span>. “Instant bookable” hosts charged on average $9.7 more than others, a difference that is statistically significant (P=0.00027, t-test with df=5039.7695486).</p>
+<div class="fragment">
+<p><em>Critiques?</em></p>
+</div>
+</section><section id="section-2" class="slide level2">
+<h2></h2>
+<p>So: what did we just do?</p>
+</section></section>
+<section><section id="hypothesis-testing-and-p-values" class="title-slide slide level1"><h1>Hypothesis testing and <span class="math inline">\(p\)</span>-values</h1></section><section id="a-p-value-is" class="slide level2">
+<h2>A <span class="math inline">\(p\)</span>-value is</h2>
+<div class="fragment">
+<blockquote>
+<p>the probability of seeing a result at least as surprising as what was observed in the data, if the null hypothesis is true.</p>
+</blockquote>
+</div>
+<div class="fragment">
+<p>Usually, this means</p>
+<ul>
+<li><em>a result</em> - numerical value of a statistic</li>
+<li><em>surprising</em> - big</li>
+<li><em>null hypothesis</em> - the model we use to calculate the <span class="math inline">\(p\)</span>-value</li>
+</ul>
+<p>which can all be defined to suit the situation.</p>
 </div>
 </section><section id="what-does-a-small-p-value-mean" class="slide level2">
 <h2>What does a small <span class="math inline">\(p\)</span>-value mean?</h2>
@@ -210,147 +459,321 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="fragment">
 <p>How useful this is depends on the null hypothesis.</p>
 </div>
+</section><section id="for-instance" class="slide level2">
+<h2>For instance</h2>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  instant and not_instant
+## t = 3.6482, df = 5039.8, p-value = 0.0002667
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##   4.475555 14.872518
+## sample estimates:
+## mean of x mean of y 
+##  124.6409  114.9668</code></pre>
+</section><section id="also-for-instance" class="slide level2">
+<h2>Also for instance</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">t.test</span>(airbnb<span class="op">$</span>price)</a></code></pre></div>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  airbnb$price
+## t = 91.32, df = 5601, p-value &lt; 2.2e-16
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  116.9734 122.1058
+## sample estimates:
+## mean of x 
+##  119.5396</code></pre>
+<div class="fragment">
+<p>Is <em>that</em> <span class="math inline">\(p\)</span>-value useful?</p>
+</div>
 </section><section id="exercise" class="slide level2">
 <h2>Exercise:</h2>
 <p><em>(class survey)</em> How many people have a longer index finger on the hand they write with?</p>
 <div class="fragment">
-<p><span class="math display">\[\begin{equation}
+<p>We want to know <span class="math display">\[\begin{equation}
     \theta = \P(\text{random person has writing finger longer}) .
 \end{equation}\]</span></p>
-<p><em>(in groups)</em> Use R to make 1000 fake datasets like ours with <span class="math inline">\(\theta = 1/2\)</span>, e.g.:</p>
-<pre><code>n &lt;- 35
+<p>Everyone make a fake dataset with <span class="math inline">\(\theta = 1/2\)</span>, e.g.:</p>
+<pre><code>n &lt;- 35 # class size
 replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
-<p>Use this to estimate the <span class="math inline">\(p\)</span>-value for the hypothesis that <span class="math inline">\(\theta = 1/2\)</span>. Conclusions?</p>
 </div>
-</section></section>
-<section><section id="stochastic-minute-the-central-limit-theorem" class="title-slide slide level1"><h1>Stochastic minute: the Central Limit Theorem</h1></section><section id="the-clt" class="slide level2">
-<h2>The CLT</h2>
-<p>sum of independent things</p>
-<p>eg sampling distrn of sample mean</p>
-</section><section id="the-gaussian-distribution" class="slide level2">
-<h2>The Gaussian distribution</h2>
-<p>aka normal</p>
-</section></section>
-<section><section id="estimating-a-mean-t-things" class="title-slide slide level1"><h1>Estimating a mean: <span class="math inline">\(t\)</span>-things</h1></section><section id="example-problem" class="slide level2">
-<h2>Example problem</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">(tt &lt;-<span class="st"> </span><span class="kw">t.test</span>(x))</a></code></pre></div>
-<pre><code>## 
-##  One Sample t-test
-## 
-## data:  x
-## t = 1.3189, df = 19, p-value = 0.2029
-## alternative hypothesis: true mean is not equal to 0
-## 95 percent confidence interval:
-##  -0.1502748  0.6623513
-## sample estimates:
-## mean of x 
-## 0.2560383</code></pre>
-</section><section id="conclusion" class="slide level2">
-<h2>Conclusion</h2>
-<blockquote>
-<p>The X group was higher than the Y group… (P=0.2, t-test with df=19).</p>
-</blockquote>
 <div class="fragment">
-<p><em>Critique this conclusion.</em></p>
+<p>Now we can estimate the <span class="math inline">\(p\)</span>-value for the hypothesis that <span class="math inline">\(\theta = 1/2\)</span>. Conclusions?</p>
+</div>
+</section><section id="so-where-do-p-values-come-from" class="slide level2">
+<h2>So, where do <span class="math inline">\(p\)</span>-values come from?</h2>
+<p>Either math:</p>
+<figure>
+<img data-src="images/t-table.png" alt="table of p-values from a t distribution" /><figcaption>table of p-values from a t distribution</figcaption>
+</figure>
+<div class="fragment">
+<p>Or, computers. (maybe math, maybe simulation, maybe both)</p>
 </div>
 </section></section>
-<section><section id="communicating-effects-and-uncertainty" class="title-slide slide level1"><h1>Communicating: effects and uncertainty</h1></section><section id="dont-forget-steps-1-and-5" class="slide level2">
-<h2>Don’t forget Steps 1 and 5!</h2>
+<section><section id="stochastic-minute-the-t-distribution" class="title-slide slide level1"><h1>Stochastic minute: the <span class="math inline">\(t\)</span> distribution</h1></section><section id="the-t-statistic" class="slide level2">
+<h2>The <span class="math inline">\(t\)</span> statistic</h2>
+<p>The <span class="math inline">\(t\)</span> statistic computed from a collection of <span class="math inline">\(n\)</span> numbers is the sample mean divided by the estimated standard error of the mean, which is the sample SD divided by <span class="math inline">\(\sqrt{n}\)</span>.</p>
+<div class="fragment">
+<p>If <span class="math inline">\(x_1, \ldots, x_n\)</span> are numbers, then <span class="math display">\[\begin{aligned}
+    \text{(sample mean)} \qquad \bar x &amp;= \frac{1}{n}\sum_{i=1}^n x_i \\
+    \text{(sample SD)} \qquad s &amp;= \sqrt{\frac{1}{n-1}\sum_{i=1}^n (x_i - \bar x)^2} 
+\end{aligned}\]</span> so <span class="math display">\[\begin{equation}
+    t(x) = \frac{\bar x}{s / \sqrt{n}} .
+\end{equation}\]</span></p>
+</div>
+</section><section id="sanity-check" class="slide level2">
+<h2>Sanity check</h2>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb28-2" title="2">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n)</a>
+<a class="sourceLine" id="cb28-3" title="3"><span class="kw">c</span>(<span class="kw">t.test</span>(x)<span class="op">$</span>statistic, </a>
+<a class="sourceLine" id="cb28-4" title="4">  <span class="kw">mean</span>(x) <span class="op">/</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(n)))</a></code></pre></div>
+<pre><code>##        t          
+## 1.318919 1.318919</code></pre>
+</section><section id="the-t-approximation" class="slide level2">
+<h2>The <span class="math inline">\(t\)</span> approximation</h2>
+<p><strong>Fact:</strong> If <span class="math inline">\(X_1, \ldots, X_n\)</span> are independent random samples from a distribution with mean <span class="math inline">\(\mu\)</span>, then <span class="math display">\[\begin{equation}
+    t(X - \mu) = \frac{\bar x - \mu}{\sigma} \approx \StudentsT(n-2) ,
+\end{equation}\]</span> as long as <span class="math inline">\(n\)</span> is not too small and the distribution isn’t too wierd.</p>
+</section><section id="a-demonstration" class="slide level2">
+<h2>A demonstration</h2>
+<p>Let’s check this, by doing:</p>
+<blockquote>
+<p>find the sample <span class="math inline">\(t\)</span> score of 100 random draws from some distribution</p>
+</blockquote>
+<p>lots of times, and looking at the distribution of those <span class="math inline">\(t\)</span> scores.</p>
+<div class="fragment">
+<p>Claim: no matter the distribution we sample from, it should look close to <span class="math inline">\(t\)</span>.</p>
+</div>
+</section><section id="one-sample" class="slide level2">
+<h2>One sample</h2>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb30-2" title="2">x &lt;-<span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">runif</span>(n) <span class="op">-</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb30-3" title="3"><span class="kw">hist</span>(x, <span class="dt">xlab=</span><span class="st">&#39;value&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(<span class="fl">0.5</span>),</a>
+<a class="sourceLine" id="cb30-4" title="4">     <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&quot;t=%f&quot;</span>, <span class="kw">mean</span>(x)<span class="op">*</span><span class="kw">sqrt</span>(n<span class="dv">-1</span>)<span class="op">/</span><span class="kw">sd</span>(x)))</a>
+<a class="sourceLine" id="cb30-5" title="5"><span class="kw">abline</span>(<span class="dt">v=</span><span class="dv">0</span>, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">lty=</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb30-6" title="6"><span class="kw">abline</span>(<span class="dt">v=</span><span class="kw">mean</span>(x), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/t_one_smaple-1.png" title="plot of chunk t_one_smaple" alt="plot of chunk t_one_smaple" style="display: block; margin: auto;" /></p>
+</section><section id="more-samples" class="slide level2">
+<h2>More samples</h2>
+<p><img src="figure/Week_01_Lecture/t_more_samples-1.png" title="plot of chunk t_more_samples" alt="plot of chunk t_more_samples" style="display: block; margin: auto;" /></p>
+</section><section id="distribution-of-1000-sample-t-scores" class="slide level2">
+<h2>Distribution of 1,000 sample <span class="math inline">\(t\)</span> scores</h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">xm &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
+<a class="sourceLine" id="cb31-2" title="2">            x &lt;-<span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">runif</span>(n) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>;</a>
+<a class="sourceLine" id="cb31-3" title="3">            <span class="kw">mean</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(n<span class="dv">-1</span>) <span class="op">/</span><span class="st"> </span><span class="kw">sd</span>(x) })</a>
+<a class="sourceLine" id="cb31-4" title="4">xh &lt;-<span class="st"> </span><span class="kw">hist</span>(xm, <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;t of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/t_sampling_dist-1.png" title="plot of chunk t_sampling_dist" alt="plot of chunk t_sampling_dist" style="display: block; margin: auto;" /></p>
+</section><section id="distribution-of-1000-sample-t-scores-1" class="slide level2">
+<h2>Distribution of 1,000 sample <span class="math inline">\(t\)</span> scores</h2>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">plot</span>(xh, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;t of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a>
+<a class="sourceLine" id="cb32-2" title="2">xx &lt;-<span class="st"> </span>xh<span class="op">$</span>breaks</a>
+<a class="sourceLine" id="cb32-3" title="3"><span class="kw">polygon</span>(<span class="kw">c</span>(xx[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">diff</span>(xx)<span class="op">/</span><span class="dv">2</span>, xx[<span class="dv">1</span>]),</a>
+<a class="sourceLine" id="cb32-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pt</span>(xx, <span class="dt">df=</span>(n<span class="dv">-1</span>))), <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb32-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/t_smpling_dist2-1.png" title="plot of chunk t_smpling_dist2" alt="plot of chunk t_smpling_dist2" style="display: block; margin: auto;" /></p>
+</section><section id="excercise" class="slide level2">
+<h2>Excercise:</h2>
+<p>Do this again (use my code) except using</p>
+<pre><code>x &lt;- rexp(n) - 1</code></pre>
+<p>instead of <code>2 * runif(n) - 1</code>.</p>
+</section></section>
+<section><section id="permutation-tests" class="title-slide slide level1"><h1>Permutation tests</h1></section><section id="section-3" class="slide level2">
+<h2></h2>
+<p>Is the distribution of AirBnB prices too “wierd”? How can we be sure?</p>
+<div class="fragment">
+<p>Methods:</p>
 <ol type="1">
-<li><p>Care, or at least think, about the data.</p></li>
-<li><p>Communicate.</p></li>
+<li><p>Remove the big values and try again.</p></li>
+<li><p>Use a nonparametric test.</p></li>
 </ol>
-<div class="fragment">
-<p>How <em>big</em> is the effect? How sure are we?</p>
 </div>
+</section><section id="remove-the-big-values" class="slide level2">
+<h2>Remove the big values</h2>
+<p>(demonstration)</p>
+</section><section id="the-permutation-test" class="slide level2">
+<h2>The permutation test</h2>
+<p><em>Observation:</em> <strong>If</strong> there was no meaningful difference in prices between “instant bookable” and not, <strong>then randomly shuffling that label</strong> won’t change anything.</p>
 <div class="fragment">
-<p>Statistical significance does not imply real-world significance.</p>
+<p>Strategy:</p>
+<ol type="1">
+<li>Shuffle the <code>instant_bookable</code> column.</li>
+<li>Compute the difference in means.</li>
+<li>Repeat, many times.</li>
+<li>Compare: the <span class="math inline">\(p\)</span> value is the proportion of “shuffled” values more extreme than observed.</li>
+</ol>
 </div>
-</section><section id="revised-conclusion" class="slide level2">
-<h2>Revised conclusion</h2>
+</section><section id="shuffle-once" class="slide level2">
+<h2>Shuffle once</h2>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1">fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
+<a class="sourceLine" id="cb34-2" title="2">(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant]) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb34-3" title="3"><span class="st">       </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant]))</a></code></pre></div>
+<pre><code>## [1] NA</code></pre>
+</section><section id="many-times" class="slide level2">
+<h2>Many times</h2>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">permuted_diffs &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
+<a class="sourceLine" id="cb36-2" title="2">        fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
+<a class="sourceLine" id="cb36-3" title="3">        (<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb36-4" title="4"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb36-5" title="5">   } )</a></code></pre></div>
+</section><section id="how-surprising-was-the-real-value" class="slide level2">
+<h2>How surprising was the real value?</h2>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1">real_diff &lt;-<span class="st"> </span>(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb37-2" title="2"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb37-3" title="3"><span class="kw">mean</span>(<span class="kw">abs</span>(permuted_diffs) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(real_diff))</a></code></pre></div>
+<pre><code>## [1] 0</code></pre>
+<div class="fragment">
 <blockquote>
-<p>The sample mean was 0.26 (P=0.2, t-test with df=19).</p>
+<p>The difference in price between instant bookable and not is highly statistically significant (<span class="math inline">\(p \approx 0.001\)</span>, permutation test).</p>
 </blockquote>
-<div class="fragment">
-<p><em>Critiques?</em></p>
 </div>
-</section><section id="re-revised-conclusion" class="slide level2">
-<h2>Re-Revised conclusion</h2>
-<blockquote>
-<p>The sample mean was 0.26 (P=0.2, t-test with df=19), with a 95% confidence interval of -0.15 to 0.66.</p>
-</blockquote>
+</section><section id="permutation-test-recap" class="slide level2">
+<h2>Permutation test: recap</h2>
+<p><em>Pros:</em></p>
+<ul>
+<li>Very robust and flexible!</li>
+</ul>
+<p><em>Cons:</em></p>
+<ul>
+<li>Harder to do.</li>
+<li>Confidence intervals needs another step.</li>
+</ul>
 </section></section>
-<section><section id="confident-in-confidence-intervals" class="title-slide slide level1"><h1>Confident in confidence intervals?</h1></section><section id="confidence-intervals" class="slide level2">
+<section><section id="confident-in-confidence-intervals" class="title-slide slide level1"><h1>Confident in confidence intervals?</h1></section><section id="section-4" class="slide level2">
+<h2></h2>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">tt</a></code></pre></div>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  instant and not_instant
+## t = 3.6482, df = 5039.8, p-value = 0.0002667
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##   4.475555 14.872518
+## sample estimates:
+## mean of x mean of y 
+##  124.6409  114.9668</code></pre>
+</section><section id="confidence-intervals" class="slide level2">
 <h2>Confidence intervals</h2>
 <p>A <em>95% confidence interval</em> for an estimate is constructed so that no matter what the true value, the confidence interval overlaps the truth 95% of the time.</p>
 <div class="fragment">
-<p>In other words, if we collect 1,000 independent samples from a population with true mean <span class="math inline">\(\mu\)</span>, and construct confidence intervals from each, then about 950 of these should overlap <span class="math inline">\(\mu\)</span>.</p>
+<p>In other words, if we collect 1,000 independent samples from a population with true mean <span class="math inline">\(\mu\)</span>, and construct confidence intervals for the mean from each, then about 950 of these should overlap <span class="math inline">\(\mu\)</span>.</p>
 </div>
-</section><section id="your-turn-check-this." class="slide level2">
-<h2>Your turn: check this.</h2>
+</section><section id="check-this." class="slide level2">
+<h2>Check this.</h2>
 <blockquote>
 <p>if we collect 1,000 independent samples from a population with true mean <span class="math inline">\(\mu\)</span>, and construct confidence intervals from each, then about 950 of these should overlap <span class="math inline">\(\mu\)</span>.</p>
 </blockquote>
 <p>Let’s take independent samples of size <span class="math inline">\(n=20\)</span> from a Normal distribution with <span class="math inline">\(\mu = 0\)</span>. Example:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span>; mu &lt;-<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="kw">t.test</span>(<span class="kw">rnorm</span>(n, <span class="dt">mean=</span>mu))<span class="op">$</span>conf.int</a></code></pre></div>
-<pre><code>## [1] -0.4964010  0.2742785
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span>; mu &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb41-2" title="2"><span class="kw">t.test</span>(<span class="kw">rnorm</span>(n, <span class="dt">mean=</span>mu))<span class="op">$</span>conf.int</a></code></pre></div>
+<pre><code>## [1] -0.5049656  0.5953488
 ## attr(,&quot;conf.level&quot;)
 ## [1] 0.95</code></pre>
+</section><section id="section-5" class="slide level2">
+<h2></h2>
+<p><img src="figure/Week_01_Lecture/many conf_int-1.png" title="plot of chunk many conf_int" alt="plot of chunk many conf_int" style="display: block; margin: auto;" /></p>
 </section></section>
-<section><section id="two-variables" class="title-slide slide level1"><h1>Two variables</h1></section><section id="second-look-at-the-data" class="slide level2">
+<section><section id="stochastic-minute-the-central-limit-theorem-and-the-normal-distribution" class="title-slide slide level1"><h1>Stochastic minute: the Central Limit Theorem and the Normal distribution</h1></section><section id="the-clt" class="slide level2">
+<h2>The CLT</h2>
+<p>The <a href="https://en.wikipedia.org/wiki/Central_limit_theorem">Central Limit Theorem</a> says, roughly, that net effect of the <em>sum</em> of a bunch of small, <em>independent</em> random things can be well-approximated by a <a href="https://en.wikipedia.org/wiki/Normal_distribution">Gaussian distribution</a>, almost regardless of the details.</p>
+<div class="fragment">
+<p>For instance: say <span class="math inline">\(X_1, X_2, \ldots, X_n\)</span> are independent, random draws with mean <span class="math inline">\(\mu\)</span> and standard deviation <span class="math inline">\(\sigma\)</span>.</p>
+<p>Then, the difference between the “true” mean, <span class="math inline">\(\mu\)</span>, and the sample mean is Gaussian, <span class="math display">\[\begin{aligned}
+    \bar x = \frac{1}{n}\sum_{i=1}^n X_i \approx \Normal\left(\mu, \frac{\sigma}{\sqrt{n}}\right) .
+\end{aligned}\]</span></p>
+</div>
+</section><section id="the-gaussian-distribution" class="slide level2">
+<h2>The Gaussian distribution</h2>
+<p>Also called the <em>Normal distribution</em>: see previous slide.</p>
+<div class="fragment">
+<p>Saying that a random number <span class="math inline">\(Z\)</span> “is Normal”: <span class="math display">\[\begin{equation}
+    Z \sim \Normal(\mu, \sigma)
+\end{equation}\]</span> means that <span class="math display">\[\begin{equation}
+    \P\left\{Z \ge \frac{x - \mu}{\sigma}\right\} = \int_x^\infty \frac{1}{\sqrt{2 \pi}} e^{-u^2/2} du .
+\end{equation}\]</span></p>
+</div>
+<div class="fragment">
+<p>What to remember:</p>
+<ol type="1">
+<li><span class="math inline">\(Z\)</span> is probably no more than a few times <span class="math inline">\(\sigma\)</span> away from <span class="math inline">\(\mu\)</span></li>
+<li>Using R,</li>
+</ol>
+<pre><code>rnorm(10, mean=3, sd=2)    # random simulations
+pnorm(5, mean=3, sd=2)     # probabilities
+qnorm(0.975, mean=3, sd=2) # quantiles</code></pre>
+</div>
+</section><section id="a-demonstration-1" class="slide level2">
+<h2>A demonstration</h2>
+<p>Let’s check this, by doing:</p>
+<blockquote>
+<p>find the sample mean of 100 random draws from some distribution</p>
+</blockquote>
+<p>lots of times, and looking at the distribution of those sample means.</p>
+<div class="fragment">
+<p>Claim: no matter the distribution we sample from, it should look close to Normal.</p>
+</div>
+</section><section id="one-sample-1" class="slide level2">
+<h2>One sample</h2>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb44-2" title="2">x &lt;-<span class="st"> </span><span class="kw">runif</span>(n)</a>
+<a class="sourceLine" id="cb44-3" title="3"><span class="kw">hist</span>(x, <span class="dt">xlab=</span><span class="st">&#39;value&#39;</span>, <span class="dt">main=</span><span class="st">&#39;sample&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(<span class="fl">0.5</span>))</a>
+<a class="sourceLine" id="cb44-4" title="4"><span class="kw">abline</span>(<span class="dt">v=</span><span class="kw">mean</span>(x), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/one_smaple-1.png" title="plot of chunk one_smaple" alt="plot of chunk one_smaple" style="display: block; margin: auto;" /></p>
+</section><section id="more-samples-1" class="slide level2">
+<h2>More samples</h2>
+<p><img src="figure/Week_01_Lecture/more_samples-1.png" title="plot of chunk more_samples" alt="plot of chunk more_samples" style="display: block; margin: auto;" /></p>
+</section><section id="distribution-of-1000-sample-means" class="slide level2">
+<h2>Distribution of 1,000 sample means</h2>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1">xm &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, <span class="kw">mean</span>(<span class="kw">runif</span>(n)))</a>
+<a class="sourceLine" id="cb45-2" title="2">xh &lt;-<span class="st"> </span><span class="kw">hist</span>(xm, <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/smpling_dist-1.png" title="plot of chunk smpling_dist" alt="plot of chunk smpling_dist" style="display: block; margin: auto;" /></p>
+</section><section id="distribution-of-1000-sample-means-1" class="slide level2">
+<h2>Distribution of 1,000 sample means</h2>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1"><span class="kw">plot</span>(xh, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a>
+<a class="sourceLine" id="cb46-2" title="2">xx &lt;-<span class="st"> </span>xh<span class="op">$</span>breaks</a>
+<a class="sourceLine" id="cb46-3" title="3"><span class="kw">polygon</span>(<span class="kw">c</span>(xx[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">diff</span>(xx)<span class="op">/</span><span class="dv">2</span>, xx[<span class="dv">1</span>]),</a>
+<a class="sourceLine" id="cb46-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pnorm</span>(xx, <span class="dt">mean=</span><span class="fl">0.5</span>, <span class="dt">sd=</span><span class="dv">1</span><span class="op">/</span><span class="kw">sqrt</span>(n<span class="op">*</span><span class="dv">12</span>))), <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb46-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/smpling_dist2-1.png" title="plot of chunk smpling_dist2" alt="plot of chunk smpling_dist2" style="display: block; margin: auto;" /></p>
+</section></section>
+<section><section id="two-variables" class="title-slide slide level1"><h1>Two variables</h1></section><section id="second-look-at-the-data-1" class="slide level2">
 <h2>“Second, look at the data”</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">n &lt;-<span class="st"> </span><span class="dv">200</span></a>
-<a class="sourceLine" id="cb6-2" title="2">tz &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">t=</span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dt">length.out=</span>n))</a>
-<a class="sourceLine" id="cb6-3" title="3">tz<span class="op">$</span>z &lt;-<span class="st"> </span><span class="kw">cos</span>(tz<span class="op">$</span>t) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n)<span class="op">/</span><span class="dv">4</span></a>
-<a class="sourceLine" id="cb6-4" title="4"></a>
-<a class="sourceLine" id="cb6-5" title="5">(ggp &lt;-<span class="st"> </span><span class="kw">ggplot</span>(tz, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">x=</span>t, <span class="dt">y=</span>z)) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;time&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;value&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="st">    </span><span class="kw">geom_point</span>())</a></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" title="1">n &lt;-<span class="st"> </span><span class="dv">200</span></a>
+<a class="sourceLine" id="cb47-2" title="2">tz &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">t=</span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dt">length.out=</span>n))</a>
+<a class="sourceLine" id="cb47-3" title="3">tz<span class="op">$</span>z &lt;-<span class="st"> </span><span class="kw">cos</span>(tz<span class="op">$</span>t) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n)<span class="op">/</span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb47-4" title="4"></a>
+<a class="sourceLine" id="cb47-5" title="5">(ggp &lt;-<span class="st"> </span><span class="kw">ggplot</span>(tz, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">x=</span>t, <span class="dt">y=</span>z)) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;time&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;value&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb47-6" title="6"><span class="st">    </span><span class="kw">geom_point</span>())</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/biplot-1.png" title="plot of chunk biplot" alt="plot of chunk biplot" style="display: block; margin: auto;" /></p>
 </section><section id="smooths" class="slide level2">
 <h2>“Smooths”</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">(ggp <span class="op">+</span></a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;loess&#39;</span>, <span class="dt">formula=</span>y <span class="op">~</span><span class="st"> </span>x, <span class="dt">span=</span><span class="fl">0.2</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1">(ggp <span class="op">+</span></a>
+<a class="sourceLine" id="cb48-2" title="2"><span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;loess&#39;</span>, <span class="dt">formula=</span>y <span class="op">~</span><span class="st"> </span>x, <span class="dt">span=</span><span class="fl">0.2</span>))</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/biplot2-1.png" title="plot of chunk biplot2" alt="plot of chunk biplot2" style="display: block; margin: auto;" /></p>
 <div class="fragment">
 <p>That line is produced by <code>loess</code>, which does <em>local weighted regression</em>.</p>
 </div>
 </section><section id="lines" class="slide level2">
 <h2>Lines?</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">(ggp <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;lm&#39;</span>, <span class="dt">formula=</span>y <span class="op">~</span><span class="st"> </span>x))</a></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" title="1">(ggp <span class="op">+</span></a>
+<a class="sourceLine" id="cb49-2" title="2"><span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;lm&#39;</span>, <span class="dt">formula=</span>y <span class="op">~</span><span class="st"> </span>x))</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/biplot3-1.png" title="plot of chunk biplot3" alt="plot of chunk biplot3" style="display: block; margin: auto;" /></p>
 <p>Is this a good idea?</p>
 </section></section>
 <section><section id="correlation-and-regression" class="title-slide slide level1"><h1>Correlation and regression</h1></section><section id="two-variables-1" class="slide level2">
 <h2>Two variables</h2>
-<p>Suppose now we have <em>two variables</em>, like so:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">(xy &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="kw">rnorm</span>(<span class="dv">20</span>), <span class="dt">y=</span><span class="kw">rnorm</span>(<span class="dv">20</span>)))</a></code></pre></div>
-<pre><code>##              x          y
-## 1   0.50356163  1.0824382
-## 2   0.40083469  1.2946636
-## 3  -1.09831839 -0.8166615
-## 4   0.13057922  0.4759993
-## 5   0.76465876  0.3731633
-## 6  -1.89485633 -1.0196005
-## 7  -0.26303828  0.2388127
-## 8  -0.20787829 -1.8744110
-## 9  -1.04187663  0.9811913
-## 10 -1.54222061  2.2401228
-## 11  0.75277806 -0.6918545
-## 12 -0.26536990  0.4053915
-## 13  1.20660580 -1.0598341
-## 14 -0.79796857 -0.4217093
-## 15  0.09586926 -1.4051704
-## 16 -0.13050400  0.3127866
-## 17  1.38843020 -0.7485361
-## 18 -0.25001931  1.6648238
-## 19 -1.36408323 -0.8868494
-## 20 -0.81056749 -0.6646478</code></pre>
+<p>Now consider the results of an experiment: green fluorescent protein (GFP) concentration at eight temperatures (<a href="../Datasets/gfp_temp.tsv">data</a>):</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" title="1">(xy &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;../Datasets/gfp_temp.tsv&quot;</span>)</a></code></pre></div>
+<pre><code>## Error: &lt;text&gt;:2:0: unexpected end of input
+## 1: (xy &lt;- read.table(&quot;../Datasets/gfp_temp.tsv&quot;)
+##    ^</code></pre>
 </section><section id="correlation" class="slide level2">
 <h2>Correlation?</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">cor</span>(xy<span class="op">$</span>x, xy<span class="op">$</span>y)</a></code></pre></div>
-<pre><code>## [1] -0.07778214</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" title="1"><span class="kw">cor</span>(xy<span class="op">$</span>temp, xy<span class="op">$</span>gfp)</a></code></pre></div>
+<pre><code>## Error in is.data.frame(y): object &#39;xy&#39; not found</code></pre>
 <div class="fragment">
 <figure>
 <img data-src="images/xkcd_correlation.png" alt="xkcd:552" /><figcaption>xkcd:552</figcaption>
@@ -359,8 +782,10 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 </div>
 </section><section id="have-a-look" class="slide level2">
 <h2>Have a look</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">plot</span>(xy<span class="op">$</span>x, xy<span class="op">$</span>y, <span class="dt">xlab=</span><span class="st">&#39;x&#39;</span>, <span class="dt">ylab=</span><span class="st">&#39;y&#39;</span>)</a></code></pre></div>
-<p><img src="figure/Week_01_Lecture/xyplot-1.png" title="plot of chunk xyplot" alt="plot of chunk xyplot" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" title="1">(<span class="kw">ggplot</span>(xy, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">x=</span>temp, <span class="dt">y=</span>gfp)) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;temperature&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;GFP concentration&quot;</span>)</a>
+<a class="sourceLine" id="cb54-2" title="2">    <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</a>
+<a class="sourceLine" id="cb54-3" title="3">    <span class="op">+</span><span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;lm&#39;</span>, <span class="dt">se=</span><span class="ot">FALSE</span>))</a></code></pre></div>
+<pre><code>## Error in ggplot(xy, mapping = aes(x = temp, y = gfp)): object &#39;xy&#39; not found</code></pre>
 <p>(on board: how’s least-squares regression work)</p>
 </section></section>
     </div>

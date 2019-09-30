@@ -1,7 +1,7 @@
 ---
-title: "TITLE HERE"
+title: "Design of Experiments, and Analysis of Variance"
 author: "Peter Ralph"
-date: "DATE HERE -- Advanced Biological Statistics"
+date: "8 October -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
@@ -16,50 +16,83 @@ library(matrixStats)
 options(mc.cores = parallel::detectCores())
 ```
 
+# Outline
 
-# Section 1
+## Goal for the week
 
-## Slide 1.1
+To compare means of some measurement between groups.
 
-To turn these slides into html, do
-```
-make Lecture_template.slides.html
-```
+. . .
 
---------------
+Using statistics.
 
-What `make` does is first get the LaTeX macros where they can be included:
-```
-(echo '<div style="display: none">'; echo '\['; cat macros.tex; echo '\]'; echo '</div>') > .pandoc.macros.tex
-```
-and then in R, using the package [templater](https://github.com/petrelharp/templater), convert to markdown:
-```
-setwd('.')
-knitr::opts_chunk$set( fig.path=file.path('figure','Lecture_template',''), 
-                      cache.path=file.path('cache','Lecture_template','') )
-knitr::opts_knit$set( root.dir="." )
-knit("/home/peter/teaching/comp_bio/UO_ABS/CLASS_MATERIALS/Lectures/Lecture_template.Rmd", output = "Lecture_template.md",  ) 
-```
-and then uses pandoc to convert from markdown to (reveal.js) html.
-```
-pandoc -o Lecture_template.slides.html -t revealjs -V theme=simple -V slideNumber=true -V transition=none -H resources/adjust-revealjs.style --slide-level 2 --standalone  -H .pandoc.macros.tex --mathjax=https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML  Lecture_template.md
-```
+. . .
+
+- When can you do it, and how well? Power/sensitivity, false positive rate.
+- How can experiments best do it? Experimental design.
+- Methods: two-sample $t$-test, (one-way) ANOVA, permutation tests
+
+# Means of two groups
+
+## 30 min
+
+- introduce the idea
+- apply to simple example // group discussion: interpret `t.test` output
+- plot data, notice outlier
+- alternative: do permutation test (demo in R?)
 
 
-# Section2
+# Power and false positives
 
-## Slide 2.1
+## 35 min
 
-Code block:
-```r
-f <- function (x)
-    return(x + 1)
-```
+- definitions: depends on the model!
+- group discussion: examples when each are high, low
+- demo: obtain power for two-sample $t$ by simulation
+- group ex: same for false pos
 
-------
+# Experimental design
 
-Slide 2.2 without a header
+## 40 min
 
-$$\begin{aligned}
-    e^{i\pi} = -1
-\end{aligned}$$
+- effect size: rules of thumb for detectable/not
+- confounding factors
+- representative samplesj
+- how to ask: what will we *actually* measure/test?
+- tools: replication, independence, controls, randomization, pairs
+- group exercise: design an experiment to do X - identify confounders, deal with them
+
+<!-- THURSDAY -->
+
+# Tidy data
+
+## 20 min
+
+- rectangular, semantic
+- wide vs long
+- metadata!
+- group ex: design data format for experiment
+
+# ANOVA
+
+## 50 min
+
+- goal
+- example and visualization
+- on-board disc of power, sens
+- analyze example
+- testing assumptions
+- demo: verify by simulation properties when asummptions hold (maybe unequal variance?)
+- group ex: see what happens when they don't
+
+
+# Permutation tests
+
+## 30 min
+
+- definition
+- demo: do it by defining a function
+- group discussion: figure out how to do it in some examples
+
+
+
