@@ -101,6 +101,13 @@ nrow(airbnb)
 names(airbnb)
 ```
 
+## In class
+
+```{r in_class}
+
+```
+
+
 ## Second, look at the data
 
 ```{r airbnb_numbers}
@@ -149,8 +156,8 @@ Conclusion?
 
 ```{r airbnb_hist2, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
 layout(1:2)
-hist(airbnb$price[!airbnb$instant_bookable], breaks=40, xlab='nightly price ($)', col=grey(.8), xlim=range(airbnb$price, finite=TRUE), main='instant bookable') 
-hist(airbnb$price[airbnb$instant_bookable], breaks=40, xlab='nightly price ($)', col=grey(.8), main='not instant bookable')
+hist(airbnb$price[!airbnb$instant_bookable], breaks=40, xlab='nightly price ($)', col=grey(.8), xlim=range(airbnb$price, finite=TRUE), main='not instant bookable') 
+hist(airbnb$price[airbnb$instant_bookable], breaks=40, xlab='nightly price ($)', col=grey(.8), main='instant bookable')
 ```
 
 --------------
@@ -336,7 +343,7 @@ c(t.test(x)$statistic,
 If $X_1, \ldots, X_n$ are independent random samples from a distribution with mean $\mu$,
 then
 $$\begin{equation}
-    t(X - \mu) = \frac{\bar x - \mu}{\sigma} \approx \StudentsT(n-2) ,
+    t(X - \mu) = \frac{\bar x - \mu}{s/\sqrt{n}} \approx \StudentsT(n-2) ,
 \end{equation}$$
 as long as $n$ is not too small and the distribution isn't too wierd.
 

@@ -311,6 +311,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [104] &quot;calculated_host_listings_count_private_rooms&quot;
 ## [105] &quot;calculated_host_listings_count_shared_rooms&quot; 
 ## [106] &quot;reviews_per_month&quot;</code></pre>
+</section><section id="in-class" class="slide level2">
+<h2>In class</h2>
 </section><section id="second-look-at-the-data" class="slide level2">
 <h2>Second, look at the data</h2>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">summary</span>(airbnb<span class="op">$</span>price)</a></code></pre></div>
@@ -380,8 +382,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section><section id="do-instant-bookable-charge-more" class="slide level2">
 <h2>Do “instant bookable” charge more?</h2>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">layout</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb21-2" title="2"><span class="kw">hist</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">xlab=</span><span class="st">&#39;nightly price ($)&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(.<span class="dv">8</span>), <span class="dt">xlim=</span><span class="kw">range</span>(airbnb<span class="op">$</span>price, <span class="dt">finite=</span><span class="ot">TRUE</span>), <span class="dt">main=</span><span class="st">&#39;instant bookable&#39;</span>) </a>
-<a class="sourceLine" id="cb21-3" title="3"><span class="kw">hist</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">xlab=</span><span class="st">&#39;nightly price ($)&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(.<span class="dv">8</span>), <span class="dt">main=</span><span class="st">&#39;not instant bookable&#39;</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb21-2" title="2"><span class="kw">hist</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">xlab=</span><span class="st">&#39;nightly price ($)&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(.<span class="dv">8</span>), <span class="dt">xlim=</span><span class="kw">range</span>(airbnb<span class="op">$</span>price, <span class="dt">finite=</span><span class="ot">TRUE</span>), <span class="dt">main=</span><span class="st">&#39;not instant bookable&#39;</span>) </a>
+<a class="sourceLine" id="cb21-3" title="3"><span class="kw">hist</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">xlab=</span><span class="st">&#39;nightly price ($)&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(.<span class="dv">8</span>), <span class="dt">main=</span><span class="st">&#39;instant bookable&#39;</span>)</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/airbnb_hist2-1.png" title="plot of chunk airbnb_hist2" alt="plot of chunk airbnb_hist2" style="display: block; margin: auto;" /></p>
 </section><section class="slide level2">
 
@@ -533,7 +535,7 @@ sum(rbinom(n, 1, 1/2) &gt; 0)</code></pre>
 </section><section id="the-t-approximation" class="slide level2">
 <h2>The <span class="math inline">\(t\)</span> approximation</h2>
 <p><strong>Fact:</strong> If <span class="math inline">\(X_1, \ldots, X_n\)</span> are independent random samples from a distribution with mean <span class="math inline">\(\mu\)</span>, then <span class="math display">\[\begin{equation}
-    t(X - \mu) = \frac{\bar x - \mu}{\sigma} \approx \StudentsT(n-2) ,
+    t(X - \mu) = \frac{\bar x - \mu}{s/\sqrt{n}} \approx \StudentsT(n-2) ,
 \end{equation}\]</span> as long as <span class="math inline">\(n\)</span> is not too small and the distribution isn’t too wierd.</p>
 </section><section id="a-demonstration" class="slide level2">
 <h2>A demonstration</h2>
