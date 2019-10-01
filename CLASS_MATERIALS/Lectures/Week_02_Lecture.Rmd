@@ -96,3 +96,76 @@ Using statistics.
 
 
 
+# Two variables
+
+## "Second, look at the data"
+
+```{r biplot}
+n <- 200
+tz <- data.frame(t=seq(0, 10, length.out=n))
+tz$z <- cos(tz$t) + rnorm(n)/4
+
+(ggp <- ggplot(tz, mapping=aes(x=t, y=z)) + xlab("time") + ylab("value") + 
+    geom_point())
+```
+
+## "Smooths"
+
+```{r biplot2}
+(ggp +
+    geom_smooth(method='loess', formula=y ~ x, span=0.2))
+```
+
+. . .
+
+That line is produced by `loess`, which does *local weighted regression*.
+
+
+## Lines?
+
+```{r biplot3}
+(ggp +
+    geom_smooth(method='lm', formula=y ~ x))
+```
+
+Is this a good idea?
+
+
+# Correlation and regression
+
+## Two variables
+
+Now consider the results of an experiment:
+green fluorescent protein (GFP) concentration
+at eight temperatures ([data](../Datasets/gfp_temp.tsv)):
+
+```{r twovars}
+(xy <- read.table("../Datasets/gfp_temp.tsv")
+```
+
+## Correlation?
+
+```{r cor}
+cor(xy$temp, xy$gfp)
+```
+
+. . .
+
+![xkcd:552](images/xkcd_correlation.png)
+
+*Correlation doesn't imply causation,
+but it does waggle its eyebrows suggestively and gesture furtively
+while mouthing "look over there".*
+
+## Have a look
+
+```{r xyplot, fig.width=fig.dim}
+(ggplot(xy, mapping=aes(x=temp, y=gfp)) + xlab("temperature") + ylab("GFP concentration")
+    + geom_point()
+    + geom_smooth(method='lm', se=FALSE))
+```
+
+(on board: how's least-squares regression work)
+
+
+

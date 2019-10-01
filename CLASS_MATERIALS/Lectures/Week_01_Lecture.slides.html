@@ -739,55 +739,6 @@ qnorm(0.975, mean=3, sd=2) # quantiles</code></pre>
 <a class="sourceLine" id="cb46-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/smpling_dist2-1.png" title="plot of chunk smpling_dist2" alt="plot of chunk smpling_dist2" style="display: block; margin: auto;" /></p>
 </section></section>
-<section><section id="two-variables" class="title-slide slide level1"><h1>Two variables</h1></section><section id="second-look-at-the-data-1" class="slide level2">
-<h2>“Second, look at the data”</h2>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" title="1">n &lt;-<span class="st"> </span><span class="dv">200</span></a>
-<a class="sourceLine" id="cb47-2" title="2">tz &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">t=</span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dt">length.out=</span>n))</a>
-<a class="sourceLine" id="cb47-3" title="3">tz<span class="op">$</span>z &lt;-<span class="st"> </span><span class="kw">cos</span>(tz<span class="op">$</span>t) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n)<span class="op">/</span><span class="dv">4</span></a>
-<a class="sourceLine" id="cb47-4" title="4"></a>
-<a class="sourceLine" id="cb47-5" title="5">(ggp &lt;-<span class="st"> </span><span class="kw">ggplot</span>(tz, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">x=</span>t, <span class="dt">y=</span>z)) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;time&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;value&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb47-6" title="6"><span class="st">    </span><span class="kw">geom_point</span>())</a></code></pre></div>
-<p><img src="figure/Week_01_Lecture/biplot-1.png" title="plot of chunk biplot" alt="plot of chunk biplot" style="display: block; margin: auto;" /></p>
-</section><section id="smooths" class="slide level2">
-<h2>“Smooths”</h2>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1">(ggp <span class="op">+</span></a>
-<a class="sourceLine" id="cb48-2" title="2"><span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;loess&#39;</span>, <span class="dt">formula=</span>y <span class="op">~</span><span class="st"> </span>x, <span class="dt">span=</span><span class="fl">0.2</span>))</a></code></pre></div>
-<p><img src="figure/Week_01_Lecture/biplot2-1.png" title="plot of chunk biplot2" alt="plot of chunk biplot2" style="display: block; margin: auto;" /></p>
-<div class="fragment">
-<p>That line is produced by <code>loess</code>, which does <em>local weighted regression</em>.</p>
-</div>
-</section><section id="lines" class="slide level2">
-<h2>Lines?</h2>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" title="1">(ggp <span class="op">+</span></a>
-<a class="sourceLine" id="cb49-2" title="2"><span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;lm&#39;</span>, <span class="dt">formula=</span>y <span class="op">~</span><span class="st"> </span>x))</a></code></pre></div>
-<p><img src="figure/Week_01_Lecture/biplot3-1.png" title="plot of chunk biplot3" alt="plot of chunk biplot3" style="display: block; margin: auto;" /></p>
-<p>Is this a good idea?</p>
-</section></section>
-<section><section id="correlation-and-regression" class="title-slide slide level1"><h1>Correlation and regression</h1></section><section id="two-variables-1" class="slide level2">
-<h2>Two variables</h2>
-<p>Now consider the results of an experiment: green fluorescent protein (GFP) concentration at eight temperatures (<a href="../Datasets/gfp_temp.tsv">data</a>):</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" title="1">(xy &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;../Datasets/gfp_temp.tsv&quot;</span>)</a></code></pre></div>
-<pre><code>## Error: &lt;text&gt;:2:0: unexpected end of input
-## 1: (xy &lt;- read.table(&quot;../Datasets/gfp_temp.tsv&quot;)
-##    ^</code></pre>
-</section><section id="correlation" class="slide level2">
-<h2>Correlation?</h2>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" title="1"><span class="kw">cor</span>(xy<span class="op">$</span>temp, xy<span class="op">$</span>gfp)</a></code></pre></div>
-<pre><code>## Error in is.data.frame(y): object &#39;xy&#39; not found</code></pre>
-<div class="fragment">
-<figure>
-<img data-src="images/xkcd_correlation.png" alt="xkcd:552" /><figcaption>xkcd:552</figcaption>
-</figure>
-<p><em>Correlation doesn’t imply causation, but it does waggle its eyebrows suggestively and gesture furtively while mouthing “look over there”.</em></p>
-</div>
-</section><section id="have-a-look" class="slide level2">
-<h2>Have a look</h2>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" title="1">(<span class="kw">ggplot</span>(xy, <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">x=</span>temp, <span class="dt">y=</span>gfp)) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;temperature&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;GFP concentration&quot;</span>)</a>
-<a class="sourceLine" id="cb54-2" title="2">    <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</a>
-<a class="sourceLine" id="cb54-3" title="3">    <span class="op">+</span><span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&#39;lm&#39;</span>, <span class="dt">se=</span><span class="ot">FALSE</span>))</a></code></pre></div>
-<pre><code>## Error in ggplot(xy, mapping = aes(x = temp, y = gfp)): object &#39;xy&#39; not found</code></pre>
-<p>(on board: how’s least-squares regression work)</p>
-</section></section>
     </div>
   </div>
 
