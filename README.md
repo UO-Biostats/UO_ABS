@@ -1,8 +1,8 @@
 
 
-The actual website can be viewed at [https://petrelharp.github.io/UO_ABS/](https://petrelharp.github.io/UO_ABS/).
+The actual website can be viewed at [https://UO-Biostats.github.io/UO_ABS/](https://UO-Biostats.github.io/UO_ABS/).
 
-Quick link: the [schedule](https://petrelharp.github.io/UO_ABS/schedule.html), with links to the slides.
+Quick link: the [schedule](https://UO-Biostats.github.io/UO_ABS/schedule.html), with links to the slides.
 
 
 --------------------
