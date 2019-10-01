@@ -17,6 +17,7 @@ Week 1 (*10/1*)
     with examples for comparing means and linear regression; smoothing.
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.slides.html)
+    - [using git](using-git.html)
     - Reading: Quinn & Keough chapters 1-4
     - Introductory workshop to R and Rmarkdown, by Hannah: date/time TBD
 
