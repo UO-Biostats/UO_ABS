@@ -277,13 +277,19 @@ $$\begin{equation}
 Everyone make a fake dataset with $\theta = 1/2$, e.g.:
 ```
 n <- 35 # class size
-replicate(1000, sum(rbinom(n, 1, 1/2) > 0))
+sum(rbinom(n, 1, 1/2) > 0)
 ```
 
 . . .
 
 Now we can estimate the $p$-value for the hypothesis that $\theta = 1/2$.
 Conclusions?
+
+. . .
+
+```
+replicate(1000, sum(rbinom(n, 1, 1/2) > 0))
+```
 
 ## So, where do $p$-values come from?
 

@@ -493,10 +493,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \end{equation}\]</span></p>
 <p>Everyone make a fake dataset with <span class="math inline">\(\theta = 1/2\)</span>, e.g.:</p>
 <pre><code>n &lt;- 35 # class size
-replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
+sum(rbinom(n, 1, 1/2) &gt; 0)</code></pre>
 </div>
 <div class="fragment">
 <p>Now we can estimate the <span class="math inline">\(p\)</span>-value for the hypothesis that <span class="math inline">\(\theta = 1/2\)</span>. Conclusions?</p>
+</div>
+<div class="fragment">
+<pre><code>replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 </div>
 </section><section id="so-where-do-p-values-come-from" class="slide level2">
 <h2>So, where do <span class="math inline">\(p\)</span>-values come from?</h2>
@@ -521,10 +524,10 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 </div>
 </section><section id="sanity-check" class="slide level2">
 <h2>Sanity check</h2>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
-<a class="sourceLine" id="cb28-2" title="2">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n)</a>
-<a class="sourceLine" id="cb28-3" title="3"><span class="kw">c</span>(<span class="kw">t.test</span>(x)<span class="op">$</span>statistic, </a>
-<a class="sourceLine" id="cb28-4" title="4">  <span class="kw">mean</span>(x) <span class="op">/</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(n)))</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb29-2" title="2">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n)</a>
+<a class="sourceLine" id="cb29-3" title="3"><span class="kw">c</span>(<span class="kw">t.test</span>(x)<span class="op">$</span>statistic, </a>
+<a class="sourceLine" id="cb29-4" title="4">  <span class="kw">mean</span>(x) <span class="op">/</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(n)))</a></code></pre></div>
 <pre><code>##        t          
 ## 1.318919 1.318919</code></pre>
 </section><section id="the-t-approximation" class="slide level2">
@@ -544,30 +547,30 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 </div>
 </section><section id="one-sample" class="slide level2">
 <h2>One sample</h2>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
-<a class="sourceLine" id="cb30-2" title="2">x &lt;-<span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">runif</span>(n) <span class="op">-</span><span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb30-3" title="3"><span class="kw">hist</span>(x, <span class="dt">xlab=</span><span class="st">&#39;value&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(<span class="fl">0.5</span>),</a>
-<a class="sourceLine" id="cb30-4" title="4">     <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&quot;t=%f&quot;</span>, <span class="kw">mean</span>(x)<span class="op">*</span><span class="kw">sqrt</span>(n<span class="dv">-1</span>)<span class="op">/</span><span class="kw">sd</span>(x)))</a>
-<a class="sourceLine" id="cb30-5" title="5"><span class="kw">abline</span>(<span class="dt">v=</span><span class="dv">0</span>, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">lty=</span><span class="dv">3</span>)</a>
-<a class="sourceLine" id="cb30-6" title="6"><span class="kw">abline</span>(<span class="dt">v=</span><span class="kw">mean</span>(x), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb31-2" title="2">x &lt;-<span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">runif</span>(n) <span class="op">-</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb31-3" title="3"><span class="kw">hist</span>(x, <span class="dt">xlab=</span><span class="st">&#39;value&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(<span class="fl">0.5</span>),</a>
+<a class="sourceLine" id="cb31-4" title="4">     <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&quot;t=%f&quot;</span>, <span class="kw">mean</span>(x)<span class="op">*</span><span class="kw">sqrt</span>(n<span class="dv">-1</span>)<span class="op">/</span><span class="kw">sd</span>(x)))</a>
+<a class="sourceLine" id="cb31-5" title="5"><span class="kw">abline</span>(<span class="dt">v=</span><span class="dv">0</span>, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">lty=</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb31-6" title="6"><span class="kw">abline</span>(<span class="dt">v=</span><span class="kw">mean</span>(x), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/t_one_smaple-1.png" title="plot of chunk t_one_smaple" alt="plot of chunk t_one_smaple" style="display: block; margin: auto;" /></p>
 </section><section id="more-samples" class="slide level2">
 <h2>More samples</h2>
 <p><img src="figure/Week_01_Lecture/t_more_samples-1.png" title="plot of chunk t_more_samples" alt="plot of chunk t_more_samples" style="display: block; margin: auto;" /></p>
 </section><section id="distribution-of-1000-sample-t-scores" class="slide level2">
 <h2>Distribution of 1,000 sample <span class="math inline">\(t\)</span> scores</h2>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">xm &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
-<a class="sourceLine" id="cb31-2" title="2">            x &lt;-<span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">runif</span>(n) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>;</a>
-<a class="sourceLine" id="cb31-3" title="3">            <span class="kw">mean</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(n<span class="dv">-1</span>) <span class="op">/</span><span class="st"> </span><span class="kw">sd</span>(x) })</a>
-<a class="sourceLine" id="cb31-4" title="4">xh &lt;-<span class="st"> </span><span class="kw">hist</span>(xm, <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;t of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1">xm &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
+<a class="sourceLine" id="cb32-2" title="2">            x &lt;-<span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">runif</span>(n) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>;</a>
+<a class="sourceLine" id="cb32-3" title="3">            <span class="kw">mean</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(n<span class="dv">-1</span>) <span class="op">/</span><span class="st"> </span><span class="kw">sd</span>(x) })</a>
+<a class="sourceLine" id="cb32-4" title="4">xh &lt;-<span class="st"> </span><span class="kw">hist</span>(xm, <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;t of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/t_sampling_dist-1.png" title="plot of chunk t_sampling_dist" alt="plot of chunk t_sampling_dist" style="display: block; margin: auto;" /></p>
 </section><section id="distribution-of-1000-sample-t-scores-1" class="slide level2">
 <h2>Distribution of 1,000 sample <span class="math inline">\(t\)</span> scores</h2>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">plot</span>(xh, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;t of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a>
-<a class="sourceLine" id="cb32-2" title="2">xx &lt;-<span class="st"> </span>xh<span class="op">$</span>breaks</a>
-<a class="sourceLine" id="cb32-3" title="3"><span class="kw">polygon</span>(<span class="kw">c</span>(xx[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">diff</span>(xx)<span class="op">/</span><span class="dv">2</span>, xx[<span class="dv">1</span>]),</a>
-<a class="sourceLine" id="cb32-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pt</span>(xx, <span class="dt">df=</span>(n<span class="dv">-1</span>))), <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb32-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1"><span class="kw">plot</span>(xh, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;t of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a>
+<a class="sourceLine" id="cb33-2" title="2">xx &lt;-<span class="st"> </span>xh<span class="op">$</span>breaks</a>
+<a class="sourceLine" id="cb33-3" title="3"><span class="kw">polygon</span>(<span class="kw">c</span>(xx[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">diff</span>(xx)<span class="op">/</span><span class="dv">2</span>, xx[<span class="dv">1</span>]),</a>
+<a class="sourceLine" id="cb33-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pt</span>(xx, <span class="dt">df=</span>(n<span class="dv">-1</span>))), <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb33-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/t_smpling_dist2-1.png" title="plot of chunk t_smpling_dist2" alt="plot of chunk t_smpling_dist2" style="display: block; margin: auto;" /></p>
 </section><section id="excercise" class="slide level2">
 <h2>Excercise:</h2>
@@ -602,25 +605,25 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 </div>
 </section><section id="shuffle-once" class="slide level2">
 <h2>Shuffle once</h2>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1">fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
-<a class="sourceLine" id="cb34-2" title="2">(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb34-3" title="3"><span class="st">                </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
+<a class="sourceLine" id="cb35-2" title="2">(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb35-3" title="3"><span class="st">                </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a></code></pre></div>
 <pre><code>## [1] -0.3979329</code></pre>
 </section><section id="many-times" class="slide level2">
 <h2>Many times</h2>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">real_diff &lt;-<span class="st"> </span>(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-2" title="2"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb36-3" title="3">permuted_diffs &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
-<a class="sourceLine" id="cb36-4" title="4">        fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
-<a class="sourceLine" id="cb36-5" title="5">        (<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-6" title="6"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb36-7" title="7">   } )</a>
-<a class="sourceLine" id="cb36-8" title="8"><span class="kw">hist</span>(permuted_diffs, <span class="dt">xlab=</span><span class="st">&quot;shuffled differences in mean&quot;</span>, <span class="dt">xlim=</span><span class="kw">range</span>(<span class="kw">c</span>(permuted_diffs, real_diff)))</a>
-<a class="sourceLine" id="cb36-9" title="9"><span class="kw">abline</span>(<span class="dt">v=</span>real_diff, <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">3</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1">real_diff &lt;-<span class="st"> </span>(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb37-2" title="2"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb37-3" title="3">permuted_diffs &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
+<a class="sourceLine" id="cb37-4" title="4">        fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
+<a class="sourceLine" id="cb37-5" title="5">        (<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb37-6" title="6"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb37-7" title="7">   } )</a>
+<a class="sourceLine" id="cb37-8" title="8"><span class="kw">hist</span>(permuted_diffs, <span class="dt">xlab=</span><span class="st">&quot;shuffled differences in mean&quot;</span>, <span class="dt">xlim=</span><span class="kw">range</span>(<span class="kw">c</span>(permuted_diffs, real_diff)))</a>
+<a class="sourceLine" id="cb37-9" title="9"><span class="kw">abline</span>(<span class="dt">v=</span>real_diff, <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">3</span>)</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/many_shuf-1.png" title="plot of chunk many_shuf" alt="plot of chunk many_shuf" style="display: block; margin: auto;" /></p>
 </section><section id="how-surprising-was-the-real-value" class="slide level2">
 <h2>How surprising was the real value?</h2>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1"><span class="kw">mean</span>(<span class="kw">abs</span>(permuted_diffs) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(real_diff))</a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1"><span class="kw">mean</span>(<span class="kw">abs</span>(permuted_diffs) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(real_diff))</a></code></pre></div>
 <pre><code>## [1] 0</code></pre>
 <div class="fragment">
 <blockquote>
@@ -641,7 +644,7 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 </section></section>
 <section><section id="confident-in-confidence-intervals" class="title-slide slide level1"><h1>Confident in confidence intervals?</h1></section><section id="section-3" class="slide level2">
 <h2></h2>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">tt</a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1">tt</a></code></pre></div>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -665,8 +668,8 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 <p>if we collect 1,000 independent samples from a population with true mean <span class="math inline">\(\mu\)</span>, and construct confidence intervals from each, then about 950 of these should overlap <span class="math inline">\(\mu\)</span>.</p>
 </blockquote>
 <p>Let’s take independent samples of size <span class="math inline">\(n=20\)</span> from a Normal distribution with <span class="math inline">\(\mu = 0\)</span>. Example:</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span>; mu &lt;-<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb41-2" title="2"><span class="kw">t.test</span>(<span class="kw">rnorm</span>(n, <span class="dt">mean=</span>mu))<span class="op">$</span>conf.int</a></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span>; mu &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb42-2" title="2"><span class="kw">t.test</span>(<span class="kw">rnorm</span>(n, <span class="dt">mean=</span>mu))<span class="op">$</span>conf.int</a></code></pre></div>
 <pre><code>## [1] -0.5049656  0.5953488
 ## attr(,&quot;conf.level&quot;)
 ## [1] 0.95</code></pre>
@@ -715,26 +718,26 @@ qnorm(0.975, mean=3, sd=2) # quantiles</code></pre>
 </div>
 </section><section id="one-sample-1" class="slide level2">
 <h2>One sample</h2>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
-<a class="sourceLine" id="cb44-2" title="2">x &lt;-<span class="st"> </span><span class="kw">runif</span>(n)</a>
-<a class="sourceLine" id="cb44-3" title="3"><span class="kw">hist</span>(x, <span class="dt">xlab=</span><span class="st">&#39;value&#39;</span>, <span class="dt">main=</span><span class="st">&#39;sample&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(<span class="fl">0.5</span>))</a>
-<a class="sourceLine" id="cb44-4" title="4"><span class="kw">abline</span>(<span class="dt">v=</span><span class="kw">mean</span>(x), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb45-2" title="2">x &lt;-<span class="st"> </span><span class="kw">runif</span>(n)</a>
+<a class="sourceLine" id="cb45-3" title="3"><span class="kw">hist</span>(x, <span class="dt">xlab=</span><span class="st">&#39;value&#39;</span>, <span class="dt">main=</span><span class="st">&#39;sample&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(<span class="fl">0.5</span>))</a>
+<a class="sourceLine" id="cb45-4" title="4"><span class="kw">abline</span>(<span class="dt">v=</span><span class="kw">mean</span>(x), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/one_smaple-1.png" title="plot of chunk one_smaple" alt="plot of chunk one_smaple" style="display: block; margin: auto;" /></p>
 </section><section id="more-samples-1" class="slide level2">
 <h2>More samples</h2>
 <p><img src="figure/Week_01_Lecture/more_samples-1.png" title="plot of chunk more_samples" alt="plot of chunk more_samples" style="display: block; margin: auto;" /></p>
 </section><section id="distribution-of-1000-sample-means" class="slide level2">
 <h2>Distribution of 1,000 sample means</h2>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1">xm &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, <span class="kw">mean</span>(<span class="kw">runif</span>(n)))</a>
-<a class="sourceLine" id="cb45-2" title="2">xh &lt;-<span class="st"> </span><span class="kw">hist</span>(xm, <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1">xm &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, <span class="kw">mean</span>(<span class="kw">runif</span>(n)))</a>
+<a class="sourceLine" id="cb46-2" title="2">xh &lt;-<span class="st"> </span><span class="kw">hist</span>(xm, <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/smpling_dist-1.png" title="plot of chunk smpling_dist" alt="plot of chunk smpling_dist" style="display: block; margin: auto;" /></p>
 </section><section id="distribution-of-1000-sample-means-1" class="slide level2">
 <h2>Distribution of 1,000 sample means</h2>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1"><span class="kw">plot</span>(xh, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a>
-<a class="sourceLine" id="cb46-2" title="2">xx &lt;-<span class="st"> </span>xh<span class="op">$</span>breaks</a>
-<a class="sourceLine" id="cb46-3" title="3"><span class="kw">polygon</span>(<span class="kw">c</span>(xx[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">diff</span>(xx)<span class="op">/</span><span class="dv">2</span>, xx[<span class="dv">1</span>]),</a>
-<a class="sourceLine" id="cb46-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pnorm</span>(xx, <span class="dt">mean=</span><span class="fl">0.5</span>, <span class="dt">sd=</span><span class="dv">1</span><span class="op">/</span><span class="kw">sqrt</span>(n<span class="op">*</span><span class="dv">12</span>))), <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb46-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" title="1"><span class="kw">plot</span>(xh, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a>
+<a class="sourceLine" id="cb47-2" title="2">xx &lt;-<span class="st"> </span>xh<span class="op">$</span>breaks</a>
+<a class="sourceLine" id="cb47-3" title="3"><span class="kw">polygon</span>(<span class="kw">c</span>(xx[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">diff</span>(xx)<span class="op">/</span><span class="dv">2</span>, xx[<span class="dv">1</span>]),</a>
+<a class="sourceLine" id="cb47-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pnorm</span>(xx, <span class="dt">mean=</span><span class="fl">0.5</span>, <span class="dt">sd=</span><span class="dv">1</span><span class="op">/</span><span class="kw">sqrt</span>(n<span class="op">*</span><span class="dv">12</span>))), <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb47-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/smpling_dist2-1.png" title="plot of chunk smpling_dist2" alt="plot of chunk smpling_dist2" style="display: block; margin: auto;" /></p>
 </section></section>
     </div>
