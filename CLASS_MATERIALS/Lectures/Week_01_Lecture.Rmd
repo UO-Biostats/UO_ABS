@@ -45,7 +45,7 @@ Doing that effectively requires all the other steps, too.
 
 ## Overview and mechanics
 
-See [the course website](https://petrelharp.github.io/UO_ABS).
+See [the course website](https://UO-Biostats.github.io/UO_ABS).
 
 
 # Some core statistical concepts
