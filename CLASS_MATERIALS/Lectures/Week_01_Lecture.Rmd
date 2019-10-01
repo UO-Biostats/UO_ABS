@@ -25,10 +25,6 @@ nf <- function (x, prefix="", digits=2, ...) {
 
 ![a box of tools](images/toolbox.jpeg){width=80%}
 
-##
-
-![people using tools](images/using-tools.jpeg){width=80%}
-
 
 ## Steps in data analysis
 
@@ -443,25 +439,27 @@ Strategy:
 
 ```{r shuf}
 fake_is_instant <- sample(airbnb$instant_bookable)
-(mean(airbnb$price[fake_is_instant]) - 
-       mean(airbnb$price[!fake_is_instant]))
+(mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
+                mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
 ```
 
 ## Many times
 
 ```{r many_shuf}
+real_diff <- (mean(airbnb$price[airbnb$instant_bookable], na.rm=TRUE) - 
+               mean(airbnb$price[!airbnb$instant_bookable], na.rm=TRUE))
 permuted_diffs <- replicate(1000, {
         fake_is_instant <- sample(airbnb$instant_bookable)
         (mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
                mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
    } )
+hist(permuted_diffs, xlab="shuffled differences in mean", xlim=range(c(permuted_diffs, real_diff)))
+abline(v=real_diff, col='red', lwd=3)
 ```
 
 ## How surprising was the real value?
 
 ```{r perm_p}
-real_diff <- (mean(airbnb$price[airbnb$instant_bookable], na.rm=TRUE) - 
-               mean(airbnb$price[!airbnb$instant_bookable], na.rm=TRUE))
 mean(abs(permuted_diffs) > abs(real_diff))
 ```
 

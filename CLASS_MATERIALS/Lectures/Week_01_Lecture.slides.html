@@ -150,11 +150,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <figure>
 <img data-src="images/toolbox.jpeg" alt="a box of tools" style="width:80.0%" /><figcaption>a box of tools</figcaption>
 </figure>
-</section><section id="section-1" class="slide level2">
-<h2></h2>
-<figure>
-<img data-src="images/using-tools.jpeg" alt="people using tools" style="width:80.0%" /><figcaption>people using tools</figcaption>
-</figure>
 </section><section id="steps-in-data-analysis" class="slide level2">
 <h2>Steps in data analysis</h2>
 <ol type="1">
@@ -430,7 +425,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="fragment">
 <p><em>Critiques?</em></p>
 </div>
-</section><section id="section-2" class="slide level2">
+</section><section id="section-1" class="slide level2">
 <h2></h2>
 <p>So: what did we just do?</p>
 </section></section>
@@ -580,7 +575,7 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 <pre><code>x &lt;- rexp(n) - 1</code></pre>
 <p>instead of <code>2 * runif(n) - 1</code>.</p>
 </section></section>
-<section><section id="permutation-tests" class="title-slide slide level1"><h1>Permutation tests</h1></section><section id="section-3" class="slide level2">
+<section><section id="permutation-tests" class="title-slide slide level1"><h1>Permutation tests</h1></section><section id="section-2" class="slide level2">
 <h2></h2>
 <p>Is the distribution of AirBnB prices too “wierd”? How can we be sure?</p>
 <div class="fragment">
@@ -608,21 +603,24 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 </section><section id="shuffle-once" class="slide level2">
 <h2>Shuffle once</h2>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1">fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
-<a class="sourceLine" id="cb34-2" title="2">(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant]) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb34-3" title="3"><span class="st">       </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant]))</a></code></pre></div>
-<pre><code>## [1] NA</code></pre>
+<a class="sourceLine" id="cb34-2" title="2">(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb34-3" title="3"><span class="st">                </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a></code></pre></div>
+<pre><code>## [1] -0.3979329</code></pre>
 </section><section id="many-times" class="slide level2">
 <h2>Many times</h2>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">permuted_diffs &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
-<a class="sourceLine" id="cb36-2" title="2">        fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
-<a class="sourceLine" id="cb36-3" title="3">        (<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-4" title="4"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb36-5" title="5">   } )</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">real_diff &lt;-<span class="st"> </span>(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb36-2" title="2"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb36-3" title="3">permuted_diffs &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
+<a class="sourceLine" id="cb36-4" title="4">        fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
+<a class="sourceLine" id="cb36-5" title="5">        (<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb36-6" title="6"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb36-7" title="7">   } )</a>
+<a class="sourceLine" id="cb36-8" title="8"><span class="kw">hist</span>(permuted_diffs, <span class="dt">xlab=</span><span class="st">&quot;shuffled differences in mean&quot;</span>, <span class="dt">xlim=</span><span class="kw">range</span>(<span class="kw">c</span>(permuted_diffs, real_diff)))</a>
+<a class="sourceLine" id="cb36-9" title="9"><span class="kw">abline</span>(<span class="dt">v=</span>real_diff, <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">3</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/many_shuf-1.png" title="plot of chunk many_shuf" alt="plot of chunk many_shuf" style="display: block; margin: auto;" /></p>
 </section><section id="how-surprising-was-the-real-value" class="slide level2">
 <h2>How surprising was the real value?</h2>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1">real_diff &lt;-<span class="st"> </span>(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb37-2" title="2"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb37-3" title="3"><span class="kw">mean</span>(<span class="kw">abs</span>(permuted_diffs) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(real_diff))</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1"><span class="kw">mean</span>(<span class="kw">abs</span>(permuted_diffs) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(real_diff))</a></code></pre></div>
 <pre><code>## [1] 0</code></pre>
 <div class="fragment">
 <blockquote>
@@ -641,7 +639,7 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 <li>Confidence intervals needs another step.</li>
 </ul>
 </section></section>
-<section><section id="confident-in-confidence-intervals" class="title-slide slide level1"><h1>Confident in confidence intervals?</h1></section><section id="section-4" class="slide level2">
+<section><section id="confident-in-confidence-intervals" class="title-slide slide level1"><h1>Confident in confidence intervals?</h1></section><section id="section-3" class="slide level2">
 <h2></h2>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">tt</a></code></pre></div>
 <pre><code>## 
@@ -672,7 +670,7 @@ replicate(1000, sum(rbinom(n, 1, 1/2) &gt; 0))</code></pre>
 <pre><code>## [1] -0.5049656  0.5953488
 ## attr(,&quot;conf.level&quot;)
 ## [1] 0.95</code></pre>
-</section><section id="section-5" class="slide level2">
+</section><section id="section-4" class="slide level2">
 <h2></h2>
 <p><img src="figure/Week_01_Lecture/many conf_int-1.png" title="plot of chunk many conf_int" alt="plot of chunk many conf_int" style="display: block; margin: auto;" /></p>
 </section></section>
