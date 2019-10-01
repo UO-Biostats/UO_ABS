@@ -4,7 +4,7 @@ title: course schedule
 description: schedule, with links to slides and homeworks
 ---
 
-The (Rmarkdown) source code for these lectures is available at [the github repository](https://github.com/petrelharp/UO_ABS),
+The (Rmarkdown) source code for these lectures is available at [the github repository](https://github.com/UO-Biostats/UO_ABS),
 or by replacing the `.slides.html` suffix to `.Rmd` in the link below;
 the slides are made using [reveal.js](https://github.com/hakimel/reveal.js/).
 Here are the [slides from previous years](2018_schedule.html).

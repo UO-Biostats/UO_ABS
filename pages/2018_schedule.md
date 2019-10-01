@@ -5,7 +5,7 @@ description: schedule, with links to slides and homeworks
 ---
 
 Here is the schedule for Fall 2018 and Winter 2019.
-The (Rmarkdown) source code for many of these lectures is available at [the github repository](https://github.com/petrelharp/UO_ABS),
+The (Rmarkdown) source code for many of these lectures is available at [the github repository](https://github.com/UO-Biostats/UO_ABS),
 or by replacing the `.slides.html` suffix to `.Rmd` in the link below;
 the slides are made using [reveal.js](https://github.com/hakimel/reveal.js/).
 

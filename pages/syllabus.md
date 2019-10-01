@@ -37,7 +37,7 @@ some (basic) programming.
 ## Course Information
 
 - *Schedule:* Tue/Thur 10:00 AM - 11:50 AM, 40 Science Library
-- *Websites:* besides [the page you are looking at](https://petrelharp.github.io/UO_ABS/),
+- *Websites:* besides [the page you are looking at](https://UO-Biostats.github.io/UO_ABS/),
     assignments and announcements will be distributed on the Bi 610 [canvas page](https://canvas.uoregon.edu/)
 - *Assignments:* Assigned, and due, on Thursdays.
 
