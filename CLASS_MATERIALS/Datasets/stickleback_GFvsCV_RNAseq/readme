@@ -15,3 +15,10 @@ CVvsGF_RNAseq_Metadata.tsv
 
 Link to paper: https://academic.oup.com/gbe/article/9/3/504/3058199
   
+
+
+
+stickleback_heat.tsv
+- for clustering and heatmap exercise
+- contains normalized expression values for a subset of LG4 and LG19 genes (with gene names)
+- strong clustering by sex for LG19, but not LG4

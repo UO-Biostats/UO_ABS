@@ -1,0 +1,12 @@
+The following file groups (separted by empty lines) contain the same data but were named differently, for some reason
+
+multivariate.csv
+multivariate.tsv
+plant_ecology.csv
+
+ANOVA.csv
+biofilm.csv
+biofilm.tsv
+
+ant_diversity.csv
+ant_diversity.tsv
