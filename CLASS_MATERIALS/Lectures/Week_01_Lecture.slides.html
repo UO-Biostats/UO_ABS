@@ -311,8 +311,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [104] &quot;calculated_host_listings_count_private_rooms&quot;
 ## [105] &quot;calculated_host_listings_count_shared_rooms&quot; 
 ## [106] &quot;reviews_per_month&quot;</code></pre>
-</section><section id="in-class" class="slide level2">
-<h2>In class</h2>
 </section><section id="second-look-at-the-data" class="slide level2">
 <h2>Second, look at the data</h2>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">summary</span>(airbnb<span class="op">$</span>price)</a></code></pre></div>
@@ -574,79 +572,15 @@ sum(rbinom(n, 1, 1/2) &gt; 0)</code></pre>
 <a class="sourceLine" id="cb33-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pt</span>(xx, <span class="dt">df=</span>(n<span class="dv">-1</span>))), <span class="dv">0</span>),</a>
 <a class="sourceLine" id="cb33-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/t_smpling_dist2-1.png" title="plot of chunk t_smpling_dist2" alt="plot of chunk t_smpling_dist2" style="display: block; margin: auto;" /></p>
-</section><section id="excercise" class="slide level2">
-<h2>Excercise:</h2>
+</section><section id="exercise-1" class="slide level2">
+<h2>Exercise:</h2>
 <p>Do this again (use my code) except using</p>
 <pre><code>x &lt;- rexp(n) - 1</code></pre>
 <p>instead of <code>2 * runif(n) - 1</code>.</p>
 </section></section>
-<section><section id="permutation-tests" class="title-slide slide level1"><h1>Permutation tests</h1></section><section id="section-2" class="slide level2">
+<section><section id="confident-in-confidence-intervals" class="title-slide slide level1"><h1>Confident in confidence intervals?</h1></section><section id="section-2" class="slide level2">
 <h2></h2>
-<p>Is the distribution of AirBnB prices too “wierd”? How can we be sure?</p>
-<div class="fragment">
-<p>Methods:</p>
-<ol type="1">
-<li><p>Remove the big values and try again.</p></li>
-<li><p>Use a nonparametric test.</p></li>
-</ol>
-</div>
-</section><section id="remove-the-big-values" class="slide level2">
-<h2>Remove the big values</h2>
-<p>(demonstration)</p>
-</section><section id="the-permutation-test" class="slide level2">
-<h2>The permutation test</h2>
-<p><em>Observation:</em> <strong>If</strong> there was no meaningful difference in prices between “instant bookable” and not, <strong>then randomly shuffling that label</strong> won’t change anything.</p>
-<div class="fragment">
-<p>Strategy:</p>
-<ol type="1">
-<li>Shuffle the <code>instant_bookable</code> column.</li>
-<li>Compute the difference in means.</li>
-<li>Repeat, many times.</li>
-<li>Compare: the <span class="math inline">\(p\)</span> value is the proportion of “shuffled” values more extreme than observed.</li>
-</ol>
-</div>
-</section><section id="shuffle-once" class="slide level2">
-<h2>Shuffle once</h2>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
-<a class="sourceLine" id="cb35-2" title="2">(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb35-3" title="3"><span class="st">                </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a></code></pre></div>
-<pre><code>## [1] -0.3979329</code></pre>
-</section><section id="many-times" class="slide level2">
-<h2>Many times</h2>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1">real_diff &lt;-<span class="st"> </span>(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb37-2" title="2"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb37-3" title="3">permuted_diffs &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
-<a class="sourceLine" id="cb37-4" title="4">        fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
-<a class="sourceLine" id="cb37-5" title="5">        (<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb37-6" title="6"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb37-7" title="7">   } )</a>
-<a class="sourceLine" id="cb37-8" title="8"><span class="kw">hist</span>(permuted_diffs, <span class="dt">xlab=</span><span class="st">&quot;shuffled differences in mean&quot;</span>, <span class="dt">xlim=</span><span class="kw">range</span>(<span class="kw">c</span>(permuted_diffs, real_diff)))</a>
-<a class="sourceLine" id="cb37-9" title="9"><span class="kw">abline</span>(<span class="dt">v=</span>real_diff, <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">3</span>)</a></code></pre></div>
-<p><img src="figure/Week_01_Lecture/many_shuf-1.png" title="plot of chunk many_shuf" alt="plot of chunk many_shuf" style="display: block; margin: auto;" /></p>
-</section><section id="how-surprising-was-the-real-value" class="slide level2">
-<h2>How surprising was the real value?</h2>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1"><span class="kw">mean</span>(<span class="kw">abs</span>(permuted_diffs) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(real_diff))</a></code></pre></div>
-<pre><code>## [1] 0</code></pre>
-<div class="fragment">
-<blockquote>
-<p>The difference in price between instant bookable and not is highly statistically significant (<span class="math inline">\(p \approx 0.001\)</span>, permutation test).</p>
-</blockquote>
-</div>
-</section><section id="permutation-test-recap" class="slide level2">
-<h2>Permutation test: recap</h2>
-<p><em>Pros:</em></p>
-<ul>
-<li>Very robust and flexible!</li>
-</ul>
-<p><em>Cons:</em></p>
-<ul>
-<li>Harder to do.</li>
-<li>Confidence intervals needs another step.</li>
-</ul>
-</section></section>
-<section><section id="confident-in-confidence-intervals" class="title-slide slide level1"><h1>Confident in confidence intervals?</h1></section><section id="section-3" class="slide level2">
-<h2></h2>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1">tt</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">tt</a></code></pre></div>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -664,20 +598,36 @@ sum(rbinom(n, 1, 1/2) &gt; 0)</code></pre>
 <div class="fragment">
 <p>In other words, if we collect 1,000 independent samples from a population with true mean <span class="math inline">\(\mu\)</span>, and construct confidence intervals for the mean from each, then about 950 of these should overlap <span class="math inline">\(\mu\)</span>.</p>
 </div>
+</section><section id="hows-that-work" class="slide level2">
+<h2>How’s that work?</h2>
+<p><img src="figure/Week_01_Lecture/plot_t-1.png" title="plot of chunk plot_t" alt="plot of chunk plot_t" style="display: block; margin: auto;" /></p>
 </section><section id="check-this." class="slide level2">
 <h2>Check this.</h2>
 <blockquote>
 <p>if we collect 1,000 independent samples from a population with true mean <span class="math inline">\(\mu\)</span>, and construct confidence intervals from each, then about 950 of these should overlap <span class="math inline">\(\mu\)</span>.</p>
 </blockquote>
 <p>Let’s take independent samples of size <span class="math inline">\(n=20\)</span> from a Normal distribution with <span class="math inline">\(\mu = 0\)</span>. Example:</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span>; mu &lt;-<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb42-2" title="2"><span class="kw">t.test</span>(<span class="kw">rnorm</span>(n, <span class="dt">mean=</span>mu))<span class="op">$</span>conf.int</a></code></pre></div>
-<pre><code>## [1] -0.5049656  0.5953488
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span>; mu &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb37-2" title="2"><span class="kw">t.test</span>(<span class="kw">rnorm</span>(n, <span class="dt">mean=</span>mu))<span class="op">$</span>conf.int</a></code></pre></div>
+<pre><code>## [1] -0.5259054  0.3753652
 ## attr(,&quot;conf.level&quot;)
 ## [1] 0.95</code></pre>
+</section><section id="section-3" class="slide level2">
+<h2></h2>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">tci &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">300</span>, <span class="kw">t.test</span>(<span class="kw">rnorm</span>(n, <span class="dt">mean=</span>mu))<span class="op">$</span>conf.int)</a>
+<a class="sourceLine" id="cb39-2" title="2"><span class="kw">mean</span>(tci[<span class="dv">1</span>,] <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">|</span><span class="st"> </span>tci[<span class="dv">2</span>,] <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span>)</a></code></pre></div>
+<pre><code>## [1] 0.05666667</code></pre>
 </section><section id="section-4" class="slide level2">
 <h2></h2>
-<p><img src="figure/Week_01_Lecture/many conf_int-1.png" title="plot of chunk many conf_int" alt="plot of chunk many conf_int" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Week_01_Lecture/many_conf_int_plot-1.png" title="plot of chunk many_conf_int_plot" alt="plot of chunk many_conf_int_plot" style="display: block; margin: auto;" /></p>
+</section></section>
+<section><section id="sensitivity-analysis" class="title-slide slide level1"><h1>Sensitivity analysis</h1></section><section id="group-exercise" class="slide level2">
+<h2>Group exercise</h2>
+<p>How does the margin of error change with sample size? By taking random samples from the <code>price</code> column of the <code>airbnb</code> data, make two plots:</p>
+<ol type="1">
+<li><p>Probability that a sample of size <code>n</code> of Portland AirBnB rooms has a sample mean within $10 of the (true) mean price of <em>all</em> rooms, as a function of <code>n</code>.</p></li>
+<li><p>Expected difference between the mean price of a random sample of <code>n</code> Portland AirBnB rooms and the (true) mean price of <em>all</em> rooms, as a function of <code>n</code>.</p></li>
+</ol>
 </section></section>
 <section><section id="stochastic-minute-the-central-limit-theorem-and-the-normal-distribution" class="title-slide slide level1"><h1>Stochastic minute: the Central Limit Theorem and the Normal distribution</h1></section><section id="the-clt" class="slide level2">
 <h2>The CLT</h2>
@@ -720,27 +670,131 @@ qnorm(0.975, mean=3, sd=2) # quantiles</code></pre>
 </div>
 </section><section id="one-sample-1" class="slide level2">
 <h2>One sample</h2>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
-<a class="sourceLine" id="cb45-2" title="2">x &lt;-<span class="st"> </span><span class="kw">runif</span>(n)</a>
-<a class="sourceLine" id="cb45-3" title="3"><span class="kw">hist</span>(x, <span class="dt">xlab=</span><span class="st">&#39;value&#39;</span>, <span class="dt">main=</span><span class="st">&#39;sample&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(<span class="fl">0.5</span>))</a>
-<a class="sourceLine" id="cb45-4" title="4"><span class="kw">abline</span>(<span class="dt">v=</span><span class="kw">mean</span>(x), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb42-2" title="2">x &lt;-<span class="st"> </span><span class="kw">runif</span>(n)</a>
+<a class="sourceLine" id="cb42-3" title="3"><span class="kw">hist</span>(x, <span class="dt">xlab=</span><span class="st">&#39;value&#39;</span>, <span class="dt">main=</span><span class="st">&#39;sample&#39;</span>, <span class="dt">col=</span><span class="kw">grey</span>(<span class="fl">0.5</span>))</a>
+<a class="sourceLine" id="cb42-4" title="4"><span class="kw">abline</span>(<span class="dt">v=</span><span class="kw">mean</span>(x), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/one_smaple-1.png" title="plot of chunk one_smaple" alt="plot of chunk one_smaple" style="display: block; margin: auto;" /></p>
 </section><section id="more-samples-1" class="slide level2">
 <h2>More samples</h2>
 <p><img src="figure/Week_01_Lecture/more_samples-1.png" title="plot of chunk more_samples" alt="plot of chunk more_samples" style="display: block; margin: auto;" /></p>
 </section><section id="distribution-of-1000-sample-means" class="slide level2">
 <h2>Distribution of 1,000 sample means</h2>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1">xm &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, <span class="kw">mean</span>(<span class="kw">runif</span>(n)))</a>
-<a class="sourceLine" id="cb46-2" title="2">xh &lt;-<span class="st"> </span><span class="kw">hist</span>(xm, <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" title="1">xm &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, <span class="kw">mean</span>(<span class="kw">runif</span>(n)))</a>
+<a class="sourceLine" id="cb43-2" title="2">xh &lt;-<span class="st"> </span><span class="kw">hist</span>(xm, <span class="dt">breaks=</span><span class="dv">40</span>, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/smpling_dist-1.png" title="plot of chunk smpling_dist" alt="plot of chunk smpling_dist" style="display: block; margin: auto;" /></p>
 </section><section id="distribution-of-1000-sample-means-1" class="slide level2">
 <h2>Distribution of 1,000 sample means</h2>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" title="1"><span class="kw">plot</span>(xh, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a>
-<a class="sourceLine" id="cb47-2" title="2">xx &lt;-<span class="st"> </span>xh<span class="op">$</span>breaks</a>
-<a class="sourceLine" id="cb47-3" title="3"><span class="kw">polygon</span>(<span class="kw">c</span>(xx[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">diff</span>(xx)<span class="op">/</span><span class="dv">2</span>, xx[<span class="dv">1</span>]),</a>
-<a class="sourceLine" id="cb47-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pnorm</span>(xx, <span class="dt">mean=</span><span class="fl">0.5</span>, <span class="dt">sd=</span><span class="dv">1</span><span class="op">/</span><span class="kw">sqrt</span>(n<span class="op">*</span><span class="dv">12</span>))), <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb47-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1"><span class="kw">plot</span>(xh, <span class="dt">main=</span><span class="kw">sprintf</span>(<span class="st">&#39;mean of %d samples&#39;</span>, n), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>)</a>
+<a class="sourceLine" id="cb44-2" title="2">xx &lt;-<span class="st"> </span>xh<span class="op">$</span>breaks</a>
+<a class="sourceLine" id="cb44-3" title="3"><span class="kw">polygon</span>(<span class="kw">c</span>(xx[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">diff</span>(xx)<span class="op">/</span><span class="dv">2</span>, xx[<span class="dv">1</span>]),</a>
+<a class="sourceLine" id="cb44-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pnorm</span>(xx, <span class="dt">mean=</span><span class="fl">0.5</span>, <span class="dt">sd=</span><span class="dv">1</span><span class="op">/</span><span class="kw">sqrt</span>(n<span class="op">*</span><span class="dv">12</span>))), <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb44-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/smpling_dist2-1.png" title="plot of chunk smpling_dist2" alt="plot of chunk smpling_dist2" style="display: block; margin: auto;" /></p>
+</section></section>
+<section><section id="permutation-tests" class="title-slide slide level1"><h1>Permutation tests</h1></section><section id="section-5" class="slide level2">
+<h2></h2>
+<p>Is the distribution of AirBnB prices too “wierd”? How can we be sure?</p>
+<div class="fragment">
+<p>Methods:</p>
+<ol type="1">
+<li><p>Remove the big values and try again.</p></li>
+<li><p>Use a nonparametric test.</p></li>
+</ol>
+</div>
+</section><section id="remove-the-big-values" class="slide level2">
+<h2>Remove the big values</h2>
+<p>(demonstration)</p>
+</section><section id="the-permutation-test" class="slide level2">
+<h2>The permutation test</h2>
+<p><em>Observation:</em> <strong>If</strong> there was no meaningful difference in prices between “instant bookable” and not, <strong>then randomly shuffling that label</strong> won’t change anything.</p>
+<div class="fragment">
+<p>Strategy:</p>
+<ol type="1">
+<li>Shuffle the <code>instant_bookable</code> column.</li>
+<li>Compute the difference in means.</li>
+<li>Repeat, many times.</li>
+<li>Compare: the <span class="math inline">\(p\)</span> value is the proportion of “shuffled” values more extreme than observed.</li>
+</ol>
+</div>
+</section><section id="shuffle-once" class="slide level2">
+<h2>Shuffle once</h2>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1">fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
+<a class="sourceLine" id="cb45-2" title="2">(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb45-3" title="3"><span class="st">                </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a></code></pre></div>
+<pre><code>## [1] 2.448844</code></pre>
+</section><section id="many-times" class="slide level2">
+<h2>Many times</h2>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" title="1">real_diff &lt;-<span class="st"> </span>(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb47-2" title="2"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb47-3" title="3">permuted_diffs &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
+<a class="sourceLine" id="cb47-4" title="4">        fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
+<a class="sourceLine" id="cb47-5" title="5">        (<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb47-6" title="6"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb47-7" title="7">   } )</a>
+<a class="sourceLine" id="cb47-8" title="8"><span class="kw">hist</span>(permuted_diffs, <span class="dt">xlab=</span><span class="st">&quot;shuffled differences in mean&quot;</span>, <span class="dt">xlim=</span><span class="kw">range</span>(<span class="kw">c</span>(permuted_diffs, real_diff)))</a>
+<a class="sourceLine" id="cb47-9" title="9"><span class="kw">abline</span>(<span class="dt">v=</span>real_diff, <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">3</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/many_shuf-1.png" title="plot of chunk many_shuf" alt="plot of chunk many_shuf" style="display: block; margin: auto;" /></p>
+</section><section id="how-surprising-was-the-real-value" class="slide level2">
+<h2>How surprising was the real value?</h2>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1"><span class="kw">mean</span>(<span class="kw">abs</span>(permuted_diffs) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(real_diff))</a></code></pre></div>
+<pre><code>## [1] 0</code></pre>
+<div class="fragment">
+<blockquote>
+<p>The difference in price between instant bookable and not is highly statistically significant (<span class="math inline">\(p \approx 0.001\)</span>, permutation test).</p>
+</blockquote>
+</div>
+</section></section>
+<section><section id="correlation" class="title-slide slide level1"><h1>Correlation</h1></section><section id="what-else-predicts-price" class="slide level2">
+<h2>What else predicts price?</h2>
+<p>Whimsically, what about number of characters in the house rules?</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" title="1">airbnb<span class="op">$</span>house_rules &lt;-<span class="st"> </span><span class="kw">as.character</span>(airbnb<span class="op">$</span>house_rules)</a>
+<a class="sourceLine" id="cb50-2" title="2"><span class="kw">hist</span>(<span class="kw">nchar</span>(airbnb<span class="op">$</span>house_rules), <span class="dt">breaks=</span><span class="dv">40</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/house_rules-1.png" title="plot of chunk house_rules" alt="plot of chunk house_rules" style="display: block; margin: auto;" /></p>
+</section><section id="section-6" class="slide level2">
+<h2></h2>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb51-1" title="1"><span class="kw">plot</span>(price <span class="op">~</span><span class="st"> </span><span class="kw">nchar</span>(house_rules), <span class="dt">data=</span>airbnb)</a>
+<a class="sourceLine" id="cb51-2" title="2"><span class="kw">abline</span>(<span class="kw">coef</span>(<span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span><span class="kw">nchar</span>(house_rules), <span class="dt">data=</span>airbnb)), <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</a></code></pre></div>
+<p><img src="figure/Week_01_Lecture/lm_price-1.png" title="plot of chunk lm_price" alt="plot of chunk lm_price" style="display: block; margin: auto;" /></p>
+</section><section id="lm" class="slide level2">
+<h2><code>lm()</code></h2>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" title="1"><span class="kw">summary</span>(<span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span><span class="kw">nchar</span>(house_rules), <span class="dt">data=</span>airbnb))</a></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = price ~ nchar(house_rules), data = airbnb)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -123.50  -51.07  -22.86   19.23  893.23 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        105.77263    1.71343   61.73   &lt;2e-16 ***
+## nchar(house_rules)   0.04672    0.00382   12.23   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 96.7 on 5600 degrees of freedom
+##   (32 observations deleted due to missingness)
+## Multiple R-squared:  0.02603,    Adjusted R-squared:  0.02585 
+## F-statistic: 149.6 on 1 and 5600 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="fragment">
+<p>How do we do a permutation test of <em>this</em> result?</p>
+</div>
+</section></section>
+<section><section id="recap" class="title-slide slide level1"><h1>Recap</h1></section><section id="section-7" class="slide level2">
+<h2></h2>
+<ul>
+<li><p><em>statistics</em> describe data and estimate <em>parameters</em>.</p></li>
+<li><p><span class="math inline">\(p\)</span>-values assess (in)consistency with specific models (ie, hypotheses)</p></li>
+<li><p>confidence intervals give a measure of uncertainty</p></li>
+<li><p>A sample mean scaled by (its sample SD over <span class="math inline">\(\sqrt{n}\)</span>) is approximately <span class="math inline">\(t\)</span>-distributed,</p></li>
+<li><p>which means that sample means are typically a few multiples of <span class="math inline">\(\sigma/\sqrt{n}\)</span> away from the true mean.</p></li>
+<li><p>A <em>permutation test</em> gives a way of testing hypotheses with fewer assumptions.</p></li>
+</ul>
+</section><section id="and-a-p-value-is" class="slide level2">
+<h2>and, a <span class="math inline">\(p\)</span>-value is…</h2>
+<p><em>pop quiz</em></p>
 </section></section>
     </div>
   </div>

@@ -101,12 +101,6 @@ nrow(airbnb)
 names(airbnb)
 ```
 
-## In class
-
-```{r in_class}
-
-```
-
 
 ## Second, look at the data
 
@@ -403,94 +397,13 @@ polygon(c(xx[-1] - diff(xx)/2, xx[1]),
         col=adjustcolor("blue", 0.4))
 ```
 
-## Excercise:
+## Exercise:
 
 Do this again (use my code) except using
 ```
 x <- rexp(n) - 1
 ```
 instead of `2 * runif(n) - 1`.
-
-# Permutation tests
-
-## 
-
-Is the distribution of AirBnB prices too "wierd"?
-How can we be sure?
-
-. . .
-
-Methods:
-
-1. Remove the big values and try again.
-
-2. Use a nonparametric test.
-
-
-## Remove the big values
-
-
-(demonstration)
-
-
-## The permutation test
-
-*Observation:*
-**If** there was no meaningful difference in prices between "instant bookable" and not,
-**then randomly shuffling that label** won't change anything.
-
-. . .
-
-Strategy:
-
-1. Shuffle the `instant_bookable` column.
-2. Compute the difference in means.
-3. Repeat, many times.
-4. Compare: the $p$ value is the proportion of "shuffled" values more extreme than observed.
-
-## Shuffle once
-
-```{r shuf}
-fake_is_instant <- sample(airbnb$instant_bookable)
-(mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
-                mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
-```
-
-## Many times
-
-```{r many_shuf}
-real_diff <- (mean(airbnb$price[airbnb$instant_bookable], na.rm=TRUE) - 
-               mean(airbnb$price[!airbnb$instant_bookable], na.rm=TRUE))
-permuted_diffs <- replicate(1000, {
-        fake_is_instant <- sample(airbnb$instant_bookable)
-        (mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
-               mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
-   } )
-hist(permuted_diffs, xlab="shuffled differences in mean", xlim=range(c(permuted_diffs, real_diff)))
-abline(v=real_diff, col='red', lwd=3)
-```
-
-## How surprising was the real value?
-
-```{r perm_p}
-mean(abs(permuted_diffs) > abs(real_diff))
-```
-
-. . .
-
-> The difference in price between instant bookable and not
-> is highly statistically significant ($p \approx 0.001$, permutation test).
-
-## Permutation test: recap
-
-*Pros:*
-
-- Very robust and flexible!
-
-*Cons:*
-
-- Harder to do.
-- Confidence intervals needs another step.
 
 
 # Confident in confidence intervals?
@@ -514,6 +427,18 @@ if we collect 1,000 independent samples from a population with true mean $\mu$,
 and construct confidence intervals for the mean from each,
 then about 950 of these should overlap $\mu$.
 
+## How's that work?
+
+```{r plot_t, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+xx <- seq(-5, 5, length.out=101)
+plot(c(xx[-1] - diff(xx)/2, xx[1]),
+        c(diff(pt(xx, df=4)), 0), type='l', xlab='t', ylab='probability density')
+polygon(c(xx[-1] - diff(xx)/2, xx[1]),
+        c(diff(pt(xx, df=4)), 0),
+        col=adjustcolor("blue", 0.4))
+text(-2.5, 0.03, expression(t == (bar(x) - mu)/(sigma/sqrt(n))), cex=3)
+```
+
 ## Check this.
 
 > if we collect 1,000 independent samples from a population with true mean $\mu$,
@@ -529,8 +454,14 @@ t.test(rnorm(n, mean=mu))$conf.int
 
 ## 
 
-```{r many conf_int, fig.height=2*fig.dim, echo=FALSE}
+```{r many conf_int}
 tci <- replicate(300, t.test(rnorm(n, mean=mu))$conf.int)
+mean(tci[1,] > 0 | tci[2,] < 0)
+```
+
+##
+
+```{r many_conf_int_plot, fig.height=2*fig.dim, echo=FALSE} 
 tci <- tci[,order(colSums(tci))]
 plot((tci[1,] + tci[2,])/2, 1:ncol(tci), xlim=range(tci), type='n',
      xlab='value', ylab='')
@@ -538,6 +469,19 @@ segments(x0=tci[1,], x1=tci[2,], y0=1:ncol(tci), col=ifelse(tci[2,] < 0 | tci[1,
 points((tci[1,] + tci[2,])/2, 1:ncol(tci), pch=20)
 abline(v=0)
 ```
+
+# Sensitivity analysis
+
+## Group exercise
+
+How does the margin of error change with sample size?
+By taking random samples from the `price` column of the `airbnb` data, make two plots:
+
+1. Probability that a sample of size `n` of Portland AirBnB rooms has a sample mean within \$10 of the (true) mean price of *all* rooms, as a function of `n`.
+
+2. Expected difference between the mean price of a random sample of `n` Portland AirBnB rooms and the (true) mean price of *all* rooms, as a function of `n`.
+
+
 
 # Stochastic minute: the Central Limit Theorem and the Normal distribution
 
@@ -637,4 +581,124 @@ polygon(c(xx[-1] - diff(xx)/2, xx[1]),
         c(length(xm)* diff(pnorm(xx, mean=0.5, sd=1/sqrt(n*12))), 0),
         col=adjustcolor("blue", 0.4))
 ```
+
+# Permutation tests
+
+## 
+
+Is the distribution of AirBnB prices too "wierd"?
+How can we be sure?
+
+. . .
+
+Methods:
+
+1. Remove the big values and try again.
+
+2. Use a nonparametric test.
+
+
+## Remove the big values
+
+
+(demonstration)
+
+
+## The permutation test
+
+*Observation:*
+**If** there was no meaningful difference in prices between "instant bookable" and not,
+**then randomly shuffling that label** won't change anything.
+
+. . .
+
+Strategy:
+
+1. Shuffle the `instant_bookable` column.
+2. Compute the difference in means.
+3. Repeat, many times.
+4. Compare: the $p$ value is the proportion of "shuffled" values more extreme than observed.
+
+## Shuffle once
+
+```{r shuf}
+fake_is_instant <- sample(airbnb$instant_bookable)
+(mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
+                mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
+```
+
+## Many times
+
+```{r many_shuf}
+real_diff <- (mean(airbnb$price[airbnb$instant_bookable], na.rm=TRUE) - 
+               mean(airbnb$price[!airbnb$instant_bookable], na.rm=TRUE))
+permuted_diffs <- replicate(1000, {
+        fake_is_instant <- sample(airbnb$instant_bookable)
+        (mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
+               mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
+   } )
+hist(permuted_diffs, xlab="shuffled differences in mean", xlim=range(c(permuted_diffs, real_diff)))
+abline(v=real_diff, col='red', lwd=3)
+```
+
+## How surprising was the real value?
+
+```{r perm_p}
+mean(abs(permuted_diffs) > abs(real_diff))
+```
+
+. . .
+
+> The difference in price between instant bookable and not
+> is highly statistically significant ($p \approx 0.001$, permutation test).
+
+
+# Correlation
+
+## What else predicts price?
+
+Whimsically, what about number of characters in the house rules?
+
+```{r house_rules}
+airbnb$house_rules <- as.character(airbnb$house_rules)
+hist(nchar(airbnb$house_rules), breaks=40)
+```
+
+##
+
+```{r lm_price}
+plot(price ~ nchar(house_rules), data=airbnb)
+abline(coef(lm(price ~ nchar(house_rules), data=airbnb)), col='red', lwd=2)
+```
+
+## `lm()`
+
+```{r summary_lm}
+summary(lm(price ~ nchar(house_rules), data=airbnb))
+```
+
+. . .
+
+How do we do a permutation test of *this* result?
+
+
+# Recap
+
+##
+
+- *statistics* describe data and estimate *parameters*.
+
+- $p$-values assess (in)consistency with specific models (ie, hypotheses)
+
+- confidence intervals give a measure of uncertainty
+
+- A sample mean scaled by (its sample SD over $\sqrt{n}$) is approximately $t$-distributed,
+
+- which means that sample means are typically a few multiples of $\sigma/\sqrt{n}$ away from the true mean.
+
+- A *permutation test* gives a way of testing hypotheses with fewer assumptions.
+
+## and, a $p$-value is... 
+
+*pop quiz*
 

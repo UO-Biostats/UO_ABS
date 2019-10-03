@@ -67,3 +67,10 @@ Here are links to data from some studies that other people have done, and also s
 
 ## zfish_diet 
 
+
+# Other ideas
+
+## Fly distributions and associated weather data in the LA basin
+
+From *Temperature accounts for the biodiversity of a hyperdiverse group of insects in urban Los Angeles*,
+twelve sites in LA in 2014, about 100 taxa, from monthly samples: [dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.gr68f2j)
