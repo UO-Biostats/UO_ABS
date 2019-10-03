@@ -1,0 +1,9 @@
+Notes on data from a pilot experiment using 14-dpf gnotobiotic stickleback
+
+Gacu_RNAseq_values.csv
+- whole gut transcriptome (RNA-seq) normalized expression values from 16 individual fish
+- "MA" fish were mono-associated with a single Pseudomonas spp. bacterial isolate
+- "CV" fish were inoculated with a "conventional" microibiota (1 mL of tank water)
+
+Gacu_RNAseq_samples.csv
+- contains sample names with metadata
