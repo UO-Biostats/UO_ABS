@@ -482,6 +482,22 @@ By taking random samples from the `price` column of the `airbnb` data, make two 
 2. Expected difference between the mean price of a random sample of `n` Portland AirBnB rooms and the (true) mean price of *all* rooms, as a function of `n`.
 
 
+## In class
+
+```{r sampling, cache=TRUE}
+x <- subset(airbnb, !is.na(price))$price # to save typing
+nvals <- 10 * (2:20)
+props <- rep(NA, length(nvals))
+for (k in 1:length(nvals)) {
+    many_means <- replicate(1e4, mean(sample(x, nvals[k])))
+    props[k] <- mean(abs(many_means - mean(x)) < 10)
+}
+plot(nvals, 1-props,
+     ylab='proportion of sample means not within $10',
+     xlab='sample size',
+     ylim=c(0,1), col='plum', pch=20, cex=2)
+```
+
 
 # Stochastic minute: the Central Limit Theorem and the Normal distribution
 
