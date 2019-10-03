@@ -691,6 +691,19 @@ qnorm(0.975, mean=3, sd=2) # quantiles</code></pre>
 <a class="sourceLine" id="cb44-4" title="4">        <span class="kw">c</span>(<span class="kw">length</span>(xm)<span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">pnorm</span>(xx, <span class="dt">mean=</span><span class="fl">0.5</span>, <span class="dt">sd=</span><span class="dv">1</span><span class="op">/</span><span class="kw">sqrt</span>(n<span class="op">*</span><span class="dv">12</span>))), <span class="dv">0</span>),</a>
 <a class="sourceLine" id="cb44-5" title="5">        <span class="dt">col=</span><span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>, <span class="fl">0.4</span>))</a></code></pre></div>
 <p><img src="figure/Week_01_Lecture/smpling_dist2-1.png" title="plot of chunk smpling_dist2" alt="plot of chunk smpling_dist2" style="display: block; margin: auto;" /></p>
+</section><section id="relationship-to-the-t-distribution" class="slide level2">
+<h2>Relationship to the <span class="math inline">\(t\)</span> distribution</h2>
+<p>If <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z_1, \ldots, Z_n\)</span> are independent <span class="math inline">\(\Normal(0, \sigma)\)</span>, and <span class="math display">\[\begin{equation}
+    X = \frac{Y}{ \sqrt{\frac{1}{n}\sum_{j=1}^n Z_j^2} }
+\end{equation}\]</span> then <span class="math display">\[\begin{equation}
+    X \sim \StudentsT(n) .
+\end{equation}\]</span></p>
+<div class="fragment">
+<p>More usefully, <em>a sample mean divided by its standard error is<span class="math inline">\(^*\)</span> <span class="math inline">\(t\)</span> distributed.</em></p>
+</div>
+<div class="fragment">
+<p>This is thanks to the Central Limit Theorem. (<span class="math inline">\(^*\)</span> usually, approximately)</p>
+</div>
 </section></section>
 <section><section id="permutation-tests" class="title-slide slide level1"><h1>Permutation tests</h1></section><section id="section-5" class="slide level2">
 <h2></h2>

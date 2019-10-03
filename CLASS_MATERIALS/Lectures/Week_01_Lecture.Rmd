@@ -582,6 +582,28 @@ polygon(c(xx[-1] - diff(xx)/2, xx[1]),
         col=adjustcolor("blue", 0.4))
 ```
 
+## Relationship to the $t$ distribution
+
+If $Y$ and $Z_1, \ldots, Z_n$ are independent $\Normal(0, \sigma)$, and
+$$\begin{equation}
+    X = \frac{Y}{ \sqrt{\frac{1}{n}\sum_{j=1}^n Z_j^2} }
+\end{equation}$$
+then
+$$\begin{equation}
+    X \sim \StudentsT(n) .
+\end{equation}$$
+
+. . .
+
+More usefully,
+*a sample mean divided by its standard error is$^*$ $t$ distributed.*
+
+. . .
+
+This is thanks to the Central Limit Theorem.
+($^*$ usually, approximately)
+
+
 # Permutation tests
 
 ## 

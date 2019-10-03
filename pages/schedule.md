@@ -18,6 +18,7 @@ Week 1 (*10/1*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.slides.html)
     - [using git](using-git.html)
+    - [Homework 1](../CLASS_MATERIALS/Homeworks/HW1_F19.html) *(due 10/10)*
     - Reading: Quinn & Keough chapters 1-4
     - Introductory workshop to R and Rmarkdown, by Hannah: date/time TBD
 
