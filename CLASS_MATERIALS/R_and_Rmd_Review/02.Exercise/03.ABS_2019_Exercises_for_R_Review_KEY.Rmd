@@ -1,0 +1,402 @@
+---
+title: "Student Exercises | Intro to R"
+output: pdf_document
+author: your name here 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=FALSE}
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+```
+
+## _Exercise 1.1: Exploring R Studio_
+1. Take a few minutes to familiarize yourself with the R studio environment by locating the following features:
+- The windows clockwise from top left are: the code editor, the workspace and history, the plots and files window, and the R console.
+- In the plots and files window, click on the packages and help tabs to see what they offer. 
+- See what types of new files can be made in R studio by clicking the top left icon- open a new R script.
+
+2. Now open the file called 'Exercises_for_R_Lectures.Rmd'. This file will serve as your digital notebook for parts of the workshop and contains the other exercises.
+
+_______________________________
+
+## _Exercise 1.2: Intro to `R Markdown` Files_
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+1. When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded `R` code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+2. Each code chunk begins and ends in the same way- with a fence (three dashes). You can further specify what you want to show up in your final document using the `echo` and `eval` commands in the opening line. Insert a few code chunks below using the `insert` tab at the top of this window. Then, change the `echo` and `eval` arguments to `TRUE` or `FALSE` and see how different combinations of these arguments change the output when you knit. I have done the first one for you. Notice too that each `R` code chunk requires a unique title argument (here 'cars variant 1'), or the Rmd will not knit. 
+
+```{r cars variant 1, echo=TRUE, eval=TRUE}
+summary(cars)
+```
+
+```{r cars variant 2, echo=TRUE, eval=FALSE}
+summary(cars)
+```
+
+```{r cars variant 3, echo=FALSE, eval=TRUE}
+summary(cars)
+```
+
+
+```{r cars variant 4, echo=FALSE, eval=FALSE}
+summary(cars)
+```
+
+3. What do you think `echo` and `eval` do, based on your manipulations?
+    - `echo` repeats the code in the final document, `eval` tells R to actually run the code and print the results.
+- What are the defaults for `echo` and `eval`, based on your manipulations? 
+    - defaults are `echo=FALSE` and `eval=TRUE`
+
+_______________________________
+
+## _Excercise 1.3: RMarkdown advanced_
+
+Getting more familiar with RMarkdown
+
+- If you want to beautify your output, it always starts here. 
+- There are many options, and a few are laid out below. 
+- The `knitr` package has lots of options explained 
+  - [here](http://yihui.name/knitr/options#chunk_options) and 
+  - [here](http://kbroman.org/knitr_knutshell/pages/Rmarkdown.html) in detail. 
+
+- Part of configuring your script is loading the correct packages. Always load all packages together at the top in your `config` chunk. That way future users will know exactly what they need to install. 
+
+```{r config, echo=TRUE}
+library(scales)
+library(knitr)
+opts_chunk$set(background='gray80', tidy=FALSE, cache=FALSE, comment='',
+               dpi=72, fig.path='RMDfigs/', fig.width=4, fig.height=4)
+```
+
+
+2.  Generate fake data
+- The `x` value is just numbers 1-100 for an x axis value. This might be time or distance, etc.  
+- For the response variable, generate a random normal distribution with the `rnorm` function, 
+and then add a trend with the `seq` function. 
+- Then we'll add some fake treatments with `letters`. 
+
+```{r simulateData}
+# setwd('~/Desktop')
+
+x <- 1:100
+y <- rnorm(100, sd=3) + seq(10.05, 20, 10/100)
+z <- factor(rep(letters[1:5], each=20))
+dat <- data.frame(x, y, z)
+```
+
+3. Tables in `knitr`
+- This is an ugly way to preview data or display tables. 
+```{r previewUglyData}
+head(dat)
+```
+
+- The `knitr` package has a simple built-in function for dealing with tables. This works well in either html or pdf output. 
+```{r previewData, results='asis'}
+kable(head(dat))
+```
+
+
+<!-- This is a comment in html, which is a great way to include comments in an RMarkdown document. 
+The following two code chunks are also hidden - because of the 'echo=FALSE' command. 
+The code is also not evaluated in R - notice the 'eval=FALSE' command. --> 
+
+
+```{r reassignFactor, eval=FALSE, echo=FALSE}
+# reassign the factor levels to change model order downstream. 
+# dat$z <- factor(dat$z, levels=c('b', 'c', 'd', 'e', 'a'))
+```
+
+```{r removeCrappySamples, eval=TRUE, echo=TRUE}
+# remove a few samples that we don't want to analyze. 
+# dat <- dat[-c(3, 4, 5, 12), ]
+```
+
+4. R commands embedded in prose
+
+- One of the best features in `knitr` and RMarkdown generally, is the ability to embed real R commands in sentences, so that you can report actual values instead of constantly copying and pasting when results change a little bit. 
+- This table has `r nrow(dat)` rows and `r ncol(dat)` columns. The 'x' variable starts at `r min(dat$x)` and ends at `r max(dat$x)`. 
+- `r mean(rnorm(100))`
+
+5. Formatting text in RMarkdown
+
+- Create a formatted list with 2 levels and 2 sub levels; make one of the sub levels italic and the main levels bold
+- Create a quote from one of your new workshop friends
+    
+6. LaTeX in RMarkdown
+
+- Insert three symbols of your choice
+- Recreate an equation from the slides and insert it in-line and fenced
+
+_______________________________
+
+
+## _Exercise 1.4: Basic Mathematics in `R`_
+Insert a code chunk below and complete the following tasks:
+
+1. Add and subtract
+
+```{r,echo=TRUE, eval=TRUE}
+2+2
+2-1
+```
+  
+2. Multiply and divide
+```{r,echo=TRUE, eval=TRUE}
+2*2
+2/1
+```
+
+3. Raise a number to a power using the ^ symbol
+```{r,echo=TRUE, eval=TRUE}
+2^2
+```
+
+4. Create a more complex equation involving all of these operations to convince yourself that `R` follows the normal priority of mathematical evaluation
+```{r,echo=TRUE, eval=TRUE}
+(4-1)^2*3
+```
+
+
+_______________________________
+
+
+## _Exercise 1.5: Assigning Variables and Arithmetic Functions in `R`_
+Insert a code chunk below and complete the following tasks:
+
+1. Assign three variables using basic mathematical operations
+```{r, echo=TRUE, eval=TRUE}
+x<-2*3
+y<-5
+z<-5-1
+```
+
+2. Take the log of your three variables
+```{r, echo=TRUE, eval=TRUE}
+log(x)
+log(y)
+log(z)
+```
+
+3. Use the print function to display your most complex variable
+```{r, echo=TRUE, eval=TRUE}
+print(z)
+```
+4. Use the `concatenate` function to print a sentence
+```{r, echo=TRUE, eval=TRUE}
+q<-c("I","love","stats")
+print(q)
+```
+_______________________________
+
+
+## _Exercise 1.6: Vectors and Factors_
+Insert a code chunk below and complete the following tasks:
+
+1. Create a numeric vector using the `c` function
+```{r, echo=TRUE, eval=TRUE}
+n<-c(2,4,6,8,10)
+```
+
+2. Create a multi-level character factor using the `c` function
+```{r, echo=TRUE, eval=TRUE}
+vec1<-c("I", "am", "great","at","R")
+fac1<-as.factor(vec1)
+print(fac1)
+```
+
+3. Use `str` and `class` to evaluate your variables
+```{r, echo=TRUE, eval=TRUE}
+class(fac1)
+str(fac1)
+```
+
+
+_______________________________
+
+
+## _Exercise 1.7: Basic Statistics_
+Insert a code chunk below and complete the following tasks:
+
+1. Create a vector and calculate the `mean`, `sd`, `sum`, `length`, and `var`
+```{r, echo=TRUE, eval=TRUE}
+n<-c(2,4,6,8,10)
+mean(n)
+sd(n)
+sum(n)
+length(n)
+var(n)
+```
+
+2. Use the `log` and `sqrt` functions on your vector
+```{r, echo=TRUE, eval=TRUE}
+n<-c(2,4,6,8,10)
+log(n)
+sqrt(n)
+```
+
+3. What happens when you try to apply these functions to a factor?
+    - Error! log not meaningful for factors
+    
+4. Type the first couple letters of a function within your R code chunk, then hit tab- what happens? 
+- What if you press tab with you cursor inside the function parentheses? 
+    - Tab complete is the BEST! Use it to help you with functions and the arguments for each function!
+
+_______________________________
+
+
+## _Exercise 1.8: Creating Larger Vectors and Random Sampling_
+Complete the following tasks in the codechunk below:
+- Note: If you ever want someone else to be able to perfectly reproduce your results, always set the random seed at the top. Any number will do. Note that it never hurts to set the seed, *but* robust results should always stand up to random number generators. 
+
+1. Create a vector with 100 elements using the `seq` function and calculate two basic statistics on your vector
+2. Create a variable and `sample` it with equal probability 
+- Can you figure out what the arguments in the parentheses mean?
+- Try varying the arguments to see what happens.
+3. Create a normally distributed variable of 10000 elements using the `rnorm` function then `sample` that distribution with and without replacement
+4. Use `hist` to plot your normally distributed variable
+
+```{r setSeed, echo=TRUE, eval=TRUE}
+set.seed(1415)
+#1
+s<-seq(from=1, to=1000,length.out = 100)
+mean(s)
+sqrt(s)
+#2
+t<-sample(x=s,size=50,replace = TRUE)
+#3
+u <- rnorm (n = 10000, mean = 0, sd = 10)
+v <- sample (u, 10000, replace = T)
+w <- sample (u, 10000, replace = F)
+#4
+x <-rnorm(1000, 0, 100)
+hist(x, xlim = c(-500,500))
+```
+
+
+## Including Plots
+You can also embed plots in your pdf document (`knit` to view), for example:
+```{r pressure, echo=FALSE, out.width='50%'}
+plot(pressure)
+```
+
+- Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+- Note that you can also alter the size of the plot in the chunk header (`{}`) section.
+
+
+_______________________________
+
+
+## _Exercise 1.9: Basic Visualization_
+Insert a code chunk below and complete the following tasks, make sure to label all plot axes and have fun with colors!
+
+1. Create a variable using `seq` and make two different plots by changing the `type` argument 
+```{r, echo=FALSE, out.width='50%'}
+a<- seq(from=1, to=10000,length.out = 1000)
+plot(a, type="p")
+plot(a, type="l")
+```
+
+2. Create a normally distributed variable using `rnorm` and make two different plots using `hist` by varying the `breaks` argument (what does `breaks` appear to do?)
+```{r}
+x <-rnorm(1000, 0, 100)
+hist(x, xlim = c(-500,500), breaks=100)
+hist(x, xlim = c(-500,500), breaks=10)
+```
+
+3. Modify your `par()` arguments to create a composite figure of the above graphs. 
+```{r}
+par(mfrow=c(2,1))
+x <-rnorm(1000, 0, 100)
+hist(x, xlim = c(-500,500), breaks=100)
+hist(x, xlim = c(-500,500), breaks=10)
+```
+
+_______________________________
+
+## _Exercise 1.10: Creating a Data Frame and Evaluating Class_
+Insert a code chunk below and complete the following tasks:
+
+1. Recreate the dataframe from the slides by creating each vector then using `data.frame`
+```{r, echo=TRUE}
+habitat <- factor(c("mixed", "wet", "wet", "wet", "dry", "dry", "dry","mixed"))
+temp <- c(3.4, 3.4, 8.4, 3, 5.6, 8.1, 8.3, 4.5)
+elevation <- c(0, 9.2, 3.8, 5, 5.6, 4.1, 7.1, 5.3)
+mydata <- data.frame(habitat, temp, elevation)
+```
+
+2. Assign rownames to your dataframe using `rownames` and `c`
+```{r, echo=TRUE}
+row.names(mydata) <- c("Reedy Lake", "Pearcadale", "Warneet", "Cranbourne", "Lysterfield", "Red Hill", "Devilbend", "Olinda")
+```
+
+3. Get class assignments for your whole dataframe using `str`
+```{r, echo=TRUE}
+str(mydata)
+```
+
+4. Calculate the `mean` of each numeric variable 
+```{r, echo=TRUE}
+mean(mydata$temp)
+mean(mydata$elevation)
+```
+
+5. Make a descriptive plot of your choosing
+```{r, echo=TRUE}
+plot(mydata$temp,mydata$elevation)
+```
+
+6. What happens when you use the functions `head` and `tail` on your dataframe?
+```{r, echo=TRUE}
+head(mydata)
+tail(mydata)
+```
+_______________________________
+
+
+## _Exercise 1.11: Datasets and Indexing_
+By opening this .Rmd file, you have automatically set your working directory to the folder containing it. Now, you can access data from this directory or a sub-directory in this folder. You can do this by including that part of the path in the `read.csv` function. Insert a code chunk below and complete the following tasks:
+
+1. Save the file we created together in a sub-directory of your current working directory 
+2. Use `read.csv` to read your file in  
+```{r, echo=TRUE, eval=TRUE}
+YourFile <- read.csv("yourfile_key.csv", header=T, row.names=1,sep=',')
+```
+
+3. Use `str` and `head` to view your data structure
+```{r, echo=T, eval=FALSE}
+str(YourFile)
+head(YourFile)
+```
+
+4. Use the `$` and `[ ]` operators to select out different parts of the dataframe.
+```{r}
+YourFile$temp
+YourFile[3]
+```
+
+5. Plot temperature over elevation using `$`.
+```{r, echo=TRUE}
+plot(YourFile$elevation,YourFile$temp)
+```
+
+6. Use the `tapply` function to calculate the `mean` and `var` of temp by habitat type and temp by elevation. 
+```{r, echo=TRUE}
+tapply(YourFile$temp, YourFile$habitat, mean)
+tapply(YourFile$temp, YourFile$habitat, var)
+```
+
+7. Export your data frame with a different file name
+```{r, eval = FALSE, echo = TRUE}
+write.csv(YourFile, "yourfile_2.csv", quote=F, row.names=T, sep=",")
+```
+
+_______________________________
