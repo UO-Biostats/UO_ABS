@@ -11,16 +11,15 @@ knitr::opts_chunk$set(fig.width=2*fig.dim,
                       fig.align='center')
 set.seed(23)
 library(tidyverse)
-library(rstan)
 library(matrixStats)
-options(mc.cores = parallel::detectCores())
 ```
 
 # Outline
 
 ## Goal for the week
 
-To compare means of some measurement between groups.
+To compare means of something between groups.
+(Tools will be applicable to other tasks also.)
 
 . . .
 
@@ -32,140 +31,424 @@ Using statistics.
 - How can experiments best do it? Experimental design.
 - Methods: two-sample $t$-test, (one-way) ANOVA, permutation tests
 
-# Means of two groups
-
-## 30 min
-
-- introduce the idea
-- apply to simple example // group discussion: interpret `t.test` output
-- plot data, notice outlier
-- alternative: do permutation test (demo in R?)
+# Comparing means
 
 
-# Power and false positives
+## Example:
 
-## 35 min
+How different are AirBnB prices between neighbourhoods?
 
-- definitions: depends on the model!
-- group discussion: examples when each are high, low
-- demo: obtain power for two-sample $t$ by simulation
-- group ex: same for false pos
+```{r get_airbnb}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
+airbnb$price <- as.numeric(gsub("$", "", airbnb$price, fixed=TRUE))
+airbnb$neighbourhood[airbnb$neighbourhood == ""] <- NA
+(neighbourhood_counts <- sort(table(airbnb$neighbourhood), decreasing=TRUE))
+```
+
+##
+
+Let's take only the ten biggest neighbourhoods:
+
+```{r clean_airbnb}
+big_neighbourhoods <- names(neighbourhood_counts)[1:10]
+sub_bnb <- subset(airbnb, !is.na(price) & neighbourhood %in% big_neighbourhoods)
+sub_bnb <- droplevels(sub_bnb[, c("price", "neighbourhood", "host_id")])
+nrow(sub_bnb)
+```
+
+##
+
+Look at the data:
+
+```{r plot_boxes}
+par(mar=c(7, 3, 1, 1)+.1)
+plot(price ~ neighbourhood, data=sub_bnb, fill=grey(0.8), las=2, xlab='')
+```
+
+. . .
+
+Preliminary conclusions?
+
+. . .
+
+Formal questions?
+
+
+
+# ANOVA
+
+## The ANOVA model
+
+The *price* $P_{ij}$ of the $j$th room in neighbourhood $i$ is
+$$\begin{equation}
+    P_{ij} = \mu + \alpha_i + \epsilon_{ij} ,
+\end{equation}$$
+where
+
+- $\mu$ is the overall mean
+- $\alpha_i$ is the mean deviation of neighborhood $i$ from $\mu$
+- $\epsilon_{ij}$ is what's left over ("error", or "residual")
+
+. . .
+
+In words,
+$$\begin{equation}
+    \text{(price)} = \text{(group mean)} + \text{(residual)}
+\end{equation}$$
+
+## ANOVA 
+
+- Stands for ANalysis of VAriance
+- Core statistical procedure in biology
+- Developed by R.A. Fisher in the early 20th Century
+- The core idea is to ask how much variation exists within vs. among groups
+- ANOVAs are linear models that have categorical predictor and continuous response variables
+- The categorical predictors are often called factors, and can have two or more levels (important to specify in R)
+- Each factor will have a hypothesis test
+- The levels of each factor may also need to be tested
+
+## Question 1: what are the means?
+
+```{r airbnb_anova1}
+summary(lm(formula = price ~ neighbourhood, data = sub_bnb))
+```
+
+## Question 2: is there group heterogeneity?
+
+```{r airbnb_anova2}
+anova(lm(formula = price ~ neighbourhood, data = sub_bnb))
+```
+
+## 
+
+![F definitions](images/anova-F-calcs.jpeg)
+
+##
+
+![more on F](images/anova-F-calcs2.jpeg)
+
+## One or more predictor variables
+
+* One-way ANOVAs just have a single factor
+
+* Multi-factor ANOVAs
+
+    - Factorial - two or more factors and their interactions
+    - Nested - the levels of one factor are contained within another level
+    - The models can be quite complex
+
+* ANOVAs use an $F$-statistic to test factors in a model
+
+    - Ratio of two variances (numerator and denominator)
+    - The numerator and denominator d.f. need to be included (e.g. \(F_{1, 34} = 29.43\))
+
+* Determining the appropriate test ratios for complex ANOVAs takes some work
+
+## Assumptions
+
+* Normally distributed groups
+
+    - robust to non-normality if equal variances and sample sizes
+
+* Equal variances across groups
+
+    - okay if largest-to-smallest variance ratio < 3:1
+    - problematic if there is a mean-variance relationship among groups
+
+* Observations in a group are independent
+
+    - randomly selected
+    - don’t confound group with another factor
+
 
 # Experimental design
 
-## 40 min
+## Goals of an experiment
 
-- effect size: rules of thumb for detectable/not
-- confounding factors
-- representative samplesj
-- how to ask: what will we *actually* measure/test?
-- tools: replication, independence, controls, randomization, pairs
-- group exercise: design an experiment to do X - identify confounders, deal with them
+What do we want to know?
+
+. . .
+
+How do we measure it?
+
+. . .
+
+This can be done by *observation* or *experiment*.
+
+
+## What's an experiment?
+
+An *experiment* is a study in which the values of important variables
+(e.g., group membership, dosage)
+are determined by the *experimenters*.
+
+Otherwise, it is an *observational* study.
+
+. . .
+
+Note that controlling the set-up doesn't necessarily make it a *good* experiment.
+
+## A biological example to get us started
+
+Say you perform an experiment on two different strains of stickleback fish, one from an ocean population (RS) and one from a freshwater lake (BP) by making them microbe free. Microbes in the gut are known to interact with the gut epithelium in ways that lead to a proper maturation of the immune system.
+
+**Experimental setup:** 
+You decide to carry out an experiment by treating multiple fish from each strain so that some of them have a conventional microbiota, and some of them are inoculated with only one bacterial species. You then measure the levels of gene expression in the stickleback gut using RNA-seq. Because you have a suspicion that the sex of the fish might be important, you track it too.
+
+<!-- comment this out: use later?
+**Getting the data ready to analyze:**
+How should the data set be organized to best analyze it? What are the properties of the variables, and why does that matter?
+-->
+
+## 
+
+![stickleback experiment](images/stickleback_experiment.jpeg)
+
+##
+
+![terms related to experiments](images/experimental_terms.jpeg){width=75%}
+
+## What makes a good study?
+
+- Will we have the *power* to detect the effect of interest?
+
+    * What are the sources of *noise*? 
+    * How big do we expect the effect to be?
+
+- How generalizable will the results be?
+
+    * How *representative* is the sample? Of what group?
+
+- What are possible *causal* explanations?
+
+    * What are possible *confounding factors*?
+
+
+## Considerations
+
+1. Where do the samples come from?
+2. Sample size, replication, and balance across groups
+3. Controls: setting up good comparisons
+4. Randomization!
+
+. . .
+
+For (2), remember that
+$$\begin{equation}
+    \text{(margin of error)} \propto \frac{\sigma}{\sqrt{n}} .
+\end{equation}$$
+
 
 <!-- THURSDAY -->
 
 # Tidy data
 
-## 20 min
+## Rules of thumb for data tidiness
 
-- rectangular, semantic
-- wide vs long
-- metadata!
-- group ex: design data format for experiment
+- Store a copy of data in nonproprietary software and hardware formats, such as plain ASCII text (aka a flat file)
+- Leave an uncorrected file when doing analyses
+- Use descriptive names for your data files and variables
+- Include a header line with descriptive variable names
+- Maintain effective metadata about the data
+- When you add observations to a database, add rows
+- When you add variables to a database, add columns, not rows
+- A column of data should contain only one data type
+- All measurements of the same type should be in the same column
 
-# ANOVA
+## Example?
 
-## 50 min
+Have a look at the AirBnB dataset.
+Is it "tidy"?
 
-- goal
-- example and visualization
-- on-board disc of power, sens
-- analyze example
-- testing assumptions
-- demo: verify by simulation properties when asummptions hold (maybe unequal variance?)
-- group ex: see what happens when they don't
+## Exercise
+
+Design a tidy data format for the stickleback experiment:
+
+![stickleback experiment](images/stickleback_experiment.jpeg)
+
+## Tools for tidy data
+
+Tidying data is *hard*!
+
+. . .
+
+... and often requires expert input.
+
+. . .
+
+Many common *data wrangling* operations
+are made easier by the [tidyverse](https://tidyverse.org).
+
+## The "tidyverse"
+
+
+- packages that do many of the same things as base functions in R
+
+- designed to do them more "cleanly"
+
+- also includes `ggplot` (for "Grammar of Graphics")
+
+## A tibble is a data frame
+
+![](images/tibble.jpeg)
+
+
+## A tibble is a data frame
+
+![](images/tibble2.jpeg)
+
+## Key functions in dplyr for vectors
+
+- Pick observations by their values with `filter()`.
+- Reorder the rows with `arrange()`.
+- Pick variables by their names with `select()`.
+- Create new variables with functions of existing variables with `mutate()`.
+- Collapse many values down to a single summary with `summarise()`.
+
+## `filter()`, `arrange()` and `select()`
+
+```
+a1 <- select(airbnb, neighbourhood, price, host_id, beds, bathrooms)
+```
+
+```
+a2 <- filter(a1, neighbourhood == "Richmond" 
+                 | neighbourhood == "Woodlawn"
+                 | neighbourhood == "Downtown")
+```
+
+```
+a3 <- arrange(a2, price, neighbourhood)
+```
+
+## `mutate()` and `transmutate()`
+
+Add new variables:
+```
+mutate(a3,
+    price_per_bed = price / beds,
+    price_per_bath = price / bathrooms)
+```
+Or, make an entirely new data frame:
+```
+transmute(airbnb,
+    price = price,
+    price_per_bed = price / beds,
+    price_per_bath = price / bathrooms)
+```
+
+## `group_by()` and `summarize()`
+
+`group_by()` aggregates data by category, e.g.:
+```
+by_hood <- group_by(a3, neighbourhood)
+```
+Now, you can calculate *summaries* of other variables *within* each group, e.g.:
+```
+summarise(by_hood, price = mean(price, na.rm = TRUE))
+```
+
+## Your turn
+
+1. Make a data frame only including rooms in the top ten neighbourhoods.
+    Then, using only these neighbourhoods...
+
+2. Find the mean `price`, `cleaning_fee`, and ratio of cleaning fee to price, by neighbourhood.
+
+3. Edit your code in (2) to add variables for the 25% and 75% quantile of `price` (use `quantile( )`).
+
+4. Do as in (2) and (3) but splitting by both `neighbourhood` and `room_type`
+   (e.g., finding the mean price of private rooms in Woodlawn).
+
+5. Edit your code in (1) to add a new variable giving the number of characters in the `house_rules` (use `nchar( )`).
+
+
 
 
 # Permutation tests
 
-## 30 min
+## 
 
-- definition
-- demo: do it by defining a function
-- group discussion: figure out how to do it in some examples
+Is the distribution of AirBnB prices too "wierd"?
+How can we be sure?
+
+. . .
+
+Methods:
+
+1. Remove the big values and try again.
+
+2. Use a nonparametric test.
 
 
+## Remove the big values
 
-# Two variables
 
-## "Second, look at the data"
+(demonstration)
 
-```{r biplot}
-n <- 200
-tz <- data.frame(t=seq(0, 10, length.out=n))
-tz$z <- cos(tz$t) + rnorm(n)/4
 
-(ggp <- ggplot(tz, mapping=aes(x=t, y=z)) + xlab("time") + ylab("value") + 
-    geom_point())
+## The permutation test
+
+*Observation:*
+**If** there was no meaningful difference in prices between "instant bookable" and not,
+**then randomly shuffling that label** won't change anything.
+
+. . .
+
+Strategy:
+
+1. Shuffle the `instant_bookable` column.
+2. Compute the difference in means.
+3. Repeat, many times.
+4. Compare: the $p$ value is the proportion of "shuffled" values more extreme than observed.
+
+##
+
+```{r setup_data}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
+airbnb$price <- as.numeric(gsub("$", "", airbnb$price, fixed=TRUE))
+airbnb$instant_bookable <- (airbnb$instant_bookable == "t")
 ```
 
-## "Smooths"
+## Shuffle once
 
-```{r biplot2}
-(ggp +
-    geom_smooth(method='loess', formula=y ~ x, span=0.2))
+```{r shuf}
+fake_is_instant <- sample(airbnb$instant_bookable)
+(mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
+                mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
+```
+
+## Many times
+
+```{r many_shuf}
+real_diff <- (mean(airbnb$price[airbnb$instant_bookable], na.rm=TRUE) - 
+               mean(airbnb$price[!airbnb$instant_bookable], na.rm=TRUE))
+permuted_diffs <- replicate(1000, {
+        fake_is_instant <- sample(airbnb$instant_bookable)
+        (mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
+               mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
+   } )
+hist(permuted_diffs, xlab="shuffled differences in mean", xlim=range(c(permuted_diffs, real_diff)))
+abline(v=real_diff, col='red', lwd=3)
+```
+
+## How surprising was the real value?
+
+```{r perm_p}
+mean(abs(permuted_diffs) > abs(real_diff))
 ```
 
 . . .
 
-That line is produced by `loess`, which does *local weighted regression*.
+> The difference in price between instant bookable and not
+> is highly statistically significant ($p \approx 0.001$, permutation test).
 
 
-## Lines?
+## Your turn
 
-```{r biplot3}
-(ggp +
-    geom_smooth(method='lm', formula=y ~ x))
+Do the analogous thing for the ANOVA
+comparing price between neighbourhoods:
+```{r anvoa_again}
+anova(lm(price ~ neighbourhood, data=airbnb))
 ```
-
-Is this a good idea?
-
-
-# Correlation and regression
-
-## Two variables
-
-Now consider the results of an experiment:
-green fluorescent protein (GFP) concentration
-at eight temperatures ([data](../Datasets/gfp_temp.tsv)):
-
-```{r twovars}
-(xy <- read.table("../Datasets/gfp_temp.tsv")
-```
-
-## Correlation?
-
-```{r cor}
-cor(xy$temp, xy$gfp)
-```
-
-. . .
-
-![xkcd:552](images/xkcd_correlation.png)
-
-*Correlation doesn't imply causation,
-but it does waggle its eyebrows suggestively and gesture furtively
-while mouthing "look over there".*
-
-## Have a look
-
-```{r xyplot, fig.width=fig.dim}
-(ggplot(xy, mapping=aes(x=temp, y=gfp)) + xlab("temperature") + ylab("GFP concentration")
-    + geom_point()
-    + geom_smooth(method='lm', se=FALSE))
-```
-
-(on board: how's least-squares regression work)
-
-
 
