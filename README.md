@@ -2,7 +2,7 @@
 
 The actual website can be viewed at [https://UO-Biostats.github.io/UO_ABS/](https://UO-Biostats.github.io/UO_ABS/).
 
-Quick link: the [schedule](https://UO-Biostats.github.io/UO_ABS/schedule.html), with links to the slides.
+Quick link: the [schedule](https://UO-Biostats.github.io/UO_ABS/pages/schedule.html), with links to the slides.
 
 
 --------------------
@@ -23,4 +23,4 @@ by way of [Cécile Ané](http://cecileane.github.io/computingtools/).
     then find where the executable is using `bundle info jekyll`; 
     and finally make a symlink for the `jekyll` executable to somewhere in my `PATH`.
 
-- More in the [development docs](https://UO-Biostats.github.com/pages/development.html).
+- More in the [development docs](https://UO-Biostats.github.io/UO_ABS/pages/development.html).
