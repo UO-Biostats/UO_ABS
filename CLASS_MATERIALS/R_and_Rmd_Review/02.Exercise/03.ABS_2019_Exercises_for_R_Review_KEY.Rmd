@@ -130,11 +130,6 @@ The code is also not evaluated in R - notice the 'eval=FALSE' command. -->
 
 - Create a formatted list with 2 levels and 2 sub levels; make one of the sub levels italic and the main levels bold
 - Create a quote from one of your new workshop friends
-    
-6. LaTeX in RMarkdown
-
-- Insert three symbols of your choice
-- Recreate an equation from the slides and insert it in-line and fenced
 
 _______________________________
 

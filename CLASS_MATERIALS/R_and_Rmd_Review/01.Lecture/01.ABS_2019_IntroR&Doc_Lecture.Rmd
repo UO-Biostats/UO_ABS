@@ -251,9 +251,9 @@ These do not work
 ```
 
 
-## Arithmetic operations on functions {}
+## Arithmetic operations on variables {}
 
-- Arithmetic operations can be performed easily on functions as well as numbers.
+- Arithmetic operations can be performed easily on variables as well as numbers.
 
 ```{r functions, eval = TRUE, echo = TRUE}
 x <- 12
@@ -262,13 +262,13 @@ x^2
 log(x)
 ```
 
-## Arithmetic operations on functions {}
+## Arithmetic operations on variables {}
 - Note that the last of these - `log` - is a built-in function of `R`, and therefore the object of the function needs to be put in parentheses
 - These parentheses will be important, and we'll come back to them later when we add `arguments` in the parentheses after the function   
 - The outcome of calculations can be assigned to new variables as well, and the results can be checked using the `print` command
 
 
-## Arithmetic operations on functions {.flexbox .vcenter}
+## Arithmetic operations on variables {.flexbox .vcenter}
 
 ```{r, echo=TRUE}
 y <- 67
@@ -311,6 +311,9 @@ print (z)
 ```{r Example vectors, echo=TRUE}
 n <- c(2,3,4,2,1,2,4,5,10,8,9)
 print(n)
+n2<-c(n,3)
+print(n2)
+n2
 ```
 
 ```{r Example vectors two, echo=TRUE}
