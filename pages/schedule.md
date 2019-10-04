@@ -20,7 +20,7 @@ Week 1 (*10/1*)
     - [using git](using-git.html)
     - [Homework 1](../CLASS_MATERIALS/Homeworks/HW1_F19.html) *(due 10/10)*
     - Reading: Quinn & Keough chapters 1-4
-    - Introductory workshop to R and Rmarkdown [lecture](../CLASS_MATERIALS/R_and_Rmd_Review/01.ABS_2019_IntroR_Doc_Lecture.html) and [exercises] (../CLASS_MATERIALS/R_and_Rmd_Review/02.Exercises/02.ABS_2019_Exercises_for_R_Review.html), by Hannah: Friday 9-11am
+    - Introductory workshop to R and Rmarkdown [lecture](../CLASS_MATERIALS/R_and_Rmd_Review/01.ABS_2019_IntroR_Doc_Lecture.html) and [exercises](../CLASS_MATERIALS/R_and_Rmd_Review/02.Exercises/02.ABS_2019_Exercises_for_R_Review.html), by Hannah: Friday 9-11am
 
 Week 2 (*10/7*)
 
