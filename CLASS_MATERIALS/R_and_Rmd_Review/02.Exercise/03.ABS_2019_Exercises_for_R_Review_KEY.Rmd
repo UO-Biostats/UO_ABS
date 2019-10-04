@@ -1,6 +1,6 @@
 ---
 title: "Student Exercises | Intro to R"
-output: pdf_document
+output: html_document
 author: your name here 
 ---
 
