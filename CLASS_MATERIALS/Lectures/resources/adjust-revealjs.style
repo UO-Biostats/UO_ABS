@@ -10,6 +10,14 @@
 
 .reveal .slides figure { text-align: center; }
 
+.centered p { text-align: center; }
+
+.caption p { font-size: 75%; color: grey; }
+
+.greyed { color: grey; }
+
+div.floatright { float: right; text-align: right; }
+
 .reveal figcaption { display: none; }
 
 </style>

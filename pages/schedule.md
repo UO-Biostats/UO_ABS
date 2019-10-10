@@ -28,6 +28,7 @@ Week 2 (*10/7*)
 
     - Reading: Quinn & Keough chapters 5, 7, 8
     - [Slides](../CLASS_MATERIALS/Lectures/Week_02_Lecture.slides.html)
+    - [Homework 2](../CLASS_MATERIALS/Homeworks/HW2_F19.html) *(due 10/17)*
 
 Week 3 (*10/14*)
 

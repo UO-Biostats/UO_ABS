@@ -43,6 +43,12 @@ Here are links to data from some studies that other people have done, and also s
 
 ## Airbnb_listings_Portland
 
+## PanTHERIA:
+
+A dataset containing information about 5,416 extant mammal species.
+
+- [README](PanTHERIA/README.md)
+
 ## ant_diversity
 
 ## biofilm

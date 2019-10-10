@@ -1,7 +1,7 @@
 ---
-title: "Plotting, visualization, and linear regression"
+title: "Multifactor ANOVA, and visualization"
 author: "Peter Ralph"
-date: "8 October -- Advanced Biological Statistics"
+date: "15 October -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
@@ -10,112 +10,229 @@ knitr::opts_chunk$set(fig.width=2*fig.dim,
                       fig.height=fig.dim,
                       fig.align='center')
 set.seed(23)
-library(tidyverse)
 library(matrixStats)
-options(mc.cores = parallel::detectCores())
+library(tidyverse)
+```
+```{r setup_data}
+read_pantheria <- function(dirname) {
+    pantheria <- read.table(file.path(dirname, "PanTHERIA_WR05_mammals.txt"),
+                            header=TRUE, check.names=FALSE, stringsAsFactors=FALSE, sep="\t")
+    names(pantheria) <- gsub("^MSW05_", "", gsub("^[0-9-]*_", "", names(pantheria)))
+    pantheria$Order <- factor(pantheria$Order)
+    pantheria$Family <- factor(pantheria$Family)
+    pantheria$Genus <- factor(pantheria$Genus)
+    translations <- list(ActivityCycle = c("nocturnal", "crepuscular", "diurnal"),
+                         Terrestriality = c("fossorial", "ground_dwelling"),
+                         TrophicLevel = c("carnivore", "herbivore", "omnivore"))
+    for (col in names(pantheria)) {
+        a <- pantheria[[col]]
+        if (is.numeric(a)) {
+            a[a == -999] <- NA
+        } else if (col %in% names(translations)) {
+            a <- factor(translations[[col]][a], levels=translations[[col]])
+        }
+        pantheria[[col]] <- a
+    }
+    return(pantheria)
+}
 ```
 
+# Outline
 
 
-# Correlation
+# Multivariate ANOVA
 
-## What else predicts price?
 
-Whimsically, what about number of characters in the house rules?
 
-```{r house_rules}
-airbnb$house_rules <- as.character(airbnb$house_rules)
-hist(nchar(airbnb$house_rules), breaks=40)
+# Visualization
+
+## Goals
+
+- pattern discovery
+
+- efficient summary of information
+
+- visual intuition for quantitative patterns
+
+- model adequacy
+
+. . .
+
+aim to *maximize information and minimize ink*
+
+::: {.caption}
+John Tukey (XXX)
+:::
+
+
+## Considerations
+
+- Is the visual analogy appropriate for the *type* of data? 
+
+    ::: {.floatright}
+    counts? quantities? multivariate? relationships?
+    :::
+
+- Are important *comparisons* clear?
+
+    ::: {.floatright}
+    between groups? differences? time trend? 
+    :::
+
+- Are *units* easily interpretable?
+
+    ::: {.floatright}
+    meters? dollars? percent? relative change?
+    :::
+
+
+## Case study: comparing distributions
+
+```{r get_pantheria}
+pantheria <- read_pantheria("../Datasets/PanTHERIA")
+# look at most common orders
+(order_nums <- sort(table(pantheria$Order)))
+big_orders <- names(order_nums)[order_nums > 150]
+px <- (pantheria %>% filter(Order %in% big_orders)
+       %>% filter(!is.na(LitterSize))
+       %>% select(Order, Family, Genus, Species, LitterSize))
+for (xn in c("Order", "Family", "Genus")) px[[xn]] <- factor(px[[xn]])
 ```
 
 ##
 
-```{r lm_price}
-plot(price ~ nchar(house_rules), data=airbnb)
-abline(coef(lm(price ~ nchar(house_rules), data=airbnb)), col='red', lwd=2)
+```{r nums}
+px$LitterSize
 ```
 
-## `lm()`
 
-```{r summary_lm}
-summary(lm(price ~ nchar(house_rules), data=airbnb))
+##
+
+```{r stem}
+stem(px$LitterSize)
 ```
 
-. . .
+##
 
-How do we do a permutation test of *this* result?
-
-
-# Two variables
-
-## "Second, look at the data"
-
-```{r biplot}
-n <- 200
-tz <- data.frame(t=seq(0, 10, length.out=n))
-tz$z <- cos(tz$t) + rnorm(n)/4
-
-(ggp <- ggplot(tz, mapping=aes(x=t, y=z)) + xlab("time") + ylab("value") + 
-    geom_point())
+```{r fivenum}
+summary(px$LitterSize)
 ```
 
-## "Smooths"
+##
 
-```{r biplot2}
-(ggp +
-    geom_smooth(method='loess', formula=y ~ x, span=0.2))
+```{r plot}
+layout(t(1:2))
+with(px, plot(LitterSize, xlab='', ylab='litter size', col=Order, pch=20, cex=2))
+with(px, plot(rank(LitterSize, ties.method='first'), LitterSize, xlab='rank of litter size', ylab='litter size', col=Order, pch=20, cex=2))
 ```
 
-. . .
+##
 
-That line is produced by `loess`, which does *local weighted regression*.
+::: {.columns}
+::::::: {.column width=50%}
 
-
-## Lines?
-
-```{r biplot3}
-(ggp +
-    geom_smooth(method='lm', formula=y ~ x))
+```{r ggplot, fig.width=fig.dim}
+ggplot(px, mapping=aes(x=1:nrow(px), y=LitterSize, col=Order)) + geom_point()
 ```
 
-Is this a good idea?
+:::
+::::::: {.column width=50%}
 
-
-# Correlation and regression
-
-## Two variables
-
-Now consider the results of an experiment:
-green fluorescent protein (GFP) concentration
-at eight temperatures ([data](../Datasets/gfp_temp.tsv)):
-
-```{r twovars}
-(xy <- read.table("../Datasets/gfp_temp.tsv")
+```{r ggplot2, fig.width=fig.dim}
+ggplot(px, mapping=aes(x=rank(LitterSize, ties.method='first'), y=LitterSize, col=Order)) + geom_point()
 ```
 
-## Correlation?
+:::
+:::::::
 
-```{r cor}
-cor(xy$temp, xy$gfp)
+##
+
+```{r hist}
+layout(t(1:2))
+with(px, hist(LitterSize))
+with(px, hist(LitterSize, breaks=40))
 ```
 
-. . .
+##
 
-![xkcd:552](images/xkcd_correlation.png)
-
-*Correlation doesn't imply causation,
-but it does waggle its eyebrows suggestively and gesture furtively
-while mouthing "look over there".*
-
-## Have a look
-
-```{r xyplot, fig.width=fig.dim}
-(ggplot(xy, mapping=aes(x=temp, y=gfp)) + xlab("temperature") + ylab("GFP concentration")
-    + geom_point()
-    + geom_smooth(method='lm', se=FALSE))
+```{r many_hist}
+layout(matrix(1:6, ncol=3, byrow=TRUE))
+opar <- par(mar=c(1, 3, 1, 1)+.1)
+xh <- hist(px$LitterSize, plot=FALSE, breaks=30)
+for (k in 1:nlevels(px$Order)) {
+    ord <- levels(px$Order)[k]
+    if (k == 7) par(opar)
+    with(subset(px, Order == ord), 
+        hist(LitterSize, xlim=c(0, max(px$LitterSize)),
+             breaks=xh$breaks, main=ord,
+             xaxt=if (k > 6) 's' else 'n',
+             xlab=if (k > 6) 'litter size' else '') )
+}
 ```
 
-(on board: how's least-squares regression work)
+##
+
+```{r stacked_hist}
+overlay_hist <- function (x, f, breaks=30, ...) {
+    xh <- hist(x, breaks=breaks, plot=FALSE)
+    ymax <- do.call(max, with(px, lapply(tapply(LitterSize, Order, hist), "[[", "counts")))
+    for (k in 1:nlevels(f)) {
+        hist(x[f==levels(f)[k]], breaks=xh$breaks, ...,
+             add=(k>1), col=adjustcolor(k, 0.4), ylim=c(0, ymax))
+    }
+    legend("topright", fill=adjustcolor(1:nlevels(f), 0.4),
+           legend=levels(f))
+}
+with(px, overlay_hist(LitterSize, Order), xlab='litter size', main='')
+```
+
+##
+
+```{r gghist}
+ggplot(px, mapping=aes(LitterSize)) + geom_histogram() + facet_wrap(~ Order)
+```
+
+##
+
+```{r gghist}
+ggplot(px, mapping=aes(LitterSize, fill=Order)) + geom_histogram()
+```
+
+##
+
+```{r boxplot}
+with(px, boxplot(LitterSize ~ Order, notch=TRUE))
+```
+
+##
+
+```{r boxplot}
+ggplot(px, mapping=aes(y=LitterSize, x=Order)) + geom_boxplot(notch=TRUE)
+```
+
+##
+
+```{r boxplot}
+par(mar=c(9, 3, 1, 1) + 0.1)
+with(px, boxplot(LitterSize ~ Family, las=2, xlab=''))
+```
+
+
+##
+
+```{r boxplot}
+## ggplot fails on this one
+par(mar=c(9, 4, 1, 1) + 0.1)
+famsize <- aggregate(LitterSize ~ Order + Family, data=px, mean)
+famorder <- rank(with(famsize, LitterSize + 100 * as.numeric(Order)))
+with(px, boxplot(LitterSize ~ Family, las=2, xlab='',
+                 col=as.numeric(famsize$Order),
+                 at=famorder))
+text(x=tapply(famorder, famsize$Order, mean),
+     y=10, label=levels(famsize$Order))
+```
+
+
 
 
 
