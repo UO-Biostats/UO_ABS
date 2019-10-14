@@ -26,19 +26,19 @@
 </ul>
 <p>Code to read in the data and assign levels in columns appropriately:</p>
 <pre><code>read_pantheria &lt;- function(dirname) {
-    pantheria &lt;- read.table(file.path(dirname, &quot;pantheria_wr05_mammals.txt&quot;),
-                            header=true, check.names=false, stringsasfactors=false, sep=&quot;\t&quot;)
-    names(pantheria) &lt;- gsub(&quot;^msw05_&quot;, &quot;&quot;, gsub(&quot;^[0-9-]*_&quot;, &quot;&quot;, names(pantheria)))
+    pantheria &lt;- read.table(file.path(dirname, &quot;PanTHERIA_WR05_mammals.txt&quot;),
+                            header=TRUE, check.names=FALSE, stringsAsFactors=FALSE, sep=&quot;\t&quot;)
+    names(pantheria) &lt;- gsub(&quot;^MSW05_&quot;, &quot;&quot;, gsub(&quot;^[0-9-]*_&quot;, &quot;&quot;, names(pantheria)))
     pantheria$Order &lt;- factor(pantheria$Order)
     pantheria$Family &lt;- factor(pantheria$Family)
     pantheria$Genus &lt;- factor(pantheria$Genus)
-    translations &lt;- list(activitycycle = c(&quot;nocturnal&quot;, &quot;crepuscular&quot;, &quot;diurnal&quot;),
-                         terrestriality = c(&quot;fossorial&quot;, &quot;ground_dwelling&quot;),
-                         trophiclevel = c(&quot;carnivore&quot;, &quot;herbivore&quot;, &quot;omnivore&quot;))
+    translations &lt;- list(ActivityCycle = c(&quot;nocturnal&quot;, &quot;crepuscular&quot;, &quot;diurnal&quot;),
+                         Terrestriality = c(&quot;fossorial&quot;, &quot;ground_dwelling&quot;),
+                         TrophicLevel = c(&quot;carnivore&quot;, &quot;herbivore&quot;, &quot;omnivore&quot;))
     for (col in names(pantheria)) {
         a &lt;- pantheria[[col]]
         if (is.numeric(a)) {
-            a[a == -999] &lt;- na
+            a[a == -999] &lt;- NA
         } else if (col %in% names(translations)) {
             a &lt;- factor(translations[[col]][a], levels=translations[[col]])
         }
