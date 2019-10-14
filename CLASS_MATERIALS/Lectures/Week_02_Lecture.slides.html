@@ -1617,6 +1617,14 @@ transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985); }
   
   .reveal .slides figure { text-align: center; }
   
+  .centered p { text-align: center; }
+  
+  .caption p { font-size: 75%; color: grey; }
+  
+  .greyed { color: grey; }
+  
+  div.floatright { float: right; text-align: right; }
+  
   .reveal figcaption { display: none; }
   
   </style>
@@ -2031,77 +2039,6 @@ How should the data set be organized to best analyze it? What are the properties
 <li><p>Do as in (2) and (3) but splitting by both <code>neighbourhood</code> and <code>room_type</code> (e.g., finding the mean price of private rooms in Woodlawn).</p></li>
 <li><p>Edit your code in (1) to add a new variable giving the number of characters in the <code>house_rules</code> (use <code>nchar( )</code>).</p></li>
 </ol>
-</section></section>
-<section><section id="permutation-tests" class="title-slide slide level1"><h1>Permutation tests</h1></section><section id="section-6" class="slide level2">
-<h2></h2>
-<p>Is the distribution of AirBnB prices too “wierd”? How can we be sure?</p>
-<div class="fragment">
-<p>Methods:</p>
-<ol type="1">
-<li><p>Remove the big values and try again.</p></li>
-<li><p>Use a nonparametric test.</p></li>
-</ol>
-</div>
-</section><section id="remove-the-big-values" class="slide level2">
-<h2>Remove the big values</h2>
-<p>(demonstration)</p>
-</section><section id="the-permutation-test" class="slide level2">
-<h2>The permutation test</h2>
-<p><em>Observation:</em> <strong>If</strong> there was no meaningful difference in prices between “instant bookable” and not, <strong>then randomly shuffling that label</strong> won’t change anything.</p>
-<div class="fragment">
-<p>Strategy:</p>
-<ol type="1">
-<li>Shuffle the <code>instant_bookable</code> column.</li>
-<li>Compute the difference in means.</li>
-<li>Repeat, many times.</li>
-<li>Compare: the <span class="math inline">\(p\)</span> value is the proportion of “shuffled” values more extreme than observed.</li>
-</ol>
-</div>
-</section><section id="section-7" class="slide level2">
-<h2></h2>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">airbnb &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../Datasets/portland-airbnb-listings.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb19-2" title="2">airbnb<span class="op">$</span>price &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">gsub</span>(<span class="st">&quot;$&quot;</span>, <span class="st">&quot;&quot;</span>, airbnb<span class="op">$</span>price, <span class="dt">fixed=</span><span class="ot">TRUE</span>))</a></code></pre></div>
-<pre><code>## Warning: NAs introduced by coercion</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">airbnb<span class="op">$</span>instant_bookable &lt;-<span class="st"> </span>(airbnb<span class="op">$</span>instant_bookable <span class="op">==</span><span class="st"> &quot;t&quot;</span>)</a></code></pre></div>
-</section><section id="shuffle-once" class="slide level2">
-<h2>Shuffle once</h2>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
-<a class="sourceLine" id="cb22-2" title="2">(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb22-3" title="3"><span class="st">                </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a></code></pre></div>
-<pre><code>## [1] 2.837541</code></pre>
-</section><section id="many-times" class="slide level2">
-<h2>Many times</h2>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">real_diff &lt;-<span class="st"> </span>(<span class="kw">mean</span>(airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-2" title="2"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb24-3" title="3">permuted_diffs &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</a>
-<a class="sourceLine" id="cb24-4" title="4">        fake_is_instant &lt;-<span class="st"> </span><span class="kw">sample</span>(airbnb<span class="op">$</span>instant_bookable)</a>
-<a class="sourceLine" id="cb24-5" title="5">        (<span class="kw">mean</span>(airbnb<span class="op">$</span>price[fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb24-6" title="6"><span class="st">               </span><span class="kw">mean</span>(airbnb<span class="op">$</span>price[<span class="op">!</span>fake_is_instant], <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb24-7" title="7">   } )</a>
-<a class="sourceLine" id="cb24-8" title="8"><span class="kw">hist</span>(permuted_diffs, <span class="dt">xlab=</span><span class="st">&quot;shuffled differences in mean&quot;</span>, <span class="dt">xlim=</span><span class="kw">range</span>(<span class="kw">c</span>(permuted_diffs, real_diff)))</a>
-<a class="sourceLine" id="cb24-9" title="9"><span class="kw">abline</span>(<span class="dt">v=</span>real_diff, <span class="dt">col=</span><span class="st">&#39;red&#39;</span>, <span class="dt">lwd=</span><span class="dv">3</span>)</a></code></pre></div>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAEgCAMAAABrWDzDAAAC91BMVEUAAAABAQECAgIDAwMEBAQFBQUGBgYHBwcICAgJCQkKCgoLCwsMDAwNDQ0ODg4PDw8QEBARERESEhITExMUFBQVFRUWFhYXFxcYGBgZGRkaGhobGxscHBwdHR0eHh4fHx8gICAhISEiIiIjIyMkJCQlJSUmJiYnJycoKCgpKSkqKiorKyssLCwtLS0uLi4vLy8wMDAxMTEyMjIzMzM0NDQ1NTU2NjY3Nzc4ODg5OTk6Ojo7Ozs8PDw9PT0+Pj4/Pz9AQEBBQUFCQkJDQ0NERERFRUVGRkZHR0dISEhKSkpLS0tMTExNTU1OTk5PT09QUFBRUVFTU1NUVFRVVVVWVlZXV1dYWFhZWVlaWlpbW1tcXFxdXV1eXl5fX19gYGBhYWFjY2NkZGRlZWVmZmZnZ2doaGhpaWlrNjZra2tsbGxtbW1ubm5vb29wcHBxcXFycnJzc3N1dXV2dnZ3d3d4eHh5eXl6enp7e3t8fHx9fX1+fn5/f3+AgICBgYGCgoKDg4OEhISFhYWGhoaHh4eIiIiJiYmKioqLi4uMjIyNjY2Pj4+QkJCRkZGSkpKTk5OUlJSVlZWWlpaXl5eYmJiZmZmaJSWampqcnJydnZ2enp6fn5+goKChoaGioqKkpKSlpaWmpqanp6eoICCoqKipqamqqqqrq6usrKytra2urq6vr6+wsLCxsbGysrKzs7O1tbW2tra4uLi5ubm6urq7u7u8vLy9vb2+vr6/v7/AwMDBwcHCwsLDw8PExMTFxcXGxsbHx8fIyMjJycnKysrLy8vMzMzNzc3Ozs7Pz8/Q0NDR0dHS0tLT09PU1NTV1dXW1tbX19fY2NjZ2dna2trb29vc3Nzd3d3e3t7g4ODh4eHi4uLj4+Pk5OTl5eXm5ubn5+fo6Ojp6enq6urr6+vs7Ozt7e3u7u7v7+/w8PDy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7/AAD/ERH/JCT/MjL/m5v/oqL///+4UJtHAAAACXBIWXMAAAsSAAALEgHS3X78AAAQ+UlEQVR4nO3de3xT5R3H8ccCA6RAhVRa2nItcisiglykWi0IDhQQpTjRIaLOu0xEGeAdCiq6KQyceJ0TEXUO6USESgGZVo3QclFQEYRyq7RQyq6/P3ZuSZMm5zx98jQ5PTnf90tCOHme85yQzxKatTmMACQwuw8AnA0BgRQEBFIQEEhBQCAFAYEUBARSEBBIQUAgBQGBFAQEUhAQSEFAIAUBgRQEBFIQEEhBQCAFAYEUBARSEBBIQUAgBQGBFAQEUuIooErGvlV+G80WnGL1d7c2d2u8qB5242U9Qjdox6ktUE+r2CD+AzqPbZHZ60SWUyg+K2RR84C0BSJbpSGIy4CosrJms2RAl7OVEcyqW0DacWoLRLZKQxCXAZWzZkQbLm6ZfOVW5aFk7C06dndm4vnLlFvLJrQZVJA5nvYxz4b+b1HB4JZthhfT7szcp9I6Lizqn3jpt/rOfBPU6XPUDdszRyzulPHbKqIdo9tm3HjE2EPQTC2KQjbYWNQYSPvGnXXe0sCAfBvU49QW0FcxjthZ4iugPgMGDGitB3SwdcK4HJZeuaoje+w7ymUdRp/JFhINZR0vaKk8xPtYYkbye7ubNxk2iHWlneyM5r0Z+0X3luwafWe+Cav6smledYOXNWtxSSt2Fx32NBkz1L+HoJn+gLRFfQNP9WadByYEBOTfoB6ntoB24TtiW/7yIhZfAem0gNawc/bT/dd9q72afMw6HFMu2iq/upTTndrDrzxF0Mdj8+lkc3Z4J2M7KJtdRwXG4+yfoLy4vKNt8TK2hr5MaHosn91ONJit1vcQNNMfkLaob+By1reSbg0IyL9Be6bUFlAv/EfsKPEVUMBL2IEkljDk4f36Y/ksu025JZXtfUZ5CqHPtYBaqHO2PTy2A2MHd7IMojz2ApWwTG1f/gkBAbVTLs9ln//aqFTfQ9DM4IB8Ax9kj6hF1gTk3xAckP+IHSVuA6KymT0YS9phBKQ8GVAa25PP7iX6SgvIo2xZ3yRx0pJWakCd1AyWBQRkTAgIKEW57Ms+v5Hd+oaiWN9D0Ewv60601heQb+AM9qiaVU1A/g3BAfmP2FHiNqD3bl9OpUPYs8pjuYk+Yp3KaT1rQ++ynpX0gD+gu9lM5fkoTED+CYEvYevoq0bNfl7A7iFas2xHmIB2sV8coWl6QJvIN/A11v+E8rJZE5B/Q3BA/iN2lLgNaDU7c8LEROVBv5Bdu51yWJdxiewZOtmVnTOU+QPKZ22uSj2D/RASkH9CQECNWlzWmt1Hh9o0mfyrRm1/ChNQ1dksuWeCGpC6qG+guuaFLCAg/4bggPxH7ChxGxC9dkHrFue9TPTG2Y1W0tE7u7bop34Z/82IVr0X+wP6eXxij5ev6fRiaED+CTUBdX8sNf2BU0Rfj0hqO3YbhQmIPspKvOjlTuOMRY2BtGdU697PdhpWc6S+DbVewnxH7ChxFFBdHC4uJdrERonPDHknEDQuC6i0caMnnuvJXhSfiYDCc1lA9MFFSYn9lkYwUT6gt3zvU70juaMGxW0BQT1DQCAFAYEUBARSEBBIQUAgBQGBFAQEUhAQSEFAIAUBgRQEBFIQEEhBQCAFAYEUBARSEBBIQUAgBQGBFAQEUhAQSEFAEOB///qP4AwEBAH++89/C85AQBAAAYEUBARSEFBUnbh9qhCHfVILIaAoOzBsi4jnHrH7gIUhoKg6MF5oeAECintPTxdx51ChnSOg+DdE6DVpRbrQzhFQ/LtEaHRputBwBBT/EFCwKAV0+ujpCA7GCRBQsGgEVDmrWxPWOHP2icgOqWFDQMGiEdD1YwsPVR0qypsc2SE1bAgoWDQC8lRov53qEMHxNHgIKFg0Auqrf6jo2n4RHE+Dh4CCRSOgzal9JkzJ69f+08gOqWFDQMGi8lVYVcGSeUsKqiI6oIYOAQWL2vtAZeXCx+IICChYNAIaXUHb+yc0GfljZIfUsCGgYNEIiJVT7vSKE3OuiuyQGjYEFCxKASUp/wCqPtu/5a3hmoFPCq7VACGgYFEJaBedv5Po6/a1b/jLHwTXaoAQULBoBHRxemLSSFrjWVD7BgTEgYAMlds20icfhmxGQBwIyHBYuzxSezMC4kBAmq29Erq8rZ6RtPYNCIgDAWly8k+uSSlEQISAwuEHlFRNtLLnSQSEgMLhB5S5Qbm46jYEhIDC4Qe0vFVuGR26oD8CQkBh1OGrsL0ry4lOLp9eezsC4kBA1hAQBwKyhoA4EJA1BMSBgKwhIA4EZA0BcSAgawiIAwFZQ0AcCMgaAuJAQNYQEAcCsoaAOBCQNQTEgYCsISAOBGQNAXEgIGsIiAMBmdj+puaexyKY28AgoGCxCeiLxZqbHopgbgODgIJFHNA9hdXCi+EljMNNAc3MSrlF9COAEBCHmwIi2rEg23PDuxUCUxEQh7sCKn/35uTu2W3frPtUBMThpoCeuqzl8Kd3En2WVvepCIjDTQFNXnFU+73qnbpPRUAcbgqoatE6en++2IfRIyAONwV0w8Av6KtLxT6MHgFxuCmgpP3KxeFkoakIiMNNAXUtVS52dRGaioA43BTQKynTFt6ftkRoKgLicFNA5J095UHBkxkgIA5XBRQBBMTxygCx08xvF9p7VEQc0KohWYo7hKYiII55Q3eJmPFXob1HRcQBdXlpW0lJSanJoPCnvERAHPOGCQ2f7+SAxpiPMD3lJQLicFNA+atNR5ie8hIBcbgpoJymqb2VfwSFG2F6yksExOGmgLy6cCNMT3mJgDjcFJDyD+WDJiNMT3mJgDjcFNB3uYlZJdnfhB1idspLBMThpoCuvv9EVvXjw02HhTvlJQLicFNA7aooi6rahBthespLBMThpoD6FCoBfdYr7AizU14iIA43BfShZ6Jnsue9sCPMTnl57rRIDzOKbssdLqKt0M4RUCjfV2E/vTDn+T3hRzjqlJejjwkNTxIajYBCxdspLxGQlIgDytZMCj/GSae8REBSIg5o48aNRW8Pf0NoKgLicFNAmuMDhKYiIA7XBbQ77F9niU/tGxAQh5sCUv8FNKT5zeFGjGTNUzS1b0BAHG4KqFD1ZbjvOyS6+ZbwUxEQh5sCsrJ2XvjtCIjDTQFleHQdBaYiIA43BTTjl0U/br7iiSNHBKYiIA43BZShfrvG8c5CUxEQh5sCSt+qXJSmCk1FQBxuCuj3KXOWPZT6qNBUBMThpoBow13jb/2b2FQExOGqgMy/qd4UAuJwU0BW31RvBgFxuCkg3jfVh4OAONwUkMU31ZtCQBxuCsjim+pNISAONwVk8U31phAQh5sCsvimelMIiMNFAe3tEeYnT3kQEIeLAqK8ueG/F8gKAuJwU0A5TT29TD4fKNSmuZprZwmuFQsISEo0Ph8o1J4CzUyTbzSzFQKSEmFA6g/4viq8GF7CONwTUGPjlxgExIGArCEgDgRkDQFxuCegRsXFxeqvYqGpCIjDPQF5fISmIiAO9wQUGQTEgYCsISAOBGQNAXEgIGsIiAMBWUNAHAjIGgLiQEDWEBAHArKGgDgQkDUExIGArCEgDgRkDQFxICAfB521GQFJiUZAzjprMwKSEo2AnHXWZgQkJRoBOeuszQhISjQCsvmszWunC+km8jGhCKi2aARk81mbZy7dIqLNPqG9N6SA8l8/JELsqbaOovJVmL1nbZ65Xmh4O+cGNLaL0MkW24ecxLYeRO19oKCzNhunvOxzj+BaEXFPQKN/JzR8kuBnYdRJNAKy+azNCMiEYwKy+azNCMiEkwKqddZmAwLiQED6CHvP2oyATDgmIJvP2oyATDgmIJvP2oyATDgoIBMIiAMBWUNAHAjIGgLiQEDWEBAHArKGgDgQkDUExIGArCEgDgRkDQFxICBrCIgDAVlDQBwIyBoC4kBA1hAQBwKyhoA4EJA1BMSBgKwhIA4E5FOvH67gnSrk/BVCe0dAUpzw4QrL5+wSMUBsFfcENLFQ6O9xf512as+HKxwW+onKZQuFDjAbAYXXNfdqEd3qtNPYfLhCgf7iMvxB/Y+7mZiuQi9hKdlCw5tPEhreTGj0hBZCwwenCw3veL7Q8FZjhYZ3ty2g0A9XOKT/GPqGMv2Pp4uFfnp9Q6HQ8HWbhYZ/JDR6y9poDt+0Xmj4+iKh4R8Ljd6y07aATD9cAeJPTD9cAeJPTN8HgviDgECKLQHt6i70uTb1IyfThkUvFfsEn/qR2zmGi/3mz3/Ur+TEMKAdU+T3Iey762xY9MB4GxYtH2XDoqfq/BYWAhKAgEIhIAEIKBQCEoCAQiEgAQgoFAISgIBC1ceX8VPl9yHsh+ttWLTsGhsWPX6FDYtWj6zryPp4I/FoPewDizp0UbwTDVIQEEhBQCAFAYEUBARSEBBIQUAgBQGBFPmABpYoF5/2S76hUv5oBFzMGBsd0xVtuJNky/0UekRlA/r4JqYsV5W68viYWZK7EpO+q7y8IqYr2nAnyYb7KfiIygY075bmynIFfYgKz5HclZDKxFiupon9nSQ77qfgIyr/EpaiLLdkAtGhJuE+gSFatiX1Txq2I4YL2nEnyZb7KfaI1k9A86YoT3oslv+v38YRO07eNyCGC9pxJ8mW+yn2iEoEtDQz801juSV5Sq+NY/U/TmNhqkgoi9GKmtjeyQAxvp9ij2j9PAMV9CMqypTelYBP1hCdaFLOH1h/Yn8nyZb7KfaI1k9AVe3Xnpo4W3pXAj5M3lr90IhYrmjDnSRb7qfYI1o/AdGn52XE+C2S+anJY/fGdEUb7iTZcj+FHlG8Ew1SEBBIQUAgBQGBFAQEUhAQSEFAIAUBgRQEBFIQEEhBQCAFAYEUBARSEBBIQUAgBQGBFAQEUhAQSEFAIAUBgRTXBOTNCvrj7IyDszM+DPqJvSOegGurEo0xB8WWWRX7H7m2l1sDan1Q+a/YPKBD640xNbfX6Wcj1Hmu4oKATt3i8cwib6/7O3RcTYXZRBuzaUJCz+EJPdVnoDXntrvme6IFaZ3m6gHp15Te9DEH9QHenIk9yHc1f0zmB0SvZraZXGVs09cgrVPf7UQl2TNyLlyd1/lO/zIL0xIHlQaMcD4XBLS8b9muM0u9bNHpWUN9AVFiufKf8gx0wLOuanou/T1l67HLtYCMa+oTljbGGOBt+sQx/9UPaNkQ+jqlZN/ARcY2fQ3SA9JvV5SwjTSqd9X+hMPGsB+afVkx9eaAEc7ngoBe7/oPOkXetqfpi6yQgF6YSHQi8fRtc4iKtICMa/6AjAFez2nfWG8q0bYsmj2N6It1xjZ9DdID0m9XlKQRPfgAUdr3xrDKvXT83ryAEc7ngoCq5qZm5J/09tYeXTWgouyagOZ4shQHr1pG9KMWkHHNH5AxwNuLfGPVPZVk0ZSF6nBjm74G6QHptytKehDNnEuU/r0xrPrh/gNy8gJGOJ8LAtr7U3VRrxVqEWpAyivH29k1AT0/mai6hO54iGizFpBxzR+QMUD9c8BV5eF/YAbRV+8b2/Q1SA8oKzQgY9ibfb6jl/ICRjifCwKaO7j8yKA/GQF92XxPxWXZNQHt9nxe9Xg2fdR+e8WVyepo45o/IGOA+ueAq8rDvzntm8O5841t+hpkGpAxbOHI6j2XjEZAznJkVGvPlJNGQKentu7/+qSagOjdHmflfkP0ZHqn5/UPwdCv+QMyBmjvAtRcLb2DaHHntjecMLbpa5A/IPX2moDGHTWGleW0G7Si39s1I5zPBQFBNCEgkIKAQAoCAikICKQgIJCCgEAKAgIpCAikICCQgoBACgICKQgIpCAgkIKAQAoCAikICKQgIJCCgEDK/wGp84zBb1NZ0gAAAABJRU5ErkJggg==" title="plot of chunk many_shuf" alt="plot of chunk many_shuf" style="display: block; margin: auto;" /></p>
-</section><section id="how-surprising-was-the-real-value" class="slide level2">
-<h2>How surprising was the real value?</h2>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">mean</span>(<span class="kw">abs</span>(permuted_diffs) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(real_diff))</a></code></pre></div>
-<pre><code>## [1] 0</code></pre>
-<div class="fragment">
-<blockquote>
-<p>The difference in price between instant bookable and not is highly statistically significant (<span class="math inline">\(p \approx 0.001\)</span>, permutation test).</p>
-</blockquote>
-</div>
-</section><section id="your-turn-1" class="slide level2">
-<h2>Your turn</h2>
-<p>Do the analogous thing for the ANOVA comparing price between neighbourhoods:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">anova</span>(<span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span>neighbourhood, <span class="dt">data=</span>airbnb))</a></code></pre></div>
-<pre><code>## Analysis of Variance Table
-## 
-## Response: price
-##                 Df   Sum Sq Mean Sq F value    Pr(&gt;F)    
-## neighbourhood   91  6015248   66102  7.6277 &lt; 2.2e-16 ***
-## Residuals     5510 47749952    8666                      
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </section></section>
     </div>
   </div>

@@ -34,13 +34,13 @@ Week 3 (*10/14*)
 
 : Multifactor ANOVA, plotting/visualization, and permutation/bootstrapping
 
-    - Reading: Quinn & Keough chapter 6
+    - Reading: Quinn & Keough chapter 9
 
 Week 4 (*10/21*)
 
 : Multivariate regression, likelihood, model selection
 
-    - Reading: Quinn & Keough chapter 9
+    - Reading: Quinn & Keough chapter 6
 
 Week 5 (*10/28*)
 

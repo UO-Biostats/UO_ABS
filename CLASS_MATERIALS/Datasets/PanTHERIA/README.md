@@ -30,5 +30,6 @@ read_pantheria <- function(dirname) {
         }
         pantheria[[col]] <- a
     }
+    return(pantheria)
 }
 ```

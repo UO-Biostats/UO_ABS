@@ -13,7 +13,7 @@ set.seed(23)
 library(matrixStats)
 library(tidyverse)
 ```
-```{r setup_data}
+```{r setup_data, include=FALSE}
 read_pantheria <- function(dirname) {
     pantheria <- read.table(file.path(dirname, "PanTHERIA_WR05_mammals.txt"),
                             header=TRUE, check.names=FALSE, stringsAsFactors=FALSE, sep="\t")
@@ -39,8 +39,94 @@ read_pantheria <- function(dirname) {
 
 # Outline
 
+# Permutation tests
 
-# Multivariate ANOVA
+## 
+
+Is the distribution of AirBnB prices too "wierd"?
+How can we be sure?
+
+. . .
+
+Methods:
+
+1. Remove the big values and try again.
+
+2. Use a nonparametric test.
+
+
+## Remove the big values
+
+
+(demonstration)
+
+
+## The permutation test
+
+*Observation:*
+**If** there was no meaningful difference in prices between "instant bookable" and not,
+**then randomly shuffling that label** won't change anything.
+
+. . .
+
+Strategy:
+
+1. Shuffle the `instant_bookable` column.
+2. Compute the difference in means.
+3. Repeat, many times.
+4. Compare: the $p$ value is the proportion of "shuffled" values more extreme than observed.
+
+##
+
+```{r setup_airbnb_data}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
+airbnb$price <- as.numeric(gsub("$", "", airbnb$price, fixed=TRUE))
+airbnb$instant_bookable <- (airbnb$instant_bookable == "t")
+```
+
+## Shuffle once
+
+```{r shuf}
+fake_is_instant <- sample(airbnb$instant_bookable)
+(mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
+                mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
+```
+
+## Many times
+
+```{r many_shuf}
+real_diff <- (mean(airbnb$price[airbnb$instant_bookable], na.rm=TRUE) - 
+               mean(airbnb$price[!airbnb$instant_bookable], na.rm=TRUE))
+permuted_diffs <- replicate(1000, {
+        fake_is_instant <- sample(airbnb$instant_bookable)
+        (mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
+               mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
+   } )
+hist(permuted_diffs, xlab="shuffled differences in mean", xlim=range(c(permuted_diffs, real_diff)))
+abline(v=real_diff, col='red', lwd=3)
+```
+
+## How surprising was the real value?
+
+```{r perm_p}
+mean(abs(permuted_diffs) > abs(real_diff))
+```
+
+. . .
+
+> The difference in price between instant bookable and not
+> is highly statistically significant ($p \approx 0.001$, permutation test).
+
+
+## Your turn
+
+Do the analogous thing for the ANOVA
+comparing price between neighbourhoods:
+```{r anvoa_again}
+anova(lm(price ~ neighbourhood, data=airbnb))
+```
+
+
 
 
 
@@ -69,21 +155,21 @@ John Tukey (XXX)
 
 - Is the visual analogy appropriate for the *type* of data? 
 
-    ::: {.floatright}
-    counts? quantities? multivariate? relationships?
-    :::
+::: {.caption}
+counts? quantities? multivariate? relationships?
+:::
 
 - Are important *comparisons* clear?
 
-    ::: {.floatright}
-    between groups? differences? time trend? 
-    :::
+::: {.caption}
+between groups? differences? time trend? 
+:::
 
 - Are *units* easily interpretable?
 
-    ::: {.floatright}
-    meters? dollars? percent? relative change?
-    :::
+::: {.caption}
+meters? dollars? percent? relative change?
+:::
 
 
 ## Case study: comparing distributions
@@ -116,6 +202,12 @@ stem(px$LitterSize)
 
 ```{r fivenum}
 summary(px$LitterSize)
+```
+
+##
+
+```{r points}
+ggplot(px, mapping=aes(x=Order, y=LitterSize)) + geom_point()
 ```
 
 ##
@@ -194,7 +286,7 @@ ggplot(px, mapping=aes(LitterSize)) + geom_histogram() + facet_wrap(~ Order)
 
 ##
 
-```{r gghist}
+```{r gghist2}
 ggplot(px, mapping=aes(LitterSize, fill=Order)) + geom_histogram()
 ```
 
@@ -206,13 +298,13 @@ with(px, boxplot(LitterSize ~ Order, notch=TRUE))
 
 ##
 
-```{r boxplot}
+```{r boxplot2}
 ggplot(px, mapping=aes(y=LitterSize, x=Order)) + geom_boxplot(notch=TRUE)
 ```
 
 ##
 
-```{r boxplot}
+```{r boxplot3}
 par(mar=c(9, 3, 1, 1) + 0.1)
 with(px, boxplot(LitterSize ~ Family, las=2, xlab=''))
 ```
@@ -220,7 +312,7 @@ with(px, boxplot(LitterSize ~ Family, las=2, xlab=''))
 
 ##
 
-```{r boxplot}
+```{r boxplot4}
 ## ggplot fails on this one
 par(mar=c(9, 4, 1, 1) + 0.1)
 famsize <- aggregate(LitterSize ~ Order + Family, data=px, mean)
@@ -234,5 +326,5 @@ text(x=tapply(famorder, famsize$Order, mean),
 
 
 
-
+# Multivariate ANOVA
 
