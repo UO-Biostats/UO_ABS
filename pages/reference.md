@@ -25,18 +25,16 @@ description: useful links for Advanced Biological Statistics
 * Vignette on [stanfit objects](https://cran.r-project.org/web/packages/rstan/vignettes/stanfit-objects.html)
 * Brief guide to [Stan's warnings](http://mc-stan.org/misc/warnings)
 
-### tidyverse
-
-* [ggplot2 quick reference](http://ggplot2.tidyverse.org/reference/)
-
-
 ### Miscellaneous R tips
 
+* [knitr chunk options](https://yihui.name/knitr/options/) for control of Rmarkdown code chunks
+* [Formulae in R](http://conjugateprior.org/2013/01/formulae-in-r-anova/) and, in more detail, [General linear models in R FAQ](http://bbolker.github.io/mixedmodels-misc/glmmFAQ.html)
 * How to [print the source code](https://stackoverflow.com/questions/19226816/how-can-i-view-the-source-code-for-a-function/19226817#19226817) 
     for functions that don't show it to you when you type their names. (tldr; `showMethods(fun); getMethod(fun, c(x='class1', y='class2'))`)
 
 ### ggplotting
 
+* [ggplot2 quick reference](http://ggplot2.tidyverse.org/reference/)
 * [practical ggplot2](https://wilkelab.org/practicalgg/) an annotated website of examples by Claus Wilke
 
 ### Rstudio

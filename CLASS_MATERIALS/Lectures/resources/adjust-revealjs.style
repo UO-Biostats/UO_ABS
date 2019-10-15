@@ -20,6 +20,8 @@ div.floatright { float: right; text-align: right; }
 
 .reveal figcaption { display: none; }
 
+img.finger, .reveal img.finger { vertical-align: text-top; border: none; }
+
 </style>
 
 
