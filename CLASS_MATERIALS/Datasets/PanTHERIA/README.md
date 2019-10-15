@@ -25,7 +25,8 @@ read_pantheria <- function(dirname) {
         a <- pantheria[[col]]
         if (is.numeric(a)) {
             a[a == -999] <- NA
-        } else if (col %in% names(translations)) {
+        }
+        if (col %in% names(translations)) {
             a <- factor(translations[[col]][a], levels=translations[[col]])
         }
         pantheria[[col]] <- a

@@ -39,7 +39,8 @@
         a &lt;- pantheria[[col]]
         if (is.numeric(a)) {
             a[a == -999] &lt;- NA
-        } else if (col %in% names(translations)) {
+        }
+        if (col %in% names(translations)) {
             a &lt;- factor(translations[[col]][a], levels=translations[[col]])
         }
         pantheria[[col]] &lt;- a
