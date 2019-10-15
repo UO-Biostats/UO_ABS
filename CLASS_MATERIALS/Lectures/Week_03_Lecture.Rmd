@@ -28,7 +28,8 @@ read_pantheria <- function(dirname) {
         a <- pantheria[[col]]
         if (is.numeric(a)) {
             a[a == -999] <- NA
-        } else if (col %in% names(translations)) {
+        }
+        if (col %in% names(translations)) {
             a <- factor(translations[[col]][a], levels=translations[[col]])
         }
         pantheria[[col]] <- a
@@ -126,7 +127,7 @@ mean(abs(permuted_diffs) > abs(real_diff))
 
 . . .
 
-> The difference in price between instant bookable and not
+> The difference in price between instant bookable and not instant bookable
 > is highly statistically significant ($p \approx 0.001$, permutation test).
 
 

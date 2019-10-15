@@ -34,6 +34,7 @@ Week 3 (*10/14*)
 
 : Multifactor ANOVA, plotting/visualization, and permutation/bootstrapping
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_03_Lecture.slides.html)
     - Reading: Quinn & Keough chapter 9
 
 Week 4 (*10/21*)
