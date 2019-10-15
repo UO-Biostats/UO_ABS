@@ -20,7 +20,7 @@ read_pantheria <- function(dirname) {
     pantheria$Genus <- factor(pantheria$Genus)
     translations <- list(ActivityCycle = c("nocturnal", "crepuscular", "diurnal"),
                          Terrestriality = c("fossorial", "ground_dwelling"),
-                         TrophicLevel = c("carnivore", "herbivore", "omnivore"))
+                         TrophicLevel = c("herbivore", "omnivore", "carnivore"))
     for (col in names(pantheria)) {
         a <- pantheria[[col]]
         if (is.numeric(a)) {
