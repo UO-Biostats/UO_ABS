@@ -139,7 +139,21 @@ comparing price between neighbourhoods:
 anova(lm(price ~ neighbourhood, data=airbnb))
 ```
 
+## in class
 
+```{r in_class}
+
+true_F <- anova(lm(price ~ neighbourhood, data=airbnb))[["F value"]][1]
+
+# do this a lot of times:
+## DO NOT put the randomness here: fake_neighbourhood <- sample(airbnb$neighbourhood)
+fake_Fs <- replicate(1000, {
+    fake_neighbourhood <- sample(airbnb$neighbourhood)  # randomness must be here
+    anova(lm(price ~ fake_neighbourhood, data=airbnb))[["F value"]][1]
+   })
+hist(fake_Fs, xlim=range(fake_Fs, c(-1,1)*true_F), xlab="permuted F values")
+abline(v=true_F, col='red', lwd=2)
+```
 
 
 
