@@ -821,7 +821,8 @@ model.matrix(~ fertilizer + water, data=pumpkins)
 
 ------------
 
-```{r model_matrix3}
+```{r model_matrix3, echo=2}
+options(width=200)
 model.matrix(~ 0 + fertilizer * water, data=pumpkins)
 ```
 

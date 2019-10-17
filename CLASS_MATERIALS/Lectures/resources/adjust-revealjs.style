@@ -22,6 +22,8 @@ div.floatright { float: right; text-align: right; }
 
 img.finger, .reveal img.finger { vertical-align: text-top; border: none; }
 
+code { white-space: pre; }
+
 </style>
 
 

@@ -36,6 +36,7 @@ Week 3 (*10/14*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_03_Lecture.slides.html)
     - Reading: Quinn & Keough chapter 9
+    - [Homework 3](../CLASS_MATERIALS/Homeworks/HW3_F19.html) *(due 10/24)*
 
 Week 4 (*10/21*)
 
