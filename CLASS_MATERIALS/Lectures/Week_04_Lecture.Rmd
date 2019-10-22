@@ -313,9 +313,16 @@ TukeyHSD(aov(weight ~ fertilizer + water, data=pumpkins))
 
 ## Does the effect of fertilizer depend on water?
 
-```{r aov}
+```{r mlm}
 summary(aov(weight ~ fertilizer * water, data=pumpkins))
 ```
+
+-----------
+
+```{r aov}
+summary(lm(weight ~ fertilizer * water, data=pumpkins))
+```
+
 
 --------------
 
