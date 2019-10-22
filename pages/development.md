@@ -50,3 +50,28 @@ To do this,
 *Note:* If you want to switch back to `master` temporarily,
 this is as easy as doing `git checkout master`; having a look,
 and then `git checkout my_new_branch` to get back.
+
+# Rmarkdown
+
+The Rmarkdown slides can be knitted from Rstudio,
+but I don't do it that way.
+Here's how I do it:
+
+1. install [templater](https://github.com/petrelharp/templater), which is a small R package I wrote as a wrapper around `knitr` and `pandoc`
+
+    *Note:* what `knitr` does is it first evaluates code chunks and makes a `.md` file; then it calls `pandoc` to make the html.
+    
+2. to make a certain set of slides, run e.g. `make Week_03_Lecture.slides.html`. Running this will do these two things:
+```
+Rscript -e 'knitr::knit_patterns[["set"]](list( chunk.begin="^```+\\s*\\{[.]?(r[a-zA-Z]*.*)\\}\\s*$", chunk.end="^```+\\s*$", inline.code="`r +([^`]+)\\s*`")); templater::render_template("Week_03_Lecture.Rmd", output="Week_03_Lecture.md", change.rootdir=TRUE)'
+pandoc -o Week_03_Lecture.slides.html -t revealjs -V theme=simple -V slideNumber=true -V transition=none -H resources/adjust-revealjs.style --slide-level 2 --standalone  --self-contained -H .pandoc.macros.tex --mathjax=https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML  Week_03_Lecture.md
+```
+There is, for instance, some special CSS configuration to the slides in `resources/adjust-revealjs.style`.
+
+3. To run the `R` code in a console, to do for instance online examples, open R and then run:
+```
+library(templater)
+render_template("Week_03_Lecture.Rmd", envir=environment(), output="Week_03_Lecture.md")
+```
+This says to knit the Rmd document *in the current environment*, so all the variables are available, and output just the markdown file instead of going all the way to html.
+
