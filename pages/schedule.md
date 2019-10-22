@@ -32,7 +32,7 @@ Week 2 (*10/7*)
 
 Week 3 (*10/14*)
 
-: Multifactor ANOVA, plotting/visualization, and permutation/bootstrapping
+: Plotting/visualization, and permutation/bootstrapping
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_03_Lecture.slides.html)
     - Reading: Quinn & Keough chapter 9
@@ -40,13 +40,14 @@ Week 3 (*10/14*)
 
 Week 4 (*10/21*)
 
-: Multivariate regression, likelihood, model selection
+: Multivariate AVNOA, regression, least-squares likelihood
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_04_Lecture.slides.html)
     - Reading: Quinn & Keough chapter 6
 
 Week 5 (*10/28*)
 
-: Random effects and mixed models - a first look.
+: Model selection; random effects and mixed models - a first look.
 
     - Reading: Quinn & Keough chapter 13
 
