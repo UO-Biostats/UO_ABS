@@ -168,7 +168,58 @@ head( expand.grid(
 
 ## Exercise: simulation
 
-*demo*
+IN CLASS:
+
+```{r sim_datas}
+# true values for means
+mu <- 10  # pounds
+alpha <- c(high=5, medium=0, low=-5)
+beta <- c("no water"=-3, water=3)
+gamma <- c("low.no water" = 0,
+           "medium.no water" = 0,
+           "high.no water" = 0,
+           "low.water" = 0,
+           "medium.water" = -3,
+           "high.water" = -6)
+sigma <- 0.5
+
+pumpkins <- expand.grid(
+              fertilizer=c("low", "medium", "high"),
+              water=c("no water", "water"),
+              plot=1:4,
+              plant=1:5,
+              weight=NA)
+
+pumpkins$mean_weight <- (mu + alpha[as.character(pumpkins$fertilizer)]
+                         + beta[as.character(pumpkins$water)]
+                         + gamma[paste(as.character(pumpkins$fertilizer),
+                                       as.character(pumpkins$water), sep=".")])
+
+pumpkins$weight <- rnorm(nrow(pumpkins),
+                         mean=pumpkins$mean_weight,
+                         sd=sigma)
+
+```
+
+-------------
+
+IN CLASS:
+```{r check_sim}
+par(mar=c(4, 8, 1, 1)+.1)
+boxplot(weight ~ water * fertilizer, data=pumpkins, horizontal=TRUE, las=2, ylab='')
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Questions that (linear models and) ANOVA can answer
