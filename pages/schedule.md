@@ -40,7 +40,7 @@ Week 3 (*10/14*)
 
 Week 4 (*10/21*)
 
-: Multivariate AVNOA, regression, least-squares likelihood
+: Multivariate ANOVA, regression, least-squares likelihood
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_04_Lecture.slides.html)
     - Reading: Quinn & Keough chapter 6
