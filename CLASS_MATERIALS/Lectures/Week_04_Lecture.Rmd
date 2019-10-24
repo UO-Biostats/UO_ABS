@@ -345,6 +345,8 @@ including `plant` and `plot` in the analysis.
 Think about what *order* to do the comparison in.
 Make sure they are nested!
 
+Data: [data/pumpkins.tsv](data/pumpkins.tsv)
+
 # Formulas
 
 ## Anatomy of a formula
