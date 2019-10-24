@@ -2556,9 +2556,9 @@ F
 <h2>Exercise:</h2>
 <p>Make formulas that give you estimates of</p>
 <ol type="1">
-<li><p>A global mean (<span class="math inline">\(\mu\)</span>), two fertilizer effects (<span class="math inline">\(\alpha_\text{medium}\)</span> and <span class="math inline">\(\alpha_\text{high}\)</span>), and one water effect (<span class="math inline">\(\gamma_\text{water}\)</span>).</p></li>
-<li><p>Three fertilizer effects (<span class="math inline">\(\alpha_\text{low}\)</span>, <span class="math inline">\(\alpha_\text{medium}\)</span> and <span class="math inline">\(\alpha_\text{high}\)</span>), and one water effect (<span class="math inline">\(\gamma_\text{water}\)</span>).</p></li>
-<li><p>Two fertilizer effects (<span class="math inline">\(\alpha_\text{medium}\)</span> and <span class="math inline">\(\alpha_\text{high}\)</span>), and two water effect (<span class="math inline">\(\gamma_\text{no water}\)</span> and <span class="math inline">\(\gamma_\text{water}\)</span>).</p></li>
+<li><p>A global mean (<span class="math inline">\(\mu\)</span>), two fertilizer effects (<span class="math inline">\(\alpha_\text{medium}\)</span> and <span class="math inline">\(\alpha_\text{high}\)</span>), and one water effect (<span class="math inline">\(\beta\text{water}\)</span>).</p></li>
+<li><p>Three fertilizer effects (<span class="math inline">\(\alpha_\text{low}\)</span>, <span class="math inline">\(\alpha_\text{medium}\)</span> and <span class="math inline">\(\alpha_\text{high}\)</span>), and one water effect (<span class="math inline">\(\beta\text{water}\)</span>).</p></li>
+<li><p>Two fertilizer effects (<span class="math inline">\(\alpha_\text{medium}\)</span> and <span class="math inline">\(\alpha_\text{high}\)</span>), and two water effect (<span class="math inline">\(\beta\text{no water}\)</span> and <span class="math inline">\(\beta\text{water}\)</span>).</p></li>
 <li><p>A single mean for each of the six conditions (<span class="math inline">\(\gamma_\text{high, water}\)</span>, <span class="math inline">\(\gamma_\text{medium, water}\)</span>, <span class="math inline">\(\gamma_\text{low, water}\)</span>, <span class="math inline">\(\gamma_\text{high, no water}\)</span>, <span class="math inline">\(\gamma_\text{medium, no water}\)</span>, <span class="math inline">\(\gamma_\text{low, no water}\)</span>).</p></li>
 </ol>
 </section><section id="example-1" class="slide level2">
@@ -2656,13 +2656,13 @@ Usage:
 \]</span> where <span class="math inline">\(\beta_0, \beta_1, \ldots, \beta_k\)</span> are the <em>parameters</em> of the linear model.</p>
 <div class="fragment">
 <p>Goal: find <span class="math inline">\(b_0, \ldots, b_k\)</span> to <em>best fit</em> the model: <span class="math display">\[
-    y_i = b_0 + b_1 x_{i1} + \cdots + \beta_k x_{ik} + e_i,
+    y_i = b_0 + b_1 x_{i1} + \cdots + b_k x_{ik} + e_i,
 \]</span> so that <span class="math inline">\(b_i\)</span> is an <em>estimate</em> of <span class="math inline">\(\beta_i\)</span> and <span class="math inline">\(e_i\)</span> is the <em>residual</em>, an estimate of <span class="math inline">\(\epsilon_i\)</span>.</p>
 </div>
 </section><section id="least-squares-fitting-of-a-linear-model" class="slide level2">
 <h2>Least-squares fitting of a linear model</h2>
 <p>Define the <em>predicted values</em>: <span class="math display">\[
-    \hat y_i = b_0 + b_1 x_{i1} + \cdots + \beta_k x_{ik},
+    \hat y_i = b_0 + b_1 x_{i1} + \cdots + b_k x_{ik},
 \]</span> and find <span class="math inline">\(b_0, \ldots, b_k\)</span> to minimize the <em>sum of squared residuals</em>, or <span class="math display">\[
     \sum_i \left(y_i - \hat y_i\right)^2 .
 \]</span></p>

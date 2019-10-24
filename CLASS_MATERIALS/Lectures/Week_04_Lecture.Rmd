@@ -480,13 +480,13 @@ For fine control of factors in linear models, either
 Make formulas that give you estimates of
 
 1. A global mean ($\mu$), two fertilizer effects ($\alpha_\text{medium}$ and $\alpha_\text{high}$),
-    and one water effect ($\gamma_\text{water}$).
+    and one water effect ($\beta\text{water}$).
 
 2. Three fertilizer effects ($\alpha_\text{low}$, $\alpha_\text{medium}$ and $\alpha_\text{high}$),
-    and one water effect ($\gamma_\text{water}$).
+    and one water effect ($\beta\text{water}$).
 
 3. Two fertilizer effects ($\alpha_\text{medium}$ and $\alpha_\text{high}$),
-    and two water effect ($\gamma_\text{no water}$ and $\gamma_\text{water}$).
+    and two water effect ($\beta\text{no water}$ and $\beta\text{water}$).
 
 4. A single mean for each of the six conditions 
    ($\gamma_\text{high, water}$, $\gamma_\text{medium, water}$, $\gamma_\text{low, water}$, 
@@ -619,7 +619,7 @@ where $\beta_0, \beta_1, \ldots, \beta_k$ are the *parameters* of the linear mod
 
 Goal: find $b_0, \ldots, b_k$ to *best fit* the model:
 $$
-    y_i = b_0 + b_1 x_{i1} + \cdots + \beta_k x_{ik} + e_i,
+    y_i = b_0 + b_1 x_{i1} + \cdots + b_k x_{ik} + e_i,
 $$
 so that $b_i$ is an *estimate* of $\beta_i$ and $e_i$ is the *residual*, an estimate of $\epsilon_i$.
 
@@ -627,7 +627,7 @@ so that $b_i$ is an *estimate* of $\beta_i$ and $e_i$ is the *residual*, an esti
 
 Define the *predicted values*:
 $$
-    \hat y_i = b_0 + b_1 x_{i1} + \cdots + \beta_k x_{ik},
+    \hat y_i = b_0 + b_1 x_{i1} + \cdots + b_k x_{ik},
 $$
 and find $b_0, \ldots, b_k$ to minimize the *sum of squared residuals*, or
 $$
