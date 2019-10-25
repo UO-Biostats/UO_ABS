@@ -44,6 +44,7 @@ Week 4 (*10/21*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_04_Lecture.slides.html)
     - Reading: Quinn & Keough chapter 6
+    - [Homework 4](../CLASS_MATERIALS/Homeworks/HW4_F19.html) *(due 10/31)*
 
 Week 5 (*10/28*)
 
