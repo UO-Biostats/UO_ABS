@@ -31,6 +31,9 @@ galton <- read.table("../Datasets/galton/galton-all.tsv", header=TRUE)
 head(galton)
 ```
 
+## in class
+
+Here is [the source](height_demo.Rmd) and [the results](height_demo.html).
 
 # Random effects
 

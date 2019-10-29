@@ -1,0 +1,111 @@
+---
+title: "Heights"
+author: "Peter Ralph"
+date: "October 29, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Let's recreate Galton's classic analysis:
+midparent height, adjusted for gender, is a good predictor of child height.
+*(How good?)*
+
+Link to [the data](../Datasets/galton/galton-all.tsv).
+```{r read_galton}
+galton <- read.table("../Datasets/galton/galton-all.tsv", header=TRUE)
+head(galton)
+```
+
+## Look at the data
+
+Here are the heights of children:
+```{r look}
+hist(galton$height, breaks=30, xlab='height', main='')
+```
+
+Now let's look at heights by sex:
+```{r more_look}
+layout((1:2))
+hist(galton$height[galton$gender=="M"], breaks=20, xlab='height', main='', xlim=range(galton$height))
+hist(galton$height[galton$gender=="F"], breaks=20, xlab='height', main='', xlim=range(galton$height))
+```
+
+Also, we should look at parent and child height relationships:
+red is male, black is female; circles are fathers, squares are mothers.
+```{r moremorelook}
+plot(father ~ height, data=galton, col=gender, ylim=range(father, mother), ylab='parent heights', pch=20, xlab='child height', asp=1)
+points(mother ~ height, data=galton, col=gender, pch=22)
+```
+
+Is there a correlation between parents' heights?
+```{r parent_reg}
+plot(jitter(father) ~ jitter(mother), data=galton, asp=1, col=adjustcolor("black", 0.5), pch=20)
+```
+Not obviously.
+
+## Adjust by gender
+
+To adjust by sex, we need to, separately for parents and children,
+
+- compute the mean of male and female height
+- subtract the difference from males
+
+```{r adjust}
+parent_means <- c('father' = mean(tapply(galton$father, galton$family, unique)),
+                  'mother' = mean(tapply(galton$mother, galton$family, unique)))
+child_means <- c('F' = mean(subset(galton, gender=="F")$height),
+                 'M' = mean(subset(galton, gender=="M")$height))
+galton$adj_father <- galton$father + diff(parent_means)
+galton$adj_height <- galton$height - ifelse(galton$gender == "F", 0, abs(diff(child_means)))
+```
+
+Now the histograms line up:
+```{r new_hist}
+layout((1:2))
+hist(galton$adj_height[galton$gender=="M"], breaks=20, xlab='height', main='', xlim=range(galton$adj_height))
+hist(galton$adj_height[galton$gender=="F"], breaks=20, xlab='height', main='', xlim=range(galton$adj_height))
+```
+
+## Compute midparent height
+
+The midparent height is the average of the *adjusted* father height and the mother height.
+```{r add_midparent}
+galton$midparent <- (galton$adj_father + galton$mother)/2
+```
+
+## Fit a model
+
+
+```{r do_lm}
+the_lm <- lm(adj_height ~ midparent, data=galton)
+summary(the_lm)
+```
+
+Diagnostics: first, residuals versus fitted:
+```{r rf}
+plot(fitted(the_lm), resid(the_lm), xlab='fitted values',
+     ylab='residuals')
+abline(h=0, lty=3)
+```
+
+Look at residual distribution:
+```{r qqplot}
+qqnorm(resid(the_lm))
+qqline(resid(the_lm))
+```
+
+## Look for residual signal
+
+It doesn't look like we're missing anything obvious:
+```{r big_lm}
+summary(lm(adj_height ~ midparent + I(father - mother) + kids + gender, data=galton))
+anova(lm(adj_height ~ midparent, data=galton),
+      lm(adj_height ~ midparent + I(father - mother) + kids + gender, data=galton))
+
+```
+
+
+
