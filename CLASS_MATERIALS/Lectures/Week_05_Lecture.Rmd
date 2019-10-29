@@ -132,6 +132,23 @@ alglm <- lmer(ALGAE ~ TREAT + (1|PATCH), data=andrew_data)
 summary(alglm)
 ```
 
+##
+
+```{r compare_lmer}
+anova(
+      lmer(ALGAE ~ TREAT + (1|PATCH), data=andrew_data),
+      lm(ALGAE ~ TREAT, data=andrew_data))
+```
+
+##
+
+```{r compare_lmer2}
+anova(
+      lmer(ALGAE ~ TREAT + (1|PATCH), data=andrew_data),
+      lmer(ALGAE ~ (1|PATCH), data=andrew_data))
+```
+
+
 ## What *are* the random effects?
 
 ```{r ranef}
