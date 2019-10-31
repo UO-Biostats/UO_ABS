@@ -52,6 +52,7 @@ Week 5 (*10/28*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_05_Lecture.slides.html)
     - Reading: Quinn & Keough chapter 13
+    - [Homework 5](../CLASS_MATERIALS/Homeworks/HW5_F19.html) *(due 11/7)*
 
 Week 6 (*11/4*)
 
