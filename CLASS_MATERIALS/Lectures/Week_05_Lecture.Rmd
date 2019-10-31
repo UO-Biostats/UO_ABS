@@ -168,6 +168,64 @@ segments(x0=ses[,1], x1=ses[,2], y0=1:nrow(rfs))
 abline(v=0, col='red')
 ```
 
+# Notes on mixed models
+
+## The math is a lot harder.
+
+For simple linear regression (with *fixed effects*),
+the *log-likelihood function* is just the sum of the squared residuals.
+
+. . .
+
+But with a *mixed model*, the likelihood *averages* over the values of the random effects,
+which makes everything more difficult.
+
+## You sometimes have to worry about *convergence*.
+
+Since the math is harder,
+mixed-model-fitting functions like `lmer( )` have to use various sorts of *numerical optimization* methods
+to find the best-fitting parameters.
+
+. . .
+
+Sometimes, these may fail.
+
+. . .
+
+Notably, many use the [`REML`](https://en.wikipedia.org/wiki/Restricted_maximum_likelihood) approximation:
+```
+Usage:
+
+     lmer(formula, data = NULL, REML = TRUE, control = lmerControl(),
+          start = NULL, verbose = 0L, subset, weights, na.action,
+          offset, contrasts = NULL, devFunOnly = FALSE, ...)
+```
+
+## Hypothesis testing?
+
+With fixed effects, for a factor `f`, the comparison
+```
+anova( lm(y ~ f - 1), lm(y ~ 1) )
+```
+uses the model that
+$$ y_i = \beta_{f_i} + \epsilon_i $$
+to test against the null hypothesis that
+$$ H_0 : \beta_1 = \beta_2 = \cdots = \beta_m = 0. $$
+
+. . .
+
+With *random* effects,
+```
+anova( lm(y ~ (1|f) - 1), lm(y ~ 1) )
+```
+uses the model that
+$$\begin{aligned} 
+    y_i &= \beta_{f_i} + \epsilon_i   \\
+    \beta_a &\sim \Normal(0, \eta) 
+\end{aligned}$$
+to test against the null hypothesis that
+$$ H_0 : \eta = 0. $$
+
 
 # Back to the height data
 
@@ -176,47 +234,235 @@ abline(v=0, col='red')
 1. Add a *random effect* of `family` to the model.
 2. How big is the "family" effect?
 3. Assess significance by using `anova( )` to compare to a nested model.
-4. Sketch out how to do a permutation test to do the same thing.
 
+
+Link to [the data](../Datasets/galton/galton-all.tsv).
+```{r read_galton2}
+galton <- read.table("../Datasets/galton/galton-all.tsv", header=TRUE)
+```
 
 # Multiple comparisons
 
-## 14-dpf gnotobiotic stickleback experiment
+## A silly example
 
-[CVvsGF_RNAseq_Metadata.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv)
+Suppose 100 people did 100 well-executed experiments
+to ask if snails move faster while listening to metal than to mozart.
 
-- factor level assignments for individual fish
+. . .
 
-[CVvsGF_RNAseq_CPM.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv")
+How many would find a statistically significant difference at $p < 0.05$?
 
-- normalized RNA-Seq data (copies per million) for 84 experimental fish
-- only contains information for genes with reliable count data in at least some libraries
-- also includes annotation information for genes
-- genes especially subject to sex-biased expression should be on "groupXIX" from 6-12 Mb
+. . .
 
-Link to paper: https://academic.oup.com/gbe/article/9/3/504/3058199
+Would any find a large effect size?
+
+## A less silly example
+
+Suppose someone conducts a well-controlled study
+that records the salary and the mean daily consumption of 100 different foods
+in a bunch of people.
+
+. . .
+
+How many of the foods would be statistically significantly correlated with income at $p < 0.05$?
+
+. . .
+
+Would any have a large effect size?
+
+## The problem
+
+A $p$-value is
+
+> the probability of seeing something at least as extreme as what was seen in the data,
+> if the null hypothesis were true.
+
+. . .
+
+So, if the null hypothesis *is* true, then **by definition**,
+$p$-values are uniformly distributed between 0 and 1.
+
+## The Bonferroni Correction
+
+A cutoff of $p < 0.05$ ensures you should not wrongly reject the null hypothesis more than 5% of the time.
+
+. . .
+
+But, if you do $n$ different tests, all at once?
+
+. . .
+
+To keep the probability of not wrongly rejecting *any* of the $n$ null hypotheses,
+take a cutoff of $p < 0.05/n$.
+
+. . .
+
+To tolerate *some* errors, use the *false discovery rate*.
+
+## Example: Bonferroni
+
+```{r null}
+tp <- replicate(1000, t.test(rnorm(20))$p.value)
+layout(t(1:2))
+hist(tp, breaks=40, xlab='p-value')
+plot(sort(tp), xlim=c(1,100), ylim=c(0, 0.1), ylab='p-values, sorted')
+abline(h=c(0.05, 0.05/length(tp)), col=1:2)
+legend("topright", lty=1, col=1:2, legend=paste("p=", c(0.05, 0.05/length(tp))))
+```
+
+## Example: False Discovery Rate
+
+```{r null2}
+layout(t(1:2))
+plot(sort(tp), xlim=c(1,100), ylim=c(0, 1.0), ylab='p-values, sorted', main='p')
+abline(h=0.05, col=1:2)
+plot(sort(p.adjust(tp, method='fdr')), xlim=c(1,100), ylim=c(0, 1.0), ylab='FDR-adjusted p-values, sorted', main='5% FDR')
+abline(h=0.05, col=1:2)
+```
+
+
+
+# Many regressions
+
+## Gene expression levels
+
+From [*Host Genotype and Microbiota Contribute Asymmetrically to Transcriptional Variation in the Threespine Stickleback Gut*
+Clayton M. Small,  Kathryn Milligan-Myhre,  Susan Bassham,  Karen Guillemin, William A. Cresko.
+Genome Biology and Evolution, March 2017.](https://academic.oup.com/gbe/article/9/3/504/3058199)
+
+- Metadata: [CVvsGF_RNAseq_Metadata.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv)
+- RNA-Seq: [CVvsGF_RNAseq_CPM.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv")
 
 ## Study design:
 
 ![study_design](../Datasets/stickleback_GFvsCV_RNAseq/study_design.png)
 
 
-##
+## The data
 
-```{r stickleback, cache=TRUE}
+```{r parse_data, cache=TRUE, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim}
 fish <- read.table("../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv", header=TRUE, sep='\t')
 tmp <- read.table("../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv", header=TRUE, sep='\t', stringsAsFactors=FALSE, check.names=FALSE)
 genes <- tmp[,1:5]
 expression <- as.matrix(tmp[,6:ncol(tmp)])
 # sanity check
 stopifnot(all(match(colnames(expression), fish$Individual) == 1:nrow(fish)))
-
-expr <- sweep(expression, 1, rowMedians(expression), "/")
-
-pop_coefs <- apply(expr, 1, function (x) coef(lm(x ~ Population, data=fish)))
-all_coefs <- apply(expr, 1, function (x) coef(lm(x ~ Population + Treatment + Sex, data=fish)))
-
-# genes: pitx1, bmp6, tsh-beta-2
-# chromosome 19!
-
 ```
+
+There are `r nrow(genes)` genes whose expression is measured in `r nrow(fish)` fish.
+
+```{r plot_data, echo=FALSE}
+plot(rowMedians(expression), rowMads(expression), log='xy',
+     xlab='median expression', ylab='MAD expression')
+```
+
+## Normalize
+
+To put coefficients on the same scale:
+
+```{r parse_data2}
+expr <- sweep(expression, 1, rowMeans(expression), "/")
+```
+```{r plotdata2, echo=FALSE}
+plot(rowMedians(expr), rowMads(expr), log='xy',
+     xlab='median normalized expression', ylab='MAD normalized expression')
+```
+
+##
+
+```{r matplot, fig.width=3*fig.dim, fig.height=1.5*fig.dim, warning=FALSE}
+matplot(expr[1:1000,], pch=20, log='y', xlab='gene', ylab='normalized expression')
+```
+
+## 
+
+Fit *lots* of models:
+```{r stickleback, cache=TRUE, dependson="parse_data"}
+pop_lms <- apply(expr, 1, function (x) (lm(x ~ Population, data=fish)))
+all_lms <- apply(expr, 1, function (x) (lm(x ~ Population + Treatment + Sex, data=fish)))
+anovas <- mapply(anova, pop_lms, all_lms, SIMPLIFY=FALSE)
+```
+and extract coefficients, $p$-values
+```{r pvals, cache=TRUE, dependson="stickleback"}
+pop_coefs <- sapply(pop_lms, coef)
+all_coefs <- sapply(all_lms, coef)
+pvals <- sapply(lapply(anovas, "[[", "Pr(>F)"), "[", 2)
+```
+
+## The $p$-values
+
+... for an ANOVA comparing
+```
+    gene expression ~ Population
+    gene expression ~ Population + Treatment + Sex
+```
+
+```{r show_pvals}
+hist(pvals, breaks=500, xlab='p-values')
+```
+
+##
+
+Coefficents, with $p < 0.05$ in red:
+```{r signif, fig.width=2*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+pairs(t(all_coefs[2:4,]), pch=20, col=ifelse(pvals < 0.05, 'red', adjustcolor('black',0.2)))
+```
+
+##
+
+Coefficents, with $p < 0.05/n$ in red:
+```{r signif2, fig.width=2*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+pairs(t(all_coefs[2:4,]), pch=20, col=ifelse(pvals < 0.05/length(pop_lms), 'red', adjustcolor('black',0.2)))
+```
+
+## The Bonferroni Bunch
+
+```{r which}
+subset(genes, pvals < 0.05/nrow(genes))
+```
+
+## The paper
+
+<div class=caption style="width: 150%; margin-left: -25%; font-size: 90%;">
+
+> We limited differential expression analysis to only those genes represented
+> by at least two reads per million mapped (“copies per million,” CPM) in at
+> least 12 of the 84 libraries (see supplementary fig. S1, Supplementary
+> Material online). We normalized read counts for these 15,847 genes using TMM
+> normalization (Robinson and Oshlack 2010) as implemented by the
+> calcNormFactors function of the R/Bioconductor package edgeR (Robinson et al.
+> 2010). In order to perform gene-wise differential expression analyses in a
+> general linear model framework (Law et al. 2014), we supplied the TMM
+> normalization factors to the voom function of the R/Bioconductor package
+> limma (Ritchie et al. 2015), which generated appropriately weighted log2CPM
+> expression values for all observations. We then fit a linear model for each
+> gene including the fixed effects of factor levels for host population, host
+> family (nested within host population), sex, and microbiota treatment using
+> the limma lmFit function. We did not include a library “batch” effect in the
+> model because initial nMDS ordination did not suggest batch as a major source
+> of transcriptional variation, and our stratified assignment of samples to
+> batches controlled for any confounding effect of batch with respect to other
+> factors of interest. To account for variation between replicate flasks we
+> incorporated flask as a random effect in the model using the limma
+> duplicateCorrelation function. Each hypothesis of interest was tested, for
+> each gene, using one or more contrasts via moderated t-tests applied by the
+> limma function eBayes. To evaluate the effect of our microbiota treatment we
+> performed a within-OC contrast, a within-FW contrast, and an overall
+> contrast. Genes expressed differentially in any of these three contrasts were
+> interpreted as being associated with the presence of microbes. We performed a
+> single contrast to test for an overall effect of host population, and a
+> single contrast to test for an interaction between host population and
+> microbiota, both of these accounting for family differences nested within
+> population. Finally, we performed contrasts to test for an effect of sex and
+> a sex-by-microbiota interaction. For each of these seven contrasts, we
+> controlled the false discovery rate (FDR) at 0.1 using the approach of
+> Benjamini and Hochberg (1995), as implemented by the limma topTable function.
+
+</div>
+
+# Next week
+
+##
+
+We're starting on **Kruschke**,
+*Doing Bayesian Data Analysis*.
