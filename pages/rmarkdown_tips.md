@@ -10,9 +10,9 @@ Below are a few tips on how to keep the homework reports looking clean.
 
 * **Minimize R output:** Usually you shouldn't include particular R outputs in your final version of homeworks. You should for sure look at and use the output for yourself, but you can just refer to the important results *in-line* when writing your analyses. 
 
-* **Use inline code chunks:** To reference previously computed statistics outside your code chunks, use inline code chunks. The syntax is like: `the p-value was \`r test$p.val\`.`. You can tinker with the round() or formatC() functions to deal with rounding and formatting the numerical value.
+* **Use inline code chunks:** To reference previously computed statistics outside your code chunks, use inline code chunks. The syntax is like: ``the p-value was `r test$p.val`.``. You can tinker with the round() or formatC() functions to deal with rounding and formatting the numerical value.
 
-* **Format code:** You can also use single back ticks (`\` \``) to reformat a word to look like code. This is mostly for aesthetic purposes, but if I want to tell the reader I'm using the R function, say, Anova, then writing "we will be utilizing the `Anova` function to..." and it will stand out more.
+* **Format code:** You can also use single back ticks (`` ` ` ``) to reformat a word to look like code. This is mostly for aesthetic purposes, but if I want to tell the reader I'm using the R function, say, Anova, then writing "we will be utilizing the `Anova` function to..." and it will stand out more.
 
 * **Nice tables:** When presenting statistics in a table, try to avoid supplying just the R output. Remember, you are presenting this information to someone that can read statistics, but is not familiar with R. Look into table making packages such as kableExtra.
 
