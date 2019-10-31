@@ -241,6 +241,28 @@ Link to [the data](../Datasets/galton/galton-all.tsv).
 galton <- read.table("../Datasets/galton/galton-all.tsv", header=TRUE)
 ```
 
+## in class
+
+```{r anovait}
+anova(lmer(height ~ gender + mother + father + (1|family), data=galton),
+      lm(height ~ gender + mother + father, data=galton))
+```
+
+## in class
+
+```{r do_it}
+mixed <- lmer(height ~ gender + mother + father + (1|family), data=galton)
+rfs <- ranef(mixed)$family
+rord <- rank(rfs)
+ses <- rfs[,1] + outer(sqrt(as.vector(attr(rfs, "postVar"))), c(-2, 2), "*")
+plot(rfs[,1], rord, xlim=range(ses), ylab='',
+     xlab='estimated family effect')
+segments(x0=ses[,1], x1=ses[,2], y0=rord)
+abline(v=0, col='red')
+legend("topleft", pch=c(1, NA), lty=c(NA, 1),
+       legend=c("estimate", "conf int"))
+```
+
 # Multiple comparisons
 
 ## A silly example
@@ -292,7 +314,8 @@ But, if you do $n$ different tests, all at once?
 
 . . .
 
-To keep the probability of not wrongly rejecting *any* of the $n$ null hypotheses,
+To keep the probability of not wrongly rejecting *any* of the $n$ null hypotheses
+to 5%,
 take a cutoff of $p < 0.05/n$.
 
 . . .
