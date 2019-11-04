@@ -1,7 +1,7 @@
 ---
 title: "Random effects, and mixed models"
 author: "Peter Ralph"
-date: "22 October -- Advanced Biological Statistics"
+date: "29 October -- Advanced Biological Statistics"
 ---
 
 
