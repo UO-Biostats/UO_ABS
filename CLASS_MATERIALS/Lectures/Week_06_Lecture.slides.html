@@ -1802,7 +1802,23 @@ transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985); }
 </ul>
 </div>
 </section></section>
-<section><section id="breaking-it-down-with-more-coins" class="title-slide slide level1"><h1>Breaking it down with more coins</h1></section><section id="section" class="slide level2">
+<section><section id="section" class="title-slide slide level1"><h1></h1></section><section id="bayes-rule-for-coins-in-class" class="slide level2">
+<h2>Bayes’ rule: for coins (in class)</h2>
+<p>A consequence is</p>
+<p><span class="math display">\[\P\{B \given A\} = \frac{\P\{B\} \P\{A \given B\}}{ \P\{A\} } .\]</span></p>
+<div class="fragment">
+<p>In our coin example</p>
+<ul>
+<li class="fragment"><span class="math inline">\(B\)</span>: possible model (<em>I have the 75% coin</em>)</li>
+<li class="fragment"><span class="math inline">\(A\)</span>: data (<em>6 Heads out of 10 flips</em>)</li>
+<li class="fragment"><span class="math inline">\(\P\{B\}\)</span>: prior weight on model <span class="math inline">\(B\)</span> (<em>how likely I think it is I got the 75% coin</em>)</li>
+<li class="fragment"><span class="math inline">\(\P\{A \given B\}\)</span>: likelihood of data under <span class="math inline">\(B\)</span> (<em>chance of getting 6 H with 10 flips with the 75% coin</em>)</li>
+<li class="fragment"><span class="math inline">\(\P\{B\} \P\{A \given B\}\)</span>: posterior weight on <span class="math inline">\(B\)</span> (<em>combined probabilityof getting 75% coin and then getting 6 H out of 10 flips</em>)</li>
+<li class="fragment"><span class="math inline">\(\P\{A\}\)</span>: total sum of posterior weights (<em>the sum of the last thing over all possible coins</em>)</li>
+</ul>
+</div>
+</section></section>
+<section><section id="breaking-it-down-with-more-coins" class="title-slide slide level1"><h1>Breaking it down with more coins</h1></section><section id="section-1" class="slide level2">
 <h2></h2>
 <p>Suppose instead I had 9 coins, with probabilities 10%, 20%, …, 90%; as before I flipped one 10 times and got 6 heads. For each <span class="math inline">\(\theta\)</span> in <span class="math inline">\(0.1, 0.2, \ldots, 0.8, 0.9,\)</span> find <span class="math display">\[\begin{aligned}
     \P\{\text{ coin has prob $\theta$ } \given \text{ 6 H in 10 flips } \} .
