@@ -107,7 +107,7 @@ In "Bayesian statistics":
 > - $\P\{B\} \P\{A \given B\}$: posterior weight on $B$
 > - $\P\{A\}$: total sum of posterior weights
 
-#
+
 ## Bayes' rule: for coins (in class)
 
 A consequence is
@@ -118,12 +118,12 @@ $$\P\{B \given A\} = \frac{\P\{B\} \P\{A \given B\}}{ \P\{A\} } .$$
 
 In our coin example
 
-> - $B$: possible model (*I have the 75% coin*)
-> - $A$: data (*6 Heads out of 10 flips*)
-> - $\P\{B\}$: prior weight on model $B$  (*how likely I think it is I got the 75% coin*)
-> - $\P\{A \given B\}$: likelihood of data under $B$ (*chance of getting 6 H with 10 flips with the 75% coin*)
-> - $\P\{B\} \P\{A \given B\}$: posterior weight on $B$ (*combined probabilityof getting 75% coin and then getting 6 H out of 10 flips*)
-> - $\P\{A\}$: total sum of posterior weights (*the sum of the last thing over all possible coins*)
+- $B$: possible model (*I have the 75% coin*)
+- $A$: data (*6 Heads out of 10 flips*)
+- $\P\{B\}$: prior weight on model $B$  (*how likely I think it is I got the 75% coin*)
+- $\P\{A \given B\}$: likelihood of data under $B$ (*chance of getting 6 H with 10 flips with the 75% coin*)
+- $\P\{B\} \P\{A \given B\}$: posterior weight on $B$ (*combined probabilityof getting 75% coin and then getting 6 H out of 10 flips*)
+- $\P\{A\}$: total sum of posterior weights (*the sum of the last thing over all possible coins*)
 
 
 
