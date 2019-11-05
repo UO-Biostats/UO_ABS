@@ -58,6 +58,7 @@ Week 6 (*11/4*)
 
 : Bayesian statistics - prior distributions and uncertainty - using [Stan](https://mc-stan.org))
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_06_Lecture.slides.html)
     - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
 
 Week 7 (*11/11*)
