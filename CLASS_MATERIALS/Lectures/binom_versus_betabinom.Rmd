@@ -1,0 +1,26 @@
+---
+title: "binom_versus_betabinom.Rmd"
+author: "Peter Ralph"
+date: "November 7, 2019"
+output: html_document
+---
+
+
+1. Pick a value of $\theta$ at random from $\Beta(3,1)$.
+   Flip one thousand $\theta$-coins, 500 times each.
+
+```{r one_theta}
+theta <- rbeta(1, 3, 1)
+flips <- rbinom(1000, size=500, prob=theta)
+```
+
+
+
+2. Pick one thousand random $\theta_i \sim \Beta(3,1)$ values.
+   Flip one thousand coins, one for each $\theta_i$, 500 times each.
+
+```{r many_theta}
+many_theta <- rbeta(1000, 3, 1)
+many_theta_flips <- rbinom(1000, size=500, prob=many_theta)
+```
+
