@@ -1,0 +1,714 @@
+---
+title: "Adding levels of randomness"
+author: "Peter Ralph"
+date: "12 November 2019 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+```
+
+## Outline
+
+1. Hierarchical coins
+
+2. Introduction to MCMC with Stan
+
+3. Sharing power, and shrinkage
+
+4. Baseball
+
+
+# Hierarchical coins
+
+## Motivating problem: more coins
+
+Suppose now we have data from $n$ different coins from the same source.
+We don't assume they have the *same* $\theta$,
+but don't know what its distribution is,
+so try to *learn* it.
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+**Goal:** find the posterior distribution of $\alpha$, $\beta$.
+
+. . .
+
+**Problem:** we don't have a nice mathematical expression for this posterior distribution.
+
+
+# Markov Chain Monte Carlo
+
+## When you can't do the integrals: MCMC
+
+**Goal:** 
+Given:
+
+- a model with parameters $\theta$,
+- a prior distribution $p(\theta)$ on $\theta$, and
+- data, $D$,
+
+
+"find"/ask questions of the posterior distribution on $\theta$,
+
+$$\begin{aligned}
+    p(\theta \given D) = \frac{ p(D \given \theta) p(\theta) }{ p(D) } .
+\end{aligned}$$
+
+. . .
+
+**Problem:** usually we can't write down an expression for this
+(because of the "$p(D)$").
+
+. . .
+
+**Solution:**
+we'll make up a way to *draw random samples* from it.
+
+-------------
+
+**Toy example:** 
+
+*(from beta-binomial coin example)*
+
+Do we think that $\theta < 0.5$?
+
+*(before:)* 
+```r
+pbeta(0.5, post_a, post_b)
+```
+
+*(now:)* 
+```r
+mean(rbeta(1e6, post_a, post_b) < 0.5)
+```
+
+
+## How? Markov chain Monte Carlo!
+
+i.e., "random-walk-based stochastic integration"
+
+
+**Example:**
+Gibbs sampling for uniform distribution on a region.
+*(picture)*
+
+
+## Overview of MCMC
+
+Produces a random sequence of samples $\theta_1, \theta_2, \ldots, \theta_N$.
+
+0. Begin somewhere (at $\theta_1$).
+
+At each step, starting at $\theta_k$:
+
+1. **Propose** a new location (nearby?): $\theta_k'$
+
+2. Decide whether to **accept** it.
+
+    - if so: set $\theta_{k+1} \leftarrow \theta_k'$
+    - if not: set $\theta_{k+1} \leftarrow \theta_k$
+
+3. Set $k \leftarrow k+1$; if $k=N$ then stop.
+
+. . .
+
+The magic comes from doing *proposals* and *acceptance* 
+so that the $\theta$'s are samples from the distribution we want.
+
+## Key concepts
+
+- Rules are chosen so that $p(\theta \given D)$ is the *stationary* distribution
+  (long-run average!) of the random walk (the "Markov chain").
+
+- The chain must *mix* fast enough so the distribution of visited states
+  *converges* to $p(\theta \given D)$.
+
+- Because of *autocorrelation*, $(\theta_1, \theta_2, \ldots, \theta_N)$ 
+  are not $N$ independent samples:
+  they are roughly equivalent to $N_\text{eff} < N$ independent samples.
+
+- For better *mixing*, acceptance probabilities should not be too high or too low.
+
+- Starting *several chains* far apart can help diagnose failure to mix:
+  Gelman's $r$ quantifies how different they are.
+
+
+## On your feet
+
+Three people, with randomness provided by others:
+
+1. Pick a random $\{N,S,E,W\}$.
+
+2. Take a step in that direction,
+
+    * *unless* you'd run into a wall or a table.
+
+. . .
+
+**Question:** What distribution will this sample from?
+
+. . .
+
+Do this for 10 iterations. Have the *chains mixed*?
+
+
+-------------------
+
+
+**Now:**
+
+1. Pick a random $\{N,S,E,W\}$.
+
+2. Take a $1+\Poisson(5)$ number of steps in that direction,
+
+    * *unless* you'd run into a wall or a table.
+
+. . .
+
+Does it mix faster?
+
+. . .
+
+Would $1 + \Poisson(50)$ steps be better?
+
+
+## How it works
+
+Imagine the walkers are on a hill, and:
+
+1. Pick a random $\{N,S,E,W\}$.
+
+2. If 
+
+    * the step is *uphill*, then take it.
+    * the step is *downhill*, then flip a $p$-coin;
+      if you get Heads, stay were you are.
+
+
+What would *this* do?
+
+. . .
+
+Thanks to *Metropolis-Hastings*,
+if "elevation" is $p(\theta \given D)$, 
+then setting $p = p(\theta' \given D) / p(\theta \given D)$
+makes the stationary distribution $p(\theta \given D)$. 
+
+
+
+# MC Stan
+
+## "Quick and easy" MCMC: Stan
+
+![Stanislaw Ulam](images/stan.jpeg){height=10em}
+
+
+## The skeletal Stan program
+
+```
+data {
+    // stuff you input
+}
+transformed data {
+    // stuff that's calculated from the data (just once, at the start)
+}
+parameters {
+    // stuff you want to learn the posterior distribution of
+}
+transformed parameters {
+    // stuff that's calculated from the parameters (at every step)
+}
+model {
+    // the action!
+}
+generated quantities {
+    // stuff you want computed also along the way
+}
+```
+
+. . .
+
+How to do everything: see [the user's manual](http://mc-stan.org/users/documentation/index.html).
+
+
+# Beta-Binomial with Stan
+
+## From before:
+
+We've flipped a coin 10 times and got 6 Heads.
+We think the coin is close to fair, so put a $\Beta(20,20)$ prior on
+it's probability of heads,
+and want the posterior distribution.
+
+$$\begin{aligned}
+    Z &\sim \Binom(10, \theta) \\
+    \theta &\sim \Beta(20, 20) 
+\end{aligned}$$
+Sample from $$\theta \given Z = 6$$
+
+-------------
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z &\sim \Binom(10, \theta) \\
+    \theta &\sim \Beta(20, 20) 
+\end{aligned}$$
+
+Sample from $$\theta \given Z = 6$$
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    int N;   // number of flips
+    int Z;   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta;
+}
+model {
+    Z ~ binomial(N, theta);
+    theta ~ beta(20, 20);
+}
+```
+
+:::
+::::::::::::::
+
+
+## Running the MCMC: rstan
+
+```{r stan_setup, include=FALSE}
+library(rstan)
+stan_block <- "
+data {
+    int N;   // number of flips
+    int Z;   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta;
+}
+model {
+    Z ~ binomial(N, theta);
+    theta ~ beta(20, 20);
+}
+"
+```
+
+
+```{r run_rstan, cache=TRUE}
+library(rstan)
+fit <- stan(model_code=stan_block,  # stan block from above
+            data=list(N=10, Z=6),
+            chains=3, iter=10000)
+
+```
+
+---------------
+
+`lp__` is the log posterior density.
+Note `n_eff`.
+
+```{r print_rstan}
+print(fit)
+```
+
+---------------
+
+Fuzzy caterpillars are good.
+
+```{r trace_rstan}
+stan_trace(fit)
+```
+
+---------------
+
+Stan uses ggplot2.
+
+```{r plot_rstan}
+stan_hist(fit, bins=20) + xlim(0,1)
+```
+
+---------------
+
+What's the posterior probability that $\theta < 0.5$?
+
+```{r results_rstan}
+samples <- extract(fit)
+mean(samples$theta < 0.5)
+
+# compare to analytic solution
+pbeta(0.5, shape1=10+6, shape2=10+4)
+```
+
+
+# Hierarchical Coins
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    // the data (input)
+}
+parameters {
+    // the parameters (output)
+}
+model {
+    // how they are related
+}
+```
+
+:::
+::::::::::::::
+
+-----------------------
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // the parameters (output)
+}
+model {
+    // how they are related
+}
+```
+
+:::
+::::::::::::::
+
+-----------------------
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta[n];
+    real<lower=0,upper=100> alpha;
+    real<lower=0,upper=100> beta;
+}
+model {
+    // how they are related
+}
+```
+
+:::
+::::::::::::::
+
+-----------------------
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta[n];
+    real<lower=0, upper=100> alpha;
+    real<lower=0, upper=100> beta;
+}
+model {
+    Z ~ binomial(N, theta);
+    theta ~ beta(alpha, beta);
+    // uniform priors "go without saying"
+    // alpha ~ uniform(0, 100);
+    // beta ~ uniform(0, 100);
+}
+```
+
+:::
+::::::::::::::
+
+
+## Your turn
+
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+Data:
+```
+set.seed(23)
+ncoins <- 100
+true_theta <- rbeta(ncoins, 20, 50)
+N <- rep(50, ncoins)
+Z <- rbinom(ncoins, size=N, prob=true_theta)
+```
+
+Find the posterior distribution on `alpha` and `beta`:
+check convergence with `print()` and `stan_trace()`,
+then plot using `stan_hist()` and/or `stan_scat()`..
+
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta[n];
+    real<lower=0,upper=100> alpha;
+    real<lower=0,upper=100> beta;
+}
+model {
+    Z ~ binomial(N, theta);
+    theta ~ beta(alpha, beta);
+    // uniform priors 'go without saying'
+    // alpha ~ uniform(0, 100);
+    // beta ~ uniform(0, 100);
+}
+```
+
+:::
+::::::::::::::
+
+
+
+# Baseball
+
+## Baseball
+
+We have [a dataset](BattingAverage.csv) of batting averages of baseball players,
+having
+
+1. name
+2. position
+3. number of at bats
+4. number of hits
+
+
+```{r basedata}
+batting <- read.csv("BattingAverage.csv", header=TRUE)
+head(batting)
+```
+
+------------------------
+
+The *overall* batting average of the `r nrow(batting)` players is `r sum(batting$Hits)/sum(batting$AtBats)`.
+
+Here is the average by position.
+```{r by_pos}
+batting %>% group_by(PriPos) %>% 
+    summarise(num=n(), BatAvg=sum(Hits)/sum(AtBats)) %>% 
+    select(PriPos, num, BatAvg)
+```
+
+## Questions?
+
+1. What's the overall batting average?
+
+2. Do some positions tend to be better batters?
+
+3. How much variation is there?
+
+
+## Everyone is the same
+
+```{r start, cache=TRUE}
+first_model <- "
+data {
+    int N;
+    int hits[N];
+    int at_bats[N];
+}
+parameters {
+    real<lower=0, upper=1> theta;
+}
+model {
+    hits ~ binomial(at_bats, theta);
+    theta ~ beta(1, 1);
+} "
+first_fit <- stan(model_code=first_model, chains=3, iter=1000,
+                  data=list(N=nrow(batting),
+                            hits=batting$Hits,
+                            at_bats=batting$AtBats))
+```
+
+-----------------
+
+```{r start_res}
+stan_hist(first_fit, bins=20)
+```
+
+## Every pitcher is the same
+
+```{r pos_model, cache=TRUE}
+pos_model <- "
+data {
+    int N;
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+}
+parameters {
+    real<lower=0, upper=1> theta[npos];
+}
+model {
+    real theta_vec[N];
+    for (k in 1:N) {
+        theta_vec[k] = theta[position[k]];
+    }
+    hits ~ binomial(at_bats, theta_vec);
+    theta ~ beta(1, 1);
+} "
+pos_fit <- stan(model_code=pos_model, chains=3, iter=1000,
+                  data=list(N=nrow(batting),
+                            hits=batting$Hits,
+                            at_bats=batting$AtBats,
+                            npos=nlevels(batting$PriPos),
+                            position=as.numeric(batting$PriPos)))
+```
+
+-----------------
+
+```{r pos_res, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
+theta_samples <- extract(pos_fit)$theta
+layout(matrix(1:9, nrow=3))
+for (k in 1:ncol(theta_samples)) {
+    hist(theta_samples[,k], main=levels(batting$PriPos)[k], xlim=c(0.1, 0.3),
+         col=adjustcolor('red',0.6), xlab='batting avg', freq=FALSE)
+}
+```
+
+
+
+## Your turn : Every individual different.
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha_{p_i}, \beta_{p_i}) \\
+    \alpha_p &= \omega_p \kappa_p \\
+    \beta_p &= (1-\omega_p) \kappa_p \\
+    \omega_p &\sim \Beta(1, 1) \\
+    \kappa_p &\sim \Gam(0.1, 0.1) .
+\end{aligned}$$
+
+::::::::::::::
+::: {.column width="50%"}
+
+Variable types in Stan:
+```
+int x;       // an integer
+int y[10];   // ten integers
+real z;      // a number
+real z[2,5]; // a 2x5 array of numbers
+
+vector u[10];      // length 10 vector
+matrix v[10,10];   // 10x10 matrix
+vector[10] w[10];  // ten length 10 vectors
+```
+
+* don't forget the `;`
+* make sure R types match
+* read the error messages
+
+:::
+::::::::::::::
+
+# Wrap-up
+
+##
+
+- Stan uses MCMC to sample from the posterior
+
+- which lets you fit realistic models.
+
+
+

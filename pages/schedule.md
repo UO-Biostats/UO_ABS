@@ -66,6 +66,7 @@ Week 7 (*11/11*)
 
 : Bayesian hierarchical modeling - shrinkage, and sharing power
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_07_Lecture.slides.html)
     - Reading: Kruschke, chapters 9, 10
 
 Week 8 (*11/18*)
