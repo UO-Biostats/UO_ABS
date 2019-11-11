@@ -24,7 +24,7 @@ some (basic) programming.
 ## Instructors:
 
 - [Peter Ralph](https://pages.uoregon.edu/plr/), main instructor: plr@uoregon.edu
-    * office hours: Tuesday 12:30-2pm or by appointment, 270 Onyx Bridge
+    * office hours: Tuesday 2:30-4:00pm or by appointment, 270 Onyx
 
 - [Matt Lukac](https://ie2.uoregon.edu/people/lukac/), graduate teaching assistant: mlukac@uoregon.edu
     * office hours: Monday 12-1:30 in 275 Onyx Bridge, Wednesday 1-2:30 in PSC B009
