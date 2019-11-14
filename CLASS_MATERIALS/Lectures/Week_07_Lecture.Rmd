@@ -703,6 +703,42 @@ vector[10] w[10];  // ten length 10 vectors
 :::
 ::::::::::::::
 
+## In class
+
+```{r inclass}
+ind_model <- "
+data {
+    int N;
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+}
+parameters {
+    vector<lower=0, upper=1>[N] theta;
+    vector<lower=0, upper=1>[npos] mu;
+    vector<lower=0>[npos] kappa;
+}
+model {
+    vector[npos] alpha;
+    vector[N] alpha_vec;
+    vector[npos] beta;
+    vector[N] beta_vec;
+    alpha = mu .* kappa;
+    beta = (1-mu) .* kappa;
+    alpha_vec = alpha[position];
+    beta_vec = beta[position];
+    hits ~ binomial(at_bats, theta);
+    theta ~ beta(alpha_vec, beta_vec);
+    mu ~ beta(1, 1);
+    kappa ~ gamma(0.1, 0.1);
+} "
+# ind_model <- stan_model(model_code=ind_model)
+# ind_fit <- sampling(ind_model,
+#                    data=list(
+#                              ))
+```
+
 
 # Stochastic minute
 
