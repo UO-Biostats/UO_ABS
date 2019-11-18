@@ -68,13 +68,13 @@ Week 7 (*11/11*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_07_Lecture.slides.html)
     - Reading: Kruschke, chapters 9, 10
+    - [Homework 7](../CLASS_MATERIALS/Homeworks/HW7_F19.html) *(due 11/21)*
 
 Week 8 (*11/18*)
 
 : Logistic regression - simulation, posterior predictive sampling - robust regression
 
     - Reading: Kruschke, chapters 13, 21
-    - [Homework 7](../CLASS_MATERIALS/Homeworks/HW7_F19.html) *(due 11/21)*
 
 Week 9 (*11/25*)
 
