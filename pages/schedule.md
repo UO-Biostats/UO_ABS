@@ -74,6 +74,7 @@ Week 8 (*11/18*)
 
 : Logistic regression - simulation, posterior predictive sampling - robust regression
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_08_Lecture.slides.html)
     - Reading: Kruschke, chapters 13, 21
 
 Week 9 (*11/25*)
