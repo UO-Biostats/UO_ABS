@@ -64,4 +64,5 @@ description: useful links for Advanced Biological Statistics
 - List of [common probability distributions](https://en.wikipedia.org/wiki/Probability_distribution#Common_probability_distributions)
 - [ANOVA: a short intro using R](https://stat.ethz.ch/~meier/teaching/anova/) by Lukas Meier
 - Interactive plot of the [beta distribution](https://www.desmos.com/calculator/mnvwjlvnyj)
+- Interactive plot of the [gamma distribution](https://www.desmos.com/calculator/vk2tqrxpk5)
 
