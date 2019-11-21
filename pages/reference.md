@@ -66,4 +66,4 @@ description: useful links for Advanced Biological Statistics
 - [ANOVA: a short intro using R](https://stat.ethz.ch/~meier/teaching/anova/) by Lukas Meier
 - Interactive plot of the [beta distribution](https://www.desmos.com/calculator/mnvwjlvnyj)
 - Interactive plot of the [gamma distribution](https://www.desmos.com/calculator/vk2tqrxpk5)
-
+- Interactive plot of [Student's t-distribution](https://www.desmos.com/calculator/u1ftxqcsqd)
