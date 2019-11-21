@@ -10,6 +10,7 @@ description: useful links for Advanced Biological Statistics
 * A description of how to [use git](using-git.html) to get the course material.
 * Some notes on [how the slides are made from Rmd](development.html).
 * Tips on [writing Rmd reports](rmarkdown_tips.html)
+* Tips on [writing peer reviews](peer_reviews.html)
 
 ### Stan
 
