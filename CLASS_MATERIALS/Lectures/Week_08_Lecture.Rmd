@@ -455,7 +455,7 @@ curve(1/(1+exp(-x)), from=-5, to=5, main="logistic function")
 
 $$\begin{aligned}
     Z_i &\sim \Binom(N_i, \theta_i) \\
-    \theta_i &= \Beta(\mu_i \kappa_{p_i}, (1-\mu_i) \kappa_{p_i}) \\
+    \theta_i &\sim \Beta(\mu_i \kappa_{p_i}, (1-\mu_i) \kappa_{p_i}) \\
     \mu_i &= \logistic(\gamma_{p_i} + \alpha_h h_i + \alpha_w w_i) \\
     \kappa_p &\sim \Gam(0.1, 0.1) \\
     \gamma_{p} &\sim \Normal(0, \sigma_\gamma) \\
@@ -510,7 +510,7 @@ model {
 
 $$\begin{aligned}
     Z_i &\sim \Binom(N_i, \theta_i) \\
-    \theta_i &= \Beta(\mu_i \kappa_{p_i}, (1-\mu_i) \kappa_{p_i}) \\
+    \theta_i &\sim \Beta(\mu_i \kappa_{p_i}, (1-\mu_i) \kappa_{p_i}) \\
     \mu_i &= \logistic(\gamma_{p_i} + \alpha_h h_i + \alpha_w w_i) \\
     \kappa_p &\sim \Gam(0.1, 0.1) \\
     \gamma_{p} &\sim \Normal(0, 5) \\
