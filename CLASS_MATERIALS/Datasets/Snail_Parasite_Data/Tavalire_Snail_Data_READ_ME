@@ -1,0 +1,15 @@
+#READ ME FILE FOR: Tavalire_et_al_2016_snail_parasite_data.csv
+
+- The variables are as follows:
+  - Snail_ID: individual ID
+  - Strain: inbred line ID, putatively variable in infection resistance
+  - Inf_Dose: the number of parasites each snail was exposed to at the beginning of the experiment- 0 (control), 1, and 10
+  - Tray: block effect of housing for where each individual was kept
+  - Infected: whether or not individuals were infected
+  - Initial_Size_mm: the initial size of the snail, covariate for parasite production
+  - Weeks_to_first_shed: time in weeks to when the snail first produced parasites, could be used in time-to-event analysis
+  - Total_weeks_shed: the total number of weeks that parasites were produced; right censored at 30
+  - Total_Parasites: Total number of parasites produced in the first 30 weeks of the experiment
+  - Avg_Parasites_per_Shed: Total parasites/weeks shed
+  - Week_Died: Survival time in weeks, right censored at 30 weeks
+  
