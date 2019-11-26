@@ -81,6 +81,7 @@ Week 9 (*11/25*)
 
 : Robust multiple linear regression; scale mixtures; model selection with crossvalidation; introduction to Generalized Linear Models (GLM).
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_09_Lecture.slides.html)
     - Reading: Kruschke, chapters 15, 16, 17
 
 Week 10 (*12/2*)
