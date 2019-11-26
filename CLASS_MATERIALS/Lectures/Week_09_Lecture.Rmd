@@ -23,7 +23,7 @@ options(mc.cores = parallel::detectCores())
 
 To simulate from:
 $$\begin{aligned}
-    \mu_i &= b_0 + b_1 X_{i1} + \cdots + b_k X_{i1} \\
+    \mu_i &= b_0 + b_1 X_{i1} + \cdots + b_k X_{ik} \\
     Y_i &\sim \Normal(\mu_i, \sigma) .
 \end{aligned}$$
 
@@ -79,6 +79,15 @@ $$ (Xb)_i = \sum_{j=1}^k X_{ij} b_j . $$
 In Stan, matrix multiplication is `*`.
 
 
+# A note on impostor syndrome
+
+-------
+
+![](images/impostor_penguin.jpeg)
+
+-------
+
+![](images/neil_gaiman_impostor_syndrome.png)
 
 # Generalized Linear Models
 
@@ -237,7 +246,7 @@ parameters {
   real beta[2];
 }
 model {
-  Z ~ gamma(1, exp(- beta[1] * X - beta[2] * Y);
+  Z ~ gamma(1, exp(- beta[1] * X - beta[2] * Y));
 }
 ```
 
@@ -261,7 +270,24 @@ What is
 :::
 ::::::
 
+## in class
 
+```{r siminclass}
+N <- 100
+# Matrix of X, Y
+XY <- cbind(X=rnorm(N), 
+            Y=rnorm(N))
+beta <- c(2, -3)
+# Xbeta <- beta[1] * X + beta[2] * Y
+Xbeta <- XY %*% beta
+Z <- rgamma(N, shape=1, scale=exp(-Xbeta))
+
+gZ <- glm(Z ~ XY[,"X"] + XY[,"Y"], family=Gamma(link='log'))
+summary(gZ)
+
+plot(Xbeta, Z)
+
+```
 
 
 # Stochastic minute
@@ -464,6 +490,25 @@ $$\begin{aligned}
 -->
 
 ```
+data {
+    int N;
+    int counts[N];
+    vector[N] age;
+    vector[N] exposure;
+    int genotype[N];
+    int ngeno;
+}
+parameters {
+    real a[ngeno]; // intercepts
+    real b; // slope for age
+    real c[ngeno]; // slopes for exposure
+}
+model {
+    vector[N] y; // means
+    y = exp(a[genotype] + b .* age + c[genotype] .* exposure);
+    counts ~ poisson(y);
+    // implicitly flat priors
+}
 ```
 
 :::
