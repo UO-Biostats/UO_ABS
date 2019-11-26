@@ -101,7 +101,7 @@ In Stan, matrix multiplication is `*`.
 
   > *(connects input to output)*
 
-3. A link function, $\E[Y] = h(X\beta)$.
+3. A link function (usually, $h(\E[Y]) = X\beta$).
 
   > *(connects linear predictor to probability distribution)*
 
@@ -150,6 +150,27 @@ the Gamma family the links inverse, identity and log; the poisson family the
 links log, identity, and sqrt; and the inverse.gaussian family the links
 1/mu^2, inverse, identity and log.
 ```
+
+## 
+
+Note that the link function is the *inverse* of what we'd write down in the model:
+for instance, if the mean of the response is the exponential of the linear predictor,
+i.e., if
+$$
+\E[Y] = \exp(X\beta) .
+$$
+then we have
+```
+link = "log"
+```
+
+. . .
+
+Other inverses:
+
+- `logistic` has inverse `logit`
+- `identity` has inverse `identity`
+- `x^2` ("squared") has inverse `sqrt`
 
 # Unpacking logistic regression
 
