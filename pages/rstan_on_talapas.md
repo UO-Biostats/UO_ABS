@@ -71,7 +71,10 @@ Here is an example R script, named `run_rstan.R`:
 library(rstan)
 
 # read in the data
-data <- read.table('/projects/bi607/mlukac/hw7/BattingAverage.csv', header=TRUE, sep=',') 
+data <- read.table('/projects/bi607/mlukac/hw7/BattingAverage.csv', 
+		   header=TRUE, 
+		   sep=','
+		  ) 
 
 # the stan model code
 stan_code <- "
