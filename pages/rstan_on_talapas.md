@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Using `rstan` on the cluster
+title: Using RStan on the cluster
 description: Instructions on how to run rstan on talapas
 ---
 
@@ -28,13 +28,14 @@ Now navigate to the UO biostats directory
 ``` 
 cd /projects/bi607/
 ```
-You can list `ls` all directories here, one of which is `<username>`.
-If you move to it `cd <username>` you will likely see that it is empty.
+You can list (with `ls`) all directories here, one of which is `<username>`.
+If you move to it with `cd <username>` you will likely see that it is empty.
 I recommend creating a new directory for your homework.
-Suppose I was wanted to work on homework 7, then typing `mkdir hw7`
+Suppose I wanted to work on homework 7, then typing `mkdir hw7`
 will create a new directory named `hw7` where you can store all homework 7 files.
 You can look at the full path to this directory by typing `pwd`.
 Do it, you'll need that path for the next step.
+It should be `/projects/bi607/<username>/hw7/`.
 
 ## 2 Become BFFs with `rsync`
 Now you need to populate your shiny new homework directory with some files.
@@ -44,18 +45,20 @@ you have `BattingAverage.csv` stored and run the command
 ```
 rsync -vzPe ssh BattingAverage.csv <username>@talapas-uoregon.edu:/projects/bi607/<username>/hw7/
 ```
+You will be prompted to enter your uoregon password to initiate the transfer.
+
 In case you're curious, the options for `rsync` are:
 - `-v` be verbose
 - `-z` compress the file for the transfer
 - `-P` show transfer progress
 - `-e` specify the remote shell to use (in this case `ssh`)
 
-The general structure of `rsync` is `rsync FROM TO`, so we're telling it to 
+The general structure of `rsync` is `rsync [options] FROM TO`, so we're telling it to 
 send `BattingAverage.csv`, which is in the current directory, to our 
 `hw7` directory on the cluster.
 
 ## 3 Submitting a job
-Now, in order to run `rstan` on talapas, you need two more files:
+Now, in order to run `rstan` on talapas, you need two more files in the `hw7` directory:
 1. an R script that reads in the data and fits an `rstan` model
 2. an `sbatch` file to run the R script on the cluster
 
@@ -146,10 +149,10 @@ And that's it! Your job should be submitted, or in the queue.
 You can run the command `squeue -u <username>` to see where
 the job is in the queue or how long it's been running.
 When it's complete you will find two additional files in your directory;
-1. `slurm-<JOB ID>.out` which has all the output (including errors) from the `rstan` job
+1. `slurm-<JOB ID>.out` which has all the output (including errors and warnings) from the `rstan` job
 2. `baseball_model.rds` the fitted `rstan` model
 
-You can now `rsync` the fitted model back to your local machine,
+You can now `rsync` the fitted model back to your local machine in the appropriate directory,
 load it into your Rstudio environment with `data <- readRDS(file = 'baseball_model.rds')`
 and start looking at how your chains mixed, the posterior samples, etc.
 
