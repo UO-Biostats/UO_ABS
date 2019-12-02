@@ -1,0 +1,421 @@
+---
+title: "Bayesball Analysis"
+author: "Matt Lukac"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(kableExtra)
+library(gridExtra)
+library(viridis)
+library(tidyverse)
+library(reshape2)
+library(bayesplot)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+```
+
+
+### Data exploration
+We have collected some data on the 2012 Major League Baseball (MLB) season.
+Here is a look at the data for the first 6 players.
+
+```{r head, message=FALSE, cache=TRUE}
+data <- read_csv('BattingAverage.csv') # read the data
+# convert position names to a factor, levels in the appropriate order
+pos_order <- unique(data$PriPos)[order(unique(data$PriPosNumber))]
+data$PriPos <- factor(data$PriPos, levels=pos_order) 
+# make table of head(data)
+kable(head(data)) %>% kable_styling(full_width = FALSE)
+
+# convert position names to appropriate abbreviations
+data$PriPosAbbrev <- recode(data$PriPos, 
+                            "1st Base"="1B", 
+                            "2nd Base"="2B", 
+                            "3rd Base"="3B", 
+                            "Catcher"="C", 
+                            "Center Field"="CF", 
+                            "Left Field"="LF", 
+                            "Pitcher"="P", 
+                            "Right Field"="RF", 
+                            "Shortstop"="SS")
+pos_order_abbrev <- levels(data$PriPosAbbrev)
+```
+
+As we can see, we have the following variables:
+
+* `Player`: the player name
+* `PriPos`: the primary position of the player
+* `Hits`: the total number of hits in 2012
+* `AtBats`: the total number of at bats in 2012
+* `PlayerNumber`: the rank in the list of players, i.e. the row number
+* `PriPosNumber`: a numerical value associated to player's primary position
+
+For the uninitiated, there are 9 positions in baseball:
+pitcher, catcher, 1st baseman, 2nd baseman, shortstop, 
+3rd baseman, shortstop, left, center, and right fielders.
+I have listed the positions according the their official ordering,
+see the following diagram.
+
+![By Michael J - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=40095322](positions.png){#id .class width=40% height=40%}
+
+A player's reported _batting average_ is the 
+observed proportion of at bats that result in a hit.
+We would like to make inference on batting averages, both at the player level
+and the position level. 
+In particular, we would like to answer the following questions:
+
+1. **What is the typical batting average and 
+range of variation for players in each position?**
+2. **How many right fielders have a higher lower batting average 
+than the 95th percentile of pitcher's batting averages?**
+3. **What are the theoretical batting averages, with reported uncertainty, 
+for both Prince Fielder and Thomas Field?**
+
+Before tackling these questions, we should explore the data a bit more.
+We have a total of `r nrow(data)` players, with various amounts grouped by position. 
+Observe the plots below.
+On the left is a barplot showing how the players are distributed about the primary positions. 
+Note we have more pitchers in our dataset than any other position, 
+making up `r sum( data$PriPosAbbrev == "P" )` of the `r nrow(data)` players.
+Of the non-pitchers, the right fielders make up the least observations,
+with only `r sum( data$PriPosAbbrev == "RF" )`.
+The most non-pitcher observations is a tie between catchers and left fielders
+with `r sum( data$PriPosAbbrev == "C" )` players.
+
+Below on the right we can see the empirical batting averages, grouped by position.
+The transparency measures how many total at bats each player had; 
+the opacity of the point scales with the number of at bats.
+We can see that for all non-pitcher positions the players have plenty 
+of at bats with a tight spread around the center.
+Pitchers, on the other hand, generally have quite translucent points
+with a rather large spread.
+The seemingly opaque points for pitchers are not acutally solid, 
+there are just many tranparent points on top of each other;
+there were `r sum( data$PriPosAbbrev == "P" & data$Hits == 0 )`
+pitchers that had 0 hits in 2012.
+
+```{r position_barplot, fig.align='center'}
+numObs <- ggplot(data, aes(x=PriPosAbbrev)) + 
+            geom_bar(color='black', fill='darkred') +
+            labs(x='Primary Position', y='Number of Players') + 
+            ggtitle('Pitcher data dominates') + 
+            theme_light() +
+            theme(axis.title.x = element_text(size=16),
+                  axis.title.y = element_text(size=16),
+                  plot.title = element_text(size=18))
+```
+
+```{r BA_boxplot, fig.align='center'}
+ba <- ggplot(data=data, aes(x=PriPosAbbrev, y=Hits/AtBats)) +
+        geom_boxplot(outlier.alpha=0) +
+        geom_point(aes(alpha=AtBats), color='darkred', position=position_jitterdodge()) + 
+        labs(x='Primary Position', y='Empirical Batting Average') + 
+        ggtitle('Pitchers have few at bats') + 
+        labs(alpha = "At Bats") +
+        scale_alpha_continuous(breaks=c(100,200,300,400,500,600)) + 
+        theme_light() + 
+        theme(axis.title.x = element_text(size=16),
+              axis.title.y = element_text(size=16),
+              legend.title = element_text(size=16),
+              plot.title = element_text(size=18))
+```
+
+```{r grid_plot, fig.align='center', fig.width=10}
+grid.arrange(numObs, ba, ncol=2)
+```
+
+### The Model
+To model the data, we first suppose each player's (empirical) batting average
+is an estimate of some true batting average.
+More precisely, for $i=1,2,\ldots, `r nrow(data)`$ we assume the $i$th player has
+some intrinsic probability $\theta_i$ of getting a hit.
+It then follows that the (random) number of hits $K_i$ player $i$ will get
+after $n_i$ at bats is binomially distributed with success $\theta_i$.
+
+Furthermore we assume the batting average for players in each position
+follow the same distribution.
+The beta distribution is a natural choice to put on probabilities.
+Since we are concerned with typical batting averages and their spread
+we will parameterize the beta distribution using the mean $\mu$ and concentration $\kappa$, which measure center and spread, respectively.
+Letting $p_i=1,2,\ldots,9$ index the primary position of player $i$, 
+our model can be written as
+$$
+  K_i \sim \operatorname{Binom}(n_i, \theta_{p_i})
+  \quad \text{and} \quad
+  \theta_{p_i} \sim \operatorname{Beta}(\mu_p\kappa_p, (1-\mu_p)\kappa_p)
+$$
+Our goal is to use the data along with this model to obtain samples from 
+the posterior distributions for the `r nrow(data)` $\theta_{p_i}$ parameters,
+and the `r 2*length(unique(data$PriPos))` total hyperparameters $\mu_p$ and $\kappa_p$.
+The sampling will be done via Markov Chain Monte Carlo (MCMC) using [Stan](https://mc-stan.org/).
+Once we obtain the samples, we will use posterior estimates to answer the above 3 questions.
+
+### Posterior sampling 
+
+Speaking of sampling, we will use 4 Markov chains 
+each with 2000 iterations. The first 1000 iterations
+will be the warmup phase, so in the end we will have
+4000 total samples from each posterior distribution.
+Our choices of priors are $\mu_p \sim \operatorname{Beta}(1,1)$
+and $\kappa_p \sim \operatorname{Gamma}(0.1, 0.1)$.
+
+```{r stan_code}
+stan_code <- "
+data {
+    int N;   // number of players
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+}
+parameters {
+    real<lower=0, upper=1> theta[N];
+    real<lower=0, upper=1> mu[npos];
+    real<lower=0> kappa[npos];
+}
+model {
+    real alpha;
+    real beta;
+    hits ~ binomial(at_bats, theta);
+    for (i in 1:N) {
+        alpha = mu[position[i]] * kappa[position[i]];
+        beta = (1 - mu[position[i]]) * kappa[position[i]];
+        theta[i] ~ beta(alpha, beta);
+    }
+    mu ~ beta(1,1);
+    kappa ~ gamma(0.1,0.1);
+}
+"
+```
+
+```{r sampling, cache=TRUE, results='hide', warning=FALSE}
+model_fit <- stan(model_code = stan_code,
+                  chains = 4,
+                  iter = 2000,
+                  control = list(max_treedepth = 13),
+                  data = list(N = nrow(data),
+                              hits = data$Hits,
+                              at_bats = data$AtBats,
+                              npos = length(unique(data$PriPosAbbrev)),
+                              position = data$PriPosNumber
+                              )
+                  )
+```
+
+```{r summary_setup, cache=TRUE}
+# with permuted=FALSE the samples are 3d array with chains specified in margin 2
+samples <- rstan::extract(model_fit, permuted = FALSE)
+model_sum <- summary(model_fit)$summary
+mu_idx <- grep('mu', names(samples[1,1,])) # get indices for mu
+kappa_idx <- grep('kappa', names(samples[1,1,])) # get indices for kappa
+rhat <- model_sum[,'Rhat'] # get the Rhats 
+```
+We could look at trace plots to determine if our chains mixed,
+but because of the large number of parameters it is wise to just
+look at how $\hat R$ is distributed. $\hat R$ measures mixing of chains
+by comparing the between-chain and whithin-chain estimates for our model parameters.
+Thus the closer $\hat R$ is to 1, the better the mixing. The `rstan` documentation
+[suggests](https://rdrr.io/cran/rstan/man/Rhat.html) 
+the chains have mixed well whenever $0.95 < \hat R < 1.05$. 
+Below is a summary of all $\hat R$ values for all `r nrow(data) + 18` parameters.
+Observe that all $\hat R$'s are well within the acceptable range,
+suggesting our chains have mixed enough for us to trust the posterior samples.
+
+```{r rhat, cache=TRUE}
+rhat %>%
+  summary() %>%
+  t() %>%
+  format() %>%
+  kable(col.names = c('Min', '1st Quartile', 'Median', 'Mean', '3rd Quartile', 'Max')) %>% 
+  kable_styling(full_width=FALSE)
+```
+
+This information is further visualized with the following histogram.
+Note the bars are all yellow (so $\hat R < 1.05$) and very few of them
+exceed `r quantile(rhat, 0.99)`.
+
+```{r rhat_hist, fig.align='center', message=FALSE, cache=TRUE}
+color_scheme_set("viridis")
+mcmc_rhat_hist(rhat=rhat)
+```
+
+To get a sense of the posterior distributions, we'll take a look at
+the posterior median, 80% credible region, and 95% credible region
+for $\mu$ and $\kappa$. See the below plot, recalling the ordering on positions.
+Unsurprisingly, batting averages for pitchers have a lower mean 
+compared to all other positions. The posterior mean for pitchers is 
+`r mean(samples[,,mu_idx[1]]) %>% round(3)` whereas the other positions range from
+`r min(colMeans(samples[,,mu_idx[2:9]])) %>% round(3)` to 
+`r max(colMeans(samples[,,mu_idx[2:9]])) %>% round(3)`.
+
+All positions typically have a high concentration, meaning the batting averages
+for players within a position tend to not deviate too much from one another.
+Pitchers, on the other hand, have the lowest concentration. This was intuitively 
+evident from our empirical batting averages plot above, so it's good that 
+Stan has picked up on this. We must have a good model!
+
+```{r plotEstimates, fig.align='center', message=FALSE, cache=TRUE}
+muPlot <- mcmc_intervals(samples[,,mu_idx], prob = 0.8, prob_outer = 0.95) + 
+  scale_y_discrete(labels = pos_order_abbrev) + 
+  theme_light() + 
+  ggtitle(bquote("Posterior credible regions for" ~ mu))
+kappaPlot <- mcmc_intervals(samples[,,kappa_idx], prob = 0.8, prob_outer = 0.95) + 
+  scale_y_discrete(labels = pos_order_abbrev) + 
+  theme_light() + 
+  ggtitle(bquote("Posterior credible regions for" ~ kappa))
+grid.arrange(muPlot, kappaPlot, ncol=2)
+```
+
+### Inference
+We're now in a position to answer the previous three questions.
+As a reminder, they were 
+
+1. What is the typical batting average and 
+range of variation for players in each position?
+2. How many right fielders have a higher lower batting average 
+than the 95th percentile of pitcher's batting averages?
+3. What are the theoretical batting averages, with reported uncertainty, 
+for both Prince Fielder and Thomas Field?
+
+#### Question 1
+We have already begun to answer this question in the previous section,
+where we noted pitchers tend to have a lower mean batting average
+with a higher spread, as compared to other positions.
+To get a sense of how our inferred distributions of batting averages
+vary by position, consider the following plot.
+Using the posterior means of $\mu$ and $\kappa$ we have plotted 
+all 9 inferred batting average distributions.
+It might be easier to see here that pitchers tend to have
+much lower batting averages than other positions.
+Slightly less obvious is that the pitcher's distribution
+is wider than the others, which was indicated earlier
+when we saw pitchers had a lower concentration.
+
+```{r betaPlots, fig.align='center', cache=TRUE, message=FALSE}
+# get posterior means
+muMeans <- colMeans(samples[,,mu_idx]) %>% colMeans()
+kappaMeans <- colMeans(samples[,,kappa_idx]) %>% colMeans()
+alphaMeans <- muMeans*kappaMeans
+betaMeans <- (1-muMeans)*kappaMeans
+
+# prep the distributions for plotting
+betas <- data.frame(matrix(NA, ncol=9, nrow=1000))
+colnames(betas) <- pos_order_abbrev
+
+x <- seq(0, 0.5, length.out = 1000)
+for(k in 1:length(muMeans)){
+  betas[,k] <- dbeta(x, alphaMeans[k], betaMeans[k])
+}
+betas_melt <- melt(betas, variable.name = 'Position')
+betas_melt$x <- rep(x, 9)
+
+# plot distributions
+ggplot(betas_melt, aes(x=x, y=value, color=Position)) + 
+  geom_line() + 
+  scale_color_viridis(discrete=TRUE) +
+  labs(x=bquote(theta), y='beta density') +
+  theme_light()
+```
+
+The plot above is a good visual, but to cover all our bases we will present the
+estimated batting average means and standard deviations in the following table,
+of course grouped by position.
+```{r numerical_plot, cache=TRUE}
+betaMean <- function(alpha, beta){
+  return(alpha/(alpha+beta))
+}
+betaSD <- function(alpha, beta){
+  return( sqrt( (alpha*beta)/((alpha+beta+1)*(alpha+beta)^2) ) )
+}
+posMeans <- betaMean(alphaMeans, betaMeans)
+posSDs <- betaSD(alphaMeans, betaMeans)
+
+posEstimates <- data.frame('Mean'=posMeans, 'SD'=posSDs)
+rownames(posEstimates) <- pos_order_abbrev
+t(posEstimates) %>% kable(caption='Batting Average Estimates') %>% kable_styling(full_width=FALSE)
+```
+
+#### Question 2
+```{r quants}
+# get 95 quantile for pitchers
+pitchersQuant <- qbeta(0.95, alphaMeans[1], betaMeans[1])
+
+# obtain credible intervals for right fielders
+rf <- (data$PriPosAbbrev == "RF")
+model_sum_theta <- model_sum[grep('theta', rownames(model_sum)),]
+rfCreds <- model_sum_theta[rf, c('2.5%', '50%', '97.5%')]
+colnames(rfCreds) <- c('left', 'median', 'right')
+rfCreds <- data.frame(rfCreds[order(rfCreds[,1]),], y=1:nrow(rfCreds))
+rfCreds$quant <- (rfCreds$left < pitchersQuant)
+```
+Using the posterior means for $\mu$ and $\kappa$ on the pitchers
+we estimate that the batting average that is higher than 95% of all pitchers
+is `r pitchersQuant`. This would represent a pitcher that is an elite
+batter (relative to other pitchers).
+
+Now, exactly 0 right fielders have a batting average below that of
+our imaginary elite pitcher, if we take the posterior median as point
+estimates for RF batting averages. However, when we account for our 
+uncertainty, in the sense of a 95% credible interval, there are 
+`r sum(rfCreds$quant)` (shown in yellow) of all `r nrow(rfCreds)` right fielders that 
+may have a lower batting than the elite pitcher. See the plot below.
+
+```{r quant_plot, fig.align='center', cache=TRUE}
+# plot credible intervals with quantile vline
+ggplot(rfCreds, aes(x=median, y=y)) + 
+  geom_point() + 
+  geom_segment(aes(x=left, xend=right, y=y, yend=y, color=quant)) + 
+  geom_vline(xintercept = pitchersQuant) + 
+  labs(y='Right Fielder', x='Batting Average 95% Credible Interval') +
+  scale_color_viridis(discrete=TRUE) +
+  theme_light() + 
+  theme(legend.position = 'none')
+```
+
+#### Question 3
+Let's consider 2nd baseman Thomas Field and 1st baseman Prince Fielder.
+In 2012, Thomas Field only had 2 at bats with 0 hits, while Fielder 
+was able to get 182 hits off of 581 at bats. This is summarized in the following table.
+```{r fields_table, cache=TRUE}
+# make kable showing raw data for the two players
+fNames <- c('Thomas Field', 'Prince Fielder')
+fields <- (data$Player %in% fNames)
+data[fields,-7] %>% kable() %>% kable_styling(full_width=FALSE)
+
+# get theta samples for Fielder and Field
+theta_samples <- samples[,,grep('theta', names(samples[1,1,]))]
+fields_samples <- theta_samples[,,fields]
+dimnames(fields_samples)$parameters <- fNames
+```
+Clearly we have much more data on Fielder than Field, so we would 
+expect to have less certainty in our posterior estimates.
+This is precisely what we see in the plots below. On the top row we
+have the posterior samples for both players. Note that our model has
+predicted Thomas Field to have the lower batting average of the two,
+which makes sense given the data.
+
+The bottom row gives the posterior medians (points) and the 80% and 95%
+credible regions (thick and thin segments, respectively) for both players.
+This way the posterior samples are compared on a common scale.
+It is easy to see Field's posterior distribution is significantly wider
+than that of Fielder's. To be precise, the 95% credible region for Field and Fielder are 
+(`r quantile(fields_samples[,,1], probs=c(0.025, 0.975)) %>% round(3)`) and 
+(`r quantile(fields_samples[,,2], probs=c(0.025, 0.975)) %>% round(3)`), respectively.
+The median posterior estimates for Field and Fielder's batting averages are 
+`r quantile(fields_samples[,,1], probs=0.5 %>% round(3)) %>% round(3)` and
+`r quantile(fields_samples[,,2], probs=0.5 %>% round(3)) %>% round(3)`, respectively.
+
+```{r fields_hist, fig.align='center', message=FALSE, cache=TRUE}
+# plot intervals
+fields_ints <- mcmc_intervals(fields_samples, prob = 0.8, prob_outer = 0.95) +
+  theme_light()
+
+fields_hists <- mcmc_hist(fields_samples) + theme_light()
+
+grid.arrange(fields_hists, fields_ints, nrow=2)
+```
+
+

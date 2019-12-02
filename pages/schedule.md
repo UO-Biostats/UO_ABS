@@ -69,7 +69,8 @@ Week 7 (*11/11*)
     - [Slides](../CLASS_MATERIALS/Lectures/Week_07_Lecture.slides.html)
     - Reading: Kruschke, chapters 9, 10
     - [Homework 7](../CLASS_MATERIALS/Homeworks/HW7_F19.html) *(due 11/21)*
-    - [Homework 7 Solution](../CLASS_MATERIALS/Homeworks/HW7_F19.solutions.html)
+    - [Homework 7 Solution](../CLASS_MATERIALS/Homeworks/HW7_F19.solution.html)
+    - [Homework 7 Solution Rmd File](../CLASS_MATERIALS/Homeworks/HW7_F19.solution.Rmd)
 
 Week 8 (*11/18*)
 
