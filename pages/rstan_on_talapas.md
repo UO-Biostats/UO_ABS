@@ -152,6 +152,9 @@ When it's complete you will find two additional files in your directory;
 2. `baseball_model.rds` the fitted `rstan` model
 
 You can now `rsync` the fitted model back to your local machine in the appropriate directory,
-load it into your Rstudio environment with `data <- readRDS(file = 'baseball_model.rds')`
+load it into your Rstudio environment with 
+```
+data <- readRDS(file = 'baseball_model.rds')
+```
 and start looking at how your chains mixed, the posterior samples, etc.
 
