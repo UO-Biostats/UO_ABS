@@ -11,7 +11,7 @@ the high performance computing cluster on campus.
 
 2. Utilize `rsync` to send files between talapas and your local machine.
 
-3. Run `rstan` on talapas and send the model samples to your machine.
+3. Run `rstan` on talapas and send the fitted Stan model to your machine.
 
 These instructions were written with OSX users in mind.
 Whenever you see `<username>` you should replace it with 
@@ -43,7 +43,7 @@ Let's start with our data file, `BattingAverage.csv`.
 In a different tab or window for your terminal, navigate to where
 you have `BattingAverage.csv` stored and run the command
 ```
-rsync -vzPe ssh BattingAverage.csv <username>@talapas-uoregon.edu:/projects/bi607/<username>/hw7/
+rsync -vzP BattingAverage.csv <username>@talapas-uoregon.edu:/projects/bi607/<username>/hw7/
 ```
 You will be prompted to enter your uoregon password to initiate the transfer.
 
@@ -51,7 +51,6 @@ In case you're curious, the options for `rsync` are:
 - `-v` be verbose
 - `-z` compress the file for the transfer
 - `-P` show transfer progress
-- `-e` specify the remote shell to use (in this case `ssh`)
 
 The general structure of `rsync` is `rsync [options] FROM TO`, so we're telling it to 
 send `BattingAverage.csv`, which is in the current directory, to our 
@@ -71,10 +70,7 @@ Here is an example R script, named `run_rstan.R`:
 library(rstan)
 
 # read in the data
-data <- read.table('/projects/bi607/mlukac/hw7/BattingAverage.csv', 
-		   header=TRUE, 
-		   sep=','
-		  ) 
+data <- read.table('BattingAverage.csv', header=TRUE, sep=',')
 
 # the stan model code
 stan_code <- "
