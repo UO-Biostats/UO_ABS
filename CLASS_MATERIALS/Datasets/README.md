@@ -80,3 +80,9 @@ A dataset containing information about 5,416 extant mammal species.
 
 From *Temperature accounts for the biodiversity of a hyperdiverse group of insects in urban Los Angeles*,
 twelve sites in LA in 2014, about 100 taxa, from monthly samples: [dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.gr68f2j)
+
+## NYTS tobacco use survey data
+
+A summary dataset is available [here](https://chronicdata.cdc.gov/Survey-Data/Youth-Tobacco-Survey-YTS-Data/4juz-x2tp), for 2011-2017,
+but individual-level data is [here](https://www.cdc.gov/tobacco/data_statistics/surveys/nyts/data/index.html),
+with tens of thousands of individuals per year.

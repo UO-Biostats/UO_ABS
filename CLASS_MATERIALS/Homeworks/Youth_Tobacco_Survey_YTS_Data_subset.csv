@@ -1,0 +1,895 @@
+YEAR,state,TopicDesc,MeasureDesc,Response,Percent_Yes,Sample_Size,Gender,Education
+2000,Alabama,Cigarette Use (Youth),Smoking Status,Current,27.8,816,Female,High School
+2000,Alabama,Cigarette Use (Youth),Smoking Status,Current,15.7,771,Female,Middle School
+2000,Alabama,Cigarette Use (Youth),Smoking Status,Current,32.5,704,Male,High School
+2000,Alabama,Cigarette Use (Youth),Smoking Status,Current,22.1,738,Male,Middle School
+2002,Alabama,Cigarette Use (Youth),Smoking Status,Current,23.1,669,Female,High School
+2002,Alabama,Cigarette Use (Youth),Smoking Status,Current,12,820,Female,Middle School
+2002,Alabama,Cigarette Use (Youth),Smoking Status,Current,27.3,607,Male,High School
+2002,Alabama,Cigarette Use (Youth),Smoking Status,Current,18.3,674,Male,Middle School
+2004,Alabama,Cigarette Use (Youth),Smoking Status,Current,20.4,764,Female,High School
+2004,Alabama,Cigarette Use (Youth),Smoking Status,Current,11.9,701,Female,Middle School
+2004,Alabama,Cigarette Use (Youth),Smoking Status,Current,27.5,715,Male,High School
+2004,Alabama,Cigarette Use (Youth),Smoking Status,Current,14,658,Male,Middle School
+2006,Alabama,Cigarette Use (Youth),Smoking Status,Current,23.6,758,Female,High School
+2006,Alabama,Cigarette Use (Youth),Smoking Status,Current,10.5,776,Female,Middle School
+2006,Alabama,Cigarette Use (Youth),Smoking Status,Current,29.6,783,Male,High School
+2006,Alabama,Cigarette Use (Youth),Smoking Status,Current,14.9,929,Male,Middle School
+2008,Alabama,Cigarette Use (Youth),Smoking Status,Current,16.8,659,Female,High School
+2008,Alabama,Cigarette Use (Youth),Smoking Status,Current,6.8,516,Female,Middle School
+2008,Alabama,Cigarette Use (Youth),Smoking Status,Current,27.1,658,Male,High School
+2008,Alabama,Cigarette Use (Youth),Smoking Status,Current,10.4,492,Male,Middle School
+2010,Alabama,Cigarette Use (Youth),Smoking Status,Current,14.8,678,Female,High School
+2010,Alabama,Cigarette Use (Youth),Smoking Status,Current,6.6,583,Female,Middle School
+2010,Alabama,Cigarette Use (Youth),Smoking Status,Current,22.2,621,Male,High School
+2010,Alabama,Cigarette Use (Youth),Smoking Status,Current,7.1,542,Male,Middle School
+2012,Alabama,Cigarette Use (Youth),Smoking Status,Current,14.4,698,Female,High School
+2012,Alabama,Cigarette Use (Youth),Smoking Status,Current,7.4,749,Female,Middle School
+2012,Alabama,Cigarette Use (Youth),Smoking Status,Current,24.3,737,Male,High School
+2012,Alabama,Cigarette Use (Youth),Smoking Status,Current,7.7,683,Male,Middle School
+2014,Alabama,Cigarette Use (Youth),Smoking Status,Current,14.5,618,Female,High School
+2014,Alabama,Cigarette Use (Youth),Smoking Status,Current,8,752,Female,Middle School
+2014,Alabama,Cigarette Use (Youth),Smoking Status,Current,20.9,656,Male,High School
+2014,Alabama,Cigarette Use (Youth),Smoking Status,Current,4.9,626,Male,Middle School
+2016,Alabama,Cigarette Use (Youth),Smoking Status,Current,8.8,1256,Female,High School
+2016,Alabama,Cigarette Use (Youth),Smoking Status,Current,3.3,1479,Female,Middle School
+2016,Alabama,Cigarette Use (Youth),Smoking Status,Current,12.9,1174,Male,High School
+2016,Alabama,Cigarette Use (Youth),Smoking Status,Current,3.4,1465,Male,Middle School
+2000,Arizona,Cigarette Use (Youth),Smoking Status,Current,11.3,983,Female,Middle School
+2000,Arizona,Cigarette Use (Youth),Smoking Status,Current,11.5,966,Male,Middle School
+2003,Arizona,Cigarette Use (Youth),Smoking Status,Current,16.5,800,Female,High School
+2003,Arizona,Cigarette Use (Youth),Smoking Status,Current,8.7,1024,Female,Middle School
+2003,Arizona,Cigarette Use (Youth),Smoking Status,Current,19,755,Male,High School
+2003,Arizona,Cigarette Use (Youth),Smoking Status,Current,8.7,1041,Male,Middle School
+2005,Arizona,Cigarette Use (Youth),Smoking Status,Current,17.6,975,Female,High School
+2005,Arizona,Cigarette Use (Youth),Smoking Status,Current,7.2,1002,Female,Middle School
+2005,Arizona,Cigarette Use (Youth),Smoking Status,Current,19.2,920,Male,High School
+2005,Arizona,Cigarette Use (Youth),Smoking Status,Current,8.8,917,Male,Middle School
+2007,Arizona,Cigarette Use (Youth),Smoking Status,Current,16.1,918,Female,High School
+2007,Arizona,Cigarette Use (Youth),Smoking Status,Current,8,1085,Female,Middle School
+2007,Arizona,Cigarette Use (Youth),Smoking Status,Current,17.2,800,Male,High School
+2007,Arizona,Cigarette Use (Youth),Smoking Status,Current,5.3,1084,Male,Middle School
+2009,Arizona,Cigarette Use (Youth),Smoking Status,Current,4,1132,Female,Middle School
+2009,Arizona,Cigarette Use (Youth),Smoking Status,Current,5.2,1173,Male,Middle School
+2011,Arizona,Cigarette Use (Youth),Smoking Status,Current,4.2,1944,Female,Middle School
+2011,Arizona,Cigarette Use (Youth),Smoking Status,Current,5,1997,Male,Middle School
+2013,Arizona,Cigarette Use (Youth),Smoking Status,Current,3,819,Female,Middle School
+2013,Arizona,Cigarette Use (Youth),Smoking Status,Current,3.2,756,Male,Middle School
+2015,Arizona,Cigarette Use (Youth),Smoking Status,Current,3.1,671,Female,Middle School
+2015,Arizona,Cigarette Use (Youth),Smoking Status,Current,3.2,700,Male,Middle School
+2017,Arizona,Cigarette Use (Youth),Smoking Status,Current,1.9,659,Female,Middle School
+2017,Arizona,Cigarette Use (Youth),Smoking Status,Current,2.9,679,Male,Middle School
+2000,Arkansas,Cigarette Use (Youth),Smoking Status,Current,33.7,670,Female,High School
+2000,Arkansas,Cigarette Use (Youth),Smoking Status,Current,15.7,737,Female,Middle School
+2000,Arkansas,Cigarette Use (Youth),Smoking Status,Current,37.5,664,Male,High School
+2000,Arkansas,Cigarette Use (Youth),Smoking Status,Current,15.7,767,Male,Middle School
+2005,Arkansas,Cigarette Use (Youth),Smoking Status,Current,24.9,1020,Female,High School
+2005,Arkansas,Cigarette Use (Youth),Smoking Status,Current,8.3,1038,Female,Middle School
+2005,Arkansas,Cigarette Use (Youth),Smoking Status,Current,27.8,934,Male,High School
+2005,Arkansas,Cigarette Use (Youth),Smoking Status,Current,10.1,1026,Male,Middle School
+2007,Arkansas,Cigarette Use (Youth),Smoking Status,Current,17.8,987,Female,High School
+2007,Arkansas,Cigarette Use (Youth),Smoking Status,Current,10.2,948,Female,Middle School
+2007,Arkansas,Cigarette Use (Youth),Smoking Status,Current,23,962,Male,High School
+2007,Arkansas,Cigarette Use (Youth),Smoking Status,Current,8.8,903,Male,Middle School
+2010,Arkansas,Cigarette Use (Youth),Smoking Status,Current,18.7,1097,Female,High School
+2010,Arkansas,Cigarette Use (Youth),Smoking Status,Current,7,1201,Female,Middle School
+2010,Arkansas,Cigarette Use (Youth),Smoking Status,Current,27.8,1101,Male,High School
+2010,Arkansas,Cigarette Use (Youth),Smoking Status,Current,6.9,1159,Male,Middle School
+2000,California,Cigarette Use (Youth),Smoking Status,Current,20.4,1424,Female,High School
+2000,California,Cigarette Use (Youth),Smoking Status,Current,6.4,1432,Female,Middle School
+2000,California,Cigarette Use (Youth),Smoking Status,Current,22.7,1513,Male,High School
+2000,California,Cigarette Use (Youth),Smoking Status,Current,7,1365,Male,Middle School
+2003,California,Cigarette Use (Youth),Smoking Status,Current,11.9,7713,Female,High School
+2003,California,Cigarette Use (Youth),Smoking Status,Current,3.4,5644,Female,Middle School
+2003,California,Cigarette Use (Youth),Smoking Status,Current,14.4,6848,Male,High School
+2003,California,Cigarette Use (Youth),Smoking Status,Current,4.4,4858,Male,Middle School
+2000,Colorado,Cigarette Use (Youth),Smoking Status,Current,26.9,751,Female,High School
+2000,Colorado,Cigarette Use (Youth),Smoking Status,Current,8.4,735,Female,Middle School
+2000,Colorado,Cigarette Use (Youth),Smoking Status,Current,23.9,736,Male,High School
+2000,Colorado,Cigarette Use (Youth),Smoking Status,Current,9.3,702,Male,Middle School
+2000,Connecticut,Cigarette Use (Youth),Smoking Status,Current,26,1062,Female,High School
+2000,Connecticut,Cigarette Use (Youth),Smoking Status,Current,9.8,1028,Female,Middle School
+2000,Connecticut,Cigarette Use (Youth),Smoking Status,Current,24.9,1020,Male,High School
+2000,Connecticut,Cigarette Use (Youth),Smoking Status,Current,9.7,977,Male,Middle School
+2002,Connecticut,Cigarette Use (Youth),Smoking Status,Current,20.7,1602,Female,High School
+2002,Connecticut,Cigarette Use (Youth),Smoking Status,Current,6.8,1315,Female,Middle School
+2002,Connecticut,Cigarette Use (Youth),Smoking Status,Current,23.3,1488,Male,High School
+2002,Connecticut,Cigarette Use (Youth),Smoking Status,Current,4.8,1284,Male,Middle School
+2005,Connecticut,Cigarette Use (Youth),Smoking Status,Current,18.2,1155,Female,High School
+2005,Connecticut,Cigarette Use (Youth),Smoking Status,Current,5.8,990,Female,Middle School
+2005,Connecticut,Cigarette Use (Youth),Smoking Status,Current,15.8,1006,Male,High School
+2005,Connecticut,Cigarette Use (Youth),Smoking Status,Current,6,1030,Male,Middle School
+2007,Connecticut,Cigarette Use (Youth),Smoking Status,Current,15.2,958,Female,High School
+2007,Connecticut,Cigarette Use (Youth),Smoking Status,Current,3,1112,Female,Middle School
+2007,Connecticut,Cigarette Use (Youth),Smoking Status,Current,18.6,993,Male,High School
+2007,Connecticut,Cigarette Use (Youth),Smoking Status,Current,3.7,1086,Male,Middle School
+2009,Connecticut,Cigarette Use (Youth),Smoking Status,Current,14.4,1144,Female,High School
+2009,Connecticut,Cigarette Use (Youth),Smoking Status,Current,3.2,1187,Female,Middle School
+2009,Connecticut,Cigarette Use (Youth),Smoking Status,Current,16,1047,Male,High School
+2009,Connecticut,Cigarette Use (Youth),Smoking Status,Current,3.3,1153,Male,Middle School
+2011,Connecticut,Cigarette Use (Youth),Smoking Status,Current,11.8,1017,Female,High School
+2011,Connecticut,Cigarette Use (Youth),Smoking Status,Current,2.7,1112,Female,Middle School
+2011,Connecticut,Cigarette Use (Youth),Smoking Status,Current,16.1,1048,Male,High School
+2011,Connecticut,Cigarette Use (Youth),Smoking Status,Current,3.1,1023,Male,Middle School
+2013,Connecticut,Cigarette Use (Youth),Smoking Status,Current,7.3,1188,Female,High School
+2013,Connecticut,Cigarette Use (Youth),Smoking Status,Current,1,1423,Female,Middle School
+2013,Connecticut,Cigarette Use (Youth),Smoking Status,Current,10.4,1230,Male,High School
+2013,Connecticut,Cigarette Use (Youth),Smoking Status,Current,1.8,1464,Male,Middle School
+2015,Connecticut,Cigarette Use (Youth),Smoking Status,Current,5.6,1088,Female,High School
+2015,Connecticut,Cigarette Use (Youth),Smoking Status,Current,1,1198,Female,Middle School
+2015,Connecticut,Cigarette Use (Youth),Smoking Status,Current,5.6,1166,Male,High School
+2015,Connecticut,Cigarette Use (Youth),Smoking Status,Current,0.7,1253,Male,Middle School
+2017,Connecticut,Cigarette Use (Youth),Smoking Status,Current,2.7,1120,Female,High School
+2017,Connecticut,Cigarette Use (Youth),Smoking Status,Current,4.2,1066,Male,High School
+2000,Delaware,Cigarette Use (Youth),Smoking Status,Current,26.1,1855,Female,High School
+2000,Delaware,Cigarette Use (Youth),Smoking Status,Current,15.6,2200,Female,Middle School
+2000,Delaware,Cigarette Use (Youth),Smoking Status,Current,28,1569,Male,High School
+2000,Delaware,Cigarette Use (Youth),Smoking Status,Current,14.8,2178,Male,Middle School
+2002,Delaware,Cigarette Use (Youth),Smoking Status,Current,23.4,1226,Female,High School
+2002,Delaware,Cigarette Use (Youth),Smoking Status,Current,11.6,1330,Female,Middle School
+2002,Delaware,Cigarette Use (Youth),Smoking Status,Current,28,1214,Male,High School
+2002,Delaware,Cigarette Use (Youth),Smoking Status,Current,9.1,1311,Male,Middle School
+2004,Delaware,Cigarette Use (Youth),Smoking Status,Current,24.8,1100,Female,High School
+2004,Delaware,Cigarette Use (Youth),Smoking Status,Current,9.7,1256,Female,Middle School
+2004,Delaware,Cigarette Use (Youth),Smoking Status,Current,20.2,1080,Male,High School
+2004,Delaware,Cigarette Use (Youth),Smoking Status,Current,9,1197,Male,Middle School
+2008,Delaware,Cigarette Use (Youth),Smoking Status,Current,17.9,915,Female,High School
+2008,Delaware,Cigarette Use (Youth),Smoking Status,Current,7.4,1033,Female,Middle School
+2008,Delaware,Cigarette Use (Youth),Smoking Status,Current,16.6,894,Male,High School
+2008,Delaware,Cigarette Use (Youth),Smoking Status,Current,6.9,1043,Male,Middle School
+2010,Delaware,Cigarette Use (Youth),Smoking Status,Current,14.5,966,Female,High School
+2010,Delaware,Cigarette Use (Youth),Smoking Status,Current,6.1,1072,Female,Middle School
+2010,Delaware,Cigarette Use (Youth),Smoking Status,Current,15.3,867,Male,High School
+2010,Delaware,Cigarette Use (Youth),Smoking Status,Current,6.7,1019,Male,Middle School
+2012,Delaware,Cigarette Use (Youth),Smoking Status,Current,13.7,1125,Female,High School
+2012,Delaware,Cigarette Use (Youth),Smoking Status,Current,3.9,1137,Female,Middle School
+2012,Delaware,Cigarette Use (Youth),Smoking Status,Current,14.3,1057,Male,High School
+2012,Delaware,Cigarette Use (Youth),Smoking Status,Current,4.3,1205,Male,Middle School
+2014,Delaware,Cigarette Use (Youth),Smoking Status,Current,10.1,1033,Female,High School
+2014,Delaware,Cigarette Use (Youth),Smoking Status,Current,2,1094,Female,Middle School
+2014,Delaware,Cigarette Use (Youth),Smoking Status,Current,12.3,965,Male,High School
+2014,Delaware,Cigarette Use (Youth),Smoking Status,Current,3.4,1161,Male,Middle School
+2016,Delaware,Cigarette Use (Youth),Smoking Status,Current,4.9,988,Female,High School
+2016,Delaware,Cigarette Use (Youth),Smoking Status,Current,1.2,813,Female,Middle School
+2016,Delaware,Cigarette Use (Youth),Smoking Status,Current,8.7,1160,Male,High School
+2016,Delaware,Cigarette Use (Youth),Smoking Status,Current,1.5,780,Male,Middle School
+2001,Florida,Cigarette Use (Youth),Smoking Status,Current,19,2193,Female,High School
+2001,Florida,Cigarette Use (Youth),Smoking Status,Current,9.5,2144,Female,Middle School
+2001,Florida,Cigarette Use (Youth),Smoking Status,Current,19.1,1978,Male,High School
+2001,Florida,Cigarette Use (Youth),Smoking Status,Current,10,2080,Male,Middle School
+2002,Florida,Cigarette Use (Youth),Smoking Status,Current,18.9,4607,Female,High School
+2002,Florida,Cigarette Use (Youth),Smoking Status,Current,9.7,7761,Female,Middle School
+2002,Florida,Cigarette Use (Youth),Smoking Status,Current,19,4239,Male,High School
+2002,Florida,Cigarette Use (Youth),Smoking Status,Current,10.5,7389,Male,Middle School
+1999,Georgia,Cigarette Use (Youth),Smoking Status,Current,13.6,641,Female,Middle School
+1999,Georgia,Cigarette Use (Youth),Smoking Status,Current,13.9,594,Male,Middle School
+2001,Georgia,Cigarette Use (Youth),Smoking Status,Current,19.9,1423,Female,High School
+2001,Georgia,Cigarette Use (Youth),Smoking Status,Current,7.1,1353,Female,Middle School
+2001,Georgia,Cigarette Use (Youth),Smoking Status,Current,27.4,1446,Male,High School
+2001,Georgia,Cigarette Use (Youth),Smoking Status,Current,10.5,1385,Male,Middle School
+2005,Georgia,Cigarette Use (Youth),Smoking Status,Current,16.5,895,Female,High School
+2005,Georgia,Cigarette Use (Youth),Smoking Status,Current,7.7,935,Female,Middle School
+2005,Georgia,Cigarette Use (Youth),Smoking Status,Current,22,843,Male,High School
+2005,Georgia,Cigarette Use (Youth),Smoking Status,Current,9.1,950,Male,Middle School
+2009,Georgia,Cigarette Use (Youth),Smoking Status,Current,13.6,995,Female,High School
+2009,Georgia,Cigarette Use (Youth),Smoking Status,Current,4.4,1024,Female,Middle School
+2009,Georgia,Cigarette Use (Youth),Smoking Status,Current,17.2,905,Male,High School
+2009,Georgia,Cigarette Use (Youth),Smoking Status,Current,7.8,923,Male,Middle School
+2011,Georgia,Cigarette Use (Youth),Smoking Status,Current,13.4,966,Female,High School
+2011,Georgia,Cigarette Use (Youth),Smoking Status,Current,4.2,1112,Female,Middle School
+2011,Georgia,Cigarette Use (Youth),Smoking Status,Current,20.9,924,Male,High School
+2011,Georgia,Cigarette Use (Youth),Smoking Status,Current,7.3,1049,Male,Middle School
+2013,Georgia,Cigarette Use (Youth),Smoking Status,Current,9.7,866,Female,High School
+2013,Georgia,Cigarette Use (Youth),Smoking Status,Current,2.7,1027,Female,Middle School
+2013,Georgia,Cigarette Use (Youth),Smoking Status,Current,14.3,832,Male,High School
+2013,Georgia,Cigarette Use (Youth),Smoking Status,Current,3.6,1014,Male,Middle School
+2015,Georgia,Cigarette Use (Youth),Smoking Status,Current,8.2,686,Female,High School
+2015,Georgia,Cigarette Use (Youth),Smoking Status,Current,13.2,667,Male,High School
+2017,Georgia,Cigarette Use (Youth),Smoking Status,Current,4.8,1302,Female,High School
+2017,Georgia,Cigarette Use (Youth),Smoking Status,Current,11,1263,Male,High School
+2000,Hawaii,Cigarette Use (Youth),Smoking Status,Current,25.5,836,Female,High School
+2000,Hawaii,Cigarette Use (Youth),Smoking Status,Current,23.4,613,Male,High School
+2003,Hawaii,Cigarette Use (Youth),Smoking Status,Current,5.9,5058,Female,Middle School
+2003,Hawaii,Cigarette Use (Youth),Smoking Status,Current,4.8,5084,Male,Middle School
+2005,Hawaii,Cigarette Use (Youth),Smoking Status,Current,14.2,777,Female,High School
+2005,Hawaii,Cigarette Use (Youth),Smoking Status,Current,5.1,856,Female,Middle School
+2005,Hawaii,Cigarette Use (Youth),Smoking Status,Current,10.9,705,Male,High School
+2005,Hawaii,Cigarette Use (Youth),Smoking Status,Current,4.7,759,Male,Middle School
+2009,Hawaii,Cigarette Use (Youth),Smoking Status,Current,11.9,767,Female,High School
+2009,Hawaii,Cigarette Use (Youth),Smoking Status,Current,5.4,851,Female,Middle School
+2009,Hawaii,Cigarette Use (Youth),Smoking Status,Current,10.5,667,Male,High School
+2009,Hawaii,Cigarette Use (Youth),Smoking Status,Current,3.6,724,Male,Middle School
+2011,Hawaii,Cigarette Use (Youth),Smoking Status,Current,9.6,656,Female,High School
+2011,Hawaii,Cigarette Use (Youth),Smoking Status,Current,3.8,831,Female,Middle School
+2011,Hawaii,Cigarette Use (Youth),Smoking Status,Current,8,614,Male,High School
+2011,Hawaii,Cigarette Use (Youth),Smoking Status,Current,3.5,777,Male,Middle School
+2013,Hawaii,Cigarette Use (Youth),Smoking Status,Current,4.9,735,Female,High School
+2013,Hawaii,Cigarette Use (Youth),Smoking Status,Current,2.8,1026,Female,Middle School
+2013,Hawaii,Cigarette Use (Youth),Smoking Status,Current,6.8,661,Male,High School
+2013,Hawaii,Cigarette Use (Youth),Smoking Status,Current,4.7,877,Male,Middle School
+2015,Hawaii,Cigarette Use (Youth),Smoking Status,Current,6.6,929,Female,High School
+2015,Hawaii,Cigarette Use (Youth),Smoking Status,Current,2.8,1062,Female,Middle School
+2015,Hawaii,Cigarette Use (Youth),Smoking Status,Current,8.1,878,Male,High School
+2015,Hawaii,Cigarette Use (Youth),Smoking Status,Current,3.2,1099,Male,Middle School
+2017,Hawaii,Cigarette Use (Youth),Smoking Status,Current,5.9,961,Female,High School
+2017,Hawaii,Cigarette Use (Youth),Smoking Status,Current,3,941,Female,Middle School
+2017,Hawaii,Cigarette Use (Youth),Smoking Status,Current,6.2,915,Male,High School
+2017,Hawaii,Cigarette Use (Youth),Smoking Status,Current,3.3,1001,Male,Middle School
+2001,Idaho,Cigarette Use (Youth),Smoking Status,Current,9.4,911,Female,Middle School
+2001,Idaho,Cigarette Use (Youth),Smoking Status,Current,9.7,910,Male,Middle School
+2003,Idaho,Cigarette Use (Youth),Smoking Status,Current,11.2,779,Female,Middle School
+2003,Idaho,Cigarette Use (Youth),Smoking Status,Current,7.5,800,Male,Middle School
+2002,Illinois,Cigarette Use (Youth),Smoking Status,Current,31.9,773,Female,High School
+2002,Illinois,Cigarette Use (Youth),Smoking Status,Current,8.8,799,Female,Middle School
+2002,Illinois,Cigarette Use (Youth),Smoking Status,Current,26.5,854,Male,High School
+2002,Illinois,Cigarette Use (Youth),Smoking Status,Current,6.4,775,Male,Middle School
+2005,Illinois,Cigarette Use (Youth),Smoking Status,Current,26.8,645,Female,High School
+2005,Illinois,Cigarette Use (Youth),Smoking Status,Current,8.1,708,Female,Middle School
+2005,Illinois,Cigarette Use (Youth),Smoking Status,Current,22.8,667,Male,High School
+2005,Illinois,Cigarette Use (Youth),Smoking Status,Current,6.8,676,Male,Middle School
+2006,Illinois,Cigarette Use (Youth),Smoking Status,Current,20.8,555,Female,High School
+2006,Illinois,Cigarette Use (Youth),Smoking Status,Current,5.9,608,Female,Middle School
+2006,Illinois,Cigarette Use (Youth),Smoking Status,Current,22.6,581,Male,High School
+2006,Illinois,Cigarette Use (Youth),Smoking Status,Current,11.5,579,Male,Middle School
+2010,Illinois,Cigarette Use (Youth),Smoking Status,Current,16.7,648,Female,High School
+2010,Illinois,Cigarette Use (Youth),Smoking Status,Current,4.8,684,Female,Middle School
+2010,Illinois,Cigarette Use (Youth),Smoking Status,Current,18.9,598,Male,High School
+2010,Illinois,Cigarette Use (Youth),Smoking Status,Current,4.8,682,Male,Middle School
+2013,Illinois,Cigarette Use (Youth),Smoking Status,Current,10.3,826,Female,High School
+2013,Illinois,Cigarette Use (Youth),Smoking Status,Current,3,923,Female,Middle School
+2013,Illinois,Cigarette Use (Youth),Smoking Status,Current,15.4,830,Male,High School
+2013,Illinois,Cigarette Use (Youth),Smoking Status,Current,2.1,965,Male,Middle School
+2015,Illinois,Cigarette Use (Youth),Smoking Status,Current,10,1016,Female,High School
+2015,Illinois,Cigarette Use (Youth),Smoking Status,Current,2.5,1143,Female,Middle School
+2015,Illinois,Cigarette Use (Youth),Smoking Status,Current,9.4,1190,Male,High School
+2015,Illinois,Cigarette Use (Youth),Smoking Status,Current,1.6,1157,Male,Middle School
+2000,Indiana,Cigarette Use (Youth),Smoking Status,Current,30.1,700,Female,High School
+2000,Indiana,Cigarette Use (Youth),Smoking Status,Current,10.4,698,Female,Middle School
+2000,Indiana,Cigarette Use (Youth),Smoking Status,Current,32.8,667,Male,High School
+2000,Indiana,Cigarette Use (Youth),Smoking Status,Current,9.3,768,Male,Middle School
+2004,Indiana,Cigarette Use (Youth),Smoking Status,Current,19.4,1706,Female,High School
+2004,Indiana,Cigarette Use (Youth),Smoking Status,Current,10.1,931,Female,Middle School
+2004,Indiana,Cigarette Use (Youth),Smoking Status,Current,22.8,1613,Male,High School
+2004,Indiana,Cigarette Use (Youth),Smoking Status,Current,5.7,978,Male,Middle School
+2006,Indiana,Cigarette Use (Youth),Smoking Status,Current,22.7,1591,Female,High School
+2006,Indiana,Cigarette Use (Youth),Smoking Status,Current,8.3,1759,Female,Middle School
+2006,Indiana,Cigarette Use (Youth),Smoking Status,Current,23.6,1655,Male,High School
+2006,Indiana,Cigarette Use (Youth),Smoking Status,Current,7.1,1817,Male,Middle School
+2008,Indiana,Cigarette Use (Youth),Smoking Status,Current,17.5,1739,Female,High School
+2008,Indiana,Cigarette Use (Youth),Smoking Status,Current,3.7,1626,Female,Middle School
+2008,Indiana,Cigarette Use (Youth),Smoking Status,Current,19,1858,Male,High School
+2008,Indiana,Cigarette Use (Youth),Smoking Status,Current,4.5,1579,Male,Middle School
+2010,Indiana,Cigarette Use (Youth),Smoking Status,Current,15.8,1287,Female,High School
+2010,Indiana,Cigarette Use (Youth),Smoking Status,Current,3.5,1053,Female,Middle School
+2010,Indiana,Cigarette Use (Youth),Smoking Status,Current,18.8,1298,Male,High School
+2010,Indiana,Cigarette Use (Youth),Smoking Status,Current,5.2,1002,Male,Middle School
+2013,Indiana,Cigarette Use (Youth),Smoking Status,Current,12.7,1362,Female,High School
+2013,Indiana,Cigarette Use (Youth),Smoking Status,Current,3.9,1207,Female,Middle School
+2013,Indiana,Cigarette Use (Youth),Smoking Status,Current,14.8,1277,Male,High School
+2013,Indiana,Cigarette Use (Youth),Smoking Status,Current,3.6,1210,Male,Middle School
+2016,Indiana,Cigarette Use (Youth),Smoking Status,Current,2.1,1091,Female,Middle School
+2016,Indiana,Cigarette Use (Youth),Smoking Status,Current,1.4,1131,Male,Middle School
+2000,Iowa,Cigarette Use (Youth),Smoking Status,Current,31.1,695,Female,High School
+2000,Iowa,Cigarette Use (Youth),Smoking Status,Current,12.3,884,Female,Middle School
+2000,Iowa,Cigarette Use (Youth),Smoking Status,Current,34.2,700,Male,High School
+2000,Iowa,Cigarette Use (Youth),Smoking Status,Current,11.3,869,Male,Middle School
+2002,Iowa,Cigarette Use (Youth),Smoking Status,Current,26.5,823,Female,High School
+2002,Iowa,Cigarette Use (Youth),Smoking Status,Current,7.2,800,Female,Middle School
+2002,Iowa,Cigarette Use (Youth),Smoking Status,Current,26.9,806,Male,High School
+2002,Iowa,Cigarette Use (Youth),Smoking Status,Current,6.4,780,Male,Middle School
+2004,Iowa,Cigarette Use (Youth),Smoking Status,Current,20.3,865,Female,High School
+2004,Iowa,Cigarette Use (Youth),Smoking Status,Current,7.4,873,Female,Middle School
+2004,Iowa,Cigarette Use (Youth),Smoking Status,Current,18.5,872,Male,High School
+2004,Iowa,Cigarette Use (Youth),Smoking Status,Current,6.7,983,Male,Middle School
+2006,Iowa,Cigarette Use (Youth),Smoking Status,Current,22.4,1113,Female,High School
+2006,Iowa,Cigarette Use (Youth),Smoking Status,Current,4.4,833,Female,Middle School
+2006,Iowa,Cigarette Use (Youth),Smoking Status,Current,22.6,1100,Male,High School
+2006,Iowa,Cigarette Use (Youth),Smoking Status,Current,2.8,794,Male,Middle School
+2008,Iowa,Cigarette Use (Youth),Smoking Status,Current,19.5,630,Female,High School
+2008,Iowa,Cigarette Use (Youth),Smoking Status,Current,2.4,633,Female,Middle School
+2008,Iowa,Cigarette Use (Youth),Smoking Status,Current,20.2,612,Male,High School
+2008,Iowa,Cigarette Use (Youth),Smoking Status,Current,3.3,670,Male,Middle School
+2009,Iowa,Cigarette Use (Youth),Smoking Status,Current,19.5,630,Female,High School
+2009,Iowa,Cigarette Use (Youth),Smoking Status,Current,2.4,633,Female,Middle School
+2009,Iowa,Cigarette Use (Youth),Smoking Status,Current,20.2,612,Male,High School
+2009,Iowa,Cigarette Use (Youth),Smoking Status,Current,3.3,670,Male,Middle School
+1999,Kansas,Cigarette Use (Youth),Smoking Status,Current,15.2,554,Female,Middle School
+1999,Kansas,Cigarette Use (Youth),Smoking Status,Current,16.6,581,Male,Middle School
+2000,Kansas,Cigarette Use (Youth),Smoking Status,Current,27.5,791,Female,High School
+2000,Kansas,Cigarette Use (Youth),Smoking Status,Current,7.9,778,Female,Middle School
+2000,Kansas,Cigarette Use (Youth),Smoking Status,Current,24.7,763,Male,High School
+2000,Kansas,Cigarette Use (Youth),Smoking Status,Current,8,774,Male,Middle School
+2002,Kansas,Cigarette Use (Youth),Smoking Status,Current,20.9,752,Female,High School
+2002,Kansas,Cigarette Use (Youth),Smoking Status,Current,6.6,699,Female,Middle School
+2002,Kansas,Cigarette Use (Youth),Smoking Status,Current,21.3,715,Male,High School
+2002,Kansas,Cigarette Use (Youth),Smoking Status,Current,4.6,712,Male,Middle School
+2009,Kansas,Cigarette Use (Youth),Smoking Status,Current,17.9,670,Female,High School
+2009,Kansas,Cigarette Use (Youth),Smoking Status,Current,3,516,Female,Middle School
+2009,Kansas,Cigarette Use (Youth),Smoking Status,Current,16.5,669,Male,High School
+2009,Kansas,Cigarette Use (Youth),Smoking Status,Current,5.6,436,Male,Middle School
+2013,Kansas,Cigarette Use (Youth),Smoking Status,Current,1.2,769,Female,Middle School
+2013,Kansas,Cigarette Use (Youth),Smoking Status,Current,1.1,920,Male,Middle School
+2000,Kentucky,Cigarette Use (Youth),Smoking Status,Current,39,592,Female,High School
+2000,Kentucky,Cigarette Use (Youth),Smoking Status,Current,21.1,629,Female,Middle School
+2000,Kentucky,Cigarette Use (Youth),Smoking Status,Current,35.6,658,Male,High School
+2000,Kentucky,Cigarette Use (Youth),Smoking Status,Current,21.9,595,Male,Middle School
+2002,Kentucky,Cigarette Use (Youth),Smoking Status,Current,35.8,766,Female,High School
+2002,Kentucky,Cigarette Use (Youth),Smoking Status,Current,14.8,735,Female,Middle School
+2002,Kentucky,Cigarette Use (Youth),Smoking Status,Current,32.7,717,Male,High School
+2002,Kentucky,Cigarette Use (Youth),Smoking Status,Current,15.6,723,Male,Middle School
+2004,Kentucky,Cigarette Use (Youth),Smoking Status,Current,29.1,1036,Female,High School
+2004,Kentucky,Cigarette Use (Youth),Smoking Status,Current,26.8,1011,Male,High School
+2006,Kentucky,Cigarette Use (Youth),Smoking Status,Current,24.9,1511,Female,High School
+2006,Kentucky,Cigarette Use (Youth),Smoking Status,Current,11.7,1817,Female,Middle School
+2006,Kentucky,Cigarette Use (Youth),Smoking Status,Current,24.2,1399,Male,High School
+2006,Kentucky,Cigarette Use (Youth),Smoking Status,Current,12.3,1810,Male,Middle School
+2008,Kentucky,Cigarette Use (Youth),Smoking Status,Current,26.7,1403,Female,High School
+2008,Kentucky,Cigarette Use (Youth),Smoking Status,Current,9.8,2022,Female,Middle School
+2008,Kentucky,Cigarette Use (Youth),Smoking Status,Current,26.7,1368,Male,High School
+2008,Kentucky,Cigarette Use (Youth),Smoking Status,Current,9.2,1947,Male,Middle School
+2010,Kentucky,Cigarette Use (Youth),Smoking Status,Current,25.5,1813,Female,High School
+2010,Kentucky,Cigarette Use (Youth),Smoking Status,Current,8.2,2038,Female,Middle School
+2010,Kentucky,Cigarette Use (Youth),Smoking Status,Current,27.6,1645,Male,High School
+2010,Kentucky,Cigarette Use (Youth),Smoking Status,Current,9.6,2074,Male,Middle School
+2001,Louisiana,Cigarette Use (Youth),Smoking Status,Current,15.4,1266,Female,Middle School
+2001,Louisiana,Cigarette Use (Youth),Smoking Status,Current,18.1,1119,Male,Middle School
+2008,Louisiana,Cigarette Use (Youth),Smoking Status,Current,16.9,684,Female,High School
+2008,Louisiana,Cigarette Use (Youth),Smoking Status,Current,8.6,779,Female,Middle School
+2008,Louisiana,Cigarette Use (Youth),Smoking Status,Current,20.3,588,Male,High School
+2008,Louisiana,Cigarette Use (Youth),Smoking Status,Current,11.6,767,Male,Middle School
+2009,Louisiana,Cigarette Use (Youth),Smoking Status,Current,21.9,536,Female,High School
+2009,Louisiana,Cigarette Use (Youth),Smoking Status,Current,10.1,879,Female,Middle School
+2009,Louisiana,Cigarette Use (Youth),Smoking Status,Current,16.9,487,Male,High School
+2009,Louisiana,Cigarette Use (Youth),Smoking Status,Current,11.3,753,Male,Middle School
+2011,Louisiana,Cigarette Use (Youth),Smoking Status,Current,20.2,556,Female,High School
+2011,Louisiana,Cigarette Use (Youth),Smoking Status,Current,5.9,694,Female,Middle School
+2011,Louisiana,Cigarette Use (Youth),Smoking Status,Current,26.8,391,Male,High School
+2011,Louisiana,Cigarette Use (Youth),Smoking Status,Current,6.6,653,Male,Middle School
+2013,Louisiana,Cigarette Use (Youth),Smoking Status,Current,12,709,Female,High School
+2013,Louisiana,Cigarette Use (Youth),Smoking Status,Current,4.1,976,Female,Middle School
+2013,Louisiana,Cigarette Use (Youth),Smoking Status,Current,16.7,596,Male,High School
+2013,Louisiana,Cigarette Use (Youth),Smoking Status,Current,8,999,Male,Middle School
+2015,Louisiana,Cigarette Use (Youth),Smoking Status,Current,6,659,Female,Middle School
+2015,Louisiana,Cigarette Use (Youth),Smoking Status,Current,4.4,544,Male,Middle School
+2017,Louisiana,Cigarette Use (Youth),Smoking Status,Current,12.5,589,Female,High School
+2017,Louisiana,Cigarette Use (Youth),Smoking Status,Current,2.1,894,Female,Middle School
+2017,Louisiana,Cigarette Use (Youth),Smoking Status,Current,14.5,462,Male,High School
+2017,Louisiana,Cigarette Use (Youth),Smoking Status,Current,5.4,689,Male,Middle School
+2000,Maine,Cigarette Use (Youth),Smoking Status,Current,13.9,672,Female,Middle School
+2000,Maine,Cigarette Use (Youth),Smoking Status,Current,15.4,627,Male,Middle School
+2001,Maine,Cigarette Use (Youth),Smoking Status,Current,8.5,6205,Female,Middle School
+2001,Maine,Cigarette Use (Youth),Smoking Status,Current,8.8,6226,Male,Middle School
+2000,Maryland,Cigarette Use (Youth),Smoking Status,Current,23.8,16548,Female,High School
+2000,Maryland,Cigarette Use (Youth),Smoking Status,Current,7.3,10703,Female,Middle School
+2000,Maryland,Cigarette Use (Youth),Smoking Status,Current,23.3,15382,Male,High School
+2000,Maryland,Cigarette Use (Youth),Smoking Status,Current,7.3,10671,Male,Middle School
+2002,Maryland,Cigarette Use (Youth),Smoking Status,Current,18.9,19197,Female,High School
+2002,Maryland,Cigarette Use (Youth),Smoking Status,Current,5.1,13152,Female,Middle School
+2002,Maryland,Cigarette Use (Youth),Smoking Status,Current,19.3,17349,Male,High School
+2002,Maryland,Cigarette Use (Youth),Smoking Status,Current,5.4,13001,Male,Middle School
+2002,Massachusetts,Cigarette Use (Youth),Smoking Status,Current,19.4,794,Female,High School
+2002,Massachusetts,Cigarette Use (Youth),Smoking Status,Current,7,946,Female,Middle School
+2002,Massachusetts,Cigarette Use (Youth),Smoking Status,Current,21.7,813,Male,High School
+2002,Massachusetts,Cigarette Use (Youth),Smoking Status,Current,7.1,957,Male,Middle School
+2001,Michigan,Cigarette Use (Youth),Smoking Status,Current,29.5,1593,Female,High School
+2001,Michigan,Cigarette Use (Youth),Smoking Status,Current,8.7,871,Female,Middle School
+2001,Michigan,Cigarette Use (Youth),Smoking Status,Current,25.8,1632,Male,High School
+2001,Michigan,Cigarette Use (Youth),Smoking Status,Current,9.8,883,Male,Middle School
+2003,Michigan,Cigarette Use (Youth),Smoking Status,Current,29.9,1799,Female,High School
+2003,Michigan,Cigarette Use (Youth),Smoking Status,Current,7.6,1863,Female,Middle School
+2003,Michigan,Cigarette Use (Youth),Smoking Status,Current,26.3,1635,Male,High School
+2003,Michigan,Cigarette Use (Youth),Smoking Status,Current,6.9,2023,Male,Middle School
+2007,Michigan,Cigarette Use (Youth),Smoking Status,Current,16.6,1330,Female,High School
+2007,Michigan,Cigarette Use (Youth),Smoking Status,Current,22.7,1261,Male,High School
+2011,Michigan,Cigarette Use (Youth),Smoking Status,Current,14.4,2031,Female,High School
+2011,Michigan,Cigarette Use (Youth),Smoking Status,Current,18.4,1992,Male,High School
+2000,Minnesota,Cigarette Use (Youth),Smoking Status,Current,32.6,3800,Female,High School
+2000,Minnesota,Cigarette Use (Youth),Smoking Status,Current,9.5,2294,Female,Middle School
+2000,Minnesota,Cigarette Use (Youth),Smoking Status,Current,32,3550,Male,High School
+2000,Minnesota,Cigarette Use (Youth),Smoking Status,Current,8.7,2295,Male,Middle School
+2002,Minnesota,Cigarette Use (Youth),Smoking Status,Current,8,2305,Female,Middle School
+2002,Minnesota,Cigarette Use (Youth),Smoking Status,Current,6.4,2295,Male,Middle School
+2008,Minnesota,Cigarette Use (Youth),Smoking Status,Current,3.5,1163,Female,Middle School
+2008,Minnesota,Cigarette Use (Youth),Smoking Status,Current,3.2,1128,Male,Middle School
+2014,Minnesota,Cigarette Use (Youth),Smoking Status,Current,10.4,1095,Female,High School
+2014,Minnesota,Cigarette Use (Youth),Smoking Status,Current,2.3,937,Female,Middle School
+2014,Minnesota,Cigarette Use (Youth),Smoking Status,Current,10.8,1130,Male,High School
+2014,Minnesota,Cigarette Use (Youth),Smoking Status,Current,1.1,1006,Male,Middle School
+2017,Minnesota,Cigarette Use (Youth),Smoking Status,Current,8.6,1085,Female,High School
+2017,Minnesota,Cigarette Use (Youth),Smoking Status,Current,1.8,924,Female,Middle School
+2017,Minnesota,Cigarette Use (Youth),Smoking Status,Current,10.1,1098,Male,High School
+2017,Minnesota,Cigarette Use (Youth),Smoking Status,Current,1.8,898,Male,Middle School
+1999,Mississippi,Cigarette Use (Youth),Smoking Status,Current,30.7,818,Female,High School
+1999,Mississippi,Cigarette Use (Youth),Smoking Status,Current,19.4,986,Female,Middle School
+1999,Mississippi,Cigarette Use (Youth),Smoking Status,Current,34.4,710,Male,High School
+1999,Mississippi,Cigarette Use (Youth),Smoking Status,Current,26.1,890,Male,Middle School
+2000,Mississippi,Cigarette Use (Youth),Smoking Status,Current,26.2,855,Female,High School
+2000,Mississippi,Cigarette Use (Youth),Smoking Status,Current,16.9,938,Female,Middle School
+2000,Mississippi,Cigarette Use (Youth),Smoking Status,Current,32.3,754,Male,High School
+2000,Mississippi,Cigarette Use (Youth),Smoking Status,Current,19.2,802,Male,Middle School
+2002,Mississippi,Cigarette Use (Youth),Smoking Status,Current,18.8,1189,Female,High School
+2002,Mississippi,Cigarette Use (Youth),Smoking Status,Current,12.3,1358,Female,Middle School
+2002,Mississippi,Cigarette Use (Youth),Smoking Status,Current,27.6,1060,Male,High School
+2002,Mississippi,Cigarette Use (Youth),Smoking Status,Current,11.7,1334,Male,Middle School
+2003,Mississippi,Cigarette Use (Youth),Smoking Status,Current,20.6,5432,Female,High School
+2003,Mississippi,Cigarette Use (Youth),Smoking Status,Current,9.8,5969,Female,Middle School
+2003,Mississippi,Cigarette Use (Youth),Smoking Status,Current,26,4791,Male,High School
+2003,Mississippi,Cigarette Use (Youth),Smoking Status,Current,12,5573,Male,Middle School
+2004,Mississippi,Cigarette Use (Youth),Smoking Status,Current,19.7,1302,Female,High School
+2004,Mississippi,Cigarette Use (Youth),Smoking Status,Current,11,1471,Female,Middle School
+2004,Mississippi,Cigarette Use (Youth),Smoking Status,Current,24.3,1066,Male,High School
+2004,Mississippi,Cigarette Use (Youth),Smoking Status,Current,12.8,1355,Male,Middle School
+2006,Mississippi,Cigarette Use (Youth),Smoking Status,Current,16.9,737,Female,High School
+2006,Mississippi,Cigarette Use (Youth),Smoking Status,Current,7.8,785,Female,Middle School
+2006,Mississippi,Cigarette Use (Youth),Smoking Status,Current,20.1,577,Male,High School
+2006,Mississippi,Cigarette Use (Youth),Smoking Status,Current,9,703,Male,Middle School
+2008,Mississippi,Cigarette Use (Youth),Smoking Status,Current,6.9,915,Female,Middle School
+2008,Mississippi,Cigarette Use (Youth),Smoking Status,Current,11,922,Male,Middle School
+2009,Mississippi,Cigarette Use (Youth),Smoking Status,Current,15.6,862,Female,High School
+2009,Mississippi,Cigarette Use (Youth),Smoking Status,Current,6.2,790,Female,Middle School
+2009,Mississippi,Cigarette Use (Youth),Smoking Status,Current,22.2,794,Male,High School
+2009,Mississippi,Cigarette Use (Youth),Smoking Status,Current,8,804,Male,Middle School
+2010,Mississippi,Cigarette Use (Youth),Smoking Status,Current,17.8,918,Female,High School
+2010,Mississippi,Cigarette Use (Youth),Smoking Status,Current,4.4,773,Female,Middle School
+2010,Mississippi,Cigarette Use (Youth),Smoking Status,Current,21.5,800,Male,High School
+2010,Mississippi,Cigarette Use (Youth),Smoking Status,Current,6.8,813,Male,Middle School
+2012,Mississippi,Cigarette Use (Youth),Smoking Status,Current,15.8,806,Female,High School
+2012,Mississippi,Cigarette Use (Youth),Smoking Status,Current,5,867,Female,Middle School
+2012,Mississippi,Cigarette Use (Youth),Smoking Status,Current,20.3,785,Male,High School
+2012,Mississippi,Cigarette Use (Youth),Smoking Status,Current,6.6,799,Male,Middle School
+2013,Mississippi,Cigarette Use (Youth),Smoking Status,Current,11.4,835,Female,High School
+2013,Mississippi,Cigarette Use (Youth),Smoking Status,Current,3.4,893,Female,Middle School
+2013,Mississippi,Cigarette Use (Youth),Smoking Status,Current,15.2,691,Male,High School
+2013,Mississippi,Cigarette Use (Youth),Smoking Status,Current,4.6,1022,Male,Middle School
+2014,Mississippi,Cigarette Use (Youth),Smoking Status,Current,9.6,820,Female,High School
+2014,Mississippi,Cigarette Use (Youth),Smoking Status,Current,3.2,719,Female,Middle School
+2014,Mississippi,Cigarette Use (Youth),Smoking Status,Current,14.9,769,Male,High School
+2014,Mississippi,Cigarette Use (Youth),Smoking Status,Current,6.2,673,Male,Middle School
+2015,Mississippi,Cigarette Use (Youth),Smoking Status,Current,9.6,820,Female,High School
+2015,Mississippi,Cigarette Use (Youth),Smoking Status,Current,3.2,719,Female,Middle School
+2015,Mississippi,Cigarette Use (Youth),Smoking Status,Current,14.9,769,Male,High School
+2015,Mississippi,Cigarette Use (Youth),Smoking Status,Current,6.2,673,Male,Middle School
+2016,Mississippi,Cigarette Use (Youth),Smoking Status,Current,5.9,777,Female,High School
+2016,Mississippi,Cigarette Use (Youth),Smoking Status,Current,2.5,894,Female,Middle School
+2016,Mississippi,Cigarette Use (Youth),Smoking Status,Current,14.1,781,Male,High School
+2016,Mississippi,Cigarette Use (Youth),Smoking Status,Current,3.5,921,Male,Middle School
+2017,Mississippi,Cigarette Use (Youth),Smoking Status,Current,6.2,888,Female,High School
+2017,Mississippi,Cigarette Use (Youth),Smoking Status,Current,1.1,780,Female,Middle School
+2017,Mississippi,Cigarette Use (Youth),Smoking Status,Current,8.2,906,Male,High School
+2017,Mississippi,Cigarette Use (Youth),Smoking Status,Current,1.8,876,Male,Middle School
+1999,Missouri,Cigarette Use (Youth),Smoking Status,Current,16.3,718,Female,Middle School
+1999,Missouri,Cigarette Use (Youth),Smoking Status,Current,13.7,763,Male,Middle School
+2003,Missouri,Cigarette Use (Youth),Smoking Status,Current,24.1,708,Female,High School
+2003,Missouri,Cigarette Use (Youth),Smoking Status,Current,8.3,730,Female,Middle School
+2003,Missouri,Cigarette Use (Youth),Smoking Status,Current,24.4,650,Male,High School
+2003,Missouri,Cigarette Use (Youth),Smoking Status,Current,9.2,697,Male,Middle School
+2005,Missouri,Cigarette Use (Youth),Smoking Status,Current,23,704,Female,High School
+2005,Missouri,Cigarette Use (Youth),Smoking Status,Current,8.9,827,Female,Middle School
+2005,Missouri,Cigarette Use (Youth),Smoking Status,Current,24.3,728,Male,High School
+2005,Missouri,Cigarette Use (Youth),Smoking Status,Current,7.7,813,Male,Middle School
+2007,Missouri,Cigarette Use (Youth),Smoking Status,Current,20.4,658,Female,High School
+2007,Missouri,Cigarette Use (Youth),Smoking Status,Current,7.4,666,Female,Middle School
+2007,Missouri,Cigarette Use (Youth),Smoking Status,Current,22.2,626,Male,High School
+2007,Missouri,Cigarette Use (Youth),Smoking Status,Current,6.3,633,Male,Middle School
+2009,Missouri,Cigarette Use (Youth),Smoking Status,Current,19.5,738,Female,High School
+2009,Missouri,Cigarette Use (Youth),Smoking Status,Current,5.5,780,Female,Middle School
+2009,Missouri,Cigarette Use (Youth),Smoking Status,Current,19.4,748,Male,High School
+2009,Missouri,Cigarette Use (Youth),Smoking Status,Current,5.7,816,Male,Middle School
+2011,Missouri,Cigarette Use (Youth),Smoking Status,Current,16.8,692,Female,High School
+2011,Missouri,Cigarette Use (Youth),Smoking Status,Current,6.5,889,Female,Middle School
+2011,Missouri,Cigarette Use (Youth),Smoking Status,Current,19.7,821,Male,High School
+2011,Missouri,Cigarette Use (Youth),Smoking Status,Current,4.3,957,Male,Middle School
+2013,Missouri,Cigarette Use (Youth),Smoking Status,Current,3.5,858,Female,Middle School
+2013,Missouri,Cigarette Use (Youth),Smoking Status,Current,4.4,936,Male,Middle School
+2015,Missouri,Cigarette Use (Youth),Smoking Status,Current,2.1,846,Female,Middle School
+2015,Missouri,Cigarette Use (Youth),Smoking Status,Current,2.7,842,Male,Middle School
+2017,Missouri,Cigarette Use (Youth),Smoking Status,Current,3.7,914,Female,Middle School
+2017,Missouri,Cigarette Use (Youth),Smoking Status,Current,3.3,874,Male,Middle School
+1999,Nebraska,Cigarette Use (Youth),Smoking Status,Current,9.8,1602,Female,Middle School
+1999,Nebraska,Cigarette Use (Youth),Smoking Status,Current,10.2,1647,Male,Middle School
+2000,Nebraska,Cigarette Use (Youth),Smoking Status,Current,30.8,1640,Female,High School
+2000,Nebraska,Cigarette Use (Youth),Smoking Status,Current,27.1,1531,Male,High School
+2002,Nebraska,Cigarette Use (Youth),Smoking Status,Current,28.7,1380,Female,High School
+2002,Nebraska,Cigarette Use (Youth),Smoking Status,Current,7.6,1410,Female,Middle School
+2002,Nebraska,Cigarette Use (Youth),Smoking Status,Current,27.8,1216,Male,High School
+2002,Nebraska,Cigarette Use (Youth),Smoking Status,Current,6.5,1285,Male,Middle School
+2006,Nebraska,Cigarette Use (Youth),Smoking Status,Current,20.9,1427,Female,High School
+2006,Nebraska,Cigarette Use (Youth),Smoking Status,Current,5,1135,Female,Middle School
+2006,Nebraska,Cigarette Use (Youth),Smoking Status,Current,18.2,1370,Male,High School
+2006,Nebraska,Cigarette Use (Youth),Smoking Status,Current,5.6,1035,Male,Middle School
+2012,Nebraska,Cigarette Use (Youth),Smoking Status,Current,9.5,1190,Female,High School
+2012,Nebraska,Cigarette Use (Youth),Smoking Status,Current,13.9,1214,Male,High School
+2013,Nebraska,Cigarette Use (Youth),Smoking Status,Current,9.5,1190,Female,High School
+2013,Nebraska,Cigarette Use (Youth),Smoking Status,Current,13.9,1214,Male,High School
+2014,Nebraska,Cigarette Use (Youth),Smoking Status,Current,9,1176,Female,High School
+2014,Nebraska,Cigarette Use (Youth),Smoking Status,Current,9.7,1130,Male,High School
+2015,Nebraska,Cigarette Use (Youth),Smoking Status,Current,9,1176,Female,High School
+2015,Nebraska,Cigarette Use (Youth),Smoking Status,Current,9.7,1130,Male,High School
+2017,Nebraska,Cigarette Use (Youth),Smoking Status,Current,6.2,1127,Female,High School
+2017,Nebraska,Cigarette Use (Youth),Smoking Status,Current,8.1,1123,Male,High School
+2000,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,12.8,684,Female,Middle School
+2000,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,11.1,785,Male,Middle School
+2001,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,24.4,693,Female,High School
+2001,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,4.9,725,Female,Middle School
+2001,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,26.2,695,Male,High School
+2001,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,5.4,779,Male,Middle School
+2004,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,18.7,715,Female,High School
+2004,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,4.2,763,Female,Middle School
+2004,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,19.3,683,Male,High School
+2004,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,3.3,835,Male,Middle School
+2007,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,13.4,807,Female,High School
+2007,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,19.7,762,Male,High School
+2009,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,15.8,767,Female,High School
+2009,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,16.5,694,Male,High School
+2011,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,14.5,710,Female,High School
+2011,New Hampshire,Cigarette Use (Youth),Smoking Status,Current,19.1,676,Male,High School
+1999,New Jersey,Cigarette Use (Youth),Smoking Status,Current,28.4,3363,Female,High School
+1999,New Jersey,Cigarette Use (Youth),Smoking Status,Current,11,4153,Female,Middle School
+1999,New Jersey,Cigarette Use (Youth),Smoking Status,Current,26.4,3373,Male,High School
+1999,New Jersey,Cigarette Use (Youth),Smoking Status,Current,9.9,4199,Male,Middle School
+2001,New Jersey,Cigarette Use (Youth),Smoking Status,Current,25,1962,Female,High School
+2001,New Jersey,Cigarette Use (Youth),Smoking Status,Current,7,2635,Female,Middle School
+2001,New Jersey,Cigarette Use (Youth),Smoking Status,Current,24,1987,Male,High School
+2001,New Jersey,Cigarette Use (Youth),Smoking Status,Current,4.9,2529,Male,Middle School
+2004,New Jersey,Cigarette Use (Youth),Smoking Status,Current,18.8,1179,Female,High School
+2004,New Jersey,Cigarette Use (Youth),Smoking Status,Current,4.1,1071,Female,Middle School
+2004,New Jersey,Cigarette Use (Youth),Smoking Status,Current,15.9,1100,Male,High School
+2004,New Jersey,Cigarette Use (Youth),Smoking Status,Current,3.8,1018,Male,Middle School
+2006,New Jersey,Cigarette Use (Youth),Smoking Status,Current,15.4,2097,Female,High School
+2006,New Jersey,Cigarette Use (Youth),Smoking Status,Current,2.9,2088,Female,Middle School
+2006,New Jersey,Cigarette Use (Youth),Smoking Status,Current,15.9,1922,Male,High School
+2006,New Jersey,Cigarette Use (Youth),Smoking Status,Current,3.5,1993,Male,Middle School
+2008,New Jersey,Cigarette Use (Youth),Smoking Status,Current,14.3,1511,Female,High School
+2008,New Jersey,Cigarette Use (Youth),Smoking Status,Current,2.5,1552,Female,Middle School
+2008,New Jersey,Cigarette Use (Youth),Smoking Status,Current,14.5,1456,Male,High School
+2008,New Jersey,Cigarette Use (Youth),Smoking Status,Current,3.1,1456,Male,Middle School
+2010,New Jersey,Cigarette Use (Youth),Smoking Status,Current,14.7,1299,Female,High School
+2010,New Jersey,Cigarette Use (Youth),Smoking Status,Current,13.8,1233,Male,High School
+2012,New Jersey,Cigarette Use (Youth),Smoking Status,Current,8.2,933,Female,High School
+2012,New Jersey,Cigarette Use (Youth),Smoking Status,Current,11.1,874,Male,High School
+2013,New Jersey,Cigarette Use (Youth),Smoking Status,Current,8.2,933,Female,High School
+2013,New Jersey,Cigarette Use (Youth),Smoking Status,Current,10.3,874,Male,High School
+2014,New Jersey,Cigarette Use (Youth),Smoking Status,Current,7.4,1891,Female,High School
+2014,New Jersey,Cigarette Use (Youth),Smoking Status,Current,1.1,1082,Female,Middle School
+2014,New Jersey,Cigarette Use (Youth),Smoking Status,Current,9,1895,Male,High School
+2014,New Jersey,Cigarette Use (Youth),Smoking Status,Current,1.3,975,Male,Middle School
+2015,New Jersey,Cigarette Use (Youth),Smoking Status,Current,7.4,1891,Female,High School
+2015,New Jersey,Cigarette Use (Youth),Smoking Status,Current,1.1,1082,Female,Middle School
+2015,New Jersey,Cigarette Use (Youth),Smoking Status,Current,9,1895,Male,High School
+2015,New Jersey,Cigarette Use (Youth),Smoking Status,Current,1.3,975,Male,Middle School
+2017,New Jersey,Cigarette Use (Youth),Smoking Status,Current,3.4,1845,Female,High School
+2017,New Jersey,Cigarette Use (Youth),Smoking Status,Current,5.8,1634,Male,High School
+2004,New Mexico,Cigarette Use (Youth),Smoking Status,Current,10.9,851,Female,Middle School
+2004,New Mexico,Cigarette Use (Youth),Smoking Status,Current,11.4,800,Male,Middle School
+2000,New York,Cigarette Use (Youth),Smoking Status,Current,29.2,875,Female,High School
+2000,New York,Cigarette Use (Youth),Smoking Status,Current,8.8,984,Female,Middle School
+2000,New York,Cigarette Use (Youth),Smoking Status,Current,24.8,1157,Male,High School
+2000,New York,Cigarette Use (Youth),Smoking Status,Current,9.8,994,Male,Middle School
+2002,New York,Cigarette Use (Youth),Smoking Status,Current,21.8,1879,Female,High School
+2002,New York,Cigarette Use (Youth),Smoking Status,Current,6.3,2183,Female,Middle School
+2002,New York,Cigarette Use (Youth),Smoking Status,Current,21.6,1696,Male,High School
+2002,New York,Cigarette Use (Youth),Smoking Status,Current,7.9,2163,Male,Middle School
+1999,North Carolina,Cigarette Use (Youth),Smoking Status,Current,29.7,3174,Female,High School
+1999,North Carolina,Cigarette Use (Youth),Smoking Status,Current,14,2935,Female,Middle School
+1999,North Carolina,Cigarette Use (Youth),Smoking Status,Current,33.4,2956,Male,High School
+1999,North Carolina,Cigarette Use (Youth),Smoking Status,Current,16,2715,Male,Middle School
+2002,North Carolina,Cigarette Use (Youth),Smoking Status,Current,25.7,2529,Female,High School
+2002,North Carolina,Cigarette Use (Youth),Smoking Status,Current,11.8,2730,Female,Middle School
+2002,North Carolina,Cigarette Use (Youth),Smoking Status,Current,29.8,2453,Male,High School
+2002,North Carolina,Cigarette Use (Youth),Smoking Status,Current,10.5,2700,Male,Middle School
+2004,North Carolina,Cigarette Use (Youth),Smoking Status,Current,25.7,1578,Female,High School
+2004,North Carolina,Cigarette Use (Youth),Smoking Status,Current,8.9,1470,Female,Middle School
+2004,North Carolina,Cigarette Use (Youth),Smoking Status,Current,28.7,1589,Male,High School
+2004,North Carolina,Cigarette Use (Youth),Smoking Status,Current,9.8,1509,Male,Middle School
+2005,North Carolina,Cigarette Use (Youth),Smoking Status,Current,19.8,1548,Female,High School
+2005,North Carolina,Cigarette Use (Youth),Smoking Status,Current,4.4,1574,Female,Middle School
+2005,North Carolina,Cigarette Use (Youth),Smoking Status,Current,20.7,1461,Male,High School
+2005,North Carolina,Cigarette Use (Youth),Smoking Status,Current,7.1,1588,Male,Middle School
+2009,North Carolina,Cigarette Use (Youth),Smoking Status,Current,13.7,1665,Female,High School
+2009,North Carolina,Cigarette Use (Youth),Smoking Status,Current,4.1,1909,Female,Middle School
+2009,North Carolina,Cigarette Use (Youth),Smoking Status,Current,19.2,1531,Male,High School
+2009,North Carolina,Cigarette Use (Youth),Smoking Status,Current,4.3,1801,Male,Middle School
+2011,North Carolina,Cigarette Use (Youth),Smoking Status,Current,12.5,2525,Female,High School
+2011,North Carolina,Cigarette Use (Youth),Smoking Status,Current,3.9,2699,Female,Middle School
+2011,North Carolina,Cigarette Use (Youth),Smoking Status,Current,18.4,2139,Male,High School
+2011,North Carolina,Cigarette Use (Youth),Smoking Status,Current,4.4,2546,Male,Middle School
+2013,North Carolina,Cigarette Use (Youth),Smoking Status,Current,11.1,2149,Female,High School
+2013,North Carolina,Cigarette Use (Youth),Smoking Status,Current,2.6,1943,Female,Middle School
+2013,North Carolina,Cigarette Use (Youth),Smoking Status,Current,15.7,1822,Male,High School
+2013,North Carolina,Cigarette Use (Youth),Smoking Status,Current,2.4,1917,Male,Middle School
+2015,North Carolina,Cigarette Use (Youth),Smoking Status,Current,8.1,1624,Female,High School
+2015,North Carolina,Cigarette Use (Youth),Smoking Status,Current,2.4,1692,Female,Middle School
+2015,North Carolina,Cigarette Use (Youth),Smoking Status,Current,10.5,1701,Male,High School
+2015,North Carolina,Cigarette Use (Youth),Smoking Status,Current,2.3,1745,Male,Middle School
+2017,North Carolina,Cigarette Use (Youth),Smoking Status,Current,7.8,1495,Female,High School
+2017,North Carolina,Cigarette Use (Youth),Smoking Status,Current,2.2,1596,Female,Middle School
+2017,North Carolina,Cigarette Use (Youth),Smoking Status,Current,9.9,1550,Male,High School
+2017,North Carolina,Cigarette Use (Youth),Smoking Status,Current,2.8,1528,Male,Middle School
+2003,North Dakota,Cigarette Use (Youth),Smoking Status,Current,26.3,878,Female,High School
+2003,North Dakota,Cigarette Use (Youth),Smoking Status,Current,12.4,818,Female,Middle School
+2003,North Dakota,Cigarette Use (Youth),Smoking Status,Current,25.9,756,Male,High School
+2003,North Dakota,Cigarette Use (Youth),Smoking Status,Current,9.2,850,Male,Middle School
+2005,North Dakota,Cigarette Use (Youth),Smoking Status,Current,27.4,837,Female,High School
+2005,North Dakota,Cigarette Use (Youth),Smoking Status,Current,9.8,546,Female,Middle School
+2005,North Dakota,Cigarette Use (Youth),Smoking Status,Current,27.7,846,Male,High School
+2005,North Dakota,Cigarette Use (Youth),Smoking Status,Current,5.9,588,Male,Middle School
+2007,North Dakota,Cigarette Use (Youth),Smoking Status,Current,21.5,831,Female,High School
+2007,North Dakota,Cigarette Use (Youth),Smoking Status,Current,6.8,1063,Female,Middle School
+2007,North Dakota,Cigarette Use (Youth),Smoking Status,Current,22.7,804,Male,High School
+2007,North Dakota,Cigarette Use (Youth),Smoking Status,Current,5.8,1007,Male,Middle School
+2009,North Dakota,Cigarette Use (Youth),Smoking Status,Current,22.3,950,Female,High School
+2009,North Dakota,Cigarette Use (Youth),Smoking Status,Current,7.7,1016,Female,Middle School
+2009,North Dakota,Cigarette Use (Youth),Smoking Status,Current,23.4,971,Male,High School
+2009,North Dakota,Cigarette Use (Youth),Smoking Status,Current,4.8,945,Male,Middle School
+2011,North Dakota,Cigarette Use (Youth),Smoking Status,Current,17.9,896,Female,High School
+2011,North Dakota,Cigarette Use (Youth),Smoking Status,Current,7.5,1021,Female,Middle School
+2011,North Dakota,Cigarette Use (Youth),Smoking Status,Current,21.2,979,Male,High School
+2011,North Dakota,Cigarette Use (Youth),Smoking Status,Current,4.2,978,Male,Middle School
+2013,North Dakota,Cigarette Use (Youth),Smoking Status,Current,16.7,1035,Female,High School
+2013,North Dakota,Cigarette Use (Youth),Smoking Status,Current,3.6,993,Female,Middle School
+2013,North Dakota,Cigarette Use (Youth),Smoking Status,Current,15.4,971,Male,High School
+2013,North Dakota,Cigarette Use (Youth),Smoking Status,Current,3.1,971,Male,Middle School
+2015,North Dakota,Cigarette Use (Youth),Smoking Status,Current,11,905,Female,High School
+2015,North Dakota,Cigarette Use (Youth),Smoking Status,Current,4.4,917,Female,Middle School
+2015,North Dakota,Cigarette Use (Youth),Smoking Status,Current,13.5,954,Male,High School
+2015,North Dakota,Cigarette Use (Youth),Smoking Status,Current,2.9,927,Male,Middle School
+2017,North Dakota,Cigarette Use (Youth),Smoking Status,Current,9.5,946,Female,High School
+2017,North Dakota,Cigarette Use (Youth),Smoking Status,Current,2.7,1107,Female,Middle School
+2017,North Dakota,Cigarette Use (Youth),Smoking Status,Current,8.4,950,Male,High School
+2017,North Dakota,Cigarette Use (Youth),Smoking Status,Current,2,1118,Male,Middle School
+2000,Ohio,Cigarette Use (Youth),Smoking Status,Current,33,612,Female,High School
+2000,Ohio,Cigarette Use (Youth),Smoking Status,Current,12.7,864,Female,Middle School
+2000,Ohio,Cigarette Use (Youth),Smoking Status,Current,33.7,614,Male,High School
+2000,Ohio,Cigarette Use (Youth),Smoking Status,Current,14.7,806,Male,Middle School
+2002,Ohio,Cigarette Use (Youth),Smoking Status,Current,25.8,695,Female,High School
+2002,Ohio,Cigarette Use (Youth),Smoking Status,Current,10.9,737,Female,Middle School
+2002,Ohio,Cigarette Use (Youth),Smoking Status,Current,25.6,531,Male,High School
+2002,Ohio,Cigarette Use (Youth),Smoking Status,Current,9.3,775,Male,Middle School
+2004,Ohio,Cigarette Use (Youth),Smoking Status,Current,11.3,733,Female,Middle School
+2004,Ohio,Cigarette Use (Youth),Smoking Status,Current,9.7,693,Male,Middle School
+2008,Ohio,Cigarette Use (Youth),Smoking Status,Current,18.5,676,Female,High School
+2008,Ohio,Cigarette Use (Youth),Smoking Status,Current,4.6,837,Female,Middle School
+2008,Ohio,Cigarette Use (Youth),Smoking Status,Current,20.2,664,Male,High School
+2008,Ohio,Cigarette Use (Youth),Smoking Status,Current,5.1,782,Male,Middle School
+2010,Ohio,Cigarette Use (Youth),Smoking Status,Current,4,764,Female,Middle School
+2010,Ohio,Cigarette Use (Youth),Smoking Status,Current,5.1,762,Male,Middle School
+2012,Ohio,Cigarette Use (Youth),Smoking Status,Current,3.4,507,Female,Middle School
+2012,Ohio,Cigarette Use (Youth),Smoking Status,Current,4,422,Male,Middle School
+2013,Ohio,Cigarette Use (Youth),Smoking Status,Current,3.4,507,Female,Middle School
+2013,Ohio,Cigarette Use (Youth),Smoking Status,Current,4,422,Male,Middle School
+2014,Ohio,Cigarette Use (Youth),Smoking Status,Current,2.3,596,Female,Middle School
+2014,Ohio,Cigarette Use (Youth),Smoking Status,Current,2.9,614,Male,Middle School
+2017,Ohio,Cigarette Use (Youth),Smoking Status,Current,6.4,446,Female,High School
+2017,Ohio,Cigarette Use (Youth),Smoking Status,Current,0.6,604,Female,Middle School
+2017,Ohio,Cigarette Use (Youth),Smoking Status,Current,10.5,562,Male,High School
+2017,Ohio,Cigarette Use (Youth),Smoking Status,Current,1.3,614,Male,Middle School
+1999,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,34,908,Female,High School
+1999,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,15.8,1004,Female,Middle School
+1999,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,31.8,916,Male,High School
+1999,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,17.9,980,Male,Middle School
+2000,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,15.2,791,Female,Middle School
+2000,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,18.8,756,Male,Middle School
+2002,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,21.9,930,Female,High School
+2002,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,9.5,994,Female,Middle School
+2002,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,26,914,Male,High School
+2002,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,11.1,935,Male,Middle School
+2005,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,22.5,651,Female,High School
+2005,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,11.9,876,Female,Middle School
+2005,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,22.7,702,Male,High School
+2005,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,7.9,819,Male,Middle School
+2007,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,22.9,1379,Female,High School
+2007,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,7.1,1667,Female,Middle School
+2007,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,23.7,1524,Male,High School
+2007,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,7.7,1686,Male,Middle School
+2009,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,18.9,864,Female,High School
+2009,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,6,1028,Female,Middle School
+2009,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,21.4,868,Male,High School
+2009,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,7,1071,Male,Middle School
+2011,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,17.4,1000,Female,High School
+2011,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,3.5,1578,Female,Middle School
+2011,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,18.7,1023,Male,High School
+2011,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,4.1,1633,Male,Middle School
+2013,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,5.2,1423,Female,Middle School
+2013,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,4.4,1531,Male,Middle School
+2016,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,5,1262,Female,Middle School
+2016,Oklahoma,Cigarette Use (Youth),Smoking Status,Current,3.3,1223,Male,Middle School
+2001,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,28.3,4171,Female,High School
+2001,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,12.7,3950,Female,Middle School
+2001,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,26.9,3956,Male,High School
+2001,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,13.4,4163,Male,Middle School
+2002,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,23.8,5074,Female,High School
+2002,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,8,4791,Female,Middle School
+2002,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,22.4,4946,Male,High School
+2002,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,7.5,4904,Male,Middle School
+2006,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,17.3,832,Female,High School
+2006,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,4.3,706,Female,Middle School
+2006,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,17.7,821,Male,High School
+2006,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,4,737,Male,Middle School
+2008,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,16,1159,Female,High School
+2008,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,4.2,1158,Female,Middle School
+2008,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,20.7,1205,Male,High School
+2008,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,4.4,1184,Male,Middle School
+2010,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,17.5,1100,Female,High School
+2010,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,3.2,1241,Female,Middle School
+2010,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,19.6,1158,Male,High School
+2010,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,3.7,1237,Male,Middle School
+2014,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,9.4,947,Female,High School
+2014,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,1.6,1333,Female,Middle School
+2014,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,11.1,1034,Male,High School
+2014,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,0.9,1286,Male,Middle School
+2015,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,9.4,947,Female,High School
+2015,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,1.6,1333,Female,Middle School
+2015,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,11.1,1034,Male,High School
+2015,Pennsylvania,Cigarette Use (Youth),Smoking Status,Current,0.9,1286,Male,Middle School
+2001,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,25.2,785,Female,High School
+2001,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,10.8,773,Female,Middle School
+2001,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,26.9,722,Male,High School
+2001,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,7.3,813,Male,Middle School
+2003,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,18.2,1060,Female,High School
+2003,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,6.4,1181,Female,Middle School
+2003,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,16.4,990,Male,High School
+2003,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,7.1,1145,Male,Middle School
+2005,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,19.6,1101,Female,High School
+2005,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,4.7,1252,Female,Middle School
+2005,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,17.4,1145,Male,High School
+2005,Rhode Island,Cigarette Use (Youth),Smoking Status,Current,5.3,1197,Male,Middle School
+2005,South Carolina,Cigarette Use (Youth),Smoking Status,Current,21.7,629,Female,High School
+2005,South Carolina,Cigarette Use (Youth),Smoking Status,Current,10.7,584,Female,Middle School
+2005,South Carolina,Cigarette Use (Youth),Smoking Status,Current,26.9,558,Male,High School
+2005,South Carolina,Cigarette Use (Youth),Smoking Status,Current,11.6,596,Male,Middle School
+2006,South Carolina,Cigarette Use (Youth),Smoking Status,Current,16.3,707,Female,High School
+2006,South Carolina,Cigarette Use (Youth),Smoking Status,Current,8.5,667,Female,Middle School
+2006,South Carolina,Cigarette Use (Youth),Smoking Status,Current,22.2,589,Male,High School
+2006,South Carolina,Cigarette Use (Youth),Smoking Status,Current,9.4,655,Male,Middle School
+2007,South Carolina,Cigarette Use (Youth),Smoking Status,Current,15.7,613,Female,High School
+2007,South Carolina,Cigarette Use (Youth),Smoking Status,Current,8.1,675,Female,Middle School
+2007,South Carolina,Cigarette Use (Youth),Smoking Status,Current,21.6,498,Male,High School
+2007,South Carolina,Cigarette Use (Youth),Smoking Status,Current,9.3,578,Male,Middle School
+2009,South Carolina,Cigarette Use (Youth),Smoking Status,Current,18.4,558,Female,High School
+2009,South Carolina,Cigarette Use (Youth),Smoking Status,Current,7.7,645,Female,Middle School
+2009,South Carolina,Cigarette Use (Youth),Smoking Status,Current,25,510,Male,High School
+2009,South Carolina,Cigarette Use (Youth),Smoking Status,Current,9.1,659,Male,Middle School
+2011,South Carolina,Cigarette Use (Youth),Smoking Status,Current,21,674,Female,High School
+2011,South Carolina,Cigarette Use (Youth),Smoking Status,Current,4.7,775,Female,Middle School
+2011,South Carolina,Cigarette Use (Youth),Smoking Status,Current,26.3,662,Male,High School
+2011,South Carolina,Cigarette Use (Youth),Smoking Status,Current,7,734,Male,Middle School
+2013,South Carolina,Cigarette Use (Youth),Smoking Status,Current,14.7,805,Female,High School
+2013,South Carolina,Cigarette Use (Youth),Smoking Status,Current,4.2,720,Female,Middle School
+2013,South Carolina,Cigarette Use (Youth),Smoking Status,Current,15.8,724,Male,High School
+2013,South Carolina,Cigarette Use (Youth),Smoking Status,Current,5.5,809,Male,Middle School
+2015,South Carolina,Cigarette Use (Youth),Smoking Status,Current,8.1,719,Female,High School
+2015,South Carolina,Cigarette Use (Youth),Smoking Status,Current,15.6,701,Male,High School
+2017,South Carolina,Cigarette Use (Youth),Smoking Status,Current,11.1,663,Female,High School
+2017,South Carolina,Cigarette Use (Youth),Smoking Status,Current,3.3,677,Female,Middle School
+2017,South Carolina,Cigarette Use (Youth),Smoking Status,Current,12.9,674,Male,High School
+2017,South Carolina,Cigarette Use (Youth),Smoking Status,Current,3,670,Male,Middle School
+1999,South Dakota,Cigarette Use (Youth),Smoking Status,Current,10,941,Female,Middle School
+1999,South Dakota,Cigarette Use (Youth),Smoking Status,Current,14.5,962,Male,Middle School
+2000,South Dakota,Cigarette Use (Youth),Smoking Status,Current,34.9,755,Female,High School
+2000,South Dakota,Cigarette Use (Youth),Smoking Status,Current,30.4,730,Male,High School
+2001,South Dakota,Cigarette Use (Youth),Smoking Status,Current,11.2,1187,Female,Middle School
+2001,South Dakota,Cigarette Use (Youth),Smoking Status,Current,11.8,1192,Male,Middle School
+2003,South Dakota,Cigarette Use (Youth),Smoking Status,Current,25.1,957,Female,High School
+2003,South Dakota,Cigarette Use (Youth),Smoking Status,Current,5.9,1196,Female,Middle School
+2003,South Dakota,Cigarette Use (Youth),Smoking Status,Current,29,882,Male,High School
+2003,South Dakota,Cigarette Use (Youth),Smoking Status,Current,6.8,1206,Male,Middle School
+2005,South Dakota,Cigarette Use (Youth),Smoking Status,Current,7.2,1331,Female,Middle School
+2005,South Dakota,Cigarette Use (Youth),Smoking Status,Current,8.2,1399,Male,Middle School
+2007,South Dakota,Cigarette Use (Youth),Smoking Status,Current,8,1289,Female,Middle School
+2007,South Dakota,Cigarette Use (Youth),Smoking Status,Current,4.8,1345,Male,Middle School
+2009,South Dakota,Cigarette Use (Youth),Smoking Status,Current,5.9,1616,Female,Middle School
+2009,South Dakota,Cigarette Use (Youth),Smoking Status,Current,6.2,1667,Male,Middle School
+2016,South Dakota,Cigarette Use (Youth),Smoking Status,Current,3.5,1171,Female,Middle School
+2016,South Dakota,Cigarette Use (Youth),Smoking Status,Current,2.1,1112,Male,Middle School
+2017,South Dakota,Cigarette Use (Youth),Smoking Status,Current,2.3,1555,Female,Middle School
+2017,South Dakota,Cigarette Use (Youth),Smoking Status,Current,1.8,1593,Male,Middle School
+1999,Tennessee,Cigarette Use (Youth),Smoking Status,Current,36.8,688,Female,High School
+1999,Tennessee,Cigarette Use (Youth),Smoking Status,Current,13.9,586,Female,Middle School
+1999,Tennessee,Cigarette Use (Youth),Smoking Status,Current,35.9,716,Male,High School
+1999,Tennessee,Cigarette Use (Youth),Smoking Status,Current,13.5,611,Male,Middle School
+2000,Tennessee,Cigarette Use (Youth),Smoking Status,Current,31.6,4958,Female,High School
+2000,Tennessee,Cigarette Use (Youth),Smoking Status,Current,15.8,5162,Female,Middle School
+2000,Tennessee,Cigarette Use (Youth),Smoking Status,Current,32.6,4621,Male,High School
+2000,Tennessee,Cigarette Use (Youth),Smoking Status,Current,17,5135,Male,Middle School
+2002,Tennessee,Cigarette Use (Youth),Smoking Status,Current,26.3,4152,Female,High School
+2002,Tennessee,Cigarette Use (Youth),Smoking Status,Current,10.9,4274,Female,Middle School
+2002,Tennessee,Cigarette Use (Youth),Smoking Status,Current,28.7,3814,Male,High School
+2002,Tennessee,Cigarette Use (Youth),Smoking Status,Current,11.5,4314,Male,Middle School
+2004,Tennessee,Cigarette Use (Youth),Smoking Status,Current,9.5,4627,Female,Middle School
+2004,Tennessee,Cigarette Use (Youth),Smoking Status,Current,10,4451,Male,Middle School
+2000,Texas,Cigarette Use (Youth),Smoking Status,Current,23.6,1079,Female,High School
+2000,Texas,Cigarette Use (Youth),Smoking Status,Current,13.2,1005,Female,Middle School
+2000,Texas,Cigarette Use (Youth),Smoking Status,Current,32,1138,Male,High School
+2000,Texas,Cigarette Use (Youth),Smoking Status,Current,14.6,975,Male,Middle School
+2003,Utah,Cigarette Use (Youth),Smoking Status,Current,7.4,1220,Female,High School
+2003,Utah,Cigarette Use (Youth),Smoking Status,Current,3.5,1430,Female,Middle School
+2003,Utah,Cigarette Use (Youth),Smoking Status,Current,10.1,1310,Male,High School
+2003,Utah,Cigarette Use (Youth),Smoking Status,Current,3.1,1300,Male,Middle School
+2005,Utah,Cigarette Use (Youth),Smoking Status,Current,7.4,1678,Female,High School
+2005,Utah,Cigarette Use (Youth),Smoking Status,Current,2.2,734,Female,Middle School
+2005,Utah,Cigarette Use (Youth),Smoking Status,Current,13.1,1547,Male,High School
+2005,Utah,Cigarette Use (Youth),Smoking Status,Current,1.6,703,Male,Middle School
+2007,Utah,Cigarette Use (Youth),Smoking Status,Current,5.7,2106,Female,High School
+2007,Utah,Cigarette Use (Youth),Smoking Status,Current,2.1,725,Female,Middle School
+2007,Utah,Cigarette Use (Youth),Smoking Status,Current,10.1,1988,Male,High School
+2007,Utah,Cigarette Use (Youth),Smoking Status,Current,2.4,682,Male,Middle School
+2000,Vermont,Cigarette Use (Youth),Smoking Status,Current,14.2,723,Female,Middle School
+2000,Vermont,Cigarette Use (Youth),Smoking Status,Current,9.6,725,Male,Middle School
+2002,Vermont,Cigarette Use (Youth),Smoking Status,Current,8.9,2263,Female,Middle School
+2002,Vermont,Cigarette Use (Youth),Smoking Status,Current,8.2,2255,Male,Middle School
+2004,Vermont,Cigarette Use (Youth),Smoking Status,Current,23.2,693,Female,High School
+2004,Vermont,Cigarette Use (Youth),Smoking Status,Current,5.2,853,Female,Middle School
+2004,Vermont,Cigarette Use (Youth),Smoking Status,Current,21.4,695,Male,High School
+2004,Vermont,Cigarette Use (Youth),Smoking Status,Current,6.5,847,Male,Middle School
+2007,Virginia,Cigarette Use (Youth),Smoking Status,Current,4.6,775,Female,Middle School
+2007,Virginia,Cigarette Use (Youth),Smoking Status,Current,4.7,802,Male,Middle School
+2009,Virginia,Cigarette Use (Youth),Smoking Status,Current,3.4,1020,Female,Middle School
+2009,Virginia,Cigarette Use (Youth),Smoking Status,Current,3.8,979,Male,Middle School
+2000,West Virginia,Cigarette Use (Youth),Smoking Status,Current,40.6,800,Female,High School
+2000,West Virginia,Cigarette Use (Youth),Smoking Status,Current,18.8,830,Female,Middle School
+2000,West Virginia,Cigarette Use (Youth),Smoking Status,Current,36,744,Male,High School
+2000,West Virginia,Cigarette Use (Youth),Smoking Status,Current,17.5,842,Male,Middle School
+2002,West Virginia,Cigarette Use (Youth),Smoking Status,Current,16.6,4910,Female,Middle School
+2002,West Virginia,Cigarette Use (Youth),Smoking Status,Current,15.8,4724,Male,Middle School
+2005,West Virginia,Cigarette Use (Youth),Smoking Status,Current,28.9,653,Female,High School
+2005,West Virginia,Cigarette Use (Youth),Smoking Status,Current,26.6,566,Male,High School
+2007,West Virginia,Cigarette Use (Youth),Smoking Status,Current,26.6,563,Female,High School
+2007,West Virginia,Cigarette Use (Youth),Smoking Status,Current,10.9,740,Female,Middle School
+2007,West Virginia,Cigarette Use (Youth),Smoking Status,Current,30.2,580,Male,High School
+2007,West Virginia,Cigarette Use (Youth),Smoking Status,Current,11.1,728,Male,Middle School
+2009,West Virginia,Cigarette Use (Youth),Smoking Status,Current,20.9,822,Female,High School
+2009,West Virginia,Cigarette Use (Youth),Smoking Status,Current,8.9,871,Female,Middle School
+2009,West Virginia,Cigarette Use (Youth),Smoking Status,Current,23.7,814,Male,High School
+2009,West Virginia,Cigarette Use (Youth),Smoking Status,Current,8.7,827,Male,Middle School
+2011,West Virginia,Cigarette Use (Youth),Smoking Status,Current,20.7,840,Female,High School
+2011,West Virginia,Cigarette Use (Youth),Smoking Status,Current,9.2,952,Female,Middle School
+2011,West Virginia,Cigarette Use (Youth),Smoking Status,Current,23.9,792,Male,High School
+2011,West Virginia,Cigarette Use (Youth),Smoking Status,Current,7.3,891,Male,Middle School
+2013,West Virginia,Cigarette Use (Youth),Smoking Status,Current,16.8,781,Female,High School
+2013,West Virginia,Cigarette Use (Youth),Smoking Status,Current,7.2,1105,Female,Middle School
+2013,West Virginia,Cigarette Use (Youth),Smoking Status,Current,20,849,Male,High School
+2013,West Virginia,Cigarette Use (Youth),Smoking Status,Current,7.8,1068,Male,Middle School
+2015,West Virginia,Cigarette Use (Youth),Smoking Status,Current,15,839,Female,High School
+2015,West Virginia,Cigarette Use (Youth),Smoking Status,Current,3.9,953,Female,Middle School
+2015,West Virginia,Cigarette Use (Youth),Smoking Status,Current,17.5,770,Male,High School
+2015,West Virginia,Cigarette Use (Youth),Smoking Status,Current,5.1,887,Male,Middle School
+2017,West Virginia,Cigarette Use (Youth),Smoking Status,Current,9.7,719,Female,High School
+2017,West Virginia,Cigarette Use (Youth),Smoking Status,Current,5,977,Female,Middle School
+2017,West Virginia,Cigarette Use (Youth),Smoking Status,Current,10.8,640,Male,High School
+2017,West Virginia,Cigarette Use (Youth),Smoking Status,Current,3.6,1007,Male,Middle School
+2000,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,35,668,Female,High School
+2000,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,12.7,706,Female,Middle School
+2000,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,31,613,Male,High School
+2000,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,11.9,682,Male,Middle School
+2002,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,25.4,697,Female,High School
+2002,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,8.7,611,Female,Middle School
+2002,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,28.6,628,Male,High School
+2002,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,8.6,645,Male,Middle School
+2003,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,6.5,877,Female,Middle School
+2003,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,6.4,917,Male,Middle School
+2004,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,21.8,729,Female,High School
+2004,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,6.8,782,Female,Middle School
+2004,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,20.1,675,Male,High School
+2004,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,8.4,844,Male,Middle School
+2006,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,18.5,839,Female,High School
+2006,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,6.3,936,Female,Middle School
+2006,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,21.1,851,Male,High School
+2006,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,5.2,899,Male,Middle School
+2008,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,18.4,922,Female,High School
+2008,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,4.3,734,Female,Middle School
+2008,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,22.7,945,Male,High School
+2008,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,4.2,800,Male,Middle School
+2010,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,17.9,883,Female,High School
+2010,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,3.6,916,Female,Middle School
+2010,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,17.2,832,Male,High School
+2010,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,4.2,948,Male,Middle School
+2012,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,11.5,752,Female,High School
+2012,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,2.9,869,Female,Middle School
+2012,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,14.6,758,Male,High School
+2012,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,2.2,854,Male,Middle School
+2016,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,6.5,556,Female,High School
+2016,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,2.2,783,Female,Middle School
+2016,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,9.2,608,Male,High School
+2016,Wisconsin,Cigarette Use (Youth),Smoking Status,Current,0.4,785,Male,Middle School
+2000,Wyoming,Cigarette Use (Youth),Smoking Status,Current,13.4,944,Female,Middle School
+2000,Wyoming,Cigarette Use (Youth),Smoking Status,Current,15.6,829,Male,Middle School

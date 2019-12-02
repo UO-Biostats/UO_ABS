@@ -90,6 +90,7 @@ Week 10 (*12/2*)
 : More GLMs; Poisson regression; detecting and modeling overdispersion; quantifying goodness-of-fit.
 
     - Reading: Kruschke, chapter 24
+    - [Homework 9](../CLASS_MATERIALS/Homeworks/HW9_F19.html) *(due 12/12)*
 
 
 # Winter 2020
