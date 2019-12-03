@@ -293,11 +293,12 @@ model {
 ## Now we cover the true data
 
 ```{r plot_post_sims2}
-plot(data$counts[order(mu1)], ylab="counts", ylim=range(sim2), type='n')
+ord <- order(rowMeans(mu1))
+plot(rowMeans(sim2), ylab="counts", ylim=range(sim2), type='n')
 segments(x0=seq_len(nrow(data)),
-         y0=rowMins(sim2)[order(mu1)],
-         y1=rowMaxs(sim2)[order(mu1)])
-points(data$counts[order(mu1)], pch=20, col='red')
+         y0=rowMins(sim2)[ord],
+         y1=rowMaxs(sim2)[ord])
+points(data$counts[ord], pch=20, col='red')
 legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "simulated range"), col=c('red', 'black'))
 ```
 
@@ -305,11 +306,11 @@ legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "simulated ran
 ## Now we cover the true data
 
 ```{r plot_post_sims3}
-plot(data$counts[order(mu1)], ylab="counts", ylim=c(0,500), type='n')
+plot(rowMeans(sim2), ylab="counts", ylim=c(0,200), type='n')
 segments(x0=seq_len(nrow(data)),
-         y0=rowMins(sim2)[order(mu1)],
-         y1=rowMaxs(sim2)[order(mu1)])
-points(data$counts[order(mu1)], pch=20, col='red')
+         y0=rowMins(sim2)[ord],
+         y1=rowMaxs(sim2)[ord])
+points(data$counts[ord], pch=20, col='red')
 legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "simulated range"), col=c('red', 'black'))
 ```
 
@@ -366,6 +367,9 @@ model {
 :::
 :::::::::::
 
+## Exercise 2:
+
+Compare the result of fitting a *quasipoisson* GLM to the data.
 
 # Prediction
 
