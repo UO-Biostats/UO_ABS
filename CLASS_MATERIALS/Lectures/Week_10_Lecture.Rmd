@@ -1,0 +1,595 @@
+---
+title: "Crossvalidation and prediction"
+author: "Peter Ralph"
+date: "3 December 2019 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+# Count data
+
+## A hypothetical situation:
+
+1. We have **counts** of transcript numbers,
+
+2. from some individuals of different **ages**
+   and past **exposures** to solar irradiation,
+
+3. of two **genotypes**.
+
+. . .
+
+The data:
+```{r load_data, cache=TRUE}
+data <- read.table("poisson_counts_data.tsv", header=TRUE)
+```
+```{r true_params, echo=FALSE}
+true_params <- list(a=c(0, 0.2),
+                    b=1/20,
+                    c=c(1/30, -1/15),
+                    sigma=1.0)
+```
+
+## The model
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(y_i) \\
+    y_i &= \exp(a_{g_i} + b \times \text{age}_i \\
+        &\qquad {} + c_{g_i} \times \text{exposure}_i )
+\end{aligned}$$
+
+## The result
+
+
+```{r run_simple_pois, cache=TRUE, dependson=c("load_data")}
+scaled_data <- with(data, list(N=length(counts),
+                               counts=counts,
+                               age=(age - mean(age))/sd(age),
+                               expo=(exposure - mean(exposure))/sd(exposure),
+                               geno=genotype))
+fit1 <- stan(file="simple_poisson.stan",
+             data=scaled_data,
+             control=list(max_treedepth=12),
+             iter=1000, chains=3)
+```
+
+
+## How'd we do?
+
+Here are posterior distributions of the parameters,
+with **the true values in red**.
+```{r true_fit_1, echo=FALSE}
+# a[g] + b * (age - ma)/sa + c[g] * (exp - me)/se
+# = a[g] - b * ma / sa - c[g] * me / se + (b/sa) * age  + (c[g]/se) * exp
+post1 <- extract(fit1)
+post1$true_a <- with(data, post1$a - cbind(post1$b,post1$b) * mean(age)/sd(age) - post1$c * mean(exposure)/sd(exposure))
+layout(matrix(1:6, nrow=2, byrow=TRUE))
+with(data, {
+    hist(post1$true_a[,1], breaks=50, main='a[1]', 
+         xlim=range(post1$true_a[,1], true_params$a[1]))
+    abline(v=true_params$a[1], col='red', lwd=2)
+    hist(post1$true_a[,2], breaks=50, main='a[2]',
+         xlim=range(post1$true_a[,2], true_params$a[2]))
+    abline(v=true_params$a[2], col='red', lwd=2)
+    hist(post1$b/sd(age), breaks=50, main='b',
+         xlim=range(true_params$b, post1$b/sd(age)))
+    abline(v=true_params$b, col='red', lwd=2)
+    hist(post1$c[,1]/sd(exposure), breaks=50, main='c[1]',
+         xlim=range(post1$c[,1]/sd(exposure), true_params$c[1]))
+    abline(v=true_params$c[1], col='red', lwd=2)
+    hist(post1$c[,2]/sd(exposure), breaks=50, main='c[2]',
+         xlim=range(post1$c[,2]/sd(exposure), true_params$c[2]))
+    abline(v=true_params$c[2], col='red', lwd=2)
+ })
+```
+
+
+## 100 posterior predictive datasets
+
+
+::: {.columns}
+:::::::: {.column width="60%"}
+
+```{r post_sims1}
+ps <- sample(nrow(post1$a),  100)
+params1 <- list(a=post1$a[ps,],
+                b=post1$b[ps],
+                c=post1$c[ps,])
+mu1 <- with(list2env(scaled_data), 
+            sapply(1:100, function (k)
+                exp(params1$a[k,geno] 
+                    + params1$b[k] * age
+                    + params1$c[k,geno] * expo)))
+# 100 datasets:
+sim1 <- matrix(rpois(length(mu1), mu1), nrow(mu1))
+```
+
+:::
+:::::::::: {.column width="40%"}
+
+```
+model {
+    vector[N] mu;
+    mu = exp(a[geno] 
+             + b * age 
+             + c[geno] 
+               .* expo);
+    counts ~ poisson(mu);
+```
+
+:::
+:::::::::::
+
+## True data are *overdispersed* relative to the data
+
+```{r plot_post_sims1, fig.width=3*fig.dim, fig.height=2.0*fig.dim, echo=FALSE}
+ord <- order(rowMeans(mu1))
+plot(data$counts[ord], ylab="counts", ylim=range(sim1), type='n')
+segments(x0=seq_len(nrow(data)),
+         y0=rowMins(sim1)[ord],
+         y1=rowMaxs(sim1)[ord])
+points(data$counts[ord], pch=20, col='red')
+legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "simulated range"), col=c('red', 'black'))
+```
+
+## True data are *overdispersed* relative to Poisson
+
+Recall that if $X \sim \Poisson(\lambda)$ then
+$$
+    \E[X] = \var[X] = \lambda,
+$$
+and so a "$z$-score" is
+$$\begin{aligned}
+    \E\left(\frac{X - \mu}{\sqrt{\lambda}}\right) = 0, 
+    \qquad \qquad
+    \text{SD}\left(\frac{X - \mu}{\sqrt{\lambda}}\right) = 1.
+\end{aligned}$$
+
+```{r plot_overdisp, echo=FALSE, fig.width=3*fig.dim}
+f <- function (x, mu) { (x - mu)/sqrt(mu) }
+mean_mu <- rowMeans(mu1)
+layout(t(1:2))
+plot(mean_mu, f(rpois(length(mean_mu), mean_mu), mean_mu), pch=20, ylim=range(f(data$counts, mean_mu)),
+     main="Poisson", xlab=expression(mu), ylab=expression((X-mu)/sqrt(mu)))
+plot(mean_mu, f(data$counts, mean_mu), pch=20,
+     main="our data", xlab=expression(mu), ylab=expression((X-mu)/sqrt(mu)))
+```
+
+## Add overdispersion
+
+::: {.columns}
+::::::::: {.column width="40%"}
+
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\mu_i) \\
+    \mu_i &\sim \log\Normal(y_i, \sigma) \\
+    y_i &= a_{g_i} + b \times \text{age}_i \\
+    &\qquad {} + c_{g_i} \times \text{exposure}_i 
+\end{aligned}$$
+
+
+:::
+:::::::::: {.column width="60%"}
+
+```
+overdispersed_model <- stan_model(model_code="
+data {
+    int N; // number of data points
+    vector[N] age;
+    vector[N] exposure;
+    int counts[N];
+    int genotype[N];
+    int ngenotypes;
+}
+parameters {
+    vector[ngenotypes] a; // intercepts
+    real b; // slope for age
+    vector[ngenotypes] c; // slopes for exposure
+    real<lower=0> sigma; // SD on lognormal
+    vector[N] mu; // mean of the poissons
+}
+model {
+    vector[N] y; // mean of the lognormals
+    y = a[genotype] + b * age + c[genotype] .* exposure;
+    mu ~ lognormal(y, sigma);
+    counts ~ poisson(mu);
+    a ~ normal(0, 100);
+    b ~ normal(0, 10);
+    c ~ normal(0, 20);
+    sigma ~ normal(0, 10);
+}")
+```
+
+:::
+:::::::::::
+
+---------------
+
+```{r fit_fullmodel, cache=TRUE, dependson="load_data"}
+model2 <- stan_model("lognormal_poisson.stan")
+fit2 <- sampling(model2,
+                 data=scaled_data,
+                 iter=1000, chains=3)
+post2 <- rstan::extract(fit2)
+```
+
+## How'd we do *now*?
+
+Here are posterior distributions from the full model,
+with the true values in red.
+```{r true_fit, echo=FALSE}
+# a[g] + b * (age - ma)/sa + c[g] * (exp - me)/se
+# = a[g] - b * ma / sa - c[g] * me / se + (b/sa) * age  + (c[g]/se) * exp
+layout(matrix(1:6, nrow=2, byrow=TRUE))
+with(data, {
+    hist(post2$a[,1] - post2$b * mean(age)/sd(age) - post2$c[,1] * mean(exposure)/sd(exposure), 
+         breaks=50, main='a[1]')
+    abline(v=true_params$a[1], col='red', lwd=2)
+    hist(post2$a[,2] - post2$b * mean(age)/sd(age) - post2$c[,2] * mean(exposure)/sd(exposure), 
+         breaks=50, main='a[2]')
+    abline(v=true_params$a[2], col='red', lwd=2)
+    hist(post2$b/sd(age), breaks=50, main='b')
+    abline(v=true_params$b, col='red', lwd=2)
+    hist(post2$c[,1]/sd(exposure), breaks=50, main='c[1]')
+    abline(v=true_params$c[1], col='red', lwd=2)
+    hist(post2$c[,2]/sd(exposure), breaks=50, main='c[2]')
+    abline(v=true_params$c[2], col='red', lwd=2)
+    hist(post2$sigma, breaks=50, main='sigma')
+    abline(v=true_params$sigma, col='red', lwd=2)
+ })
+```
+
+## Posterior predictive simulations, again
+
+
+::: {.columns}
+:::::::: {.column width="60%"}
+
+```{r post_sims2}
+# 100 datasets:
+params2 <- list(a=colMeans(post2$a),
+                b=mean(post2$b),
+                c=colMeans(post2$c),
+                sigma=mean(post2$sigma))
+y2 <- with(list2env(scaled_data), 
+                params2$a[geno] 
+                    + params2$b * age
+                    + params2$c[geno] * expo)
+sim2 <- replicate(100, {
+           mu = exp(rnorm(length(y2),
+                          mean=y2, 
+                          sd=params2$sigma))
+           rpois(length(mu), mu)
+         })
+```
+
+:::
+:::::::::: {.column width="40%"}
+
+```
+model {
+    vector[N] y;
+    y = a[geno] + b * age + c[geno] .* expo;
+    mu ~ lognormal(y, sigma);
+    counts ~ poisson(mu);
+}
+```
+
+:::
+:::::::::::
+
+## Now we cover the true data
+
+```{r plot_post_sims2}
+plot(data$counts[order(mu1)], ylab="counts", ylim=range(sim2), type='n')
+segments(x0=seq_len(nrow(data)),
+         y0=rowMins(sim2)[order(mu1)],
+         y1=rowMaxs(sim2)[order(mu1)])
+points(data$counts[order(mu1)], pch=20, col='red')
+legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "simulated range"), col=c('red', 'black'))
+```
+
+
+## Now we cover the true data
+
+```{r plot_post_sims3}
+plot(data$counts[order(mu1)], ylab="counts", ylim=c(0,500), type='n')
+segments(x0=seq_len(nrow(data)),
+         y0=rowMins(sim2)[order(mu1)],
+         y1=rowMaxs(sim2)[order(mu1)])
+points(data$counts[order(mu1)], pch=20, col='red')
+legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "simulated range"), col=c('red', 'black'))
+```
+
+#
+
+## Exercise:
+
+::: {.columns}
+::::::::: {.column width="40%"}
+
+Explain the model, *in words*.
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\mu_i) \\
+    \mu_i &\sim \log\Normal(y_i, \sigma) \\
+    y_i &= a_{g_i} + b \times \text{age}_i \\
+    &\qquad {} + c_{g_i} \times \text{exposure}_i 
+\end{aligned}$$
+
+
+:::
+:::::::::: {.column width="60%"}
+
+```
+overdispersed_model <- stan_model(model_code="
+data {
+    int N; // number of data points
+    vector[N] age;
+    vector[N] exposure;
+    int counts[N];
+    int genotype[N];
+    int ngenotypes;
+}
+parameters {
+    vector[ngenotypes] a; // intercepts
+    real b; // slope for age
+    vector[ngenotypes] c; // slopes for exposure
+    real<lower=0> sigma; // SD on lognormal
+    vector[N] mu; // mean of the poissons
+}
+model {
+    vector[N] y; // mean of the lognormals
+    y = a[genotype] + b * age + c[genotype] .* exposure;
+    mu ~ lognormal(y, sigma);
+    counts ~ poisson(mu);
+    a ~ normal(0, 100);
+    b ~ normal(0, 10);
+    c ~ normal(0, 20);
+    sigma ~ normal(0, 10);
+}")
+```
+
+
+:::
+:::::::::::
+
+
+# Prediction
+
+##
+
+![is it Christmas? No. (99.73% accurate)](images/xkcd_prediction.png)
+
+::: {.caption}
+https://xkcd.com/2236/
+:::
+
+
+## Out-of-sample prediction
+
+To test predictive ability (and diagnose overfitting!):
+
+1. Split the data into *test* and *training* pieces.
+2. Fit the model using the training data.
+3. See how well it predicts the test data.
+
+. . .
+
+If you do this a lot of times, it's called *crossvalidation*.
+
+## Prediction in Stan
+
+::: {.columns}
+::::::::: {.column width="50%"}
+
+```{r pred_model, cache=TRUE}
+pred_model <- stan_model(model_code="
+data {
+    int N;  // number of data points
+    int Nm; // number of missing counts
+    vector[N] age;
+    vector[N] exposure;
+    int missings[Nm]; // indexes of missings
+    int not_missings[N - Nm]; // the complement
+    int counts[N - Nm];
+    int genotype[N];
+    int ngenotypes;
+}
+parameters {
+    vector[ngenotypes] a; // intercepts
+    real b; // slope for age
+    vector[ngenotypes] c; // slopes for exposure
+    real<lower=0> sigma; // SD on lognormal
+    vector<lower=0>[N] mu; // mean of the poissons
+}
+model {
+    vector[N] y; // mean of the lognormals
+    y = a[genotype] + b * age + c[genotype] .* exposure;
+    mu ~ lognormal(y, sigma);
+    counts ~ poisson(mu[not_missings]);
+    a ~ normal(0, 100);
+    b ~ normal(0, 10);
+    c ~ normal(0, 20);
+    sigma ~ normal(0, 10);
+}
+generated quantities {
+    int missing_counts[Nm];
+    missing_counts = poisson_rng(mu[missings]);
+}
+")
+```
+
+
+:::
+:::::::::: {.column width="50%"}
+
+
+```{r predfit, cache=TRUE, dependson="pred_model"}
+predict_these <- sample(length(data$counts), 20)
+
+pred_data <- with(data,
+      list(N=length(counts),
+           Nm=length(predict_these),
+           age=(age - mean(age))/sd(age),
+           exposure=(exposure - mean(exposure))/sd(exposure),
+           counts=counts[-predict_these],
+           missings=predict_these,
+           not_missings=seq_along(counts)[-predict_these],
+           genotype=genotype,
+           ngenotypes=length(unique(genotype))))
+
+fit3 <- sampling(pred_model,
+                 data=pred_data,
+                 control=list(max_treedepth=12),
+                 iter=1000, chains=3)
+```
+
+:::
+:::::::::::
+
+## Posterior predictive samples
+
+```{r plot_pred, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+preds <- rstan::extract(fit3, pars="missing_counts")$missing_counts
+ord <- order(colMeans(preds))
+plot(ord, colMeans(preds), ylim=range(preds), xlab='', ylab='counts', type='n')
+segments(x0=ord,
+         y0=colMins(preds),
+         y1=colMaxs(preds), lty=3, lwd=0.5)
+segments(x0=ord,
+         y0=colQuantiles(preds, probs=0.025),
+         y1=colQuantiles(preds, probs=0.975), col='red')
+segments(x0=ord,
+         y0=colQuantiles(preds, probs=0.25),
+         y1=colQuantiles(preds, probs=0.75), lwd=2)
+points(x=ord, y=data$counts[predict_these], cex=2, pch=20)
+legend("topleft",
+       lty=c(3,1,1,NA), pch=c(NA,NA,NA,20), col=c("black", "red", "black", "black"),
+       pt.cex=c(NA,NA,NA,2), lwd=c(3,1,1,NA),
+       legend=c("range", "95% CI", "50% CI", "true value"))
+```
+
+
+## Posterior predictive samples
+
+```{r plot_pred2, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+plot(ord, colMeans(preds), ylim=c(0,100), xlab='', ylab='counts', type='n')
+segments(x0=ord,
+         y0=colMins(preds),
+         y1=colMaxs(preds), lty=3, lwd=0.5)
+segments(x0=ord,
+         y0=colQuantiles(preds, probs=0.025),
+         y1=colQuantiles(preds, probs=0.975), col='red')
+segments(x0=ord,
+         y0=colQuantiles(preds, probs=0.25),
+         y1=colQuantiles(preds, probs=0.75), lwd=2)
+points(x=ord, y=data$counts[predict_these], cex=2, pch=20)
+legend("topleft",
+       lty=c(3,1,1,NA), pch=c(NA,NA,NA,20), col=c("black", "red", "black", "black"),
+       pt.cex=c(NA,NA,NA,2), lwd=c(3,1,1,NA),
+       legend=c("range", "95% CI", "50% CI", "true value"))
+```
+
+
+# Application: parasite counts
+
+## The data
+
+Tavalire et al 2016,
+**Genotypic variation in host response to infection affects parasite reproductive rate**,
+*International Journal for Parasitology*,
+has:
+
+- Strain: inbred line ID
+- Inf_Dose: number of parasites exposed to: 0 (control), 1, and 10
+- Tray: housing for each individual
+- Infected: whether or not was infected
+- Initial_Size_mm: initial size of the snail
+- Weeks_to_first_shed: time until the snail first produced parasites
+- Total_weeks_shed: number of weeks that parasites were produced; right censored at 30
+- Total_Parasites: number of parasites produced in the first 30 weeks
+- Avg_Parasites_per_Shed: Total parasites/weeks shed
+- Week_Died: Survival time, right censored at 30 weeks
+
+## A question
+
+How much do genotype and parasite dose affect parasite production?
+
+. . .
+
+Here's the [data](../Datasets/Snail_Parasite_Data/Tavalire_et_al_2016_snail_parasite_data.csv)
+```{r snails}
+head(snails <- read.csv("../Datasets/Snail_Parasite_Data/Tavalire_et_al_2016_snail_parasite_data.csv"))
+```
+
+# Review
+
+Concepts:
+
+- statistic versus parameter
+- experiment versus observational study
+- controls
+- statistical power/sensitivity
+- tidy data
+- simulation
+
+- probability models
+- $p$-values
+- hypothesis testing
+- confidence intervals
+- central limit theorem
+- linear models
+- random effects
+- multiple comparisons
+- shrinkage and sharing power
+- goodness-of-fit
+
+- prior, likelihood, and posterior
+- Markov chain Monte Carlo
+
+Visualization:
+
+- center, spread, outliers
+- histograms
+- scatter plots
+- boxplots
+- maximize information per unit of ink
+
+Distributions:
+
+- Gaussian/Normal
+- Student's $t$
+- Binomial
+- Beta
+- Beta-Binomial
+- Exponential
+- Poisson
+
+Statistical models:
+
+*Parametric:*
+
+- ANOVA, partition of variance
+- least-squares regression
+- Beta-Binomial
+- logistic regression
+- robust regression
+- general linear models
+
+*Nonparametric:*
+
+- permutation test
+
