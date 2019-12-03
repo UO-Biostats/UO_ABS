@@ -151,9 +151,9 @@ $$
 $$
 and so a "$z$-score" is
 $$\begin{aligned}
-    \E\left(\frac{X - \mu}{\sqrt{\lambda}}\right) = 0, 
+    \E\left(\frac{X - \lambda}{\sqrt{\lambda}}\right) = 0, 
     \qquad \qquad
-    \text{SD}\left(\frac{X - \mu}{\sqrt{\lambda}}\right) = 1.
+    \text{SD}\left(\frac{X - \lambda}{\sqrt{\lambda}}\right) = 1.
 \end{aligned}$$
 
 ```{r plot_overdisp, echo=FALSE, fig.width=3*fig.dim}
