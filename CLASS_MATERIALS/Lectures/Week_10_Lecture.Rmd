@@ -541,30 +541,60 @@ head(snails <- read.csv("../Datasets/Snail_Parasite_Data/Tavalire_et_al_2016_sna
 
 # Review
 
-Concepts:
+## Concepts
+
+::: {.columns}
+:::::::: {.column width="50%"}
+
 
 - statistic versus parameter
-- experiment versus observational study
+- quantifying uncertainty
+- experiment vs observation
 - controls
 - statistical power/sensitivity
 - tidy data
-- simulation
-
-- probability models
-- $p$-values
-- hypothesis testing
-- confidence intervals
-- central limit theorem
-- linear models
-- random effects
+- Markov chain Monte Carlo
+- permutation test
 - multiple comparisons
 - shrinkage and sharing power
+
+:::
+:::::::: {.column width="50%"}
+
+- probability models
+- simulation
+- $p$-values
+- hypothesis testing
+- confidence and credible intervals
+- linear models
+- random effects
+- prior, likelihood, and posterior
 - goodness-of-fit
 
-- prior, likelihood, and posterior
-- Markov chain Monte Carlo
+:::
+::::::::
 
-Visualization:
+------------------
+
+::: {.columns}
+:::::::: {.column width="50%"}
+
+**Distributions:**
+
+- Central Limit Theorem
+- Gaussian/Normal
+- Student's $t$
+- Binomial
+- Beta
+- Beta-Binomial
+- Exponential
+- Cauchy
+- Poisson
+
+:::
+:::::::: {.column width="50%"}
+
+**Visualization:**
 
 - center, spread, outliers
 - histograms
@@ -572,28 +602,15 @@ Visualization:
 - boxplots
 - maximize information per unit of ink
 
-Distributions:
-
-- Gaussian/Normal
-- Student's $t$
-- Binomial
-- Beta
-- Beta-Binomial
-- Exponential
-- Poisson
-
-Statistical models:
-
-*Parametric:*
+**Statistical models:**
 
 - ANOVA, partition of variance
-- least-squares regression
+- least-squares fitting $\sim$ Gaussian
 - Beta-Binomial
 - logistic regression
 - robust regression
-- general linear models
+- General Linear (Mixed) Models
 
-*Nonparametric:*
-
-- permutation test
+:::
+::::::::
 
