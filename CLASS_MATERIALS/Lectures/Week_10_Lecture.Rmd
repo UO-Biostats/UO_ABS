@@ -539,6 +539,68 @@ Here's the [data](../Datasets/Snail_Parasite_Data/Tavalire_et_al_2016_snail_para
 head(snails <- read.csv("../Datasets/Snail_Parasite_Data/Tavalire_et_al_2016_snail_parasite_data.csv"))
 ```
 
+## in class
+
+```
+mod1 <- glm(Total_Parasites ~ Strain * Total_weeks_shed + Strain : dose, data=snails, family=poisson("log"))
+summary(mod1)
+
+# mean predicted load at 0 weeks for default strain:
+exp(9.6)
+
+# default strain is the first one
+levels(snails$Strain)
+
+# predicted load of second strain relative to first one
+exp(-.66)
+
+# plot data and predicted means
+plot(Total_Parasites ~ Total_weeks_shed, data=snails, col=Strain, pch=20)
+newdata <- expand.grid(Strain=levels(snails$Strain), Total_weeks_shed=0:30, dose=TRUE)
+for (st in levels(snails$Strain)) {
+  lines(0:30, exp(preds[newdata$Strain == st]), col=match(st, levels(snails$Strain)))
+}
+```
+
+## hm, intercept doesn't look great: try some other models?
+
+This one fails to fit because of negative values
+```
+> mod2 <- glm(Total_Parasites ~ Strain * Total_weeks_shed + Strain : dose, data=snails, family=poisson("identity"))
+Error: no valid set of coefficients has been found: please supply starting values
+In addition: Warning message:
+In log(y/mu) : NaNs produced
+```
+
+Using Stan doesn't help:
+```
+> library(brms)
+> mod2 <- brm(Total_Parasites ~ Strain * Total_weeks_shed + Strain : dose, data=snails, family=poisson("identity"))
+Compiling the C++ model
+```
+
+
+## some other models
+
+```
+mod3 <- glm(Total_Parasites ~ 0 + Strain : Total_weeks_shed + Strain : dose, data=snails, family=poisson("identity"))
+mod4 <- glm(Total_Parasites ~ 0 + Strain : Total_weeks_shed + Strain : dose, data=snails, family=poisson("log"))
+preds3 <- predict(mod3, newdata=newdata)
+preds4 <- predict(mod4, newdata=newdata)
+plot(Total_Parasites ~ Total_weeks_shed, data=snails, col=Strain, pch=20)
+for (st in levels(snails$Strain)) {
+    lines(0:30, exp(preds[newdata$Strain == st]), col=match(st, levels(snails$Strain)))
+    lines(0:30, exp(preds3[newdata$Strain == st]), col=match(st, levels(snails$Strain)), lty=3)
+    lines(0:30, exp(preds4[newdata$Strain == st]), col=match(st, levels(snails$Strain)), lty=4)
+}
+```
+
+## conclusions:
+
+- poor model fit
+- try a different link function (sqrt?)
+- perhaps adding overdispersion? need to look at noise in more detail.
+
 # Review
 
 ## Concepts

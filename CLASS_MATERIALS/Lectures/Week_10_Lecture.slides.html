@@ -2058,6 +2058,56 @@ model {
 ## 5       56     36        0    h        0            7.97                  NA               NA              NA                     NA         6
 ## 6       49     36        0    c        0            7.86                  NA               NA              NA                     NA        10</code></pre>
 </div>
+</section><section id="in-class" class="slide level2">
+<h2>in class</h2>
+<pre><code>mod1 &lt;- glm(Total_Parasites ~ Strain * Total_weeks_shed + Strain : dose, data=snails, family=poisson(&quot;log&quot;))
+summary(mod1)
+
+# mean predicted load at 0 weeks for default strain:
+exp(9.6)
+
+# default strain is the first one
+levels(snails$Strain)
+
+# predicted load of second strain relative to first one
+exp(-.66)
+
+# plot data and predicted means
+plot(Total_Parasites ~ Total_weeks_shed, data=snails, col=Strain, pch=20)
+newdata &lt;- expand.grid(Strain=levels(snails$Strain), Total_weeks_shed=0:30, dose=TRUE)
+for (st in levels(snails$Strain)) {
+  lines(0:30, exp(preds[newdata$Strain == st]), col=match(st, levels(snails$Strain)))
+}</code></pre>
+</section><section id="hm-intercept-doesnt-look-great-try-some-other-models" class="slide level2">
+<h2>hm, intercept doesn’t look great: try some other models?</h2>
+<p>This one fails to fit because of negative values</p>
+<pre><code>&gt; mod2 &lt;- glm(Total_Parasites ~ Strain * Total_weeks_shed + Strain : dose, data=snails, family=poisson(&quot;identity&quot;))
+Error: no valid set of coefficients has been found: please supply starting values
+In addition: Warning message:
+In log(y/mu) : NaNs produced</code></pre>
+<p>Using Stan doesn’t help:</p>
+<pre><code>&gt; library(brms)
+&gt; mod2 &lt;- brm(Total_Parasites ~ Strain * Total_weeks_shed + Strain : dose, data=snails, family=poisson(&quot;identity&quot;))
+Compiling the C++ model</code></pre>
+</section><section id="some-other-models" class="slide level2">
+<h2>some other models</h2>
+<pre><code>mod3 &lt;- glm(Total_Parasites ~ 0 + Strain : Total_weeks_shed + Strain : dose, data=snails, family=poisson(&quot;identity&quot;))
+mod4 &lt;- glm(Total_Parasites ~ 0 + Strain : Total_weeks_shed + Strain : dose, data=snails, family=poisson(&quot;log&quot;))
+preds3 &lt;- predict(mod3, newdata=newdata)
+preds4 &lt;- predict(mod4, newdata=newdata)
+plot(Total_Parasites ~ Total_weeks_shed, data=snails, col=Strain, pch=20)
+for (st in levels(snails$Strain)) {
+    lines(0:30, exp(preds[newdata$Strain == st]), col=match(st, levels(snails$Strain)))
+    lines(0:30, exp(preds3[newdata$Strain == st]), col=match(st, levels(snails$Strain)), lty=3)
+    lines(0:30, exp(preds4[newdata$Strain == st]), col=match(st, levels(snails$Strain)), lty=4)
+}</code></pre>
+</section><section id="conclusions" class="slide level2">
+<h2>conclusions:</h2>
+<ul>
+<li>poor model fit</li>
+<li>try a different link function (sqrt?)</li>
+<li>perhaps adding overdispersion? need to look at noise in more detail.</li>
+</ul>
 </section></section>
 <section><section id="review" class="title-slide slide level1"><h1>Review</h1></section><section id="concepts" class="slide level2">
 <h2>Concepts</h2>
