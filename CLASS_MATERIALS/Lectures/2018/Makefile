@@ -10,7 +10,7 @@ MATHJAX = https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js
 LOCAL_MATHJAX = /usr/share/javascript/mathjax/MathJax.js
 
 # may want to add "--self-contained" to the following
-PANDOC_OPTS = --standalone # --self-contained
+PANDOC_OPTS = --standalone  --self-contained
 MATHJAX_OPTS = --mathjax=$(MATHJAX)?config=TeX-AMS-MML_HTMLorMML 
 LOCAL_MATHJAX_OPTS = --mathjax=$(LOCAL_MATHJAX)?config=TeX-AMS-MML_HTMLorMML
 # optionally add in a latex file with macros

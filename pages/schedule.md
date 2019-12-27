@@ -7,7 +7,60 @@ description: schedule, with links to slides and homeworks
 The (Rmarkdown) source code for these lectures is available at [the github repository](https://github.com/UO-Biostats/UO_ABS),
 or by replacing the `.slides.html` suffix to `.Rmd` in the link below;
 the slides are made using [reveal.js](https://github.com/hakimel/reveal.js/).
-Here are the [slides from previous years](2018_schedule.html).
+Here are the [slides from Fall2018/Winter 2019](2018_schedule.html).
+
+# Winter 2020
+
+Week 11 (*1/7*)
+
+: Survival analysis
+
+Week 12 (*1/14*)
+
+: Time series: temporal autocorrelation, autoregressive models; mechanistic models
+
+Week 13 (*1/21*)
+
+: Categorical data: chi-square for contingency tables, permutation tests
+
+    - Reading: Kruschke, chapter 24 (Poisson, contingency tables)
+
+Week 14 (*1/28*)
+
+: Categorical prediction; crossvalidation for model comparison.
+
+    - Reading: Kruschke, chapter 22 (softmax regression)
+
+Week 15 (*2/4*)
+
+: Many dimensions: Sparsifying priors and variable selection.
+
+    - Reading: Kruschke, chapters 17 (one-variable linear regression), 18 (multivariate linear regression)
+
+Week 16 (*2/11*)
+
+: Factor analysis, dimensionality reduction, and visualization; "clustering"; PCA, PCoA, MDS, t-SNE, UMAP
+
+Week 17 (*2/18*)
+
+: Latent factors, mixtures of expression data; nonnegative matrix factorization
+
+Week 18 (*2/25*)
+
+: MANOVA and Discriminant Function Analysis (DFA)
+
+    - Reading: Kruschke, chapter 16 (metric data with one or two groups)
+
+Week 19 (*3/3*)
+
+: Introduction to spatial statistics: spatial autocorrelation.
+
+    - Reading: Otto and Day, Linear Algebra Primer
+
+Week 20 (*3/10*)
+
+: Looking back: example analysis and summary
+
 
 # Fall 2019
 
@@ -94,59 +147,3 @@ Week 10 (*12/2*)
     - Reading: Kruschke, chapter 24
     - [Homework 9](../CLASS_MATERIALS/Homeworks/HW9_F19.html) *(due 12/12)*
 
-
-# Winter 2020
-
-*Note:* The schedule below is tentative.
-
-Week 11 (*1/7*)
-
-: Survival analysis
-
-Week 12 (*1/14*)
-
-: Categorical data: chi-square for contingency tables, permutation tests; categorical prediction.
-
-    - Reading: Kruschke, chapters 22, 24
-
-Week 13 (*1/21*)
-
-: Sparsifying priors and variable selection.
-
-    - Reading: Kruschke, chapters 19, 20
-
-
-Week 14 (*1/28*)
-
-: Linear algebra, latent factor analysis, intro to multivariate
-
-    - Reading: Otto and Day, Linear Algebra Primer; Quinn & Keough, chapter 15
-
-
-Week 15 (*2/4*)
-
-: Factor/PCA/PCoA/MDS
-
-    - Reading: Quinn & Keough, chapters 17, 18
-
-Week 16 (*2/11*)
-
-: MANOVA and Discriminant Function Analysis (DFA)
-
-    - Reading: Quinn & Keough, chapter 16
-
-Week 17 (*2/18*)
-
-: Visualization: nonnegative matrix factorization and constrained PCA
-
-Week 18 (*2/25*)
-
-: Modeling mixtures of expression data; clustering in Stan (t-SNE)
-
-Week 19 (*3/3*)
-
-: Introduction to time series
-
-Week 20 (*3/10*)
-
-: Introduction to spatial statistics.
