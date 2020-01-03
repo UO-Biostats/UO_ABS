@@ -1,0 +1,417 @@
+---
+title: "Using brms"
+author: "Peter Ralph"
+date: "`r date()`"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 5
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center',
+                      warning=FALSE)
+set.seed(23)
+library(survival)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+library(brms)
+```
+
+# Running brms
+
+The paper introducing `brms`, available through `vignette("brms_overview")`,
+provides a good technical introduction to how `brms` works.
+
+Some other useful places for documentation are:
+
+- Vignettes listed under `vignette(package='brms')`
+- `help(brmsformula)` - very detailed! Describes all (?) the modeling options.
+- `help(brmsfamily)` - lists defaults, etcetera for each `family`.
+- `help(set_prior)` for how to choose priors
+- `methods(class = "brmsfit")` for methods of a brmsfit object
+
+
+Here, we'll look under the hood, in detail, at one of its examples, the `kidney` dataset,
+whose analysis is described in the `brms_overview` vignette.
+This has data describing the first and (possibly) second recurrence time of infection
+in thirty-eight patients.
+
+```{r thedata}
+library(brms)
+data(kidney)
+kidney$patient <- factor(kidney$patient)
+head(kidney)
+```
+
+
+Here is the model described in the paper:
+```{r fits, cache=TRUE}
+fit1 <- brm(formula = time | cens(censored) ~ age * sex + disease + (1 + age|patient),
+            data = kidney, family = lognormal(),
+            prior = c(set_prior("normal(0,5)", class = "b"),
+            set_prior("cauchy(0,2)", class = "sd"),
+            set_prior("lkj(2)", class = "cor")),
+            warmup = 1000, iter = 2000, chains = 4,
+            control = list(adapt_delta = 0.95))
+fit1
+```
+Note that the `cens(censored)` call is documented in `help("addition-terms")` and `help(brmsformula)`,
+which says that 
+```
+     With the exception of categorical, ordinal, and mixture families,
+     left, right, and interval censoring can be modeled through ‘y |
+     cens(censored) ~ predictors’. The censoring variable (named
+     ‘censored’ in this example) should contain the values ‘'left'’,
+     ‘'none'’, ‘'right'’, and ‘'interval'’ (or equivalently ‘-1’, ‘0’,
+     ‘1’, and ‘2’) to indicate that the corresponding observation is
+     left censored, not censored, right censored, or interval censored.
+     For interval censored data, a second variable (let's call it ‘y2’)
+     has to be passed to ‘cens’. In this case, the formula has the
+     structure ‘y | cens(censored, y2) ~ predictors’.  While the lower
+     bounds are given in ‘y’, the upper bounds are given in ‘y2’ for
+     interval censored data. Intervals are assumed to be open on the
+     left and closed on the right: ‘(y, y2]’.
+```
+
+# The model
+
+Translating the formula, we're trying to fit the following Bayesian hierarchical model.
+Let $\text{time}_i$ be the $i$th time,
+with $\text{censored}_i = 0$ if this is a recurrence, and $\text{censored}_i = 1$ otherwise
+(i.e., if it is censored).
+Let's use $S_i$ to denote the *actual* recurrence time.
+Then the basic model is
+$$\begin{aligned}
+    \text{time}_i &= S_i \qquad \text{if } \text{censored}_i = 0 \\
+    \text{time}_i &< S_i \qquad \text{if } \text{censored}_i = 1 \\
+    S_i &\sim \LogNormal(\mu_i, \sigma) .
+\end{aligned}$$
+How does $\mu$ relate to the linear predictor?
+Well, since a link is not specified, checking `help(brmsfamily)` tells us that the defaults are
+```
+     lognormal(link = "identity", link_sigma = "log")
+```
+and so the parameterization will be equivalent to:
+$$\begin{aligned}
+    \mu_i = \alpha
+            + \beta_\text{age, sex$_i$} \text{age}_i 
+            + \beta_\text{disease} \text{disease}_i
+            + \nu_\text{patient$_i$}
+            + \nu_\text{age, patient$_i$} \text{age}_i
+\end{aligned}$$
+Here $\alpha$ is the intercept, and the various $\beta$ and $\nu$ are other parameters.
+This is overparameterized; we'll verify what parameters are actually used below.
+
+For priors, we have for the "fixed effects":
+$$\begin{aligned}
+    \beta_\text{age, s} &\sim \Normal(0, 5) .
+\end{aligned}$$
+There is no prior specified in the call for the ("random" or "group") patient-specific effects, $\nu$,
+and in fact there doesn't seem to be a way to specify their priors directly:
+the prior on $(\nu_p, \nu_{a,p})$ will always be Normal,
+(but by default correlated between patients $p$).
+The prior standard deviations of each of these two effects are specified, though;
+this is the `class = "sd"` argument to `brm( )` above:
+$$\begin{aligned}
+    (\nu_\text{patient$_i$}, \nu_\text{patient$_i$, age$_i$}) &\sim \Normal(0, \mathop{diag}(\sigma) L L^T \mathop{diag}(\sigma) ) \\
+    \sigma_{1} &\sim \Cauchy(0, 2) \\
+    \sigma_{2} &\sim \Cauchy(0, 2) \\
+    L &\sim LKJ(2)
+\end{aligned}$$
+The last term is an LKJ prior on the correlation matrix.
+
+The only remaining aspect of the model (not specified in the `brm()` call)
+is the intercept, $\alpha$.
+For discussion of the prior on *this* (which is somewhat involved because of mean-centering),
+see `help(brmsformula)`.
+
+
+# The Stan model
+
+Let's make sure we understand exactly what's going on here.
+Use the source, Rey: let's look at the underlying Stan code.
+The call `stancode(fit1)` produces this, which we'll look at in pieces.
+
+## The data block
+
+First, comes the `data` block:
+```
+// generated with brms 2.10.0
+functions {
+}
+data {
+  int<lower=1> N;  // number of observations
+  vector[N] Y;  // response variable
+  int<lower=-1,upper=2> cens[N];  // indicates censoring
+  int<lower=1> K;  // number of population-level effects
+  matrix[N, K] X;  // population-level design matrix
+  // data for group-level effects of ID 1
+  int<lower=1> N_1;  // number of grouping levels
+  int<lower=1> M_1;  // number of coefficients per level
+  int<lower=1> J_1[N];  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  vector[N] Z_1_2;
+  int<lower=1> NC_1;  // number of group-level correlations
+  int prior_only;  // should the likelihood be ignored?
+}
+```
+
+It is pretty generic, since presumably the same structure gets used for many types of model,
+but it is *commented* -- nice!
+We can check that the data that `brms` actually passes to Stan
+matches this: `standata(fit1)` returns this:
+```{r standata}
+str(standata(fit1))
+```
+
+A key object here is `X`, the design matrix for the covariates.
+In this case, this is
+```{r show_x}
+head(standata(fit1)$X)
+```
+
+The transformed data block just centers the columns of `X`, producing `Xc`:
+```
+transformed data {
+  int Kc = K - 1;
+  matrix[N, Kc] Xc;  // centered version of X without an intercept
+  vector[Kc] means_X;  // column means of X before centering
+  for (i in 2:K) {
+    means_X[i - 1] = mean(X[, i]);
+    Xc[, i - 1] = X[, i] - means_X[i - 1];
+  }
+}
+```
+
+Note also that the term `(1 + age | patient)` has produced
+`standata(fit1)$M_1 = 2` coefficients
+for each of the `standata(fit1)$N_1 = 38` levels of the `patient` factor.
+
+
+## The parameters block
+
+There are five (vectors or matrices) of coefficents
+and one (Cholesky factor of a) correlation matrix in the `parameters` block:
+```
+parameters {
+  vector[Kc] b;  // population-level effects
+  // temporary intercept for centered predictors
+  real Intercept;
+  real<lower=0> sigma;  // residual SD
+  vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+  matrix[M_1, N_1] z_1;  // standardized group-level effects
+  // cholesky factor of correlation matrix
+  cholesky_factor_corr[M_1] L_1;
+}
+```
+
+Here, there is:
+
+- one `b` for each column of the design matrix, `X`;
+- an `Intercept`;
+- a standard deviation, `sigma`, for the logNormal response
+- two `sd_1`s for the `patient` effects: one for the patient-specific intercept,
+  and one for the patient-specific age effect
+- a (2 x 38) matrix `z_1` encoding each of the `patient` effects, decorrelated
+- a (Cholesky factor for the 2 x 2) correlation matrix for the two `patient` effects
+
+
+In *transformed parameters* we get
+
+- `r_1`, the (38 x 2) matrix of the *actual* patent effects
+
+and some stuff for optimization.
+
+```
+transformed parameters {
+  // actual group-level effects
+  matrix[N_1, M_1] r_1 = (diag_pre_multiply(sd_1, L_1) * z_1)';
+  // using vectors speeds up indexing in loops
+  vector[N_1] r_1_1 = r_1[, 1];
+  vector[N_1] r_1_2 = r_1[, 2];
+}
+```
+
+## Model block
+
+First, we construct the linear predictor, `mu`:
+```
+model {
+  // initialize linear predictor term
+  vector[N] mu = Intercept + Xc * b;
+  for (n in 1:N) {
+    // add more terms to the linear predictor
+    mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n];
+  }
+```
+Then, comes the sampling statements.
+Recall that `target += normal_lpdf(b | 0, 5);`
+is the same as `b ~ normal(0, 5);`, so these are priors:
+```
+  // priors including all constants
+  target += normal_lpdf(b | 0,5);
+  target += student_t_lpdf(Intercept | 3, 4, 10);
+```
+The strange terms here, e.g., subtracting off `student_t_lccdf(0 | ...)`
+are because we've got a *half* Student's $t$ prior (i.e., we condition on it being above 0),
+so brms is (admirably) keeping the log posterior density correct, even up to constants.
+(Here, `_lcdf` is "log cumulative distribution function",
+and `_lccdf` is "log complementary cumulative distribution function.)
+```
+  target += student_t_lpdf(sigma | 3, 0, 10)
+    - 1 * student_t_lccdf(0 | 3, 0, 10);
+  target += cauchy_lpdf(sd_1 | 0,2)
+    - 2 * cauchy_lccdf(0 | 0,2);
+  target += normal_lpdf(to_vector(z_1) | 0, 1);
+  target += lkj_corr_cholesky_lpdf(L_1 | 2);
+```
+And, here's where censoring comes in:
+if the observation is not censored (if `cens[n] == 0`)
+then the sampling statement is as usual, adding `lognormal_lpdf(Y[n] | mu[n], sigma)`;
+but if it is right-censored (`cens[n] == 1`),
+then we need to add the log probability that the logNormal is *greater than* `Y[n]`,
+and so add `lognormmal_lccdf(Y[n] | mu[n], sigma)`.
+```
+  // likelihood including all constants
+  if (!prior_only) {
+    for (n in 1:N) {
+      // special treatment of censored data
+      if (cens[n] == 0) {
+        target += lognormal_lpdf(Y[n] | mu[n], sigma);
+      } else if (cens[n] == 1) {
+        target += lognormal_lccdf(Y[n] | mu[n], sigma);
+      } else if (cens[n] == -1) {
+        target += lognormal_lcdf(Y[n] | mu[n], sigma);
+      }
+    }
+  }
+}
+```
+
+And, that's it for the model!
+
+## Generated quantities
+
+Here's where two normalizations for optimization get undone:
+the mean-centering of `X`, and the decorrelation of patient effects,
+extracting the non-mean-centered intercept
+and the actual correlation matrix of patient effects.
+
+```
+generated quantities {
+  // actual population-level intercept
+  real b_Intercept = Intercept - dot_product(means_X, b);
+  // group-level correlations
+  corr_matrix[M_1] Cor_1 = multiply_lower_tri_self_transpose(L_1);
+  vector<lower=-1,upper=1>[NC_1] cor_1;
+  // extract upper diagonal of correlation matrix
+  for (k in 1:M_1) {
+    for (j in 1:(k - 1)) {
+      cor_1[choose(k - 1, 2) + j] = Cor_1[j, k];
+    }
+  }
+}
+```
+
+
+# Extracting information
+
+Ok, now that we know precisely what's being estimated,
+what information can we get out of the fitted model?
+
+One thing useful to know about is the concept of *distributional parameters*, or "dpars".
+These are the parameters to the response distribution:
+for instance, those of the logNormal are `mu` and `sigma`:
+```{r dpars}
+fit1$family$dpars
+```
+Since the (transformed) linear predictor is turned into `mu`,
+this means that each observation has it's own posterior distribution
+on `mu` (and on `sigma`, too).
+
+
+## `posterior_samples( )` : All the samples
+
+A straightforward way to get the samples out of the `brmsfit` object
+is to use `posterior_samples( )` (or `as.matrix( )`) on it;
+this will give you one column per parameter
+and one row per sample.
+Specific parameters can be obtained by the `pars` argument (which takes regular expressions).
+For instance, here are posterior samples of the "slope" parameters:
+```{r post_slopes}
+head(posterior_samples(fit1, pars="b_")
+```
+and here are the SD and correlation parameters:
+```{r post_sds}
+head(posterior_samples(fit1, pars=c("sd", "cor", "sigma")))
+```
+and here are some of the patient-specific effects:
+```{r post_pats}
+head(posterior_samples(fit1, pars="^r_"))[,1:5]
+```
+
+## `fixef( )` : fixed effects
+
+The "fixed effects" (i.e., the `b_` parameters) can be extracted with `fixef( )`,
+either as a summary table (if `summary=TRUE`) or as a matrix of samples (otherwise).
+Here it is for this model:
+```{r fixef}
+fixef(fit1)
+```
+The `Estimate` and `Est.Error` columns give the mean and SD, respectively,
+of the posterior distributions of the listed parameters.
+
+
+## `ranef( )` : "random" effects
+
+The "group-level" effects - here, the patient-specific intercepts and slopes -
+are returned, as a 3D array, by `ranef( )`, in a similar format to `fixef( )`.
+For instance, here are the patient-specific age effects:
+```{r ranefs}
+head(ranef(fit1, pars='age'))
+```
+
+## `predict( )` : the responses
+
+The `predict.brmsfit( )` method will produce the posterior distribution of the *responses*,
+which is in this case the *times*.
+This is either the recurrence time, for uncensored observations,
+or a uniform time between 0 and the recurrence time, for censored ones.
+With `summary=FALSE`, this gets a (num steps) x (num data points matrix of samples
+from the posterior distribution,
+and with `summary=TRUE` it returns a summary table, e.g.:
+```{r predtable}
+head(predict(fit1))
+```
+Under the hood, this just calls `rlnorm( )` with posterior samples from the `dpars`,
+
+
+## `fitted( )` : the "mean" response
+
+The method `fitted.brmsfit( )` can produce the posterior distribution
+of either the linear predictor (if `scale="linear"`)
+or the mean response (if `scale="response"`).
+Again, `summary` can be used to return either a summary table or the full set of samples.
+```{r fitmean}
+head(predict(fit1, summary=TRUE))
+```
+
+You can also pass `fitted( )` the name of a distributional parameter
+to have it return the posterior distribution of those parameters (one per data point).
+For instance, here are summaries of the posterior of `mu` the top few data points:
+```{r fdpar}
+head(predict(fit1, dpar='mu'))
+```
+Under the hood, the standard `fitted( )` function uses the samples of the `dpars`
+and the analytical relationship between those and the mean.
+For instance, in this case, here's what ends up being called:
+```
+> brms:::fitted_lognormal
+function (draws)
+{
+    with(draws$dpars, exp(mu + sigma^2/2))
+}
+```
+
