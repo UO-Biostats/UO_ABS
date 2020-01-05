@@ -27,7 +27,7 @@ some (basic) programming.
     * office hours: Tuesday 2:30-4:00pm or by appointment, 270 Onyx
 
 - [Matt Lukac](https://ie2.uoregon.edu/people/lukac/), graduate teaching assistant: mlukac@uoregon.edu
-    * office hours: Monday 12-1:30 in 275 Onyx Bridge, Wednesday 1-2:30 in PSC B009
+    * office hours: Monday and Wednesday 10:00-11:30pm, 270 Onyx
 
 - [Bill Cresko](https://creskolab.uoregon.edu/), supporting instructor: wcresko@uoregon.edu
     * office hours: by appointment, 312 Pacific Hall
