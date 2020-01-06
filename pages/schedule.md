@@ -15,6 +15,8 @@ Week 11 (*1/7*)
 
 : Survival analysis
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_11_Lecture.slides.html)
+
 Week 12 (*1/14*)
 
 : Time series: temporal autocorrelation, autoregressive models; mechanistic models

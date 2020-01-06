@@ -1,0 +1,632 @@
+---
+title: "Survival Analysis"
+author: "Peter Ralph"
+date: "7 January 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center',
+                      warning=FALSE)
+set.seed(42)
+library(survival)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+# Course mechanics
+
+## as before...
+
+- homeworks due
+- peer reviews?
+- reportiness
+
+# Overview
+
+## "Survival" analysis:
+
+We are interested in
+*how long until* some particular thing happens,
+and *how this depends* on some covariates.
+
+. . .
+
+*Example:* how years until death depends on cancer grade at diagnosis and drug treatment.
+
+. . .
+
+*Example:* how day of first budburst depends on species and local temperature.
+
+
+## Surivival data
+
+*Ex:* For each patient, date of diagnosis and cancer grade;
+date of death or last follow-up.
+
+. . .
+
+*Ex:* For each plant, species, date of first budburst or last survey.
+
+. . .
+
+Both examples are **right censored**:
+for some subjects, we don't know how the actual time,
+only a lower bound on it.
+
+##
+
+**Key assumption:** any censoring is *noninformative*,
+
+. . .
+
+i.e., our data collection does not depend on the status of the subjects.
+
+. . .
+
+Examples of *informative* censoring:
+patient dropout due to worsening symptoms.
+
+
+## What do we want to know?
+
+The *survival curve:*
+
+$$\begin{aligned}
+    S(t)
+    &=
+    \P\{\text{still 'alive' after $t$ time units}\} ,
+\end{aligned}$$
+
+*Note:* this is always *decreasing*.
+
+. . .
+
+and the *hazard rate:*
+
+$$\begin{aligned}
+    h(t)
+    &=
+    \text{(mean number of 'deaths' per still-alive subject,}
+    \\ &\qquad \text{per unit time at $t$)} ,
+\end{aligned}$$
+
+. . .
+
+which is
+
+$$\begin{aligned}
+    h(t) = - \frac{d}{dt} \log S(t) .
+\end{aligned}$$
+
+## Nonparametric versus parametric?
+
+We'll look at some methods across the
+nonparametric-to-parametric continuum.
+
+. . .
+
+- *Nonparametric:* fewer assumptions.
+- *Parametric:* fits a full, generative probability model.
+
+## 
+
+Interpret the differences between these *survival curves*:
+```{r exs, echo=FALSE, fig.height=2*fig.dim}
+x <- cbind(pweibull(1:1000, shape=2, scale=400, lower.tail=FALSE),
+           pweibull(1:1000, shape=1, scale=300, lower.tail=FALSE),
+           pweibull(1:1000, shape=1/2, scale=200, lower.tail=FALSE))
+matplot(1:1000, x, ylim=c(0,1), xlab="number of days (t)", ylab="Prob(survival until t)", type='l')
+```
+
+## More information:
+
+- A [series](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2394262/)
+  [of](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2394368/)
+  [nice](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2376927/)
+  [reviews](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2394469/),
+  by Clark, Bradburn, Love, and Altman.
+
+- A [tutorial](https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html) by Emily Zabor.
+
+. . .
+
+![Rightarrow](images/finger_right.png){.finger width="15%"}
+the [CRAN task view](https://cran.r-project.org/web/views/Survival.html)
+
+
+# Datasets:
+
+## [NCCTG Lung Cancer Data](https://www.ncbi.nlm.nih.gov/pubmed/8120560)
+
+```{r get_lung, eval=1:2}
+library(survival)
+data(lung)
+help(lung)
+```
+```
+NCCTG Lung Cancer Data
+
+Description:
+
+     Survival in patients with advanced lung cancer from the North
+     Central Cancer Treatment Group.  Performance scores rate how well
+     the patient can perform usual daily activities.
+
+Usage:
+
+     lung
+     cancer
+     
+Format:
+
+       inst:       Institution code                                                    
+       time:       Survival time in days                                               
+       status:     censoring status 1=censored, 2=dead                                 
+       age:        Age in years                                                        
+       sex:        Male=1 Female=2                                                     
+       ph.ecog:    ECOG performance score as rated by the physician. 
+                   0=asymptomatic, 1= symptomatic but completely ambulatory, 2= in bed 
+                   <50% of the day, 3= in bed > 50% of the day but not bedbound, 4 = 
+                   bedbound 
+       ph.karno:   Karnofsky performance score (bad=0-good=100) rated by physician     
+       pat.karno:  Karnofsky performance score as rated by patient                     
+       meal.cal:   Calories consumed at meals                                          
+       wt.loss:    Weight loss in last six months                                      
+      
+Note:
+
+     The use of 1/2 for alive/dead instead of the usual 0/1 is a
+     historical footnote.  For data contained on punch cards, IBM 360
+     Fortran treated blank as a zero, which led to a policy within the
+     section of Biostatistics to never use "0" as a data value since
+     one could not distinguish it from a missing value.  The policy
+     became a habit, as is often the case; and the 1/2 coding endured
+     long beyond the demise of punch cards and Fortran.
+
+Source:
+
+     Terry Therneau
+
+References:
+
+     Loprinzi CL. Laurie JA. Wieand HS. Krook JE. Novotny PJ.  Kugler
+     JW. Bartel J. Law M. Bateman M. Klatt NE. et al.  Prospective
+     evaluation of prognostic variables from patient-completed
+     questionnaires. North Central Cancer Treatment Group.  Journal of
+     Clinical Oncology. 12(3):601-7, 1994.
+
+```
+
+## Simulation: Constant hazard rate
+
+Time until arrival of a high-energy neutrino
+in each of many detectors:
+
+```{r sim_surv}
+nrate <- 1 / 365
+study_time <- 4 * 365
+nobs <- 228
+neutrinos <- data.frame(
+        detector_id = 1:nobs,
+        time = rexp(nobs, rate=nrate))
+neutrinos$status <- (neutrinos$time < study_time)
+neutrinos$time <- pmin(study_time, neutrinos$time)
+```
+
+## Simulation: Increasing hazard rate
+
+Time until failure of lightbulbs,
+that wear out as time goes on:
+
+```{r sim_lightbulbs}
+lmean <- 2 * 365
+bulbs <- data.frame(
+        bulb_id = 1:nobs,
+        time = abs(rnorm(nobs, sd=lmean)))
+bulbs$status <- (bulbs$time < study_time)
+bulbs$time <- pmin(study_time, bulbs$time)
+```
+
+# Kaplan-Meier curves
+
+## Estimating probabilities
+
+Suppose that:
+
+- we start with 100 chickens
+- in the first year, 25 of them die
+- in the second year, 25 of them die
+- at the end of the second year, we give 25 of the survivors away
+- in the third year, 15 of them die
+
+. . .
+
+**Questions:**
+
+- What percent survived each year? (of those that began that year alive)
+- Find the probability of surviving to 1, 2, 3, and 4 years,
+- and draw the survival curve.
+- Find a confidence interval for each probability (it is Binomial).
+
+## 
+
+The **Kaplan-Meier survival curve** is a purely empirical, nonparametric
+estimate of survival probability:
+
+- one interval per unique event time
+- estimated probability of surviving an interval is the proportion that did
+- and so the probability of surviving until $t$
+  is the product of all the survival probabilities before $t$
+
+. . .
+
+```{r chickens, fig.height=0.8*fig.dim, echo=2:3}
+par(mar=c(5,4,1,1)+.1)
+plot(Surv(time=rep(1:3, times=c(25, 50, 25)),
+          event=c(rep(2, 25), rep(2, 25), rep(1, 25), rep(2, 15), rep(1, 10))), xlab="years", ylab="probability of survival", ylim=c(0,1))
+```
+
+## Neutrinos:
+
+```{r plot_neutrinos, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
+neutrino_sf <- survfit(Surv(time, status) ~ 1, data=neutrinos)
+plot(neutrino_sf, xlab='number of days', ylab='prob of detection', main="Neutrino detection")
+lines(1:study_time, pexp(1:study_time, rate=nrate, lower.tail=FALSE), col='red')
+```
+
+## Light bulbs:
+
+```{r plot_lbs, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
+bulb_sf <- survfit(Surv(time, status) ~ 1, data=bulbs)
+plot(bulb_sf, xlab='number of days', ylab='prob of detection', main="Lightbulb failure")
+lines(1:study_time, 2 * pnorm(1:study_time, sd=lmean, lower.tail=FALSE), col='red')
+```
+
+## Compared
+
+```{r plot_both, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
+layout(t(1:2))
+plot(neutrino_sf, xlab='number of days', ylab='prob of detection', main="Neutrino detection", log='y')
+plot(bulb_sf, xlab='number of days', main="Lightbulb failure", log='y')
+```
+
+## Lung cancer survival:
+
+```{r plot_km, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
+lung_sf <- survfit(Surv(time, status) ~ 1, data=lung)
+plot(lung_sf, conf.int=TRUE, xlab='number of days', ylab='prob of survival', main="Lung cancer survival")
+```
+
+
+## Hazard rate is slope of survival on a log scale:
+
+```{r plot_km1, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim, echo=FALSE}
+plot(lung_sf, conf.int=TRUE, xlab='number of days', ylab='prob of survival', main="Lung cancer survival", log='y')
+```
+
+
+## ... by sex:
+
+```{r plot_km2, warning=FALSE, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
+lung_sf_bysex <- survfit(Surv(time, status) ~ sex, data=lung)
+plot(lung_sf_bysex, col=1:2, conf.int=TRUE, xlab='number of days', ylab='prob of survival', main="Lung cancer survival")
+legend("topright", lty=c(1,1,2), col=c(1,2,1), legend=c("Male", "Female", "95% conf int"))
+```
+
+
+# Interpretation interlude:
+
+##
+
+Survival analysis is used to estimate the chance of surviving a given type of cancer
+for a given number of years.
+
+**Question:**
+How accurate is that?
+
+. . .
+
+
+```{r plot_km3, fig.height=1.2*fig.dim, fig.width=2.5*fig.dim, echo=FALSE}
+lung_sf <- survfit(Surv(time, status) ~ 1, data=lung)
+plot(lung_sf, conf.int=TRUE, xlab='number of days', ylab='prob of survival',
+     main=sprintf("Lung cancer survival (from n=%d subjects)", nrow(lung)))
+```
+
+
+
+# Cox's proportional hazards
+
+##
+
+![Cox's orange pippin (credit: Wikimedia)](images/Cox_orange_renette2.JPG)
+
+## Proportional Hazards
+
+*Goal:* understand how covariates affect survival time.
+
+. . .
+
+*Idea:* modify a nonparametric hazard rate
+by a linear predictor:
+$$ h(t) = h_0(t) e^{\beta x} .$$
+
+. . .
+
+```{r plotcoxph, echo=FALSE, fig.width=3.0*fig.dim}
+layout(t(1:2))
+plot(survfit(Surv(time, status) ~ sex, data=lung), col=1:2, main='Kaplan-Meier')
+plot(survfit(coxph(Surv(time, status) ~ sex, data=lung),
+              newdata=data.frame(sex=c(1,2))), col=1:2, main='Cox Proportional Hazards')
+legend('topright', lty=1, col=1:2, legend=c("male", "female"))
+```
+
+
+## Covariates
+
+::: {.columns}
+:::::: {.column width=50%}
+
+How does survival probability
+depend on the covariates?
+
+```
+age:        Age in years                                                        
+sex:        Male=1 Female=2                                                     
+ph.ecog:    ECOG performance score as rated by the physician. 
+            (good=0-bad=4)
+ph.karno:   Karnofsky performance score (bad=0-good=100) rated by physician     
+pat.karno:  Karnofsky performance score as rated by patient                     
+meal.cal:   Calories consumed at meals                                          
+wt.loss:    Weight loss in last six months     
+```
+
+:::
+:::::: {.column width=50%}
+
+
+:::
+::::::
+
+## Covariates
+
+::: {.columns}
+:::::: {.column width=50%}
+
+How does survival probability
+depend on the covariates?
+
+```
+age:        Age in years                                                        
+sex:        Male=1 Female=2                                                     
+ph.ecog:    ECOG performance score as rated by the physician. 
+            (good=0-bad=4)
+ph.karno:   Karnofsky performance score (bad=0-good=100) rated by physician     
+pat.karno:  Karnofsky performance score as rated by patient                     
+meal.cal:   Calories consumed at meals                                          
+wt.loss:    Weight loss in last six months     
+```
+
+:::
+:::::: {.column width=50%}
+
+
+$$\begin{aligned}
+    h(t) &= \text{(baseline hazard rate at $t$)} \\
+    y_i &= \beta_0 + \sum_j \beta_j x_{ij} \\
+    h_i(t) &= \text{(hazard rate for $i$ at $t$)} \\
+        &= h(t) \times \exp\left( y_i \right) \\
+    S_i(t) &= \P\left\{\text{survival of $i$ until $t$}\right\} \\
+        &= \exp\left( - \int_0^t h_i(s) ds \right) .
+\end{aligned}$$
+
+
+:::
+::::::
+
+## Fitting a Cox model
+
+```{r fitcox}
+fullcox <- coxph(Surv(time, status) ~ ., data = lung)
+summary(fullcox)
+```
+
+## Model comparison
+
+```{r anova}
+subcox <- coxph(Surv(time, status) ~ sex + inst, data = lung, subset=rowSums(is.na(lung))==0)
+anova(fullcox, subcox)
+```
+
+## Predictions
+
+```{r prediction}
+subcox_pred <- survfit(subcox, newdata=expand.grid(inst=1:2, sex=1:2))
+plot(subcox_pred, lty=1:2, col=rep(1:2, each=2))
+legend("topright", lty=c(1,1,1,2), col=c(1,2,1,1),
+       legend=c('male', 'female', paste("institution", 1:2)))
+```
+
+## Your turn
+
+Fit (and select) a proportional hazards model to the `veteran` dataset.
+What are the most important predictors of survival?
+
+```{r vetdata, eval=1}
+data(veteran)
+help(veteran)
+```
+```
+Veterans' Administration Lung Cancer study
+
+Description:
+
+     Randomised trial of two treatment regimens for lung cancer.  This
+     is a standard survival analysis data set.
+
+Usage:
+
+     veteran
+     
+Format:
+
+       trt:       1=standard 2=test                            
+       celltype:  1=squamous,  2=smallcell,  3=adeno,  4=large 
+       time:      survival time                                
+       status:    censoring status                             
+       karno:     Karnofsky performance score (100=good)       
+       diagtime:  months from diagnosis to randomisation       
+       age:       in years                                     
+       prior:     prior therapy 0=no, 10=yes      
+```
+
+# Stochastic minute: Weibull
+
+## The Weibull distribution
+
+If $T$ has a [Weibull distribution](https://en.wikipedia.org/wiki/Weibull_distribution),
+with scale $\lambda$ and shape $k$,
+then
+
+- $T \ge 0$
+- $\P\{ T > t \} = \exp\left(- (t/\lambda)^k \right)$
+- the mean is proportional to the scale:
+  $\E[T] = \lambda \times \Gamma(1 + 1/k)$
+
+. . .
+
+It is mostly used in survival analysis,
+because its *hazard rate* is:
+$$\begin{aligned}
+    h(t) = k \frac{1}{\lambda} \left(\frac{t}{\lambda}\right)^{k-1} .
+\end{aligned}$$
+which allows rates to go down, up, or stay constant over time.
+
+##
+
+```{r plot_wei, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
+kvals <- c(0.5, 0.75, 1, 1.5, 2)
+xx <- seq(0, 1.5, length.out=101)
+x <- sapply(kvals, function (k) dweibull(xx, shape=k)/pweibull(xx, shape=k, lower.tail=FALSE))
+matplot(xx, x, type='l', lty=1, xlab='time', ylab='hazard rate', lwd=2)
+legend("top", lty=1, col=1:5, legend=sprintf("shape=%0.2f", kvals))
+```
+
+
+# Fully parametric models
+
+## Modeling
+
+The idea: choose a (parametric) distribution for the time-until-event.
+
+. . .
+
+Some choices:
+
+- Exponential (constant rate)
+- Weibull
+- Gompertz
+- logNormal
+
+##
+
+::: {.columns}
+:::::: {.column width=50%}
+
+Model:
+
+- lifetimes are Weibull distributed
+- mean lifetime depends on covariates
+
+:::
+:::::: {.column width=50%}
+
+:::
+::::::
+
+##
+
+::: {.columns}
+:::::: {.column width=50%}
+
+Model:
+
+- lifetimes are Weibull distributed
+- mean lifetime depends on covariates
+
+:::
+:::::: {.column width=50%}
+
+$$\begin{aligned}
+    T_i &\sim \Weibull(\text{shape}=k, \text{mean}=\mu_i) \\
+    \mu_i &= \exp(y_i) \\
+    y_i &= \beta_0 + \sum_j \beta_j x_{ij} 
+\end{aligned}$$
+
+:::
+::::::
+
+## brms: fit
+
+```{r brms, cache=TRUE}
+lung$censored <- ifelse(lung$status == 1, 'right', 'none')
+brmcox <- brm(time | cens(censored) ~ sex + ph.ecog + inst,
+              data=lung, family='weibull')
+```
+
+## maximum likelihood
+
+```{r survreg}
+weifit <- survreg(Surv(time, status) ~ sex + ph.ecog + inst,
+                  data = lung, dist='weibull')
+```
+
+# Review
+
+##
+
+Nonparametric:
+
+- simple
+- does not depend on model fit
+
+. . .
+
+Parametric:
+
+- makes more sense: real hazard rates are not piecewise constant
+- better power, *if* the model fits
+- better extrapolation (but beware!)
+- can simulate
+
+
+## Additional notes on `brms`:
+
+- extract model code and data with `stancode(fit)` and `standata(fit)`
+- can run longer using `update()`; also update formula
+- examine with `launch_shinystan(fit)`
+- compare models with `loo(fit1, fit2)`
+- can incorpoarte time-varying variables!
+- more technical notes at [this tutorial](../Tutorials/using_brms.html)
+
+- data: MASS::leuk, survival::lung, survival::veteran
+
+
+## The Kaplan-Meier curve, by hand:
+
+```{r byhand}
+f1 <- survfit(Surv(time, status) ~ 1, data = lung)
+
+y <- data.frame(time=sort(unique(lung$time[lung$status == 2])))
+y$k <- sapply(y$time, function (t) sum(lung$status == 2 & lung$time == t))
+y$n <- sapply(y$time, function (t) sum(lung$time > t | (lung$time == t & lung$status == 2)))
+y$p <- cumprod(1 - y$k/y$n)
+
+plot(f1)
+points(p ~ time, data=y, col='red', pch=20, cex=0.5)
+```

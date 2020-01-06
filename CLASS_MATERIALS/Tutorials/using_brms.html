@@ -135,7 +135,7 @@ img {
 <div id="header">
 <h1 class="title">Using brms</h1>
 <h4 class="author"><em>Peter Ralph</em></h4>
-<h4 class="date"><em>Thu Jan 2 22:32:11 2020</em></h4>
+<h4 class="date"><em>Mon Jan 6 11:54:42 2020</em></h4>
 </div>
 
 
@@ -424,10 +424,14 @@ data {
 <section id="posterior_samples-all-the-samples" class="level2">
 <h2><code>posterior_samples( )</code> : All the samples</h2>
 <p>A straightforward way to get the samples out of the <code>brmsfit</code> object is to use <code>posterior_samples( )</code> (or <code>as.matrix( )</code>) on it; this will give you one column per parameter and one row per sample. Specific parameters can be obtained by the <code>pars</code> argument (which takes regular expressions). For instance, here are posterior samples of the “slope” parameters:</p>
-<pre class="r"><code>head(posterior_samples(fit1, pars=&quot;b_&quot;)</code></pre>
-<pre><code>## Error: &lt;text&gt;:2:0: unexpected end of input
-## 1: head(posterior_samples(fit1, pars=&quot;b_&quot;)
-##    ^</code></pre>
+<pre class="r"><code>head(posterior_samples(fit1, pars=&quot;b_&quot;))</code></pre>
+<pre><code>##   b_Intercept      b_age b_sexfemale b_diseaseGN b_diseaseAN b_diseasePKD b_age:sexfemale
+## 1    1.043771 0.05053808    3.838284  -0.6508190  -0.4624490    0.7665921     -0.05425362
+## 2    2.832988 0.01481519    2.158909  -0.9401550  -0.2148529    0.5625642     -0.02338348
+## 3    1.819965 0.03902285    3.749548  -0.4582374  -2.4208881    0.3681958     -0.04008815
+## 4    1.834780 0.05432978    2.348745  -1.2991449  -1.2454812   -1.0897825     -0.02191795
+## 5    2.355912 0.04748569    2.080690  -1.2201985  -1.3990708   -1.0805727     -0.02124655
+## 6    3.275309 0.01278897    2.684692  -0.8875593  -0.5054072    0.7073028     -0.03553824</code></pre>
 <p>and here are the SD and correlation parameters:</p>
 <pre class="r"><code>head(posterior_samples(fit1, pars=c(&quot;sd&quot;, &quot;cor&quot;, &quot;sigma&quot;)))</code></pre>
 <pre><code>##   sd_patient__Intercept sd_patient__age cor_patient__Intercept__age     sigma

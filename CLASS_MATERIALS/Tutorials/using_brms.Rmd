@@ -341,7 +341,7 @@ and one row per sample.
 Specific parameters can be obtained by the `pars` argument (which takes regular expressions).
 For instance, here are posterior samples of the "slope" parameters:
 ```{r post_slopes}
-head(posterior_samples(fit1, pars="b_")
+head(posterior_samples(fit1, pars="b_"))
 ```
 and here are the SD and correlation parameters:
 ```{r post_sds}
