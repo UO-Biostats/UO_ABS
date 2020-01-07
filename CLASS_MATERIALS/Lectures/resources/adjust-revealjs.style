@@ -24,6 +24,8 @@ img.finger, .reveal img.finger { vertical-align: text-top; border: none; }
 
 code { white-space: pre; }
 
+.reveal section img { border: 0; }
+
 </style>
 
 

@@ -18,13 +18,6 @@ options(mc.cores = parallel::detectCores())
 ```
 
 
-# Course mechanics
-
-## as before...
-
-- homeworks due
-- peer reviews?
-- reportiness
 
 # Overview
 
@@ -116,7 +109,7 @@ nonparametric-to-parametric continuum.
 ## 
 
 Interpret the differences between these *survival curves*:
-```{r exs, echo=FALSE, fig.height=2*fig.dim}
+```{r exs, echo=FALSE, fig.height=1.5 * fig.dim}
 x <- cbind(pweibull(1:1000, shape=2, scale=400, lower.tail=FALSE),
            pweibull(1:1000, shape=1, scale=300, lower.tail=FALSE),
            pweibull(1:1000, shape=1/2, scale=200, lower.tail=FALSE))
@@ -251,7 +244,7 @@ Suppose that:
 - What percent survived each year? (of those that began that year alive)
 - Find the probability of surviving to 1, 2, 3, and 4 years,
 - and draw the survival curve.
-- Find a confidence interval for each probability (it is Binomial).
+- Find a confidence interval for each probability.
 
 ## 
 
@@ -310,7 +303,7 @@ plot(lung_sf, conf.int=TRUE, xlab='number of days', ylab='prob of survival', mai
 ```
 
 
-## ... by sex:
+## Survival, by sex:
 
 ```{r plot_km2, warning=FALSE, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
 lung_sf_bysex <- survfit(Surv(time, status) ~ sex, data=lung)
@@ -439,17 +432,16 @@ summary(fullcox)
 ## Model comparison
 
 ```{r anova}
-subcox <- coxph(Surv(time, status) ~ sex + inst, data = lung, subset=rowSums(is.na(lung))==0)
+subcox <- coxph(Surv(time, status) ~ sex + ph.ecog, data = lung, subset=rowSums(is.na(lung))==0)
 anova(fullcox, subcox)
 ```
 
 ## Predictions
 
 ```{r prediction}
-subcox_pred <- survfit(subcox, newdata=expand.grid(inst=1:2, sex=1:2))
-plot(subcox_pred, lty=1:2, col=rep(1:2, each=2))
-legend("topright", lty=c(1,1,1,2), col=c(1,2,1,1),
-       legend=c('male', 'female', paste("institution", 1:2)))
+subcox_pred <- survfit(subcox, newdata=expand.grid(ph.ecog=0:3, sex=2))
+plot(subcox_pred, lty=1, col=1:4)
+legend("topright", lty=1, col=1:4, legend=paste("ECOG=", 0:3))
 ```
 
 ## Your turn
@@ -505,7 +497,7 @@ because its *hazard rate* is:
 $$\begin{aligned}
     h(t) = k \frac{1}{\lambda} \left(\frac{t}{\lambda}\right)^{k-1} .
 \end{aligned}$$
-which allows rates to go down, up, or stay constant over time.
+which allows rates to go down ($k<1$), up ($k>1$), or stay constant ($k=1$) over time.
 
 ##
 
