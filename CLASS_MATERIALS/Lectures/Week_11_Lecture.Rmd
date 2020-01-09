@@ -456,8 +456,8 @@ legend("topright", lty=1, col=1:4, legend=paste("ECOG=", 0:3))
 - sex and ECOG have large, significant effects
     * males have lower survival
     * 50% lower survival rate for males
-- higher weight loss => lower survival rate, strangely
-    * specifics?
+- higher weight loss => higher survival rate, strangely
+    * but not significant
 - age, caloric intake, patient assessment not significant
     * specifics?
 - institutional differences
