@@ -16,6 +16,7 @@ Week 11 (*1/7*)
 : Survival analysis
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_11_Lecture.slides.html)
+    - [Homework 11](../CLASS_MATERIALS/Homeworks/HW11_F19.html) *(due 1/16)*
 
 Week 12 (*1/14*)
 
