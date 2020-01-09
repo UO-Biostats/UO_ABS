@@ -11,6 +11,7 @@ knitr::opts_chunk$set(fig.width=2*fig.dim,
                       fig.align='center',
                       warning=FALSE)
 set.seed(42)
+library(brms)
 library(survival)
 library(rstan)
 library(matrixStats)
@@ -425,14 +426,17 @@ $$\begin{aligned}
 ## Fitting a Cox model
 
 ```{r fitcox}
-fullcox <- coxph(Surv(time, status) ~ ., data = lung)
+fullcox <- coxph(Surv(time, status)
+             ~ age + sex + ph.ecog + ph.karno + pat.karno
+             + meal.cal + wt.loss,
+         data = lung)
 summary(fullcox)
 ```
 
 ## Model comparison
 
 ```{r anova}
-subcox <- coxph(Surv(time, status) ~ sex + ph.ecog, data = lung, subset=rowSums(is.na(lung))==0)
+subcox <- coxph(Surv(time, status) ~ sex + ph.ecog, data = lung, subset=rowSums(is.na(lung[,2:10]))==0)
 anova(fullcox, subcox)
 ```
 
@@ -440,42 +444,25 @@ anova(fullcox, subcox)
 
 ```{r prediction}
 subcox_pred <- survfit(subcox, newdata=expand.grid(ph.ecog=0:3, sex=2))
-plot(subcox_pred, lty=1, col=1:4)
+plot(subcox_pred, lty=1, col=1:4, main='predicted survival, females')
 legend("topright", lty=1, col=1:4, legend=paste("ECOG=", 0:3))
 ```
 
-## Your turn
 
-Fit (and select) a proportional hazards model to the `veteran` dataset.
-What are the most important predictors of survival?
+## In class: interpretation
 
-```{r vetdata, eval=1}
-data(veteran)
-help(veteran)
-```
-```
-Veterans' Administration Lung Cancer study
+- physicians evaluation matters
+    * lowest to highest ECOG: 20% to 80% survival at one year
+- sex and ECOG have large, significant effects
+    * males have lower survival
+    * 50% lower survival rate for males
+- higher weight loss => lower survival rate, strangely
+    * specifics?
+- age, caloric intake, patient assessment not significant
+    * specifics?
+- institutional differences
+    * specifics?
 
-Description:
-
-     Randomised trial of two treatment regimens for lung cancer.  This
-     is a standard survival analysis data set.
-
-Usage:
-
-     veteran
-     
-Format:
-
-       trt:       1=standard 2=test                            
-       celltype:  1=squamous,  2=smallcell,  3=adeno,  4=large 
-       time:      survival time                                
-       status:    censoring status                             
-       karno:     Karnofsky performance score (100=good)       
-       diagtime:  months from diagnosis to randomisation       
-       age:       in years                                     
-       prior:     prior therapy 0=no, 10=yes      
-```
 
 # Stochastic minute: Weibull
 
@@ -563,20 +550,231 @@ $$\begin{aligned}
 :::
 ::::::
 
-## brms: fit
+## 
+
+Three ways to do parametric survival analysis:
+
+- `survival::survreg` : maximum likelihood
+- `brms::brm` : Baysian, with Stan
+- MC Stan
+
+## Maximum likelihood: survreg
+
+```{r survreg}
+weifit <- survreg(Surv(time, status) ~ sex + ph.ecog + ph.karno,
+                  data = lung, dist='weibull')
+```
+
+## Bayesian: brms
 
 ```{r brms, cache=TRUE}
 lung$censored <- ifelse(lung$status == 1, 'right', 'none')
-brmcox <- brm(time | cens(censored) ~ sex + ph.ecog + inst,
+
+brmfit <- brm(time | cens(censored) ~ sex + ph.ecog + ph.karno,
               data=lung, family='weibull')
 ```
 
-## maximum likelihood
+##
 
-```{r survreg}
-weifit <- survreg(Surv(time, status) ~ sex + ph.ecog + inst,
-                  data = lung, dist='weibull')
+```{r dummy, include=FALSE}
+summary(weifit)
+summary(brmfit)
 ```
+
+::: {.columns}
+:::::: {.column width=50%}
+
+<pre style="width:150%; margin-left:-50%;">
+```{r ssum, echo=FALSE, results='asis', message=FALSE}
+summary(weifit)
+```
+</pre>
+
+:::
+:::::: {.column width=50%}
+
+<pre style="width:150%;">
+```{r bsum, echo=FALSE, results='asis', message=FALSE}
+summary(brmfit)
+```
+</pre>
+
+:::
+::::::
+
+
+## Random effects, with brms
+
+```{r brms2, cache=TRUE, echo=2:3}
+lung$inst[is.na(lung$inst)] <- 100
+brmfit2 <- brm(time | cens(censored) ~ sex + ph.ecog + ph.karno + (1|inst),
+               data=lung, family='weibull')
+```
+
+##
+
+```{r sb2, message=FALSE}
+summary(brmfit2)
+```
+
+##
+
+```{r insts}
+ranef(brmfit2)
+```
+
+
+# Application
+
+## 
+
+Fit (and select) a proportional hazards model to the `veteran` dataset.
+What are the most important predictors of survival?
+
+```{r vetdata, eval=1}
+data(veteran)
+help(veteran)
+```
+```
+Veterans' Administration Lung Cancer study
+
+Description:
+
+     Randomised trial of two treatment regimens for lung cancer.  This
+     is a standard survival analysis data set.
+
+Usage:
+
+     veteran
+     
+Format:
+
+       trt:       1=standard 2=test                            
+       celltype:  1=squamous,  2=smallcell,  3=adeno,  4=large 
+       time:      survival time                                
+       status:    censoring status                             
+       karno:     Karnofsky performance score (100=good)       
+       diagtime:  months from diagnosis to randomisation       
+       age:       in years                                     
+       prior:     prior therapy 0=no, 10=yes      
+```
+
+# Overview of brms
+
+## Fitting models
+
+```
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = gaussian(link='identity'))
+```
+
+- `formula`: almost just like `lme4`
+- `data`: must contain all the variables
+- `family`: distribution of response
+- `link`: connects mean to linear predictor
+
+## Parameterization
+
+There are several *classes* of parameter in a brms model:
+
+- `b` : the *population-level* (or, *fixed*) effects
+- `sd` : the standard deviations of *group-level* (or, *random*) effects
+- family-specific parameters, like `sigma` for the Gaussian
+
+. . .
+
+Examples:
+
+- `b_x` : the slope of `x` : `class="b", coef="x"`
+- `sd_f` : the SD of effects for levels of `f` : `class="sd", coef="f"`
+
+## Setting priors
+
+Pass a *vector* of "priors", specified by
+```
+    set_prior(prior, class="b", ...)
+```
+where `prior` is some valid Stan code.
+
+. . .
+
+```
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = gaussian(link='identity'),
+    prior=c(set_prior("normal(0, 5)", class="b"),
+            set_prior("cauchy(0, 1)", class="sd", coef="f")))
+```
+
+## 1. Set up the formula
+
+```{r xydata}
+xy <- data.frame(x = rnorm(100),
+                 y = rexp(100),
+                 f = sample(letters[1:3], 100, replace=TRUE))
+xy$z <- xy$x + as.numeric(xy$f) * xy$y + rnorm(100, sd=0.1)
+```
+
+```{r bf}
+the_formula <- brmsformula(z ~ x + y + (1 + y | f))
+```
+
+## 2. Choose priors
+
+Default:
+```{r gp}
+get_prior(the_formula, data=xy)
+```
+
+. . .
+
+Choose modifications:
+```{r somep}
+the_priors = c(set_prior("normal(0,5)", class = "b"),
+               set_prior("cauchy(0,2)", class = "sd"))
+```
+
+## 3. Fit the model
+
+```{r dobrms, cache=TRUE}
+the_fit <- brm(the_formula, data=xy, family=gaussian(), 
+               prior=the_priors)
+```
+
+## 4. Check converence
+
+
+```{r mcbrms}
+summary(the_fit)
+```
+
+##
+
+Or...
+```
+launch_shinystan(the_fit)
+```
+
+
+## 4. Look at results
+
+Summaries of, or samples from, the posteriors of:
+
+- `fixef( )`: "fixed" effects
+- `ranef( )`: "random" effects
+- `fitted( )`: *mean* of responses
+- `predict( )`: actual responses
+- `hypothesis( )`: functions of various parameters (e.g., difference between two classes)
+- `marginal_effects( )`: effect of one predictor conditioned on values of others
+
+## More info:
+
+- formulas: `help(brmsformula)`
+- families: `help(brmsfamily)` (but note can use those in `help(family)` also)
+- priors: `help(set_prior)` and also check what can have a prior with `get_prior( )`
+- get the Stan code: `stancode(the_fit)` (and `standata(the_fit)`)
+- compare models with `loo( )`
+- more technical notes at [this tutorial](../Tutorials/using_brms.html)
+
 
 # Review
 
@@ -596,17 +794,6 @@ Parametric:
 - better extrapolation (but beware!)
 - can simulate
 
-
-## Additional notes on `brms`:
-
-- extract model code and data with `stancode(fit)` and `standata(fit)`
-- can run longer using `update()`; also update formula
-- examine with `launch_shinystan(fit)`
-- compare models with `loo(fit1, fit2)`
-- can incorpoarte time-varying variables!
-- more technical notes at [this tutorial](../Tutorials/using_brms.html)
-
-- data: MASS::leuk, survival::lung, survival::veteran
 
 
 ## The Kaplan-Meier curve, by hand:
