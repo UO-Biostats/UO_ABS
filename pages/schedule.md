@@ -22,6 +22,9 @@ Week 12 (*1/14*)
 
 : Time series: temporal autocorrelation, autoregressive models; mechanistic models
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_12_Lecture.slides.html)
+
+
 Week 13 (*1/21*)
 
 : Categorical data: chi-square for contingency tables, permutation tests
