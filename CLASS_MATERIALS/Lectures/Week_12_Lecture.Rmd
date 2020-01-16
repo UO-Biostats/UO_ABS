@@ -384,6 +384,57 @@ abline(h=0, col='red')
 plot(average - trend ~ month, data=co2, pch=20, cex=0.5, col=adjustcolor("black", 0.5), xlab='Month')
 ```
 
+## In class
+
+```{r do_interp}
+
+# 1. get monthly means of nearest 7 years and subtract off to get trend
+co2$our_trend <- NA
+for (j in 1:nrow(co2)) {
+    nearest_seven <- ( abs(co2$decimal_date - co2$decimal_date[j])  <= 3.5 )
+    # e.g., monthly_mean[7] will be the average difference in co2 concentration from the overall mean
+    # across the seven Julys in this chunk of data from 7 years
+    monthly_mean <- rep(NA, 12)
+    for (k in 1:12) {
+        monthly_mean[k] <- with(subset(co2, nearest_seven),
+                                mean(average[month == k] - mean(average, na.rm=TRUE), na.rm=TRUE))
+    }
+    # or, 
+    #   monthly_mean <- tapply(co2$average[nearest_seven], co2$month[nearest_seven], mean, na.rm=TRUE) - mean(co2$average, na.rm=TRUE)
+
+    # note: we don't need all 12 months
+    co2$our_trend[j] <- co2$average[j] - monthly_mean[co2$month[j]]
+}
+
+# 2. Interpolate missing trend values
+for (j in which(is.na(co2$our_trend))) {
+    before <- max(which(!is.na(co2$our_trend[1:j])))
+    after <- min(which(!is.na(co2$our_trend[j:nrow(co2)])))
+    dx <- (after - before)
+    dy <- co2$our_trend[after] - co2$our_trend[before]
+    co2$our_trend[j] <- co2$our_trend[before] + (j - before) * dy / dx
+}
+
+# 3. Get interpolated values by adding trend to average monthly values
+
+stopifnot(all(!is.na(co2$our_trend)))
+
+
+plot(our_trend ~ decimal_date, data=co2, type='l')
+
+plot(our_trend ~ trend, data=co2, xlab='our trend', ylab='their trend')
+abline(0, 1, col='red')
+
+plot(our_trend - trend, trend, data=co2, xlab='ours - theirs', ylab='their trend')
+abline(h=0, col='red'
+
+```
+
+
+
+
+
+
 # Interlude: Correlation
 
 ##
