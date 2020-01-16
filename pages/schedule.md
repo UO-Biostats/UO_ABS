@@ -23,6 +23,7 @@ Week 12 (*1/14*)
 : Time series: temporal autocorrelation, autoregressive models; mechanistic models
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_12_Lecture.slides.html)
+    - [Homework 12](../CLASS_MATERIALS/Homeworks/HW12_F19.html) *(due 1/23)*
 
 
 Week 13 (*1/21*)
