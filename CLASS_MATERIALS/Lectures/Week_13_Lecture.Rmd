@@ -143,7 +143,7 @@ $$
 
 # The chi-squared statistic
 
-## Just hair and eye color
+##
 
 Let's start by looking at *just* hair and eye color,
 summing over sex:
@@ -170,7 +170,7 @@ Let
 $$\begin{aligned}
     n_{ij} &= (\text{observed}_{ij}) \\
         &=(\text{observed number with hair $i$ and eye $j$}) \\
-    E_{ij} &= (\text{expected}_ij) \\
+    E_{ij} &= (\text{expected}_{ij}) \\
           &=(\text{total number})
                 \times(\text{proportion with hair $i$}) \\
           &\qquad  \times (\text{proportion with eye $j$}) \\
@@ -179,6 +179,8 @@ $$\begin{aligned}
             \times \left(\frac{n_{\cdot j}}{n}\right) .
 \end{aligned}$$
 
+Here $n_{i \cdot}$ 
+and $n_{\cdot j}$ are the *row* and *column sums*.
 
 ## 
 
@@ -196,17 +198,17 @@ So, what is $\SE[\text{observed}_{ij}]$?
 
 Under the model of independence,
 $$\begin{aligned}
-    n_{ij} &\sim \Binom(n, p_i p_j) , \\
+    n_{ij} &\sim \Binom(n, p_i q_j) , \\
     \text{where}\quad
     p_i &= (\text{prob of hair color $i$}) \\
-    p_j &= (\text{prob of eye color $j$}) .
+    q_j &= (\text{prob of eye color $j$}) .
 \end{aligned}$$
 
 . . .
 
 So,
 $$\begin{aligned}
-    \sd[n_{ij}] = \sqrt{ n p_i p_j (1 - p_i p_j) } ,
+    \sd[n_{ij}] = \sqrt{ n p_i q_j (1 - p_i q_j) } ,
 \end{aligned}$$
 
 . . .
@@ -214,7 +216,7 @@ $$\begin{aligned}
 ... and so how about this
 $$\begin{aligned}
     \SE[n_{ij}] 
-        &\approx \sqrt{ n p_i p_j } \\
+        &\approx \sqrt{ n p_i q_j } \\
         &= \sqrt{(\text{expected}_{ij})} \qquad \ldots?
 \end{aligned}$$
 
@@ -283,11 +285,12 @@ Um, ok?
 
 Let's actually look at "observed minus expected":
 
-```{r obsmexp}
+```{r obsmexp, echo=1:2}
 haireye_exp <- 0 * haireye_2d
-(haireye_exp[] <- ( rowSums(haireye_2d)[row(haireye_exp)]
-                   * colSums(haireye_2d)[col(haireye_exp)]
-                   / sum(haireye_2d) ))
+haireye_exp[] <- ( rowSums(haireye_2d)[row(haireye_exp)]
+                  * colSums(haireye_2d)[col(haireye_exp)]
+                  / sum(haireye_2d) )
+haireye_exp
 ```
 
 ##
