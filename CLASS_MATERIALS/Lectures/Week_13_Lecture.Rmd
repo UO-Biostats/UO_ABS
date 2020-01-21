@@ -1,0 +1,540 @@
+---
+title: "Categorical data"
+author: "Peter Ralph"
+date: "21 January 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(rstan)
+library(brms)
+library(matrixStats)
+library(tidyverse)
+options(mc.cores = parallel::detectCores())
+options(digits=2)
+```
+
+
+
+# Categorical data
+
+## Hair and Eye color
+
+```{r hair_eye_data}
+data(HairEyeColor)
+```
+```
+HairEyeColor             package:datasets              R Documentation
+
+Hair and Eye Color of Statistics Students
+
+Description:
+
+     Distribution of hair and eye color and sex in 592 statistics
+     students.
+
+Usage:
+
+     HairEyeColor
+     
+Format:
+
+     A 3-dimensional array resulting from cross-tabulating 592
+     observations on 3 variables.  The variables and their levels are
+     as follows:
+
+       No  Name  Levels                    
+        1  Hair  Black, Brown, Red, Blond  
+        2  Eye   Brown, Blue, Hazel, Green 
+        3  Sex   Male, Female              
+      
+Details:
+
+     The Hair x Eye table comes from a survey of students at the
+     University of Delaware reported by Snee (1974).  The split by
+     ‘Sex’ was added by Friendly (1992a) for didactic purposes.
+
+     This data set is useful for illustrating various techniques for
+     the analysis of contingency tables, such as the standard
+     chi-squared test or, more generally, log-linear modelling, and
+     graphical methods such as mosaic plots, sieve diagrams or
+     association plots.
+
+Source:
+
+     <URL:
+     http://euclid.psych.yorku.ca/ftp/sas/vcd/catdata/haireye.sas>
+
+     Snee (1974) gives the two-way table aggregated over ‘Sex’.  The
+     ‘Sex’ split of the ‘Brown hair, Brown eye’ cell was changed to
+     agree with that used by Friendly (2000).
+
+References:
+
+     Snee, R. D. (1974).  Graphical display of two-way contingency
+     tables.  _The American Statistician_, *28*, 9-12.  doi:
+     10.2307/2683520 (URL: http://doi.org/10.2307/2683520).
+
+```
+
+----------------
+
+```{r show_he, echo=FALSE}
+HairEyeColor
+```
+
+---------------
+
+```{r melt_he}
+(haireye <- data.frame(hair = dimnames(HairEyeColor)[[1]][slice.index(HairEyeColor, 1)],
+                       eye = dimnames(HairEyeColor)[[2]][slice.index(HairEyeColor, 2)],
+                       sex = dimnames(HairEyeColor)[[3]][slice.index(HairEyeColor, 3)],
+                       number = as.vector(HairEyeColor)))
+```
+
+## 
+
+*Questions:* 
+
+1. Are hair and eye color independent in this sample?
+2. Do hair and eye color proportions differ by sex?
+
+
+## Independence and multiplicativity
+
+If hair and eye color are *independent*,
+then probabilities of combinations are *multiplicative*:
+
+$$\begin{aligned}
+    &\P\{\text{black hair and blue eyes}\} \\
+    &\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\given\text{black hair}\} \\
+\end{aligned}$$
+
+. . .
+
+which if independent is
+$$\begin{aligned}
+    &\hphantom{\P\{\text{black hair and blue eyes}\}} \\
+    &\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\}
+\end{aligned}$$
+
+
+## Multiplicativity to additivity
+
+A model of *independence* will have a *multiplicative* form:
+$$
+    p_{ab} = p_a \times p_b .
+$$
+
+. . .
+
+Set $\lambda = \log(p)$, so that
+$$
+    \lambda_{ab} = \lambda_a + \lambda_b .
+$$
+
+
+
+# The chi-squared statistic
+
+## Just hair and eye color
+
+Let's start by looking at *just* hair and eye color,
+summing over sex:
+```{r nosex}
+(haireye_2d <- HairEyeColor[,,"Male"] + HairEyeColor[,,"Female"])
+```
+
+## Some questions
+
+In this dataset...
+
+1. What proportion have blonde hair?
+2. What proportion have blue eyes?
+3. If hair and eye color assort independently,
+   what proportion do you expect to have both blonde hair and blue eyes?
+   How many people would this be?
+4. How many *actually* have both?
+   Is this difference surprising?
+5. Do the same for black hair and green eyes.
+
+## "Expected" counts
+
+Let
+$$\begin{aligned}
+    n_{ij} &= (\text{observed}_{ij}) \\
+        &=(\text{observed number with hair $i$ and eye $j$}) \\
+    E_{ij} &= (\text{expected}_ij) \\
+          &=(\text{total number})
+                \times(\text{proportion with hair $i$}) \\
+          &\qquad  \times (\text{proportion with eye $j$}) \\
+          &= n
+            \times \left(\frac{n_{i\cdot}}{n}\right)
+            \times \left(\frac{n_{\cdot j}}{n}\right) .
+\end{aligned}$$
+
+
+## 
+
+We want to quantify how different the *observed* and *expected* are,
+inversely weighted by their *noisiness*:
+$$\begin{aligned}
+    \sum_{ij} \left( \frac{ (\text{observed})_{ij} - (\text{expected})_{ij} }{ \SE[\text{observed}_{ij}] } \right)^2 
+\end{aligned}$$
+
+. . .
+
+So, what is $\SE[\text{observed}_{ij}]$?
+
+## What is $\SE[\text{observed}_{ij}]$?
+
+Under the model of independence,
+$$\begin{aligned}
+    n_{ij} &\sim \Binom(n, p_i p_j) , \\
+    \text{where}\quad
+    p_i &= (\text{prob of hair color $i$}) \\
+    p_j &= (\text{prob of eye color $j$}) .
+\end{aligned}$$
+
+. . .
+
+So,
+$$\begin{aligned}
+    \sd[n_{ij}] = \sqrt{ n p_i p_j (1 - p_i p_j) } ,
+\end{aligned}$$
+
+. . .
+
+... and so how about this
+$$\begin{aligned}
+    \SE[n_{ij}] 
+        &\approx \sqrt{ n p_i p_j } \\
+        &= \sqrt{(\text{expected}_{ij})} \qquad \ldots?
+\end{aligned}$$
+
+## The chi-squared statistic
+
+$$\begin{aligned}
+\chi^2 &=
+    \sum_{ij} \frac{ \left((\text{observed})_{ij} - (\text{expected})_{ij} \right)^2 }{ (\text{expected})_{ij} } .
+\end{aligned}$$
+
+i.e., "observed minus expected squared, divided by expected".
+
+. . . 
+
+This gives us a number. What does it mean?
+
+# Stochastic minute
+
+## The chi-squared distribution
+
+Suppose that $Z_1, \ldots, Z_k$ are independent $\Normal(0, 1)$.
+Then
+
+$$ \chi^2 = Z_1^2 + \cdots + Z_k^2 $$
+
+has the *chi squared distribution* with $k$ degrees of freedom.
+
+. . .
+
+*Notes:*
+
+1. $\chi^2$ is a unitless nonnegative numbers.
+
+2. $\E[\chi^2] = k$.
+
+3. If instead $Z_i \sim \Normal(\mu_i, \sigma_i)$,
+   then $\chi^2 = \sum_{i=1}^k (Z_i - \mu_i)^2 / \sigma_i$.
+
+4. $\chi^2 \sim \Gamma(k/2, 1/2)$.
+
+## Asymptotics
+
+If the number of observations in a contingency table with $r$ rows and $c$ columns is large,
+then the chi-squared *statistic*
+has, approximately, the chi-squared distribution with $(r-1)\times(c-1)$ degrees of freedom
+under the hypothesis of independence of rows and columns.
+
+. . .
+
+(Asymptotically, i.e., as the number of observations goes to infinity.)
+
+
+# Method 1: Chi-squared test for independence
+
+## A chi-squared test
+
+```{r chisq_test}
+chisq.test(haireye_2d)
+```
+
+. . .
+
+Um, ok?
+
+## More context
+
+Let's actually look at "observed minus expected":
+
+```{r obsmexp}
+haireye_exp <- 0 * haireye_2d
+(haireye_exp[] <- ( rowSums(haireye_2d)[row(haireye_exp)]
+                   * colSums(haireye_2d)[col(haireye_exp)]
+                   / sum(haireye_2d) ))
+```
+
+##
+
+:::: {.columns}
+::::::::: {.column width="50%"}
+
+Observed minus expected:
+```{r ome, echo=FALSE}
+(haireye_2d - haireye_exp)
+```
+
+::::
+::::::::: {.column width="50%"}
+
+Normalized by $\sqrt{\text{expected}}$:
+```{r omes, echo=FALSE}
+((haireye_2d - haireye_exp) / sqrt(haireye_exp))
+```
+
+::::
+:::::::::
+
+## Conclusions?
+
+
+## What about by sex?
+
+Compute the chi-squared statistic with `chisq.test( )`:
+```{r do_chisq}
+chisq.test(HairEyeColor[,,"Female"])
+```
+
+
+# Method 2: Permutation
+
+## recall the $p$-value
+
+(definition here)
+
+. . .
+
+A permutation test *estimates* the "probability ... under the model" part.
+
+. . .
+
+We still need the other stuff.
+
+##
+
+First, "individualize" the data:
+```{r long_data}
+long_haireye <- haireye[rep(1:nrow(haireye), haireye$number), 
+                        c("hair", "eye", "sex")]
+stopifnot(nrow(long_haireye) == sum(haireye$number))
+long_haireye
+```
+
+##
+
+Compute the chi-squared statistic with `chisq.test( )`:
+```{r do_chisq2, warning=FALSE}
+he_tab <- table(long_haireye[long_haireye$sex == 'Female', 1:2])
+csq <- chisq.test(he_tab)
+str(csq)
+```
+
+##  Are hair and eye independent, given sex?
+
+```{r test_stat, warning=FALSE}
+true_val <- 0
+for (s in levels(long_haireye$sex)) {
+    true_val <- (true_val + 
+        with(subset(long_haireye, sex==s), 
+                chisq.test(table(hair, eye))$statistic))
+}
+```
+
+## Permutations:
+
+```{r perm_test, warning=FALSE}
+nperm <- 1000
+chisq_perm <- rep(0, nperm)
+for (k in 1:nperm) {
+    for (s in levels(long_haireye$sex)) {
+        fake <- subset(long_haireye, sex == s)
+        fake$eye <- sample(fake$eye)
+        chisq_perm[k] <- chisq_perm[k] + chisq.test(table(fake$eye, fake$hair))$statistic
+    }
+}
+```
+
+## Result:
+
+```{r plot_perms, echo=FALSE}
+hist(chisq_perm, breaks=40, xlab=expression(chi^2), xlim=c(0, 1.2 * true_val), main='bootstrap distribution of chi-squared value')
+abline(v=true_val, col='red', lwd=2)
+legend("topright", lty=1, col=2, lwd=2, legend="true value")
+```
+
+## Conclusion?
+
+(What did we actually test?)
+
+
+## Your turn:
+
+Use a permutation test to assess
+whether the relation between hair and eye color differs by sex.
+
+
+# Stochastic facts
+
+## Poisson additivity
+
+If we have Poisson-many things of two categories:
+$$\begin{aligned}
+    A &\sim \Poisson(a) \\
+    B &\sim \Poisson(b)
+\end{aligned}$$
+then the total number of things is also Poisson:
+$$
+    A + B \sim \Poisson(a + b)
+$$
+and each thing chooses its type independently:
+$$
+    A \given A + B \sim \Binom\left(A+B, \frac{a}{a+b}\right) .
+$$
+
+# Back to hair and eye colors
+
+## A model
+
+For hair color $i$ and eye color $j$,
+the number of students with that combination is
+$$
+    N_{ij} \sim \Poisson(\mu_{ij}) .
+$$
+
+. . .
+
+If hair and eye color are independent of each other
+and of sex, then
+$$\begin{aligned}
+    \mu_{ij}
+    &=
+    \exp\left( \alpha_i + \beta_j \right) .
+\end{aligned}$$
+
+
+## Nonindependence?
+
+$$\begin{aligned}
+    \mu_{ij}
+    &=
+    \exp\left( \alpha_i + \beta_j + \gamma_{ij} \right) ?
+\end{aligned}$$
+
+. . .
+
+Is this identifiable?
+
+
+## Nonindependence.
+
+$$\begin{aligned}
+    \mu_{ij} &= \exp\left( \delta_{ij} \right) \\
+    \delta_{ij} &\sim \Normal( \alpha_i + \beta_j, \sigma) 
+\end{aligned}$$
+
+. . .
+
+*Pick appropriate priors.*
+
+
+## brms
+
+```{r brm_fmla, cache=TRUE}
+he_formula <- brmsformula(number ~ hair * eye + (hair + eye) * sex)
+```
+
+## Flat priors
+
+```{r brm_prior, cache=TRUE, dependson='brm_fmla'}
+get_prior(he_formula, data=haireye, family='poisson')
+he_priors <- c()
+```
+
+##
+
+```{r brm_fit, cache=TRUE, dependson='brm_prior'}
+he_fit <- brm(he_formula,
+              data=haireye,
+              family=poisson(link='log'),
+              prior=he_priors)
+```
+
+##
+
+```{r brm_results, fig.width=2.5*fig.dim, fig.height=2*fig.dim}
+stanplot(he_fit)
+```
+
+## Proper priors
+
+```{r brm_prior2, cache=TRUE, dependson='brm_fmla'}
+get_prior(he_formula, data=haireye, family='poisson')
+he_priors2 <- c(prior('normal(0,1)', class='b'))
+```
+
+##
+
+```{r brm_fit2, cache=TRUE, dependson='brm_prior'}
+he_fit2 <- brm(he_formula,
+              data=haireye,
+              family=poisson(link='log'),
+              prior=he_priors2)
+```
+
+##
+
+```{r brm_results2, fig.width=2.5*fig.dim, fig.height=2*fig.dim}
+stanplot(he_fit2)
+```
+
+
+# Stochastic minute
+
+## The Dirichlet distribution
+
+A collection of $n$ nonnegative random numbers $(P_1, \ldots, P_n)$ 
+*that sums to 1*
+has a **Dirichlet($\alpha_1, \ldots, \alpha_n$)** distribution
+if it has probability density
+$$
+  \frac{1}{B(\alpha)} \prod_{i=1}^n p_i^{\alpha_i - 1} .
+$$
+
+*Facts:*
+
+> 1. If $U \sim \Beta(\alpha, \beta)$ then $(U, 1-U) \sim \Dirichlet(\alpha, \beta)$.
+> 
+> 2. If $Y_1, \ldots, Y_n$ are independent, Exponential with rates $\alpha_1, \ldots, \alpha_n$
+>    then
+>    $$
+>    Y / \sum_{i=1}^n Y_i \sim \Dirichlet(\alpha_1, \ldots, \alpha_n) .
+>    $$
+>
+> 3. Useful? Yes, if you need a distribution on numbers that sum to one 
+>    (e.g., class proportions).

@@ -28,8 +28,9 @@ Week 12 (*1/14*)
 
 Week 13 (*1/21*)
 
-: Categorical data: chi-square for contingency tables, permutation tests
+: Categorical data: chi-square for contingency tables, permutation tests.
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_13_Lecture.slides.html)
     - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
         chapter 24 (Poisson, contingency tables)
 
@@ -41,7 +42,7 @@ Week 14 (*1/28*)
 
 Week 15 (*2/4*)
 
-: Data analysis example
+: Data analysis and simulation
 
 Week 16 (*2/11*)
 
