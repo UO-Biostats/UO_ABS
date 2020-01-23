@@ -554,11 +554,11 @@ Let
 
 $$\begin{aligned}
     N_i &=  (\text{number of no difference genes in category $i$})  \\
-        &= \exp(\lambda_i^0)  \\
+        &\sim \Poisson(\exp(\lambda_i^N))  \\
     U_i &=  (\text{number of upregulated genes in category $i$})  \\
-        &= \exp(\lambda_i^+)  \\
+        &\sim \Poisson(\exp(\lambda_i^U))  \\
     D_i &=  (\text{number of downregulated genes in category $i$})  \\
-        &= \exp(\lambda_i^-) .
+        &\sim \Poisson(\exp(\lambda_i^D)) .
 \end{aligned}$$
 
 . . .
@@ -582,9 +582,54 @@ Interpret these: how do we see if
 5. Greater downregulation of anion transport genes?
 
 
-##
+## (in class)
 
-(write the stan code)
+```{r write_gostan}
+
+go_model_code <- "
+data {
+    int nterms;
+    int ntop; // number of 'top' categories
+    int N[nterms];
+    int U[nterms];
+    int D[nterms];
+    int top[nterms];
+}
+parameters {
+    real alpha[nterms];
+    real delta[2]; // up, down regulation
+    real beta1[ntop];
+    real beta2[nterms];
+    real gamma[nterms];
+}
+model {
+    real lambda_n;
+    real lambda_u;
+    real lambda_d;
+    for (i in 1:nterms) {
+        lambda_n = alpha[i];
+        lambda_u = alpha[i] + delta[1] + beta1[top[i]] + beta2[i];
+        lambda_d = alpha[i] + delta[2] + beta1[top[i]] + beta2[i] + gamma[i];
+        N[i] ~ poisson(exp(lambda_n));
+        U[i] ~ poisson(exp(lambda_u));
+        D[i] ~ poisson(exp(lambda_d));
+    }
+}
+"
+go_model <- stan_model(model_code=go_model_code)
+
+
+
+
+
+
+
+
+```
+
+
+
+
 
 ##
 
