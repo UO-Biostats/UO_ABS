@@ -37,6 +37,7 @@ Here are links to data from some studies that other people have done, and also s
 
 -   [American Gut Project](https://github.com/biocore/American-Gut/tree/master/data)
 
+-   [GTEx](https://gtexportal.org/home/datasets)
 
 
 # Datasets in this directory:

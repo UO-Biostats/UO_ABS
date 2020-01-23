@@ -19,6 +19,37 @@ options(digits=2)
 ```
 
 
+```{r sim_genes, include=FALSE}
+go_list <- list('cell death' = c('neuron death', 'oxidative stress', 'necrotic', 'apoptosis'),
+                'cell motility' = c('actin polymerization', 'sperm motility', 'cilia', 'axis elongation'),
+                'ion transport' = c('anion transport', 'cation transport', 'transmembrane transport'))
+goterms <- data.frame(top = rep(names(go_list), sapply(go_list, length)),
+                      term = unlist(go_list))
+go_props <- rgamma(nrow(goterms), 1/2, 1/2)
+go_props <- go_props / sum(go_props)
+goterms$num_genes <- rpois(length(go_props), lambda=10000 * go_props)
+
+params <- list(p = 0.05,  # baseline prob of being enriched
+               p_top = c('cell death' = 1.0,   # relative enrichment
+                         'cell motility' = 2.5,
+                         'ion transport' = 1.0),
+               p_term = c("neuron death" = 1.0,
+                          "oxidative stress" = 1.0,
+                          "necrotic" = 1.0,
+                          "apoptosis" = 5.0,
+                          "actin polymerization" = 1.0,
+                          "sperm motility" = 1.0,
+                          "cilia" = 1.0,
+                          "axis elongation" = 1.0,
+                          "anion transport" = 1.1,
+                          "cation transport" = 1.5,
+                          "transmembrane transport" = 0.5))
+upreg_prob <- with(goterms, params$p * params$p_top[top] * params$p_term[term])
+goterms$upregulated <- rbinom(nrow(goterms), size=goterms$num_genes, prob=upreg_prob)
+goterms$downregulated <- rbinom(nrow(goterms), size=goterms$num_genes - goterms$upregulated, prob=upreg_prob * 0.6)
+write.table(goterms, file="data/go_terms.tsv", row.names=FALSE)
+```
+
 
 # Categorical data
 
@@ -94,6 +125,7 @@ HairEyeColor
                        eye = dimnames(HairEyeColor)[[2]][slice.index(HairEyeColor, 2)],
                        sex = dimnames(HairEyeColor)[[3]][slice.index(HairEyeColor, 3)],
                        number = as.vector(HairEyeColor)))
+stopifnot(HairEyeColor["Brown", "Blue", "Female"] == subset(haireye, hair == "Brown" & eye == "Blue" & sex == "Female")$number)
 ```
 
 ## 
@@ -420,50 +452,206 @@ $$
     A \given A + B \sim \Binom\left(A+B, \frac{a}{a+b}\right) .
 $$
 
-# Back to hair and eye colors
+## Poisson models for contingency tables
+
+If we fit a model where 
+
+$$\begin{aligned}
+    (\text{number in cell $ij$})
+    &\sim \Poisson(\lambda_{ij})
+\end{aligned}$$
+
+then 
+$$\begin{aligned}
+    \frac{\lambda_{ij}}{\sum_{k\ell} \lambda_{k\ell}}
+    &=
+    (\text{proportion in category $ij$}) \\
+    \frac{\lambda_{ij}}{\sum_{k} \lambda_{kj}}
+    &=
+    (\text{proportion of row $j$ in column $i$}) \\
+    \frac{\lambda_{ij}}{\lambda_{ij} + \lambda_{k\ell}}
+    &=
+    (\text{proportion of those in $k\ell$ or $ij$ that are $ij$})
+\end{aligned}$$
+
+
+# Gene ontologies
+
+## 
+
+[![](images/go_analysis.png)](https://geneontology.org/docs/go-enrichment-analysis)
+
+
+## A very simplified ontology:
+
+<!-- see https://www.ebi.ac.uk/QuickGO/term/GO:0012501 /-->
+
+:::: {.columns}
+::::::::: {.column width="50%"}
+
+Suppose each gene falls into one of these categories:
+
+1. cell death
+
+   a. neuron death
+   b. oxidative stress
+   c. necrotic
+   d. apoptosis
+
+::::
+::::::::: {.column width="50%"}
+
+2. cell motility
+
+   a. actin polymerization
+   b. sperm motility
+   c. cilia
+   d. axis elongation
+
+3. ion transport
+
+   a. anion transport
+   b. cation transport
+   c. transmembrane transport
+
+::::
+:::::::::
+
+## 
+
+... and that we have detected a number of *upregulated* genes
+in our experiment.
+
+. . .
+
+Do these have anything in common? 
+
+I.e., are any gene ontologies *enriched* among the upregulated genes?
+
+
+## The data
+
+```{r the_data}
+(goterms <- read.table("data/go_terms.tsv", header=TRUE))
+```
+
+##
+
+Basic question: are the "upregulated" genes special?
+```{r chisqgo}
+goterms$no_diff <- with(goterms, num_genes - upregulated - downregulated)
+gomat <- goterms[, c("upregulated", "downregulated", "no_diff")]
+chisq.test(gomat)
+```
+
+. . .
+
+**Yes.** But, how?
 
 ## A model
 
-For hair color $i$ and eye color $j$,
-the number of students with that combination is
-$$
-    N_{ij} \sim \Poisson(\mu_{ij}) .
-$$
-
-. . .
-
-If hair and eye color are independent of each other
-and of sex, then
-$$\begin{aligned}
-    \mu_{ij}
-    &=
-    \exp\left( \alpha_i + \beta_j \right) .
-\end{aligned}$$
-
-
-## Nonindependence?
+Let
 
 $$\begin{aligned}
-    \mu_{ij}
-    &=
-    \exp\left( \alpha_i + \beta_j + \gamma_{ij} \right) ?
+    N_i &=  (\text{number of no difference genes in category $i$})  \\
+        &= \exp(\lambda_i^0)  \\
+    U_i &=  (\text{number of upregulated genes in category $i$})  \\
+        &= \exp(\lambda_i^+)  \\
+    D_i &=  (\text{number of downregulated genes in category $i$})  \\
+        &= \exp(\lambda_i^-) .
 \end{aligned}$$
 
 . . .
 
-Is this identifiable?
-
-
-## Nonindependence.
+and
 
 $$\begin{aligned}
-    \mu_{ij} &= \exp\left( \delta_{ij} \right) \\
-    \delta_{ij} &\sim \Normal( \alpha_i + \beta_j, \sigma) 
+    \lambda_i^N &= \alpha_i \\
+    \lambda_i^U &= \alpha_i + \delta_+ + \beta_1[\text{top}_i] + \beta_2[i] \\
+    \lambda_i^D &= \alpha_i + \delta_- + \beta_1[\text{top}_i] + \beta_2[i] + \gamma_i.
 \end{aligned}$$
 
-. . .
+##
 
-*Pick appropriate priors.*
+Interpret these: how do we see if
+
+1. No enrichments among differentially regulated genes?
+2. More genes are up- than down-regulated?
+3. Greater differential regulation among cell death genes?
+4. Greater differential regulation among apoptosis genes?
+5. Greater downregulation of anion transport genes?
+
+
+##
+
+(write the stan code)
+
+##
+
+```{r gostan, cache=TRUE, echo=FALSE}
+gomod_text <- "
+data {
+    int N;
+    int ntops;
+    int top[N];
+    int count[N];
+    int upreg[N];
+    int downreg[N];
+}
+transformed data {
+    int no_diff[N];
+    for (k in 1:N) {
+        no_diff[k] = count[k] - upreg[k] - downreg[k];
+    }
+}
+parameters {
+    vector[N] alpha; // mean proportions
+    real delta[2];   // prop up/down
+    vector[ntops] beta_top; // top effect
+    vector[N] beta_term; // term effect
+    vector[N] gamma;   // down relative to up
+}
+transformed parameters {
+    vector[N] nmean = exp(alpha);
+    vector[N] umean = exp(alpha + delta[1] + beta_top[top] + beta_term);
+    vector[N] dmean = exp(alpha + delta[2] + beta_top[top] + beta_term + gamma);
+}
+model {
+    no_diff ~ poisson(nmean);
+    upreg ~ poisson(umean);
+    downreg ~ poisson(dmean);
+    alpha ~ normal(0, 1);
+    delta ~ normal(0, 1);
+    beta_top ~ cauchy(0, 1);
+    beta_term ~ cauchy(0, 1);
+    gamma ~ cauchy(0, 1);
+}
+"
+gomod <- stan_model(model_code=gomod_text)
+```
+
+
+```{r run_gostan, cache=TRUE, dependson='gostan', echo=FALSE}
+gofit <- sampling(gomod,
+             chains=3, iter=1000,
+             data=list(N = nrow(goterms),
+                       ntops = nlevels(goterms$top),
+                       top = as.integer(goterms$top),
+                       count = goterms$num_genes,
+                       upreg = goterms$upregulated,
+                       downreg = goterms$downregulated))
+```
+
+## Nonidentifiability
+
+```{r nonident}
+pairs(gofit, pars=c('beta_top[1]', sprintf('beta_term[%d]', 1:4)))
+```
+
+## What do we really want to know?
+
+
+# Back to hair and eye colors: with brms
 
 
 ## brms
