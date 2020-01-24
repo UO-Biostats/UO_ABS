@@ -33,6 +33,7 @@ Week 13 (*1/21*)
     - [Slides](../CLASS_MATERIALS/Lectures/Week_13_Lecture.slides.html)
     - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
         chapter 24 (Poisson, contingency tables)
+    - [Homework 13](../CLASS_MATERIALS/Homeworks/HW13_F19.html) *(due 1/30)*
 
 Week 14 (*1/28*)
 
