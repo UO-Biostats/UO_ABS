@@ -1,10 +1,9 @@
 ---
 layout: page
-title: Using RStan on the cluster
+title: Verifying Stan Install
 description: verifying the rstan installation 
 ---
 
-# Verifying Stan Install
 Here we will check that RStan is installed on your machine.
 First we'll use a basic model, check that it compiles with `stan_model()`,
 then check that it correctly performs MCMC with `sampling()`.
