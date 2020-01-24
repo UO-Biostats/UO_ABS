@@ -12,6 +12,7 @@ description: useful links for Advanced Biological Statistics
 * Tips on [writing Rmd reports](rmarkdown_tips.html)
 * Tips on [writing peer reviews](peer_reviews.html)
 * How to [use `rstan` on the cluster](rstan_on_talapas.html)
+* How to [check if `rstan` is installed correctly](check_stan_install.html)
 
 ### Stan
 
