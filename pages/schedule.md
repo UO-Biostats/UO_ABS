@@ -16,14 +16,14 @@ Week 11 (*1/7*)
 : Survival analysis
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_11_Lecture.slides.html)
-    - [Homework 11](../CLASS_MATERIALS/Homeworks/HW11_F19.html) *(due 1/16)*
+    - [Homework 11](../CLASS_MATERIALS/Homeworks/HW11_F20.html) *(due 1/16)*
 
 Week 12 (*1/14*)
 
 : Time series: temporal autocorrelation, autoregressive models; mechanistic models
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_12_Lecture.slides.html)
-    - [Homework 12](../CLASS_MATERIALS/Homeworks/HW12_F19.html) *(due 1/23)*
+    - [Homework 12](../CLASS_MATERIALS/Homeworks/HW12_F20.html) *(due 1/23)*
 
 
 Week 13 (*1/21*)
@@ -33,7 +33,7 @@ Week 13 (*1/21*)
     - [Slides](../CLASS_MATERIALS/Lectures/Week_13_Lecture.slides.html)
     - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
         chapter 24 (Poisson, contingency tables)
-    - [Homework 13](../CLASS_MATERIALS/Homeworks/HW13_F19.html) *(due 1/30)*
+    - [Homework 13](../CLASS_MATERIALS/Homeworks/HW13_F20.html) *(due 1/30)*
 
 Week 14 (*1/28*)
 

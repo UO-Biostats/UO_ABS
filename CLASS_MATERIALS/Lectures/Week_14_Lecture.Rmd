@@ -1,0 +1,244 @@
+---
+title: "Categorical prediction and crossvalidation"
+author: "Peter Ralph"
+date: "28 January 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(rstan)
+library(brms)
+library(bayesplot)
+library(matrixStats)
+library(tidyverse)
+options(mc.cores = parallel::detectCores())
+options(digits=2)
+```
+
+
+# Gene ontology enrichment
+
+## Recall: the data
+
+```{r the_data}
+(goterms <- read.table("data/go_terms.tsv", header=TRUE))
+```
+
+## 
+
+Are some categories of genes more likely to be differentially regulated than others?
+or, upregulated? downregulated?
+
+
+## The poisson model
+
+Let
+
+$$\begin{aligned}
+    N_i &=  (\text{number of no difference genes in category $i$})  \\
+        &\sim \Poisson(\exp(\lambda_i^N))  \\
+    U_i &=  (\text{number of upregulated genes in category $i$})  \\
+        &\sim \Poisson(\exp(\lambda_i^U))  \\
+    D_i &=  (\text{number of downregulated genes in category $i$})  \\
+        &\sim \Poisson(\exp(\lambda_i^D)) .
+\end{aligned}$$
+
+. . .
+
+and
+
+$$\begin{aligned}
+    \lambda_i^N &= \alpha_i \\
+    \lambda_i^U &= \alpha_i + \delta_U + \beta_1[\text{top}_i] + \beta_2[i] \\
+    \lambda_i^D &= \alpha_i + \delta_D + \beta_1[\text{top}_i] + \beta_2[i] + \gamma_i.
+\end{aligned}$$
+
+## We will want to know
+
+Are upregulated genes enriched for category $i$?
+$$\begin{aligned}
+    \frac{
+        \text{(proportion of upregulated 
+        
+\end{aligned}$$
+
+
+## Our Stan code: flat priors
+
+```{r write_gostan, cache=TRUE}
+go_model_code <- "
+data {
+    int nterms;
+    int ntop; // number of 'top' categories
+    int N[nterms];
+    int U[nterms];
+    int D[nterms];
+    int top[nterms];
+}
+parameters {
+    real alpha[nterms];
+    real delta[2]; // up, down regulation
+    real beta1[ntop];
+    real beta2[nterms];
+    real gamma[nterms];
+}
+model {
+    real lambda_n;
+    real lambda_u;
+    real lambda_d;
+    for (i in 1:nterms) {
+        lambda_n = alpha[i];
+        lambda_u = alpha[i] + delta[1] + beta1[top[i]] + beta2[i];
+        lambda_d = alpha[i] + delta[2] + beta1[top[i]] + beta2[i] + gamma[i];
+        N[i] ~ poisson(exp(lambda_n));
+        U[i] ~ poisson(exp(lambda_u));
+        D[i] ~ poisson(exp(lambda_d));
+    }
+}
+"
+go_model <- stan_model(model_code=go_model_code)
+```
+
+## 
+
+```{r fit_gostan, cache=TRUE, dependson='write_gostan'}
+go_fit <- sampling(go_model, chains = 4, iter = 2000,
+                   data=list(nterms = nrow(goterms),
+                             ntop = nlevels(goterms$top),
+                             N = goterms$num_genes - goterms$upregulated - goterms$downregulated,
+                             U = goterms$upregulated,
+                             D = goterms$downregulated,
+                             top = as.numeric(goterms$top)))
+```
+```{r summary, echo=FALSE}
+rstan::summary(go_fit)$summary
+```
+
+## Uh-oh!! Rhat values:
+
+```{r show_rhat, echo=FALSE}
+rstan::summary(go_fit)$summary[,"Rhat"]
+```
+
+## Traces, alpha
+
+```{r trace_alpha, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+stan_trace(go_fit, pars=c('alpha', 'lp__'))
+```
+
+## Traces, gamma
+
+```{r trace_gamma, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+stan_trace(go_fit, pars=c('gamma', 'lp__'))
+```
+
+## `pairs()`
+
+```{r show_pairs, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+pairs(go_fit, pars=c('delta', 'alpha[1]', 'beta1[1]', 'beta2[1]', 'gamma[1]'))
+```
+
+# The effect of priors
+
+## Same model, with priors
+
+```{r add_priors, cache=TRUE}
+go_model_code2 <- "
+data {
+    int nterms;
+    int ntop; // number of 'top' categories
+    int N[nterms];
+    int U[nterms];
+    int D[nterms];
+    int top[nterms];
+}
+parameters {
+    real alpha[nterms];
+    real delta[2]; // up, down regulation
+    real beta1[ntop];
+    real beta2[nterms];
+    real gamma[nterms];
+}
+model {
+    real lambda_n;
+    real lambda_u;
+    real lambda_d;
+    for (i in 1:nterms) {
+        lambda_n = alpha[i];
+        lambda_u = alpha[i] + delta[1] + beta1[top[i]] + beta2[i];
+        lambda_d = alpha[i] + delta[2] + beta1[top[i]] + beta2[i] + gamma[i];
+        N[i] ~ poisson(exp(lambda_n));
+        U[i] ~ poisson(exp(lambda_u));
+        D[i] ~ poisson(exp(lambda_d));
+    }
+    alpha ~ normal(0, 5); // flat-ish
+    delta ~ normal(0, 5); // flat-ish
+    beta1 ~ cauchy(0, 0.1); // very peaked
+    beta2 ~ cauchy(0, 0.1); // very peaked
+    gamma ~ cauchy(0, 0.1); // very peaked
+}
+"
+go_model2 <- stan_model(model_code=go_model_code2)
+```
+
+## Fit, again
+
+```{r fit_gostan2, cache=TRUE, dependson='write_gostan2'}
+go_fit2 <- sampling(go_model2, chains = 4, iter = 2000,
+                    data=list(nterms = nrow(goterms),
+                              ntop = nlevels(goterms$top),
+                              N = goterms$num_genes - goterms$upregulated - goterms$downregulated,
+                              U = goterms$upregulated,
+                              D = goterms$downregulated,
+                              top = as.numeric(goterms$top)))
+```
+```{r summary2, echo=FALSE}
+rstan::summary(go_fit2)$summary
+```
+
+
+## `stan_trace()`, alpha
+
+```{r trace_alpha2, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+stan_trace(go_fit2, pars=c('alpha', 'lp__'))
+```
+
+## `stan_trace()`, gamma
+
+```{r trace_gamma2, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+stan_trace(go_fit2, pars=c('gamma', 'lp__'))
+```
+
+## `pairs()`
+
+```{r show_pairs2, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+pairs(go_fit2, pars=c('delta', 'alpha[1]', 'beta1[1]', 'beta2[1]', 'gamma[1]'))
+```
+
+## Parameter estimates: main effects
+
+```{r show_params1, fig.width=2.5*fig.dim, warning=FALSE}
+post2 <- as.array(go_fit2)
+bayesplot::mcmc_intervals(post2, regex_pars=c('alpha', 'delta')) + scale_y_discrete(labels=c(paste("alpha:", levels(goterms$term)), paste("delta:", c("up", "down"))))
+```
+
+## Parameter estimates: differential regulation
+
+```{r show_params1, fig.width=2.5*fig.dim, warning=FALSE}
+bayesplot::mcmc_intervals(post2, regex_pars=c('beta1', 'beta2')) + scale_y_discrete(labels=c(paste("beta1:", levels(goterms$top)), paste("beta2:", levels(goterms$term))))
+```
+
+## Parameter estimates: down- versus upregulation
+
+```{r show_params1, fig.width=2.5*fig.dim}
+bayesplot::mcmc_intervals(post2, regex_pars='gamma') + scale_y_discrete(labels=paste("gamma:", levels(goterms$term)))
+```
+
+## Conclusions?
+
+
+# In-class: group scheming

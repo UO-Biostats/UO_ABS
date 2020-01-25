@@ -584,7 +584,7 @@ Interpret these: how do we see if
 
 ## (in class)
 
-```{r write_gostan}
+```{r write_gostan, cache=TRUE}
 
 go_model_code <- "
 data {

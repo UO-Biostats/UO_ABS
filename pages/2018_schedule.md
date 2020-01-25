@@ -14,31 +14,45 @@ the slides are made using [reveal.js](https://github.com/hakimel/reveal.js/).
 
 Week 1 -
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_01_Lecture.html)
+: Introduction to R
+
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_01_Lecture.html)
 
 Week 2 -
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_02_Lecture.html)
+: Probability, correlation, standard errors, estimation
+
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_02_Lecture.html)
 
 Week 3 -
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_03_Lecture.html)
+: Hypothesis testing, $t$-test, permutation tests, and tidy data
+
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_03_Lecture.html)
 
 Week 4 -
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_04_Lecture.html)
+: Data visualization, linear models
 
-Week 5 -
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_04_Lecture.html)
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_05_Lecture.html)
+Week 5 - 
 
-Week 6 -
+: Linear regression
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_06_Lecture.html)
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_05_Lecture.html)
 
-Week 7 -
+Week 6 - 
 
-: [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_07_Lecture.html)
+: ANOVA, and git
+
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_06_Lecture.html)
+
+Week 7 - 
+
+: Experimental design and factorial ANOVA; mixed models; ANCOVA
+
+    * [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_07_Lecture.html)
 
 Week 8 -
 
@@ -82,52 +96,52 @@ Week 13 (*1/21, Peter*)
 
 : Categorical data: chi-square for contingency tables, permutation tests; categorical prediction.
 
-    - [Tuesday Slides](../CLASS_MATERIALS/Lectures/2018/Week_13_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_13_Lecture.slides.html)
     - Reading: **(Kruschke, ch 22, 24)**
 
 Week 14 (*1/28, Peter*)
 
 : Sparsifying priors and variable selection.
 
-    - [Tuesday Slides](../CLASS_MATERIALS/Lectures/2018/Week_14_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_14_Lecture.slides.html)
     - Reading: **(Kruschke, ch 19, 20)**
 
 Week 15 (*2/4, Bill*)
 
 : Linear algebra, latent factor analysis, intro to multivariate
 
-    - [Slides](../CLASS_MATERIALS/Lectures/2018/Week_15_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_15_Lecture.slides.html)
     - Reading: **(Otto and Day, Linear Algebra Primer; Quinn & Keogh, ch 15)**
 
 Week 16 (*2/11, Bill*)
 
 : Factor/PCA/PCoA/MDS
 
-    - [Slides](../CLASS_MATERIALS/Lectures/2018/Week_16_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_16_Lecture.slides.html)
     - Reading: **(Quinn & Keogh, ch 17, 18)**
 
 Week 17 (*2/18, Bill*)
 
 : MANOVA and Discriminant Function Analysis (DFA)
 
-    - [Slides](../CLASS_MATERIALS/Lectures/2018/Week_17_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_17_Lecture.slides.html)
     - Reading: **(Quinn & Keogh, ch 16)**
 
 Week 18 (*2/25, Peter*)
 
 : Visualization: nonnegative matrix factorization and constrained PCA
 
-    - [Slides](../CLASS_MATERIALS/Lectures/2018/Week_18_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_18_Lecture.slides.html)
 
 Week 19 (*3/4, Peter*)
 
 : Modeling mixtures of expression data; clustering in Stan (t-SNE)
 
-    - [Slides](../CLASS_MATERIALS/Lectures/2018/Week_18_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_18_Lecture.slides.html)
 
 Week 20 (*3/11, Peter*)
 
 : Introduction to time series and spatial statistics.
 
-    - [Slides](../CLASS_MATERIALS/Lectures/2018/Week_19_Lecture.slides.html)
+    - [Tuesday & Thursday Slides](../CLASS_MATERIALS/Lectures/2018/Week_19_Lecture.slides.html)
 
