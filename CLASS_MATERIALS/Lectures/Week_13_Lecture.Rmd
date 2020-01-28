@@ -34,17 +34,17 @@ params <- list(p = 0.05,  # baseline prob of being enriched
                          'cell motility' = 2.5,
                          'ion transport' = 1.0),
                p_term = c("neuron death" = 1.0,
-                          "oxidative stress" = 1.0,
+                          "oxidative stress" = 1.1,
                           "necrotic" = 1.0,
-                          "apoptosis" = 5.0,
+                          "apoptosis" = 10.0,
                           "actin polymerization" = 1.0,
-                          "sperm motility" = 1.0,
+                          "sperm motility" = 1.5,
                           "cilia" = 1.0,
                           "axis elongation" = 1.0,
-                          "anion transport" = 1.1,
-                          "cation transport" = 1.5,
+                          "anion transport" = 1.0,
+                          "cation transport" = 1.0,
                           "transmembrane transport" = 0.5))
-upreg_prob <- with(goterms, params$p * params$p_top[top] * params$p_term[term])
+upreg_prob <- with(goterms, params$p * params$p_top[as.character(top)] * params$p_term[as.character(term)])
 goterms$upregulated <- rbinom(nrow(goterms), size=goterms$num_genes, prob=upreg_prob)
 goterms$downregulated <- rbinom(nrow(goterms), size=goterms$num_genes - goterms$upregulated, prob=upreg_prob * 0.6)
 write.table(goterms, file="data/go_terms.tsv", row.names=FALSE)

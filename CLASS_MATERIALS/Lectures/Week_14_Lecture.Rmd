@@ -1,5 +1,5 @@
 ---
-title: "Categorical prediction and crossvalidation"
+title: "Categorical data and crossvalidation"
 author: "Peter Ralph"
 date: "28 January 2020 -- Advanced Biological Statistics"
 ---
@@ -33,6 +33,18 @@ options(digits=2)
 Are some categories of genes more likely to be differentially regulated than others?
 or, upregulated? downregulated?
 
+## First, look at the data
+
+```{r look_data}
+goterms$per_up <- with(goterms, upregulated/sum(upregulated))
+goterms$per_down <- with(goterms, downregulated/sum(downregulated))
+goterms$per_diff <- with(goterms, (upregulated + downregulated)/sum(upregulated + downregulated))
+goterms$per_nodiff <- with(goterms, (num_genes - upregulated + downregulated)/sum(num_genes - upregulated + downregulated))
+goterms$diff_enrich <- goterms$per_diff / goterms$per_nodiff
+goterms$up_vs_down <- goterms$per_up / goterms$per_down
+goterms
+```
+
 
 ## The poisson model
 
@@ -55,15 +67,6 @@ $$\begin{aligned}
     \lambda_i^N &= \alpha_i \\
     \lambda_i^U &= \alpha_i + \delta_U + \beta_1[\text{top}_i] + \beta_2[i] \\
     \lambda_i^D &= \alpha_i + \delta_D + \beta_1[\text{top}_i] + \beta_2[i] + \gamma_i.
-\end{aligned}$$
-
-## We will want to know
-
-Are upregulated genes enriched for category $i$?
-$$\begin{aligned}
-    \frac{
-        \text{(proportion of upregulated 
-        
 \end{aligned}$$
 
 
@@ -142,11 +145,72 @@ stan_trace(go_fit, pars=c('gamma', 'lp__'))
 pairs(go_fit, pars=c('delta', 'alpha[1]', 'beta1[1]', 'beta2[1]', 'gamma[1]'))
 ```
 
+# R interlude
+
+## Indexing with names is good!!
+
+Number of 'high' values:
+```{r naming_things}
+y <- rnorm(1e4)
+# cutoffs:
+x <- c(1, 2, 3)
+sum(y > x[3])
+```
+
+. . .
+
+Wait, let's make more cutoffs:
+```{r naming_things3}
+x <- c(1, 1.5, 2.5, 3)
+sum(y > x[3])
+```
+
+. . . whoops!
+
+##
+
+
+Wait, let's add another level:
+```{r naming_things2}
+x <- c(low=1, "lowish"=1.5, 'highish'=2.5, high=3)
+sum(y > x['high'])
+```
+
+
+## BUT: A warning about factors
+
+```{r warning}
+f <- factor(c('low', 'med', 'high'))
+x <- c(low=1, med=2, high=3)
+```
+
+What is `x[f[3]]`?
+
+. . .
+
+```{r warning2}
+x[f[3]]
+```
+
+## Defensive programming
+
+```{r checkit}
+xf <- x[f]
+stopifnot(all(names(xf) == f))
+```
+
+. . .
+
+```{r checkit2}
+xf <- x[as.character(f)]
+stopifnot(all(names(xf) == f))
+```
+
 # The effect of priors
 
 ## Same model, with priors
 
-```{r add_priors, cache=TRUE}
+```{r write_gostan2, cache=TRUE}
 go_model_code2 <- "
 data {
     int nterms;
@@ -221,24 +285,169 @@ pairs(go_fit2, pars=c('delta', 'alpha[1]', 'beta1[1]', 'beta2[1]', 'gamma[1]'))
 
 ## Parameter estimates: main effects
 
-```{r show_params1, fig.width=2.5*fig.dim, warning=FALSE}
+```{r show_params1, fig.width=2.5*fig.dim, message=FALSE, echo=FALSE}
 post2 <- as.array(go_fit2)
-bayesplot::mcmc_intervals(post2, regex_pars=c('alpha', 'delta')) + scale_y_discrete(labels=c(paste("alpha:", levels(goterms$term)), paste("delta:", c("up", "down"))))
+bayesplot::mcmc_intervals(post2, regex_pars=c('alpha', 'delta')) + scale_y_discrete(labels=c(paste("alpha:", goterms$term), paste("delta:", c("up", "down"))))
 ```
 
 ## Parameter estimates: differential regulation
 
-```{r show_params1, fig.width=2.5*fig.dim, warning=FALSE}
-bayesplot::mcmc_intervals(post2, regex_pars=c('beta1', 'beta2')) + scale_y_discrete(labels=c(paste("beta1:", levels(goterms$top)), paste("beta2:", levels(goterms$term))))
+```{r show_params2, fig.width=2.5*fig.dim, message=FALSE, echo=FALSE}
+bayesplot::mcmc_intervals(post2, regex_pars=c('beta1', 'beta2')) + scale_y_discrete(labels=c(paste("beta1:", levels(goterms$top)), paste("beta2:", goterms$term)))
 ```
 
 ## Parameter estimates: down- versus upregulation
 
-```{r show_params1, fig.width=2.5*fig.dim}
-bayesplot::mcmc_intervals(post2, regex_pars='gamma') + scale_y_discrete(labels=paste("gamma:", levels(goterms$term)))
+```{r show_params3, fig.width=2.5*fig.dim, message=FALSE, echo=FALSE}
+bayesplot::mcmc_intervals(post2, regex_pars='gamma') + scale_y_discrete(labels=paste("gamma:", goterms$term))
 ```
 
-## Conclusions?
-
-
 # In-class: group scheming
+
+
+# 
+
+
+
+# Generated quantities
+
+## Another approach
+
+For interpretation,
+we looked at parameter estimates,
+and relied on strong priors to deal with model nonidentifiability.
+
+A possibly better alternative 
+is to ask for the posterior distribution of the quantities 
+we actually want to know (not the same as the parameters, in this case).
+
+## Once more:
+
+```{r write_gostan3, cache=TRUE}
+go_model_code3 <- "
+data {
+    int nterms;
+    int ntop; // number of 'top' categories
+    int N[nterms];
+    int U[nterms];
+    int D[nterms];
+    int top[nterms];
+}
+parameters {
+    vector[nterms] alpha;
+    vector[2] delta; // up, down regulation
+    vector[ntop] beta1;
+    vector[nterms] beta2;
+    vector[nterms] gamma;
+}
+transformed parameters {
+    vector[nterms] mean_n;
+    vector[nterms] mean_u;
+    vector[nterms] mean_d;
+    mean_n = exp(alpha);
+    mean_u = exp(alpha + delta[1] + beta1[top] + beta2);
+    mean_d = exp(alpha + delta[2] + beta1[top] + beta2 + gamma);
+}
+model {
+    N ~ poisson(mean_n);
+    U ~ poisson(mean_u);
+    D ~ poisson(mean_d);
+    alpha ~ normal(0, 5); // flat-ish
+    delta ~ normal(0, 5); // flat-ish
+    beta1 ~ cauchy(0, 1.0);
+    beta2 ~ cauchy(0, 1.0);
+    gamma ~ cauchy(0, 1.0);
+}
+"
+go_model3 <- stan_model(model_code=go_model_code3)
+```
+
+## Fit, again
+
+```{r fit_gostan3, cache=TRUE, dependson='write_gostan3'}
+go_fit3 <- sampling(go_model3, chains = 4, iter = 4000,
+                    data=list(nterms = nrow(goterms),
+                              ntop = nlevels(goterms$top),
+                              N = goterms$num_genes - goterms$upregulated - goterms$downregulated,
+                              U = goterms$upregulated,
+                              D = goterms$downregulated,
+                              top = as.numeric(goterms$top)))
+```
+```{r summary3, echo=FALSE}
+rstan::summary(go_fit3)$summary
+```
+
+## What do we want to know?
+
+Let $\mu^N_i = \exp(\lambda^N_i)$ and $\mu^N = \sum_i \mu^N_i$.
+
+. . .
+
+Is term $i$ overrepresented among differentially regulated genes?
+$$\begin{aligned}
+    \frac{ (\mu^U_i + \mu^D_i) / (\mu^U + \mu^D) }
+         { \mu^N_i / \mu^N }
+\end{aligned}$$
+
+. . .
+
+Is term $i$ more up- than down-regulated?
+$$\begin{aligned}
+    \frac{ \mu^U_i / \mu^U }
+         { \mu^D_i / \mu^D }
+\end{aligned}$$
+
+
+## Posterior distributions: GO term enrichments
+
+```{r get_posts}
+samps <- rstan::extract(go_fit3)
+diff_enrichment <- ((samps$mean_d + samps$mean_u) / (rowSums(samps$mean_d) + rowSums(samps$mean_u))) / (samps$mean_n / rowSums(samps$mean_n))
+up_enrichment <- (samps$mean_u / rowSums(samps$mean_u)) / (samps$mean_d / rowSums(samps$mean_d))
+colnames(diff_enrichment) <- paste0("diff:", goterms$term)
+colnames(up_enrichment) <- paste0("up:", goterms$term)
+
+diff_top_enrichment <- (simplify2array(by(t(samps$mean_u + samps$mean_d), goterms$top, colSums))  / rowSums(samps$mean_u)) / (simplify2array(by(t(samps$mean_n), goterms$top, colSums))/ rowSums(samps$mean_n))
+up_top_enrichment <- (simplify2array(by(t(samps$mean_u), goterms$top, colSums))  / rowSums(samps$mean_u)) / (simplify2array(by(t(samps$mean_d), goterms$top, colSums))/ rowSums(samps$mean_d))
+colnames(diff_top_enrichment) <- paste0("diff:", levels(goterms$top))
+colnames(up_top_enrichment) <- paste0("up:", levels(goterms$top))
+```
+
+## Posterior distributions: GO term enrichments
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```{r plot_posts}
+bayesplot::mcmc_intervals(cbind(up_enrichment, diff_enrichment))
+```
+
+::: 
+::::::: {.column width=50%}
+
+```{r plot_posts2}
+bayesplot::mcmc_intervals(cbind(up_top_enrichment, diff_top_enrichment))
+```
+
+::: 
+:::::::
+
+## log scale
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```{r plot_posts3}
+bayesplot::mcmc_intervals(log(cbind(up_enrichment, diff_enrichment)))
+```
+
+::: 
+::::::: {.column width=50%}
+
+```{r plot_posts4}
+bayesplot::mcmc_intervals(log(cbind(up_top_enrichment, diff_top_enrichment)))
+```
+
+::: 
+:::::::
+

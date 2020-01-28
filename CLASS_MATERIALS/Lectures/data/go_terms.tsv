@@ -1,12 +1,12 @@
 "top" "term" "num_genes" "upregulated" "downregulated"
-"cell death" "neuron death" 922 39 27
-"cell death" "oxidative stress" 1932 100 54
-"cell death" "necrotic" 2020 98 57
-"cell death" "apoptosis" 972 59 28
-"cell motility" "actin polymerization" 57 4 3
-"cell motility" "sperm motility" 379 58 31
-"cell motility" "cilia" 1096 147 79
-"cell motility" "axis elongation" 248 164 33
-"ion transport" "anion transport" 300 10 11
-"ion transport" "cation transport" 194 8 7
-"ion transport" "transmembrane transport" 1905 46 32
+"cell death" "neuron death" 2405 122 70
+"cell death" "oxidative stress" 886 41 25
+"cell death" "necrotic" 32 2 0
+"cell death" "apoptosis" 898 468 123
+"cell motility" "actin polymerization" 1822 243 117
+"cell motility" "sperm motility" 1585 292 131
+"cell motility" "cilia" 517 75 25
+"cell motility" "axis elongation" 62 9 5
+"ion transport" "anion transport" 128 2 5
+"ion transport" "cation transport" 1697 91 50
+"ion transport" "transmembrane transport" 99 3 2

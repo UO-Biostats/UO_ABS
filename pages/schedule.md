@@ -39,6 +39,7 @@ Week 14 (*1/28*)
 
 : Categorical prediction; crossvalidation for model comparison.
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_14_Lecture.slides.html)
     - Reading: Kruschke, chapter 22 (softmax regression)
 
 Week 15 (*2/4*)
