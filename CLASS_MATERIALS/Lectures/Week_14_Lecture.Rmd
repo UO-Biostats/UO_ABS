@@ -302,6 +302,26 @@ bayesplot::mcmc_intervals(post2, regex_pars=c('beta1', 'beta2')) + scale_y_discr
 bayesplot::mcmc_intervals(post2, regex_pars='gamma') + scale_y_discrete(labels=paste("gamma:", goterms$term))
 ```
 
+## in-class: conclusions
+
+In conclusion, 
+we used Stan fit a Poisson model in which the cell means are given by the equation above.
+(say Bayesian somehow)
+The priors on each parameter are specified above.
+Standard methods were used for assessing convergence of the Hamiltonian Monte Carlo algorithm.
+Most genes are not differentially regulated:
+in the data, X percent were; our model fit a 95% credible interval of A to B for this effect.
+However, apoptosis and cell motility genes are strongly differentially regulated,
+showing relative enrichments of about 25-fold and 3.3-fold, respectively, over "not differentiated".
+(TODO: get the actual numbers, as exp(beta))
+95% credible intervals for these two effects ranged from X to Y. (look those up)
+TODO: up vs down for apoptosis; sperm motility;
+Remaining effects were not statistically signficant.
+
+
+
+
+
 # In-class: group scheming
 
 
