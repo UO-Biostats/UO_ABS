@@ -487,6 +487,18 @@ $$\begin{aligned}
 \end{aligned}$$
 
 
+# Crossvalidation exploration
+
+## Who says we don't do experiments?
+
+1. Simulate data with `y ~ a + b x[1] + c x[2]`, and fit a linear model.
+2. Measure in-sample and out-of-sample prediction error.
+3. Add spurious variables, and report the above as a function of number of variables.
+
+. . .
+
+4. Simulate data with *many, weakly predictive* explanatory variables.
+5. Compare different methods for fitting linear models.
 
 # Sparseness and scale mixtures
 
@@ -769,9 +781,9 @@ bhs <- brm(y ~ ., data=xy, family=gaussian(link='identity'),
 :::::::::::::: {.columns}
 ::: {.column width="50%"}
 
-```{r brmresults, echo=FALSE}
+```{r brmresults, echo=FALSE, fig.height=2*fig.dim}
 bhs_samps <- fixef(blm, summary=FALSE)
-bayesplot::mcmc_intervals(bhs_samps) + title("OLS")
+bayesplot::mcmc_intervals(bhs_samps) + ggtitle("OLS")
 ```
 
 
@@ -779,8 +791,8 @@ bayesplot::mcmc_intervals(bhs_samps) + title("OLS")
 ::: {.column width="50%"}
 
 ```{r brmresults2, echo=FALSE}
-bhs_samps <- fixef(bhs, summary=FALSE)
-bayesplot::mcmc_intervals(bhs_samps) + title("horseshoe")
+bhs_samps <- fixef(bhs, summary=FALSE, fig.height=2*fig.dim)
+bayesplot::mcmc_intervals(bhs_samps) + ggtitle("horseshoe")
 ```
 
 :::
@@ -1002,102 +1014,6 @@ They're not wrong! What's going on?
 ```{r infil_data, include=FALSE}
 head(infil <- read.table("data/infiltration_data.tsv", header=TRUE))
 ```
-
-# Exercises
-
-
-## Pick a situation
-
-1. Number of mosquitos caught in traps
-   at 20 different time points at 4 locations;
-   temperature and rainfall are also measured.
-
-2. Transpiration rates of 5 trees each of 100 strains,
-   along with genotype at five SNPs putatively linked to stomatal efficiency.
-
-3. Presence or absence of *Wolbachia* parasites
-   in fifty flies are sampled from each of 100 populations,
-   along with the sex and transcription levels of ten immune-related genes of each fly.
-
-4. HW1/2: exponential regression
-
-
-## Mosquitos: variables
-
-**Big picture:**
-We're sampling mosquitos
-in a few separate (replicate) traps
-once, in the day and at night, each month, 
-at each of four locations.
-
-**Main question:**
-How do mosquito populations vary seasonally
-and by time of day,
-after controlling for temperature and rainfall?
-
-## Mosquitos: story
-
-We've chosen locations to have similar rainfall and temperature means
-(so that location and rain/temp aren't confounded).
-
-There are more mosquitos out at night than during the day,
-and more when it is warmer and wetter,
-but there is no effect of month given temperature and rainfall.
-There is an overall mean difference in abundance
-by location, due to unmeasured factors.
-
-## Mosquitos: variables
-
-- `count` : number of mosquitos caught (0-1000)
-- `rainfall` : cm of rain in the last 12 hours ($< 10$cm)
-- `temperature` : average degrees C last 12 hours (25--35 C)
-- `location` : factor with four levels
-- `time` : day or night
-- `month` : categorical, 1--12 *(note: could be numeric/sinusoidal!)*
-- `replicate` : which trap number within the month/time/location combination (up to 5)
-  *(unused in the model)*
-
-*Note:* we'll have around 480 observations and 20 variables (without interactions).
-
-## Model:
-
-```{r moz_model}
-moz_model <- stan_model(model_code="
-data {
-    int N;                         // number of obs
-    int nmonths;                   // = 12
-    int nlocs;                     // number of locs
-    int counts[N];
-    vector[N] temp;                // temperature
-    vector[N] rain;                // rainfall
-    int month[N];                  // month index
-    vector<lower=0, upper=1>[N] time; // 0 = night, 1 = day
-    int location[N];               // location index
-}
-parameters {
-    real b0;
-    real bT;
-    real bR;
-    vector[nmonths] bM;
-    real bD; // effect of 'daytime'
-    vector[nlocs] bL;
-}
-transformed parameters {
-    vector[N] lambda;
-    lambda = b0 + bT * temp + bR * rain + bM[month] + bD * time + bL[location];
-}
-model {
-    counts ~ poisson(exp(lambda));
-    b0 ~ normal(0, 1000);
-    bT ~ normal(0, 10);
-    bR ~ normal(0, 10);
-    bM ~ normal(0, 10);
-    bD ~ normal(0, 10);
-    bL ~ normal(0, 10);
-}
-")
-```
-
 
 
 # Generated quantities
