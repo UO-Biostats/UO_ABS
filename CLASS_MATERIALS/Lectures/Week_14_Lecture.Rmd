@@ -503,7 +503,7 @@ $$\begin{aligned}
 
 ## (in-class)
 
-```{r in_class_sims}
+```{r in_class_sims, cache=TRUE}
 set.seed(23)
 N <- 500
 df <- data.frame(x1 = rnorm(N),
@@ -522,7 +522,7 @@ pairs(df)
 
 kfold <- function (K, df) {
     N <- nrow(df)
-    Kfold <- sample(rep(1:(N/K), K))
+    Kfold <- sample(rep(1:K, N/K))
 
     do_xval <- function (k) {
         the_lm <- lm(y ~ ., data=df, subset=(Kfold != k))
@@ -537,18 +537,19 @@ kfold <- function (K, df) {
 }
 
 K <- 10
-max_M <- 499
+max_M <- 300
 do_m <- floor(seq(from=2, to=max_M-1, length.out=40))
 all_results <- matrix(NA, nrow=length(do_m) + 1, ncol=2)
 first_results <- rowMeans(kfold(K, df))
 all_results[1,] <- first_results
 colnames(all_results) <- names(first_results)
 
-new_df <- df
+noise_df <- matrix(rnorm(N * (N-2)), nrow=N)
+colnames(noise_df) <- paste0('z', 1:ncol(noise_df))
+new_df <- cbind(df, noise_df)
 for (j in seq_along(do_m)) {
     m <- do_m[j]
-    df[, paste0('z', m)] <- rnorm(N)
-    all_results[j,] <- rowMeans(kfold(K, new_df))
+    all_results[j,] <- rowMeans(kfold(K, new_df[,1:(m+1)]))
 }
 
 matplot(c(2, do_m), all_results, type='l', xlab='number of variables', ylab='root mean square error')
