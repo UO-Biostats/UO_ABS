@@ -41,7 +41,7 @@ Week 14 (*1/28*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_14_Lecture.slides.html)
     - Reading: Kruschke, chapter 22 (softmax regression)
-    - [Homework 14](../CLASS_MATERIALS/Homeworks/HW14_F20.html) *(due 2/5)*
+    - [Homework 14](../CLASS_MATERIALS/Homeworks/HW14_W20.html) *(due 2/5)*
 
 Week 15 (*2/4*)
 

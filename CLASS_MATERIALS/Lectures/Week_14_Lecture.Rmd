@@ -500,6 +500,65 @@ $$\begin{aligned}
 4. Simulate data with *many, weakly predictive* explanatory variables.
 5. Compare different methods for fitting linear models.
 
+
+## (in-class)
+
+```{r in_class_sims}
+set.seed(23)
+N <- 500
+df <- data.frame(x1 = rnorm(N),
+                 x2 = runif(N))
+params <- list(intercept = 2.0,
+               x1 = 7.0,
+               x2 = -3.0,
+               sigma = 0.1 * 10)
+
+pred_y <- params$intercept + params$x1 * df$x1 + params$x2 * df$x2 
+df$y <- rnorm(N, mean=pred_y, sd=params$sigma)
+
+pairs(df)
+
+# write the crossvalidation error function
+
+kfold <- function (K, df) {
+    N <- nrow(df)
+    Kfold <- sample(rep(1:(N/K), K))
+
+    do_xval <- function (k) {
+        the_lm <- lm(y ~ ., data=df, subset=(Kfold != k))
+        train_error <- sqrt(mean(resid(the_lm)^2))
+        test_y <- df$y[Kfold == k]
+        test_error <- sqrt(mean( (test_y - predict(the_lm, newdata=subset(df, Kfold==k)))^2 ))
+        return(c('test'=test_error, 'train'=train_error))
+    }
+
+    results <- sapply(1:K, do_xval)
+    return(results)
+}
+
+K <- 10
+max_M <- 499
+do_m <- floor(seq(from=2, to=max_M-1, length.out=40))
+all_results <- matrix(NA, nrow=length(do_m) + 1, ncol=2)
+first_results <- rowMeans(kfold(K, df))
+all_results[1,] <- first_results
+colnames(all_results) <- names(first_results)
+
+new_df <- df
+for (j in seq_along(do_m)) {
+    m <- do_m[j]
+    df[, paste0('z', m)] <- rnorm(N)
+    all_results[j,] <- rowMeans(kfold(K, new_df))
+}
+
+matplot(c(2, do_m), all_results, type='l', xlab='number of variables', ylab='root mean square error')
+legend("topleft", lty=1, col=1:2, legend=colnames(all_results))
+
+
+
+
+```
+
 # Sparseness and scale mixtures
 
 ## Encouraging sparseness
