@@ -58,30 +58,42 @@ A dataset containing information about 5,416 extant mammal species.
 
 - [README](Mauna_Loa_C02/README.md)
 
-## ant_diversity
+## Perchlorate
 
-## biofilm
+- TODO: what is this?
 
-## Clays_RNAseq
+## `stickleback_GFvsCV_RNAseq/`
 
-## Danio_brain_RNAseq
+- [README](stickleback_GFvsCV_RNAseq/readme)
 
-## Gacu_RNAseq
+## `stickleback_MAvsCV_RNAseq/`
 
-## Microbiota_RNAseq
+- [README](stickleback_MAvsCV_RNAseq/readme)
 
-## PanTHERIA_WR05_mammals.txt
+## `stickleback_CommonGarden_16S/`
 
-## Perchlorate_DataTable
+- [README](stickleback_CommonGarden_16S/readme)
 
-## plant_stress
+## `pipefish_PregVsNonPreg_RNAseq/`
 
-## Stickleback
+- [README](pipefish_PregVsNonPreg_RNAseq/readme)
 
-## wine_chemicals
+## Galton's parent-child height data:
 
-## zfish_diet 
+- [README](galton/readme.txt)
 
+## NYTS tobacco use survey data
+
+A summary dataset is available [here](https://chronicdata.cdc.gov/Survey-Data/Youth-Tobacco-Survey-YTS-Data/4juz-x2tp), for 2011-2017,
+but individual-level data is [here](https://www.cdc.gov/tobacco/data_statistics/surveys/nyts/data/index.html),
+with tens of thousands of individuals per year.
+
+- Data in the `YTS/` directory (no README yet).
+
+## Data from Logan:
+
+Some datasets from the book *Biostatistical Design and Analysis Using R*
+are in the directory `Logan_data/` (no README yet).
 
 # Other ideas
 
@@ -89,9 +101,3 @@ A dataset containing information about 5,416 extant mammal species.
 
 From *Temperature accounts for the biodiversity of a hyperdiverse group of insects in urban Los Angeles*,
 twelve sites in LA in 2014, about 100 taxa, from monthly samples: [dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.gr68f2j)
-
-## NYTS tobacco use survey data
-
-A summary dataset is available [here](https://chronicdata.cdc.gov/Survey-Data/Youth-Tobacco-Survey-YTS-Data/4juz-x2tp), for 2011-2017,
-but individual-level data is [here](https://www.cdc.gov/tobacco/data_statistics/surveys/nyts/data/index.html),
-with tens of thousands of individuals per year.
