@@ -560,7 +560,7 @@ bayesplot::mcmc_intervals(bhs_samps) + ggtitle("horseshoe")
 
 ##
 
-Use [the data](infiltration_data.tsv)
+Use [the data](data/infiltration_data.tsv)
 to try to reproduce their model:
 
 ```
