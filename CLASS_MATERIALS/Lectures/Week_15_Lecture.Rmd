@@ -763,3 +763,126 @@ abline(0,1)
 The sparse model is more interpretable,
 and more generalizable.
 
+
+# Midterm review
+
+## Steps in data analysis
+
+1. Care, or at least think, about the data.
+
+2. Look at the data.
+
+3. Query the data.
+
+4. Sanity check.
+
+5. Communicate.
+
+. . .
+
+Often "statistics" focuses on *querying*.
+Doing that effectively requires all the other steps, too.
+
+## Statistics or parameters?
+
+A **statistic** is
+
+: a numerical description of a dataset.
+
+. . .
+
+A **parameter** is 
+
+: a numerical attribute of a model of reality.
+
+. . .
+
+Often, *statistics* are used to estimate *parameters*.
+
+
+## The two+ heads of classical statistics
+
+estimating parameters, with uncertainty (*confidence* or *credible intervals*)
+
+evaluating (in-)consistency with a particular situation (*$p$-values*)
+
+. . .
+
+prediction, with uncertainty
+
+model adequacy and fit (simulation, crossvalidation)
+
+
+## Models, part 1: How do we do this?
+
+Parameters are *numbers*. With *units*.
+
+So, they need to mean something *concrete* and *precise*.
+
+. . .
+
+In other words, they need to be part of a *model*.
+
+
+## Models, part 2: Noise, and uncertainty.
+
+To separate *information* from *noise*,
+we need to understand the noise.
+
+. . .
+
+*How much of these differences are due to measurement error? or, unpredictable variation?
+How much is telling me something about the world?*
+
+. . .
+
+A full model also describes the *statistical noise* in the data.
+
+(It's a full model if you can simulate from it.)
+
+
+## Models, part 3: how to fit them.
+
+**Fitting a model:**
+Finding parameter values
+that make the data look plausible.
+
+. . .
+
+There may be a *wide range* of plausible parameter values.
+
+. . .
+
+*Priors* help get answers.
+
+
+## Aspects of a model
+
+1. What variables?
+
+2. Response distribution(s).
+
+3. Relationship of predictors to the response(s).
+
+4. Relationships between parameters.
+
+##
+
+*Every* statistical method has a model lurking somewhere behind it.
+
+
+## How do we fit models?
+
+The basic tool is **likelihood**:
+
+how likely are the data, using this set of parameters?
+
+
+. . .
+
+*Some methods:*
+
+1. Hill climbing (maximum likelihood).
+
+2. Hill wandering (Monte Carlo to explore posterior distributions)
+

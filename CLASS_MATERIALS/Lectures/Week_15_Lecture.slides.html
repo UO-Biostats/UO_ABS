@@ -2587,6 +2587,92 @@ model {
 <p>The sparse model is more interpretable, and more generalizable.</p>
 </div>
 </section></section>
+<section><section id="midterm-review" class="title-slide slide level1"><h1>Midterm review</h1></section><section id="steps-in-data-analysis" class="slide level2">
+<h2>Steps in data analysis</h2>
+<ol type="1">
+<li><p>Care, or at least think, about the data.</p></li>
+<li><p>Look at the data.</p></li>
+<li><p>Query the data.</p></li>
+<li><p>Sanity check.</p></li>
+<li><p>Communicate.</p></li>
+</ol>
+<div class="fragment">
+<p>Often “statistics” focuses on <em>querying</em>. Doing that effectively requires all the other steps, too.</p>
+</div>
+</section><section id="statistics-or-parameters" class="slide level2">
+<h2>Statistics or parameters?</h2>
+<dl>
+<dt>A <strong>statistic</strong> is</dt>
+<dd><p>a numerical description of a dataset.</p>
+</dd>
+</dl>
+<div class="fragment">
+<dl>
+<dt>A <strong>parameter</strong> is</dt>
+<dd><p>a numerical attribute of a model of reality.</p>
+</dd>
+</dl>
+</div>
+<div class="fragment">
+<p>Often, <em>statistics</em> are used to estimate <em>parameters</em>.</p>
+</div>
+</section><section id="the-two-heads-of-classical-statistics" class="slide level2">
+<h2>The two+ heads of classical statistics</h2>
+<p>estimating parameters, with uncertainty (<em>confidence</em> or <em>credible intervals</em>)</p>
+<p>evaluating (in-)consistency with a particular situation (<em><span class="math inline">\(p\)</span>-values</em>)</p>
+<div class="fragment">
+<p>prediction, with uncertainty</p>
+<p>model adequacy and fit (simulation, crossvalidation)</p>
+</div>
+</section><section id="models-part-1-how-do-we-do-this" class="slide level2">
+<h2>Models, part 1: How do we do this?</h2>
+<p>Parameters are <em>numbers</em>. With <em>units</em>.</p>
+<p>So, they need to mean something <em>concrete</em> and <em>precise</em>.</p>
+<div class="fragment">
+<p>In other words, they need to be part of a <em>model</em>.</p>
+</div>
+</section><section id="models-part-2-noise-and-uncertainty." class="slide level2">
+<h2>Models, part 2: Noise, and uncertainty.</h2>
+<p>To separate <em>information</em> from <em>noise</em>, we need to understand the noise.</p>
+<div class="fragment">
+<p><em>How much of these differences are due to measurement error? or, unpredictable variation? How much is telling me something about the world?</em></p>
+</div>
+<div class="fragment">
+<p>A full model also describes the <em>statistical noise</em> in the data.</p>
+<p>(It’s a full model if you can simulate from it.)</p>
+</div>
+</section><section id="models-part-3-how-to-fit-them." class="slide level2">
+<h2>Models, part 3: how to fit them.</h2>
+<p><strong>Fitting a model:</strong> Finding parameter values that make the data look plausible.</p>
+<div class="fragment">
+<p>There may be a <em>wide range</em> of plausible parameter values.</p>
+</div>
+<div class="fragment">
+<p><em>Priors</em> help get answers.</p>
+</div>
+</section><section id="aspects-of-a-model" class="slide level2">
+<h2>Aspects of a model</h2>
+<ol type="1">
+<li><p>What variables?</p></li>
+<li><p>Response distribution(s).</p></li>
+<li><p>Relationship of predictors to the response(s).</p></li>
+<li><p>Relationships between parameters.</p></li>
+</ol>
+</section><section id="section-6" class="slide level2">
+<h2></h2>
+<p><em>Every</em> statistical method has a model lurking somewhere behind it.</p>
+</section><section id="how-do-we-fit-models" class="slide level2">
+<h2>How do we fit models?</h2>
+<p>The basic tool is <strong>likelihood</strong>:</p>
+<p>how likely are the data, using this set of parameters?</p>
+<div class="fragment">
+<p><em>Some methods:</em></p>
+<ol type="1">
+<li><p>Hill climbing (maximum likelihood).</p></li>
+<li><p>Hill wandering (Monte Carlo to explore posterior distributions)</p></li>
+</ol>
+</div>
+</section></section>
     </div>
   </div>
 
