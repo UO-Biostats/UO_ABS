@@ -55,6 +55,8 @@ Week 16 (*2/11*)
 : Many dimensions: Sparsifying priors and variable selection.
 
     - Reading: Kruschke, chapters 17 (one-variable linear regression), 18 (multivariate linear regression)
+    - [Primer on linear algebra](../CLASS_MATERIALS/Lectures/LA_primer.html)
+    - [Rmd file for the primer](../CLASS_MATERIALS/Lectures/LA_primer_slides.Rmd)
 
 Week 17 (*2/18*)
 
