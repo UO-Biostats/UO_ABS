@@ -1,0 +1,40 @@
+Abbreviation	Description
+34%	Standard full fat cream cheese '34%'
+24%	Medium fat reduced cream cheese '24%'
+16%	Maximum fat reduced cream cheese '16%'
+P	Prototype cream cheese P
+P+Aroma	Prototype cream cheese.Butter Aroma P.Aroma
+A-Prot	Commercial cream cheese A A.Prot
+B-Prot	Commercial cream cheese B B.Prot
+C-CHO	Commercial cream cheese C C.CHO
+D-CHO	Commercial cream cheese D D.CHO
+	
+Product name	Abbreviated name- above
+Product number	numerical code
+Panellist	panelist ID (1-8)
+Replicate	Replicate tasting events (1-3)
+Session	Tasting session ID (1-6)
+Serving order	The order in which the samples were tasted (1-5)
+N-Cream	cream aroma
+N-Acidic	acidic aroma
+N-Butter	butter aroma
+N-Old milk	old milk aroma
+E-White	visual assessment
+E-Grey	visual assessment
+E-Yellow	visual assessment
+E-Green	visual assessment
+H-Resistance	resistance during spreading
+E-Grainy	visual assessment- courseness after spreading
+E-Shiny	visual assessment- glossiness after spreading
+M-Firm	firm mouthfeel
+M-Melt down	melty mouthfeel- rate of melting
+M-Resistance	resistanct mouthfeel- used force to dissolve
+M-Creaminess	creamy mouthfeel
+M-Grainy	grainy mouthfeel
+M-Chalky	chalky mouthfeel
+M-Cream	creamy taste
+M-Fat	fatty taste
+M-Butter	buttery taste
+M-Salt	saltyt taste
+M-Sour	sour taste
+M-Sweet	sweet taste
