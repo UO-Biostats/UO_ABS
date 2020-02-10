@@ -1,0 +1,691 @@
+---
+title: "Linear Algebra Primer"
+author: "Matt Lukac"
+date: "2/8/2020"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(plotly)
+library(MASS)
+```
+
+## Why learn linear algebra?
+
+Applications include:
+
+- differential equations and dynamical systems
+- Markov chains
+- circuits
+- social network analyses
+- frequency analysis
+- Google's Page Rank algorithm
+- machine learning
+
+## Vectors {.build}
+
+- A **vector** is a list of numbers.
+- The dimension of a vector is the same as its length.
+  
+**Example:** if $v = (42, \pi, 0, -e)$ then $\dim(v) = 4$ 
+  
+- Vectors come in two flavors: **column** and **row** vectors.
+- If $v$ is a column vector, its **transpose** $v^T$ is a row vector, and vice versa.
+- Row vectors are usually written as a transpose of a column vector.
+
+## Vector Arithmetic {.build}
+
+- Addition, subtraction, and scalar multiplication are done component-wise.
+- A **scalar** is a 1 dimensional vector.
+
+**Example:** if $v_1 = (4,2,1)$, $v_2 = (0, -1, 3)$, and $c=-3$ then
+$$
+\begin{align}
+  v_1 + v_2 &= (4, 1, 4) \\
+  cv_2 &= (0, 3, -9)
+\end{align}
+$$
+
+
+## Scalar Multiplication
+<center>
+```{r rescaling, fig.height=6}
+origin <- c(0,0)
+#vectors
+v1 <- c(1,2)
+v2 <- c(3,1)
+v3 <- v1+v2
+
+v1to3 <- cbind(origin, v1, origin, v1+v2)
+v2to3 <- cbind(origin, v2, origin, v1+v2)
+v1v2 <- cbind(v1, v2)
+
+c <- 0.5
+v3tocv3 <- cbind(origin, v3, origin, c*v3)
+p2 <- plot_ly(x=v3tocv3[1,], y=v3tocv3[2,], frame=c(0,0,1,1), 
+            type='scatter', mode='lines', showlegend=FALSE) %>%
+  add_annotations(
+    x = c*v3[1],
+    y = c*v3[2],
+    ax = 0,
+    ay = 0,
+    xref = 'x',
+    yref = 'y',
+    axref = 'x',
+    ayref = 'y',
+    text = '',
+    showarrow = TRUE,
+    opacity=0.5
+  )
+
+p2
+```
+</center>
+
+## Vector Addition
+<center>
+```{r addition, fig.height=6}
+# plot v1 trasitioning to v1+v2
+p1 <- plot_ly(x=v1to3[1,], 
+            y=v1to3[2,], 
+            frame=c(0,0,1,1),
+            type='scatter', 
+            mode='lines', 
+            showlegend=FALSE) %>%
+  # plot v2 transitioning to v1+v2
+  add_lines(x=v2to3[1,], 
+            y=v2to3[2,]) %>%
+  # plot arrows for v1 and v2 and from heads to v1+v2
+  add_annotations(
+    x = v1v2[1,],
+    y = v1v2[2,],
+    ax = 0,
+    ay = 0,
+    xref = 'x',
+    yref = 'y',
+    axref = 'x',
+    ayref = 'y',
+    text = '',
+    showarrow = TRUE,
+    opacity=0.5
+  ) %>%
+  add_annotations(
+    x = v3[1],
+    y = v3[2],
+    ax = v1v2[1,],
+    ay = v1v2[2,],
+    xref = 'x',
+    yref = 'y',
+    axref = 'x',
+    ayref = 'y',
+    text = '',
+    showarrow = TRUE,
+    opacity=0.5,
+    clicktoshow='onout'
+  )
+
+p1
+```
+</center>
+
+## Basis {.build}
+- A **basis** is a coordinate system
+- In 2D we typically use the **Euclidean basis** with basis vectors $e_1=(1,0)$ and $e_2=(0,1)$
+
+**Example:** The vector $(4,3)$ in the Euclidean basis is written as such because 
+$$
+  \begin{pmatrix} 4 \\ 3 \end{pmatrix} = 4\begin{pmatrix} 1 \\ 0 \end{pmatrix} + 3\begin{pmatrix} 0 \\ 1\end{pmatrix}
+$$
+Say we want to change basis to using $v_1 = (1,2)$ and $v_2 = (1.5, 0.5)$ instead. Observe, 
+$$
+  \begin{pmatrix} 4 \\ 3 \end{pmatrix} = 1\begin{pmatrix} 1 \\ 2 \end{pmatrix} + 2\begin{pmatrix} 1.5 \\ 0.5 \end{pmatrix}
+$$
+so $(4,3)$ is actually written as $(1,2)$ in this new basis.
+
+## Vector Multiplication 
+- There are many notions of vector multiplication
+- If two vectors $v$ and $w$ have the same length we can do component-wise multiplication $v \odot w$
+- We can perform a cross product $v \times w$
+- We can also take an **inner product** (AKA dot product) $v \cdot w$, defined as 
+$$
+  v \cdot w = v_1w_1 + v_2w_2 + \cdots + v_nw_n
+$$
+- Notice this takes two $n$-dimensional vectors and computes a single number
+- An outer product turns two vectors into a matrix. We'll get to that later.
+
+## Matrices {.build}
+
+- A **matrix** is a 2D array, i.e. anything with two indices.
+- A data frame, for example, is a matrix.
+- The **dimension** of a matrix is an ordered pair: the number of rows followed by the number of columns.
+
+**Example:** we can write the general form of a $3\times 2$ matrix $A$ as 
+
+$$ 
+  A = \begin{pmatrix} 
+          a_{11} & a_{12} \\ 
+          a_{21} & a_{22} \\ 
+          a_{31} & a_{32} 
+       \end{pmatrix} .
+$$
+
+## Matrices as Lists {.build}
+
+- Another perspective on a matrix is that it is a list of column vectors.
+- We can write the previous matrix more compactly as $A = (a_1, a_2)$, where
+$$
+  a_1 = \begin{pmatrix} a_{11} \\ a_{21} \\ a_{31} \end{pmatrix},
+  \quad \text{and} \quad
+  a_2= \begin{pmatrix} a_{12} \\ a_{22} \\ a_{32} \end{pmatrix}.
+$$
+- We could have also written $A = (a_1^T, a_2^T, a_3^T)$ where
+$$
+\begin{align}
+  a_1^T &= (a_{11}, a_{12}) \\
+  a_2^T &= (a_{21}, a_{22}) \\
+  a_3^T &= (a_{31}, a_{32})
+\end{align}
+$$
+
+## Matrix Arithmetic {.build}
+
+- Component-wise addition $A+B$, subtraction $A-B$, and multiplication $A \odot B$ can be done provided $\dim(A) = \dim(B)$. 
+- Standard **matrix multiplication** $AB$ is defined as
+$$
+  (AB)_{ij} = \sum_{k=1}^n a_{ik}b_{kj}
+$$
+- i.e. the $i$th row and the $j$th column entry of $AB$ is found by 
+performing a dot product with the $i$th row of $A$ and the $j$th column of $B$.
+- Notice by this definition the number of columns in $A$ must equal the number of rows in $B$.
+- So if $\dim(A) = n\times p$ and $\dim(B) = p\times m$ it follows that $\dim(AB) = n\times m$.
+- In general $AB \neq BA$
+
+## Vectors are Matrices {.build}
+- Column and row vectors can be viewed as $n \times 1$ and $1\times n$ dimensional matrices, respectively.
+- The inner product can be written as $v \cdot w = v^T w$
+- The **outer product** is when we do this the other way around, $w v^T$
+- Note $\dim(w v^T) = n\times n$ and 
+$$
+  (w v^T)_{ij} = w_i v_j
+$$
+- This is a way we can construct a matrix from two vectors.
+
+## A Different Perspective {.build}
+- Suppose $\dim(A) = n\times m$ and $\dim(v) = m$ and write $A = (a_1, \ldots, a_m)$
+- Then we can write
+$$
+  Av = \sum_{i=1}^m v_i a_i
+$$
+**Example:** Let $A = \begin{pmatrix} 3 & 1 \\ -1 & 5 \end{pmatrix}$ and 
+$v = \begin{pmatrix} 3 \\ -2 \end{pmatrix}$. Then
+
+$$
+  Av = 3\begin{pmatrix} 3 \\ -1 \end{pmatrix} - 2\begin{pmatrix} 1 \\ 5 \end{pmatrix}
+  = \begin{pmatrix} 9 \\ -3 \end{pmatrix} + \begin{pmatrix} -2 \\ -10 \end{pmatrix}
+  = \begin{pmatrix} 7 \\ -13 \end{pmatrix}
+$$
+
+- We say $Av$ is a **linear combination** of the columns of $A$ using the entries in $v$ as coefficients
+
+## A Matrix is a Linear Transformation {.build}
+
+- Another perspective on a matrix is that it sends a vector to another vector, possibly of different dimension.
+- If $\dim(A) = n\times m$ and $\dim(v) = m$ then $\dim(Av) = n$
+- Think of a matrix as a linear function on vectors that returns another vector.
+
+**Example:** Let $v$ be any 2-dimensional vector and for $0\leq \theta < 2\pi$ define
+$$
+  R = \begin{pmatrix}
+    \cos\theta & -\sin\theta \\
+    \sin\theta & \cos\theta
+  \end{pmatrix}.
+$$
+Then $Rv$ is the vector $v$ rotated $\theta$ radians counterclockwise. 
+Hence a $90^\circ$ rotation is performed using $R = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}$.
+
+## A Matrix is a Linear Transformation
+<center>
+```{r matMul, fig.height=6}
+set.seed(1)
+A <- cbind(c(cos(pi/3), sin(pi/3)), c(-sin(pi/3), cos(pi/3))) %>% as.matrix()
+v <- as.vector(rnorm(2))
+Av <- A %*% v
+labs <- c('v', 'Av')
+df <- rbind(t(v), t(Av)) %>% data.frame()
+df <- cbind(df, labs) 
+names(df) <- c('x1', 'x2', 'labs')
+
+p <- plot_ly(data = df, x = ~x1, y = ~x2, 
+             type = 'scatter', mode='markers+text', 
+             text=~labs, textposition='middle right',
+             textfont = list(size = 16),
+             showlegend = FALSE) %>%
+  add_lines(x = c(0,v[1],0,Av[1,]), y=c(0,v[2],0,Av[2,]), 
+            frame = c(0,0,1,1), inherit=FALSE, showlegend=FALSE)
+p
+```
+</center>
+
+## Matrix Inversion {.build}
+
+- A real number $a \neq 0$ has a multiplicative inverse because $a \cdot \frac{1}{a} = 1$
+- 1 is called the multiplicative identity
+- The matrix version of 1 is the **identity matrix** $I$ with ones down the diagonal, zeros everywhere else
+- $AI=IA=A$ for any matrix $A$
+- If $A$ is invertible then there exists $B=A^{-1}$ such that $AB=I$ and $BA=I$.
+- So if we want to solve $Av=b$ and $A$ is invertible the solution is $v = A^{-1}b$
+- Just as 0 does not have a multiplicative inverse, not every matrix has an inverse
+- e.g. projection matrices don't have inverses
+
+## Application: Regression {.build}
+- Consider an additive model with $p$ predictors.
+- The model for the $i$th observation is
+
+$$
+  y_i = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \cdots + \beta_nx_{ip} + \varepsilon_i
+$$
+
+- If we wrote out the model for all $n$ observations it would be
+
+$$
+\begin{align}
+  y_1 &= \beta_0 + \beta_1 x_{11} + \beta_2 x_{12} + \cdots + \beta_p x_{1p} + \varepsilon_1\\
+  y_2 &= \beta_0 + \beta_1 x_{21} + \beta_2 x_{22} + \cdots + \beta_p x_{2p} + \varepsilon_2\\
+  &\hspace{2mm}\vdots\\
+  y_n &= \beta_0 + \beta_1 x_{n1} + \beta_2 x_{n2} + \cdots + \beta_p x_{np} + \varepsilon_n
+\end{align}
+$$
+
+Yuk!
+
+## Application: Regression {.build}
+- Let $X$ be $n \times (p+1)$ where $X_{\cdot 1}=1$ and $(X)_{ij}$ is the $(j-1)$th predictor, $j = 2,\ldots,p+1$, for the $i$th observation 
+- $X$ is called the **design matrix**
+- The previous system of equations can be written compactly as 
+$$
+  y = X\beta + \varepsilon
+$$
+where $\dim(y) = \dim(\varepsilon) = n$ and $\beta = (\beta_0, \beta_1, \ldots, \beta_p)$
+
+## Application: Regression
+```{r regressionFuncs}
+# simulate df given sample size and coefficients
+makeDF <- function(n, beta){
+  set.seed(32) # control for randomness 
+  
+  X <- cbind(1, rnorm(n, 40, 5), rnorm(n, 30, 5)) %>% as.matrix()# design matrix
+  y <- rnorm(n, X %*% beta, sd=15) # response
+  df <- data.frame(y, X[,-1])
+  names(df) <- c('response', 'x1', 'x2')
+  return(df)
+}
+
+regression3d <- function(df){
+  X <- cbind(1, df[,-1]) %>% as.matrix() # recover design matrix
+  n <- nrow(df) # number of observations
+  betaHat <- ginv(X) %*% as.vector(df[,1])
+  df <- rbind(df, cbind(response = X %*% betaHat, df[,-1]))
+  
+  # regression plane
+  numGridPoints <- 20
+  plotRangeBuffer <- 3
+  xMin <- min(df[,2]) - plotRangeBuffer
+  xMax <- max(df[,2]) + plotRangeBuffer
+  yMin <- min(df[,3]) - plotRangeBuffer
+  yMax <- max(df[,3]) + plotRangeBuffer
+  zMin <- min(df[,1]) - plotRangeBuffer
+  zMax <- max(df[,1]) + plotRangeBuffer
+
+  xRange <- seq(xMin, xMax, length.out = numGridPoints)
+  yRange <- seq(yMin, yMax, length.out = numGridPoints)
+  Z <- matrix(NA, nrow = numGridPoints, ncol = numGridPoints)
+  for(i in 1:nrow(Z)){
+    for(j in 1:ncol(Z)){
+      Z[i,j] <- betaHat[1] + betaHat[2]*xRange[j] + betaHat[3]*yRange[i]
+    }
+  }
+  df$projected <- rep(c(0,1), each = n)
+  
+  df %>%
+    plot_ly(x = ~ x1,
+            y = ~ x2, 
+            z = ~ response,
+            frame = ~ projected,
+            type = 'scatter3d',
+            mode = 'markers',
+            showlegend = FALSE,
+            opacity = 0.95) %>%
+    add_surface(x=xRange, y=yRange, z=as.matrix(Z), 
+                showscale=FALSE, inherit = FALSE, opacity=0.8) %>%
+    layout(
+      scene = list(
+        xaxis = list(range = c(xMin, xMax)),
+        yaxis = list(range = c(yMin, yMax)),
+        zaxis = list(range = c(zMin, zMax)),
+        aspectmode = 'cube'
+      )
+    )
+}
+```
+
+<center>
+```{r regPlot, fig.height=6}
+# construct dataset with 1 response and 2 predictors
+n <- 50 # number of observations
+beta <- c(1, 0.5, 1) %>% as.vector() # coefficient parameters
+
+df <- makeDF(n, beta)  
+regression3d(df)
+```
+</center>
+
+## Application: Regression {.build}
+- Taking this perspective on linear regression we can see how to obtain the coefficients.
+- In OLS we hope to find some $\beta$ such that our predicted values $\hat y = X \beta$ have $\| y - \hat y \|^2$ minimized.
+- Any matrix $X$ has a *psuedoinverse* $(X^T X)^{-1} X^T$ and hence we estimate $\beta$ with
+
+$$
+  \hat \beta = (X^T X)^{-1} X^T y
+$$
+
+- This psuedoinverse projects the observed response to a linear subspace defined by the coefficients $\hat \beta$
+- For instance, with two predictors our responses will be projected onto a 2D plane sitting in 3D space defined by
+$$
+  z = \beta_0 + \beta_1 x + \beta_2 y
+$$
+
+
+## Application: Regression {.build}
+ANOVA is just a linear model with 0 or 1 in the design matrix
+
+**Example:** Consider an ANOVA model with 3 treatment groups on 6 individuals. 
+Taking $\beta_0$ to be the mean response for the reference group, our model is 
+
+$$
+  y_{i} = \beta_0 + \beta_1 + \beta_2 + \varepsilon_{i}
+$$
+or, equivalently $y = X\beta + \varepsilon$ where
+
+$$
+  X = \begin{pmatrix}
+    1 & 0 & 0\\
+    1 & 0 & 0\\
+    1 & 1 & 0\\
+    1 & 1 & 0\\
+    1 & 0 & 1\\
+    1 & 0 & 1\\
+  \end{pmatrix}
+$$
+
+
+
+## Application: Fibonacci Sequence
+- Let $F_1 = F_2 = 1$ and for $n = 3,4,\ldots$ define $F_n = F_{n-2} + F_{n-1}$
+- It has been shown that the ratio of two consecutive terms in this sequence converges to the golden ratio as $n$ gets large,
+$$
+  \lim_{n\to\infty}\frac{F_n}{F_{n-1}} = \frac{1 + \sqrt{5}}{2} \approx 1.618
+$$
+- We can write this recursion as a system of equations
+$$
+  \begin{pmatrix} F_{n-1} \\ F_n \end{pmatrix} = 
+  \begin{pmatrix} 0 & 1 \\ 1 & 1 \end{pmatrix}
+  \begin{pmatrix} F_{n-2} \\ F_{n-1} \end{pmatrix}
+$$
+- So when we have a pair of consecutive Fibonacci numbers we need only perform this matrix multiplication over and over
+
+## Application: Fibonacci Sequence
+```{r fibo}
+# plot lattice converging to principal eigenvector
+matrix2dVisual <- function(A, latticeWidth, numIter){
+  # initialize data frame with lattice
+  xyRange <- 10
+  a <- seq(-xyRange, xyRange, length.out = latticeWidth+1)
+  df <- expand.grid(a,a)
+  names(df) <- c("x1", "x2")
+  numPoints <- nrow(df)
+
+  # construct data frame with lattice at each iteration
+  for(k in 0:(numIter-1)){
+    Ax <- A %*% t( as.matrix( df[(k*numPoints + 1):((k + 1)*numPoints),] ) )
+    #Ax <- xyRange * Ax / max(abs(Ax))
+    Ax <- data.frame(t(Ax))
+    names(Ax) <- c("x1", "x2")
+    df <- rbind(df, Ax)
+  }
+  
+  # index number of matrix multiplications
+  matMul <- rep(0:numIter, each=numPoints)
+  df$matMul <- matMul
+  
+  # get eigenvectors for plotting
+  v <- eigen(A)$vectors
+  
+  # plot lattices with eigenvectors
+  plot_ly() %>%
+    add_trace(
+      data = df,
+      x = ~ x1,
+      y = ~ x2,
+      frame = ~ matMul,
+      type = 'scatter',
+      mode = 'markers',
+      showlegend = FALSE
+    ) %>%
+    add_lines(x = c(0, 150*v[1,1]),
+              y = c(0, 150*v[2,1]),
+              inherit = FALSE,
+              line=list(width = 3)
+    )
+}
+```
+<center>
+```{r show2d_plot, fig.height=6}
+# example matrix
+A <- cbind(c(0,1), c(1,1)) %>% as.matrix()
+
+matrix2dVisual(A, latticeWidth = 20, numIter = 5)
+```
+</center>
+
+## The Eigenvalue Equation {.build}
+- If there is a vector $v$ with an associated scalar $\lambda$ such that $$Av = \lambda v$$
+we say $v$ and $\lambda$ are an eigenvector and eigenvalue of $A$
+- Together, $(\lambda, v)$ are called an eigenpair
+- "Eigen" is German for "own" or "inherent" so think of eigenvectors as special vectors associated with $A$
+
+## Eigenvectors of a 2x2
+<center>
+```{r 2dPower, fig.height=6}
+# plot lattice converging to principal eigenvector
+matrix2dVisual <- function(A, latticeWidth, numIter){
+  # initialize data frame with lattice
+  xyRange <- 10
+  a <- seq(-xyRange, xyRange, length.out = latticeWidth+1)
+  df <- expand.grid(a,a)
+  names(df) <- c("x1", "x2")
+  numPoints <- nrow(df)
+
+  # construct data frame with lattice at each iteration
+  for(k in 0:(numIter-1)){
+    Ax <- A %*% t( as.matrix( df[(k*numPoints + 1):((k + 1)*numPoints),] ) )
+    Ax <- xyRange * Ax / max(abs(Ax))
+    Ax <- data.frame(t(Ax))
+    names(Ax) <- c("x1", "x2")
+    df <- rbind(df, Ax)
+  }
+  
+  # index number of matrix multiplications
+  matMul <- rep(0:numIter, each=numPoints)
+  df$matMul <- matMul
+  
+  # get eigenvectors for plotting
+  v <- eigen(A)$vectors
+  
+  # plot lattices with eigenvectors
+  plot_ly() %>%
+    add_trace(
+      data = df,
+      x = ~ x1,
+      y = ~ x2,
+      frame = ~ matMul,
+      type = 'scatter',
+      mode = 'markers',
+      showlegend = FALSE
+    ) %>%
+    add_annotations(
+      x = 4*v[1,],
+      y = 4*v[2,],
+      xref = 'x',
+      yref = 'y',
+      axref = 'x',
+      ayref = 'y',
+      text = '',
+      showarrow = TRUE,
+      ax = 0,
+      ay = 0
+    ) 
+}
+
+D <- diag(c(1.3,1), nrow=2) # eigenvalues
+X <- cbind(c(1,1), c(-1,1)) # eigenvectors
+A <- X %*% D %*% t(X)
+matrix2dVisual(A, latticeWidth = 20, numIter = 6)
+```
+</center>
+
+## Application: Game Theory {.build}
+- Suppose Alice, Bob, and Charlie have some initial amount of money in their account: $a_0$, $b_0$ and $c_0$
+- The next day: 
+  - Alice's account decreases by 2.5% but increases by 5% of Bob's account balance and decreases by 5% of Charlies account balance.
+  - Bob's account decreases by 7.5% but increases by 3.75% of Alice's account balance and decreases by 32.5% of Charlies account balance.
+  - Charlie's account decreases by 40%.
+- Who will end up with the most money?
+$$
+  \begin{pmatrix} a_{t+1} \\ b_{t+1} \\ c_{t+1} \end{pmatrix} 
+  = a_t\begin{pmatrix} 0.975 \\ 0.0375 \\ 0 \end{pmatrix} +
+  b_t\begin{pmatrix} 0.05 \\ 0.925 \\ 0 \end{pmatrix} +
+  c_t\begin{pmatrix} -0.05 \\ -0.325 \\ 0.6 \end{pmatrix} 
+$$
+
+## Application: Game Theory
+```{r 3dpower_method}
+# plot lattice converging to principal eigenvector
+matrix3dVisual <- function(A, latticeWidth, numIter){
+  # initialize data frame with lattice
+  xyRange <- 10
+  a <- seq(0, xyRange, length.out = latticeWidth+1)
+  df <- expand.grid(a,a,a)
+  names(df) <- c("x1", "x2", "x3")
+  numPoints <- nrow(df)
+  
+  # construct data frame with lattice at each iteration
+  for(k in 0:(numIter-1)){
+    Ax <- A %*% t( as.matrix( df[(k*numPoints + 1):((k + 1)*numPoints),] ) )
+    Ax < Ax / max(abs(Ax))
+    Ax <- data.frame(t(Ax))
+    names(Ax) <- c("x1", "x2", "x3")
+    df <- rbind(df, Ax)
+  }
+  
+  # index number of matrix multiplications
+  matMul <- rep(0:numIter, each=numPoints)
+  df$matMul <- matMul
+  
+  # get eigenvectors for plotting
+  scaleVectors <- 8
+  v <- scaleVectors*eigen(A)$vectors
+  
+  # plot lattices with eigenvectors
+  ax <- list(showticklabels = FALSE,
+             showgrid = FALSE,
+             zeroline = TRUE)
+  p <- plot_ly() %>%
+    add_trace(
+      data = df,
+      x = ~ x1,
+      y = ~ x2,
+      z = ~ x3,
+      frame = ~ matMul,
+      type = 'scatter3d',
+      mode = 'markers',
+      size = 5,
+      showlegend = FALSE
+    ) %>%
+    layout(
+      scene = list(
+        xaxis = ax,
+        yaxis = ax,
+        zaxis = ax
+      )
+    )
+    
+  
+  # plot the eigenvectors
+  for(k in 1:3){
+    p <- p %>%
+    add_trace(
+      x = c(0,v[1,k]),
+      y = c(0,v[2,k]),
+      z = c(0,v[3,k]),
+      type = 'scatter3d',
+      mode = 'lines',
+      line = list(width = 8),
+      name = paste('eigenvector', k)
+    )
+  }
+  
+  p
+}
+```
+<center>
+```{r show3d_plot, fig.height=6}
+# example matrix
+D <- diag(c(1,0.9,0.6), nrow=3) # eigenvalue
+X <- cbind(c(1,0.5,0), c(-1,1.5,0), c(0,1,1)) %>% as.matrix() # eigenvectors
+A <- X %*% D %*% solve(X)
+
+matrix3dVisual(A, latticeWidth = 8, numIter = 20)
+```
+</center>
+
+## Application: Game Theory {.build}
+- The eigenpairs for the coefficient matrix were 
+$$
+  \lambda_1 = 1, v_1 = \begin{pmatrix} 1 \\ 0.5 \\ 0 \end{pmatrix},
+  \quad 
+  \lambda_2 = 0.9, v_2 = \begin{pmatrix} -1 \\ 1.5 \\ 0 \end{pmatrix},
+  \quad 
+  \lambda_3 = 0.6, v_3 = \begin{pmatrix} 0 \\ 1 \\ 1 \end{pmatrix},
+$$
+- Since $\lambda_1$ dominates the eigenvalues the system will, in the long run, converge to the line spanned by $v_1$.
+- So for many initial conditions we should expect Alice to have twice as much money as Bob and for Charlie to be broke.
+
+## The Eigenbasis {.build}
+- Most matrices have linearly independent eigenvectors
+- Expanding coordinate in terms of the eigenvectors will turn $A$ into a diagonal matrix, making arithmetic ezpz
+- So the eigenvector coordinates are in some sense the "best" coordinates for $A$
+- A rotation matrix won't have a real eigenpair, so if your eigenvalues are complex it suggests some sort of rotation is happening
+- When $A$ is symmetric, i.e. $A_{ij} = A_{ji}$, it will have real eigenvalues and orthogonal eigenvectors
+
+
+## Application: PCA {.build}
+- Suppose we have a dataset with many variables
+- Compute the covariance matrix $\Sigma$
+- $\Sigma$ will be symmetric, hence has real eigenvalues and orthogonal eigenvectors
+- The leading eigenvector will give the direction of maximum variance.
+- The next eigenvector will give the direction of second most variance.
+- Changing coordinates to the eigenbasis and only using the first two or three coordinates allows us to visualize high dimensional data in an optimized 2- or 3-dimensional projection
+- [Play with it here](http://setosa.io/ev/principal-component-analysis/)
+
+
+## Additional Sources
+
+- [The Essence of Linear Algebra](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab) on YouTube is a great visual tutorial on linear algebra.
+
+- [Setosa](http://setosa.io/#/) has more interactive webpages, including one for [eigenvectors and eigenvalues](http://setosa.io/ev/eigenvectors-and-eigenvalues/)
+
