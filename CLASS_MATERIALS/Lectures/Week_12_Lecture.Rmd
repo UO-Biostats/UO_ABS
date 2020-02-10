@@ -135,7 +135,7 @@ osc_model <- stan_model(model_code=osc_block)
 
 ```{r run_osc, cache=TRUE, dependson="osc_block"}
 osc_fit <- sampling(osc_model,
-                    data=list(N,
+                    data=list(N=N,
                               X=XY[,1],
                               Y=XY[,2]),
                     iter=1000, chains=3,
@@ -198,7 +198,7 @@ legend("topright", lty=c(1, NA), pch=c(NA,1), col=c("red","black"),
 
 ```{r run_osc2, cache=TRUE, dependson=c("osc_block", "sim_osc2")}
 osc_fit2 <- sampling(osc_model,
-                    data=list(N,
+                    data=list(N=N,
                               X=XY2[,1],
                               Y=XY2[,2]),
                     iter=1000, chains=3,
@@ -294,7 +294,7 @@ osc_model_missing <- stan_model(model_code=osc_block_missing)
 
 ```{r run_osc3, cache=TRUE, dependson=c("osc_stan3", "sim_osc3")}
 osc_fit3 <- sampling(osc_model_missing,
-                    data=list(N,
+                    data=list(N=N,
                               X=XY3[,1],
                               k=length(obs_y),
                               obs_y=obs_y,
