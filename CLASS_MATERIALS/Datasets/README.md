@@ -105,3 +105,8 @@ are in the directory `Logan_data/` (no README yet).
 
 From *Temperature accounts for the biodiversity of a hyperdiverse group of insects in urban Los Angeles*,
 twelve sites in LA in 2014, about 100 taxa, from monthly samples: [dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.gr68f2j)
+
+## New York Housing Authority data
+
+Lots and lots of data from across decades are available, maybe [here](https://data.cityofnewyork.us/Housing-Development/NYCHA-Development-Data-Book/evjd-dqpz).
+(But note that data cleaning and interpretation is a major task.)
