@@ -1,6 +1,32 @@
-## Cream Cheese Data Analysis
+# Cream Cheese Sensory Data
 
-The following dataset contains sensory data for a panel test of 9 cream cheeses that was part of M. B. Frøst’s dissertation at the University of Copenhagen. See the 'data dictionary' document for information on the cream cheese types and sensory scales. 
+This dataset contains sensory data for a panel test of 9 cream cheeses that was
+part of M. B. Frøst’s dissertation at the University of Copenhagen. See the
+'data dictionary' document for information on the cream cheese types and
+sensory scales. 
+
+## Product abbreviations
+
+![Table 1](table1.png)
+
+Products                                |  Abbreviation
+ -----------------------------------------------------
+Standard full fat cream cheese          |  34%
+Medium fat reduced cream cheese         |  24%
+Maximum fat reduced cream cheese        |  16%
+Prototype cream cheese                  |  P
+Prototype cream cheese + Butter Aroma   |  P + Aroma
+Commercial cream cheese A               |  A + Prot
+Commercial cream cheese B               |  B + Prot
+Commercial cream cheese C               |  C + CHO
+Commercial cream cheese D               |  D + CHO
+
+## Sensory descriptors
+
+![Table 2](table2.png)
+
+
+##
 
 A subset of the original questions associated with this study were:
 
