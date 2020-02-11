@@ -34,6 +34,23 @@ shadecurve <- function (pf, xlim, plot=TRUE, xlab='', ylab='', main='',
 
 # Cream cheese
 
+## Cream cheese
+
+This dataset contains sensory data for a panel test of 9 cream cheeses that was
+part of M. B. Frøst’s dissertation at the University of Copenhagen. See the
+['data dictionary'](../Datasets/Cream_Cheese/cream_cheese_data_dictionary.tsv)
+document for information on the cream cheese types and
+sensory scales. 
+
+
+##
+
+![Table 1](../Datasets/Cream_Cheese/table1.png)
+
+##
+
+![Table 2](../Datasets/Cream_Cheese/table2.png)
+
 ## The data
 
 ```{r thedata}
@@ -43,14 +60,6 @@ for (vn in c("Product.number", "Panellist", "Replicate", "Session")) {
 }
 head(cc)
 ```
-
-##
-
-![Table 1](../Datasets/Cream_Cheese/table1.png)
-
-##
-
-![Table 2](../Datasets/Cream_Cheese/table2.png)
 
 
 ##
@@ -85,7 +94,7 @@ with(cc, table(Product.name, Serving.order))
 
 ##
 
-- Product.number = Product.name
+- 8 panelists
 - 1 Session = (4 products plus A-prot) x every panelist
 - 2 Sessions = 1 replicate = all products x panelist
 - randomized serving order
@@ -270,7 +279,7 @@ text(row(fix_coefs)+col(fix_coefs)/ncol(fix_coefs)/2-0.5, fix_coefs,
 
 ## What does aroma addition change?
 
-```{r aroma, echo=FALSE, fig.width=2.5*fig.dim, fig.height=2.5*fig.dim}
+```{r aroma, echo=FALSE, fig.width=2.0*fig.dim, fig.height=2.0*fig.dim}
 plot(fix_coefs["P+Aroma",], fix_coefs["P",],
      type='n', xlim=c(-1.5,1.5), ylim=c(-1.5,1.5), asp=1,
      xlab="Prototype + Aroma", ylab="Prototype")
