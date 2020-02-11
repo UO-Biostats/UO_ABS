@@ -156,7 +156,23 @@ summary(lm(rowMeans(cc[,the_vars]) ~ cc$Panellist))
 image(cor(cc[,the_vars]))
 ```
 
+## Fat smell?
+
+```{r one_var_sm}
+sm_full_mod <- lmer(N.Cream ~ Product.name + Serving.order + (1|Panellist), data=cc)
+sm_sub_mod <- lm(N.Cream ~ Product.name + Serving.order, data=cc)
+
+(sm_mod_comp <- anova(sm_full_mod, sm_sub_mod))
+```
+
 ##
+
+```{r coefs_sm}
+summary(sm_full_mod)$coefficients
+```
+
+
+## Fat taste?
 
 ```{r one_var}
 fat_taste <- (cc$M.Cream + cc$M.Fat + cc$M.Butter)/3
