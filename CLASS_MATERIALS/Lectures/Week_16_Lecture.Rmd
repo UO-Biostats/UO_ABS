@@ -20,18 +20,6 @@ options(mc.cores = parallel::detectCores())
 options(digits=2)
 ```
 
-```{r helpers, include=FALSE}
-shadecurve <- function (pf, xlim, plot=TRUE, xlab='', ylab='', main='',
-                        border="black", col=adjustcolor(border, 0.25), ...) {
-    x <- seq(xlim[1], xlim[2], length.out=400)
-    mids <- x[-1] - diff(x)/2
-    df <- diff(pf(x, ...))
-    if (plot) { plot(0, type='n', xlim=range(x), ylim=range(df),
-                     main=main, xlab=xlab, ylab=ylab) }
-    polygon(c(mids, x[length(x)], x[1]), c(df, 0, 0), col=col, border=border) 
-}
-```
-
 # Cream cheese
 
 ## Cream cheese
@@ -156,6 +144,8 @@ summary(lm(rowMeans(cc[,the_vars]) ~ cc$Panellist))
 image(cor(cc[,the_vars]))
 ```
 
+# Single variable analyses
+
 ## Fat smell?
 
 ```{r one_var_sm}
@@ -200,6 +190,27 @@ coefs <- sapply(lapply(lapply(lms, summary), "[[", "coefficients"), function (x)
 stderr <- sapply(lapply(lapply(lms, summary), "[[", "coefficients"), function (x) x[,"Std. Error"])
 pvals <- sapply(lapply(lapply(lms, summary), "[[", "coefficients"), function (x) x[,"Pr(>|t|)"])
 colnames(coefs) <- colnames(stderr) <- colnames(pvals) <- the_vars
+```
+
+## 
+
+```{r resids, fig.width=3.5*fig.dim, fig.height=2.5*fig.dim, echo=FALSE}
+layout(matrix(1:24, nrow=4))
+par(mar=c(0,0,0,0)+.1)
+for (k in seq_along(lms)) {
+    hist(resid(lms[[k]]), xlab='', ylab='', xaxt='n', yaxt='n', main='')
+}
+```
+
+## 
+
+```{r resids2, fig.width=3.5*fig.dim, fig.height=2.5*fig.dim, echo=FALSE}
+layout(matrix(1:24, nrow=4))
+par(mar=c(0,0,0,0)+.1)
+for (k in seq_along(lms)) {
+    qqnorm(resid(lms[[k]]), xlab='', ylab='', xaxt='n', yaxt='n')
+    qqline(resid(lms[[k]]))
+}
 ```
 
 ##
@@ -310,3 +321,269 @@ segments(x0=fix_coefs["P+Aroma",] - 2 * fix_stderr["P+Aroma",],
 text(fix_coefs["P+Aroma",], fix_coefs["P",], labels=var_abbrev, col=var_cols)
 abline(0,1)
 ```
+
+
+# Interpretation interlude
+
+## 
+
+![](images/uc_testing_header.png)
+
+##
+
+![](images/uc_testing.png)
+
+
+# A joint analysis
+
+## Pool information for tasting order?
+
+
+##
+
+
+
+
+##
+
+```{r orderstan, cache=TRUE}
+
+ccmodel_text <- "
+data {
+    int N; // num obs
+    int M; // num responses
+    int nprods;
+    int npanel;
+    matrix[N, nprods] product;
+    matrix[N, npanel] panellist;
+    vector[N] serving_order;
+    matrix[N, M] Y;
+}
+parameters {
+    matrix[nprods, M] beta_prod;
+    matrix[npanel, M] beta_panel;
+    row_vector[M] beta_order;
+    real order_mean;
+    real<lower=0> sigma[M];
+    real<lower=0> order_sigma;
+}
+model {
+    matrix[N, M] mu;
+    mu = product * beta_prod + panellist * beta_panel + serving_order * beta_order;
+    for (j in 1:M) {
+        Y[,j] ~ normal(mu[,j], sigma[j]);
+    }
+    sigma ~ cauchy(0, 2.5);
+    beta_order ~ normal(order_mean, order_sigma);
+    order_mean ~ normal(0, 1);
+    order_sigma ~ cauchy(0, 2.5);
+}
+"
+ccmod <- stan_model(model_code=ccmodel_text)
+
+```
+
+##
+
+```{r ordersamp, cache=TRUE, dependson="orderstan"}
+product_mat <- model.matrix(~Product.name, data=cc)
+panellist_mat <- model.matrix(~Panellist, data=cc)[,-1]
+ccfit <- sampling(ccmod,
+                  data=list(N = nrow(cc),
+                            M = length(the_vars),
+                            nprods = nlevels(cc$Product.name),
+                            npanel = nlevels(cc$Panellist) - 1,
+                            product = product_mat,
+                            panellist = panellist_mat,
+                            serving_order = cc$Serving.order,
+                            Y = as.matrix(cc[,the_vars])))
+```
+
+
+##
+
+```{r sum_order}
+rstan::summary(ccfit)$summary
+```
+
+##
+
+```{r plot_order}
+stan_plot(ccfit, pars=c("order_mean", "order_sigma", "beta_order"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Introducing correlations
+
+## 
+
+We'd like to introduce
+
+- correlations between *response variables* (e.g., cream cheeses that are more green are less white)
+- correlations between *panelist effects* (e.g., panelists who taste sweet more than other panelists also taste sour less)
+- ... ?
+
+##
+
+```{r thestan, cache=TRUE}
+
+cccode <- "
+data {
+    int N; // num obs
+    int M; // num responses
+    int nprods;
+    int npanel;
+    matrix[N, nprods] product;
+    matrix[N, npanel] panellist;
+    vector[N] serving_order;
+    matrix[N, M] Y;
+}
+parameters {
+    matrix[nprods, M] beta_prod;
+    matrix[npanel, M] beta_panel;
+    row_vector[M] beta_order;
+    cov_matrix[M] panel_cov;
+    cov_matrix[M] response_cov;
+}
+transformed parameters {
+    matrix[N, M] mu;
+    mu = product * beta_prod + panellist * beta_panel + serving_order * beta_order;
+}
+model {
+    for (j in 1:N) {
+        Y[j,] ~ multi_normal(mu[j,], response_cov);
+    }
+    for (j in 1:npanel) {
+        beta_panel[j,] ~ multi_normal(rep_vector(0.0, M), panel_cov);
+    }
+}
+"
+ccmodel <- stan_model(model_code=cccode)
+
+```
+
+##
+
+```{r thsampling, cache=TRUE, dependson="thestan", eval=FALSE}
+product_mat <- model.matrix(~Product.name, data=cc)
+panellist_mat <- model.matrix(~Panellist, data=cc)
+ccfit <- sampling(ccmodel,
+                  data=list(N = nrow(cc),
+                            M = length(the_vars),
+                            nprods = nlevels(cc$Product.name),
+                            npanel = nlevels(cc$Panellist),
+                            product = product_mat,
+                            panellist = panellist_mat,
+                            serving_order = cc$serving_order,
+                            Y = as.matrix(cc[,the_vars])))
+```
+
+##
+
+```{r thestan2, cache=TRUE}
+
+cccode2 <- "
+data {
+    int N; // num obs
+    int M; // num responses
+    int nprods;
+    int npanel;
+    matrix[N, nprods] product;
+    matrix[N, npanel] panellist;
+    vector[N] serving_order;
+    matrix[N, M] Y;
+}
+parameters {
+    matrix[nprods, M] beta_prod;
+    matrix[npanel, M] beta_panel;
+    row_vector[M] beta_order;
+    cholesky_factor_corr[M] panel_chol;
+    vector<lower=0>[M] panel_sigma;
+    cholesky_factor_corr[M] response_chol;
+    vector<lower=0>[M] response_sigma;
+}
+transformed parameters {
+    matrix[N, M] mu;
+    matrix[M,M] panel_cov;
+    matrix[M,M] response_cov;
+    mu = product * beta_prod + panellist * beta_panel + serving_order * beta_order;
+    panel_cov = diag_pre_multiply(panel_sigma, panel_chol);
+    response_cov = diag_pre_multiply(response_sigma, response_chol);
+}
+model {
+    for (j in 1:N) {
+        Y[j,] ~ multi_normal_cholesky(mu[j,], response_cov);
+    }
+    for (j in 1:npanel) {
+        beta_panel[j,] ~ multi_normal_cholesky(rep_vector(0.0, M), panel_cov);
+    }
+    for (j in 1:nprods) {
+        beta_prod[j,] ~ normal(0, 2.5);
+    }
+    panel_chol ~ lkj_corr_cholesky(4);
+    response_chol ~ lkj_corr_cholesky(4);
+    panel_sigma ~ cauchy(0, 2.5);
+    response_sigma ~ cauchy(0, 2.5);
+    beta_order ~ cauchy(0, 2.5);
+}
+"
+ccmodel2 <- stan_model(model_code=cccode2)
+
+```
+
+##
+
+```{r thsampling2, cache=TRUE, dependson="thestan"}
+product_mat <- model.matrix(~Product.name, data=cc)
+panellist_mat <- model.matrix(~Panellist, data=cc)
+ccfit2 <- sampling(ccmodel2,
+                   data=list(N = nrow(cc),
+                             M = length(the_vars),
+                             nprods = nlevels(cc$Product.name),
+                             npanel = nlevels(cc$Panellist),
+                             product = product_mat,
+                             panellist = panellist_mat,
+                             serving_order = cc$Serving.order,
+                             Y = as.matrix(cc[,the_vars])))
+```
+
+
+
+##
+
+```{r sum_order2}
+rstan::summary(ccfit2)$summary
+```
+
+##
+
+```{r trace_order2, fig.width=2.5*fig.dim, fig.height=2*fig.dim}
+stan_trace(ccfit2, pars=c("beta_order"))
+```
+
+
