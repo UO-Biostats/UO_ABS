@@ -322,6 +322,46 @@ text(fix_coefs["P+Aroma",], fix_coefs["P",], labels=var_abbrev, col=var_cols)
 abline(0,1)
 ```
 
+# Without a panelist effect?
+
+
+##
+
+```{r analyze2}
+lms2 <- lapply(the_vars, function (vn) {
+           lm(cc[[vn]] ~ Product.name + Serving.order, data=cc)
+        } )
+names(lms2) <- the_vars
+coefs2 <- sapply(lapply(lapply(lms2, summary), "[[", "coefficients"), function (x) x[,"Estimate"])
+stderr2 <- sapply(lapply(lapply(lms2, summary), "[[", "coefficients"), function (x) x[,"Std. Error"])
+pvals2 <- sapply(lapply(lapply(lms2, summary), "[[", "coefficients"), function (x) x[,"Pr(>|t|)"])
+colnames(coefs2) <- colnames(stderr2) <- colnames(pvals2) <- the_vars
+```
+
+## Do cream cheeses differ? No panelist version
+
+```{r by_product2, echo=FALSE, fig.width=4.5*fig.dim, fig.height=2*fig.dim}
+fix_coefs2 <- coefs2[grepl("Product", rownames(coefs2)),]
+fix_pvals2 <- pvals2[grepl("Product", rownames(pvals2)),]
+fix_stderr2 <- stderr2[grepl("Product", rownames(stderr2)),]
+rownames(fix_coefs2) <-rownames(fix_pvals2) <-  rownames(fix_stderr2) <- gsub("Product.name", "", rownames(fix_coefs2))
+
+
+plot(0, type='n', ylim=c(-6, 6), xlim=c(0.5,nrow(fix_coefs2)), ylab='coefficient', xlab='', xaxt='n')
+abline(h=0)
+axis(1, at=1:nrow(fix_coefs2), labels=rownames(fix_coefs2), las=2)
+segments(y0=fix_coefs2 - 2 * fix_stderr2,
+         y1=fix_coefs2 + 2 * fix_stderr2,
+         x0=row(fix_coefs2)+col(fix_coefs2)/ncol(fix_coefs2)/2-0.5,
+         col=ifelse(fix_pvals2 < 0.05/length(pvals2), var_cols[col(fix_coefs2)], 'grey'))
+text(row(fix_coefs2)+col(fix_coefs2)/ncol(fix_coefs2)/2-0.5, fix_coefs2, 
+     labels=var_abbrev[match(the_vars[col(fix_coefs2)], names(var_abbrev))],
+     col=ifelse(fix_pvals2 < 0.05/length(pvals2), var_cols[col(fix_coefs2)], 'grey'),
+     pch=20)
+
+```
+
+
 
 # Interpretation interlude
 
@@ -402,7 +442,7 @@ ccfit <- sampling(ccmod,
 
 ##
 
-```{r sum_order}
+```{r sum_order, cache=TRUE, dependson="ordersamp"}
 rstan::summary(ccfit)$summary
 ```
 
@@ -576,7 +616,7 @@ ccfit2 <- sampling(ccmodel2,
 
 ##
 
-```{r sum_order2}
+```{r sum_order2, cache=TRUE, dependson="thsampling2"}
 rstan::summary(ccfit2)$summary
 ```
 

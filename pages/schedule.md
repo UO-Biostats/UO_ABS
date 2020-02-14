@@ -48,7 +48,7 @@ Week 15 (*2/4*)
 : Data analysis and simulation
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_15_Lecture.slides.html)
-    - [Homework 14](../CLASS_MATERIALS/Homeworks/HW15_W20.html) *(due 2/13)*
+    - [Homework 15](../CLASS_MATERIALS/Homeworks/HW15_W20.html) *(due 2/13)*
 
 Week 16 (*2/11*)
 
