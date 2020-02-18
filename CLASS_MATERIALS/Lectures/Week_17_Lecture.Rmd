@@ -1,5 +1,5 @@
 ---
-title: "Discriminant analysis and dimension reduction"
+title: "Dimension reduction and discriminant analysis"
 author: "Peter Ralph"
 date: "4 February 2020 -- Advanced Biological Statistics"
 ---
@@ -486,6 +486,12 @@ text(beer_pc$loadings[,1:2], xlab="PC1 loadings", ylab="PC2 loadings",
      col='red', cex=2,
      labels=beer_vars)
 ```
+
+## Gotchas
+
+- PCs are only well-defined up to sign ($\pm$) and scale.
+- Some programs report PCs normalized to have SD 1.
+- Many ways to do basically the same thing: e.g., `prcomp` and `princomp`.
 
 # Your turn: wine
 
