@@ -45,23 +45,25 @@ Week 14 (*1/28*)
 
 Week 15 (*2/4*)
 
-: Data analysis and simulation
+: Many dimensions: Sparsifying priors and variable selection.
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_15_Lecture.slides.html)
+    - Reading: Kruschke, chapters 17 (one-variable linear regression), 18 (multivariate linear regression)
     - [Homework 15](../CLASS_MATERIALS/Homeworks/HW15_W20.html) *(due 2/13)*
 
 Week 16 (*2/11*)
 
-: Many dimensions: Sparsifying priors and variable selection.
+: Many response variables; data analysis example (cream cheese)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_16_Lecture.slides.html)
-    - Reading: Kruschke, chapters 17 (one-variable linear regression), 18 (multivariate linear regression)
     - [Primer on linear algebra](../CLASS_MATERIALS/Lectures/LA_primer_slides.html)
     - [Rmd file for the primer](../CLASS_MATERIALS/Lectures/LA_primer_slides.Rmd)
 
 Week 17 (*2/18*)
 
-: Factor analysis, dimensionality reduction, and visualization; "clustering"; PCA, PCoA, MDS, t-SNE, UMAP
+: Factor analysis, dimensionality reduction, and visualization; clustering; PCA, PCoA, MDS, t-SNE, UMAP
+
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_17_Lecture.slides.html)
 
 Week 18 (*2/25*)
 
