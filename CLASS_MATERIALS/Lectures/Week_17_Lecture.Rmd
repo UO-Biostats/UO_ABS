@@ -929,11 +929,11 @@ plot(rw_y, xlab='t-sne 1', ylab='t-sne 2', main="t-SNE",
 
 ## The menagerie
 
-There are *many* ways to represent high-dimensional data in a few dimensions,
-for instance:
+There are *many* dimension reduction methods, e.g.:
 
 - principal components analysis (PCA)
 - non-negative matrix factorization (NMF)
+- independent components analysis (ICA)
 - canonical correpondence analysis (CCA)
 - principal coordinates analysis (PCoA)
 - multidimensional scaling (MDS)
