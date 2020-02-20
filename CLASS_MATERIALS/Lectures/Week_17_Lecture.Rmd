@@ -1,7 +1,7 @@
 ---
-title: "Dimension reduction and discriminant analysis"
+title: "Dimension reduction: PCA, t-SNE and others"
 author: "Peter Ralph"
-date: "4 February 2020 -- Advanced Biological Statistics"
+date: "18 February 2020 -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
@@ -510,7 +510,9 @@ Using this [dataset of chemical concentrations in wine](data/wine.tsv):
 3. What happens if you set `cor=FALSE`?
 4. Which variables most strongly differentiate the three vineyards?
 
-# Squaring the math and the code:
+
+
+# PCA: Squaring the math and the code:
 
 ## 
 
@@ -586,3 +588,416 @@ stopifnot(all(abs(X.pca2$loadings - X.svd2$v * the_signs[col(X.svd2$v)]) < 1e-10
 stopifnot(all(abs(X.pca2$scores
                   - X.svd2$u * X.svd2$d[col(X.svd2$u)] * the_signs[col(X.svd2$u)]) < 1e-10))
 ```
+
+
+# t-SNE
+
+## t-SNE
+
+![http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf](images/t-sne_abstract.png)
+
+----------------
+
+[t-SNE](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding) 
+is a recently published method for dimension reduction
+(visualization of struture in high-dimensional data).
+
+-----------------
+
+It [makes very nice visualizations](https://distill.pub/2016/misread-tsne/).
+
+------------
+
+The *generic idea* is to find a low dimensional representation
+(i.e., a *picture*)
+in which *proximity* of points
+reflects *similarity* of the corresponding (high dimensional) observations.
+
+-------------
+
+Suppose we have $n$ data points, $x_1, \ldots, x_n$
+and each one has $p$ variables: $x_1 = (x_{11}, \ldots, x_{1p})$.
+
+. . .
+
+For each, we want to find a low-dimensional point $y$:
+$$\begin{aligned}
+    x_i \mapsto y_i
+\end{aligned}$$
+similarity of $x_i$ and $x_j$
+is (somehow) reflected by proximity of $y_i$ and $y_j$
+
+. . .
+
+We need to define:
+
+0. "low dimension" (usually, $k=2$ or $3$)
+1. "similarity" of $x_i$ and $x_j$
+2. "reflected by proximity" of $y_i$ and $y_j$
+
+## Similarity
+
+To measure similarity, we just use (Euclidean) distance:
+$$\begin{aligned}
+    d(x_i, x_j) = \sqrt{\sum_{\ell=1}^n (x_{i\ell} - x_{j\ell})^2} ,
+\end{aligned}$$
+after first normalizing variables to vary on comparable scales.
+
+
+## Proximity
+
+A natural choice is to require distances in the new space ($d(y_i, y_j)$) 
+to be as close as possible to distances in the original space ($d(x_i, x_j)$).
+
+. . .
+
+That's a *pairwise* condition.
+t-SNE instead tries to measure how faithfully
+*relative distances* are represented in each point's *neighborhood*.
+
+
+## Neighborhoods 
+
+For each data point $x_i$, define 
+$$\begin{aligned}
+    p_{ij} = \frac{ e^{-d(x_i, x_j)^2 / (2\sigma^2)} 
+                  }{ \sum_{\ell \neq i} e^{-d(x_i, x_\ell)^2 / (2 \sigma^2)} } ,
+\end{aligned}$$
+and $p_{ii} =  0$.
+
+This is the probability that point $i$ would pick point $j$ as a neighbor
+if these are chosen according to the Gaussian density centered at $x_i$.
+
+
+--------------
+
+Similarly, in the output space, define
+$$\begin{aligned}
+    q_{ij} = \frac{ (1 + d(y_i, y_j)^2)^{-1} 
+                  }{ \sum_{\ell \neq i} (1 + d(y_i, y_\ell)^2)^{-1} }
+\end{aligned}$$
+and $q_{ii} =  0$.
+
+
+This is the probability that point $i$ would pick point $j$ as a neighbor
+if these are chosen according to the Cauchy centered at $x_i$.
+
+
+## Similiarity of neighborhoods
+
+We want neighborhoods to look similar, i.e.,
+choose $y$ so that 
+$q$ looks like $p$.
+
+To do this, we minimize
+$$\begin{aligned}
+    \text{KL}(p \given q)
+    &=
+    \sum_{i} \sum_{j} p_{ij} \log\left(\frac{p_{ij}}{q_{ij}}\right) .
+\end{aligned}$$
+
+. . .
+
+*What's KL()?*
+
+## Kullback-Leibler divergence
+
+$$\begin{aligned}
+    \text{KL}(p \given q)
+    &=
+    \sum_{i} \sum_{j} p_{ij} \log\left(\frac{p_{ij}}{q_{ij}}\right) .
+\end{aligned}$$
+
+This is the average log-likelihood ratio between $p$ and $q$
+for a single observation drawn from $p$.
+
+It is a measure of how "surprised" you would be by a sequence of samples from $p$
+that you think should be coming from $q$.
+
+
+. . .
+
+**Facts:**
+
+1. $\text{KL}(p \given q) \ge 0$
+
+2. $\text{KL}(p \given q) = 0$ only if $p_i = q_i$ for all $i$.
+
+
+
+# Simulate data
+
+## A high-dimensional donut
+
+Let's first make some data.
+This will be some points distributed around a ellipse in $n$ dimensions.
+
+```{r tsim_data, cache=TRUE}
+n <- 20
+npts <- 1e3
+xy <- matrix(rnorm(n*npts), ncol=n)
+theta <- runif(npts) * 2 * pi
+ab <- matrix(rnorm(2*n), nrow=2)
+ab[,2] <- ab[,2] - ab[,1] * sum(ab[,1] * ab[,2]) / sqrt(sum(ab[,1]^2))
+ab <- sweep(ab, 1, sqrt(rowSums(ab^2)), "/")
+for (k in 1:npts) {
+    dxy <- 4 * c(cos(theta[k]), sin(theta[k])) %*% ab
+    xy[k,] <- xy[k,] + dxy
+}
+```
+
+---------------------
+
+Here's what the data look like:
+```{r plot_data, fig.width=6*fig.dim, fig.height=4*fig.dim, echo=FALSE}
+pairs(xy, pch=20)
+```
+
+---------------------
+
+But there is hidden, two-dimensional structure:
+```{r plot_ring, fig.height=2*fig.dim, echo=FALSE}
+plot(xy %*% t(ab), xlab='dimension 1', ylab='dimension 2', 
+     pch=20, col=rainbow(nrow(xy))[rank(theta)])
+```
+
+---------------------
+
+Now let's build the distance matrix.
+
+```{r dist_mat}
+dmat <- as.matrix(dist(xy)) 
+```
+
+# Implementation
+
+The quantity to be minimized is Kullback-Leibler distance between $p$ and $q$,
+defined as
+$$\begin{aligned}
+    \text{KL}(p|q) 
+        &= \sum_x p_x \log(p_x/q_x) .
+\end{aligned}$$
+
+---------------------
+
+## A Stan block
+
+```{r stan_tsne, cache=TRUE}
+tsne_block <- '
+data {
+    int N; // number of points
+    int n; // input dimension
+    int k; // output dimension
+    matrix[N,N] dsq;  // distance matrix, squared
+}
+parameters {
+    real<lower=0> sigma_sq; // in kernel for p 
+    matrix[N-2,k] y1;
+    real<lower=0> y21;
+}
+transformed parameters {
+    matrix[N,k] y;
+    y[1,] = rep_row_vector(0.0, k);
+    y[3:N,] = y1;
+    y[2,] = rep_row_vector(0.0, k);
+    y[2,1] = y21;
+}
+model {
+    matrix[N,N] q;
+    real dt;
+    matrix[N,N] p;
+    q[N,N] = 0.0;
+    for (i in 1:(N-1)) {
+        q[i,i] = 0.0;
+        for (j in (i+1):N) {
+            q[i,j] = 1 / (1 + squared_distance(y[i], y[j]));
+            q[j,i] = q[i,j];
+        }
+    }
+    for (i in 1:N) {
+        q[i] = q[i] / sum(q[i]);
+    }
+    // create p matrix
+    p = exp(-dsq/(2*sigma_sq));
+    for (i in 1:N) {
+        p[i,i] = 0.0;
+        p[i] = p[i] / sum(p[i]);
+    }
+    // compute the target
+    for (i in 1:(N-1)) {
+        for (j in (i+1):N) {
+            target += (-1) * (p[i,j] .* log(p[i,j] ./ q[i,j]));
+            target += (-1) * (p[j,i] .* log(p[j,i] ./ q[j,i]));
+        }
+    }
+    sigma_sq ~ normal(0, 10);
+}'
+
+
+tk <- 2
+tsne_model <- stan_model(model_code=tsne_block)
+```
+
+## Run the model with `optimizing`
+
+```{r run_tsne, cache=TRUE, dependson=c("stan_tsne", "tsim_data")}
+runtime <- system.time(tsne_optim <- optimizing(tsne_model,
+                                 data=list(N=nrow(xy),
+                                           n=ncol(xy),
+                                           k=tk,
+                                           dsq=(dmat/max(dmat))^2)))
+runtime
+```
+
+## It works!
+
+```{r plot_tsne, fig.width=4*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+out_y <- do.call(cbind, lapply(1:tk, function (k) {
+                                   tsne_optim$par[sprintf("y[%d,%d]", 1:nrow(xy), k)]
+                           } ) )
+layout(t(1:2))
+plot(out_y, xlab='t-sne 1', ylab='t-sne 2', main="t-SNE",
+     pch=20, col=rainbow(nrow(xy))[rank(theta)])
+plot(xy %*% t(ab), xlab='input 1', ylab='input 2', main="'truth'",
+     pch=20, col=rainbow(nrow(xy))[rank(theta)])
+
+```
+
+
+# Another case
+
+## High-dimensional random walk
+
+
+```{r sim_rw, cache=TRUE}
+n <- 40
+npts <- 1e2
+# rw <- colCumsums(matrix(rnorm(n*npts), ncol=n))
+rw <- matrix(rnorm(n*npts), ncol=n)
+for (i in 2:npts) {
+    rw[i,] <- sqrt(.9) * rw[i-1,] + sqrt(.1) * rw[i,]
+}
+```
+
+-----------------
+
+Here's what the data look like:
+```{r plot_rw, fig.width=6*fig.dim, fig.height=5*fig.dim, echo=FALSE}
+pairs(rw, col=rainbow(npts), pch=20)
+```
+
+--------------------------
+
+```{r plot_rw_sub, fig.width=6*fig.dim, fig.height=5*fig.dim, echo=FALSE}
+pairs(rw[,1:10], col=rainbow(npts), pch=20)
+```
+
+-----------------
+
+Now let's build the distance matrix.
+
+```{r dist_mat_rw}
+rw_dmat <- as.matrix(dist(rw)) 
+```
+
+## Run again
+
+```{r run_tsne_rw, cache=TRUE, dependson=c("stan_tsne", "sim_rw")}
+rw_runtime <- system.time(
+     rw_tsne_optim <- optimizing(tsne_model,
+                                 data=list(N=nrow(rw),
+                                           n=ncol(rw),
+                                           k=tk,
+                                           dsq=(rw_dmat/max(rw_dmat))^2),
+                                 tol_rel_grad=1e5))
+rw_runtime
+```
+
+## It works!
+
+```{r plot_rw_tsne, fig.width=2*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+rw_y <- do.call(cbind, lapply(1:tk, function (k) {
+                                   rw_tsne_optim$par[sprintf("y[%d,%d]", 1:nrow(xy), k)]
+                           } ) )
+plot(rw_y, xlab='t-sne 1', ylab='t-sne 2', main="t-SNE",
+     pch=20, col=rainbow(nrow(rw)))
+
+```
+
+
+# Overview of dimension reduction
+
+## The menagerie
+
+There are *many* ways to represent high-dimensional data in a few dimensions,
+for instance:
+
+- principal components analysis (PCA)
+- non-negative matrix factorization (NMF)
+- canonical correpondence analysis (CCA)
+- principal coordinates analysis (PCoA)
+- multidimensional scaling (MDS)
+- redundancy analysis (RDA)
+- Sammon mapping
+- kernel PCA
+- t-SNE
+- UMAP
+- locally linear embedding (LLE)
+- Laplacian eigenmaps
+- autoencoders
+
+## Using distances or similarities?
+
+PCA uses the *covariance matrix*, which measures similarity.
+
+t-SNE begins with the matrix of *distances*, measuring dissimilarity.
+
+## Metric or non-Metric?
+
+Are distances interpretable?
+
+. . .
+
+*metric:* In PCA, each axis is a fixed linear combination of variables.
+So, distances always mean the same thing no matter where you are on the plot.
+
+. . .
+
+*non-metric:* In t-SNE,
+distances within different clusters are not comparable.
+
+
+## Why ordination?
+
+From [ordination.okstate.edu](http://ordination.okstate.edu/overview.htm),
+about ordination in ecology:
+
+
+1. Graphical results often lead to intuitive interpretations of species-environment relationships.
+
+2. A single multivariate analysis saves time, in contrast to a separate univariate analysis for each species.
+
+3. Ideally and typically, dimensions of this 'low dimensional space' will represent important and interpretable environmental gradients.
+
+4. If statistical tests are desired, problems of multiple comparisons are diminished when species composition is studied in its entirety.
+
+5. Statistical power is enhanced when species are considered in aggregate, because of redundancy.
+
+6. By focusing on 'important dimensions', we avoid interpreting (and misinterpreting) noise.
+
+
+
+## Beware overinterpretation
+
+
+1. Ordination methods
+    are strongly influenced by *sampling*:
+    ordination may ignore large-scale patterns in favor of describing variation within a highly oversampled area.
+
+2. Ordination methods also describe patterns common to many variables:
+   measuring the same thing many times may drive results.
+
+3. Many methods are designed to find clusters, because our brain likes to categorize things.
+   This doesn't mean those clusters are well-separated in reality.
+
+
