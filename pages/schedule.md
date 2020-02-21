@@ -64,6 +64,7 @@ Week 17 (*2/18*)
 : Factor analysis, dimensionality reduction, and visualization; clustering; PCA, PCoA, MDS, t-SNE, UMAP
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_17_Lecture.slides.html)
+    - [Homework 17](../CLASS_MATERIALS/Homeworks/HW17_W20.html) *(due 2/27)*
 
 Week 18 (*2/25*)
 
