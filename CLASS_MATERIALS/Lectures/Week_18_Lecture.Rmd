@@ -95,6 +95,91 @@ about ordination in ecology:
    This doesn't mean those clusters are well-separated in reality.
 
 
+# Text analysis
+
+## Identifying authors
+
+In [data/passages.txt](data/passages.txt)
+we have a number of short passages from a few different books.
+
+. . .
+
+Can we identify the authors of each passage?
+
+. . .
+
+The true sources of the passages are in [data/passage_sources.tsv](data/passage_sources.tsv).
+
+## Turn the data into a matrix
+
+```{r wordmat, cache=TRUE}
+passages <- readLines("data/passages.txt")
+sources <- read.table("data/passage_sources.tsv", header=TRUE)
+words <- sort(unique(strsplit(paste(passages, collapse=" "), " +")[[1]]))
+tabwords <- function (x, w) { tabulate(match(strsplit(x, " ")[[1]], w), nbins=length(w)) }
+wordmat <- sapply(passages, tabwords, words)
+dimnames(wordmat) <- list(words, NULL)
+stopifnot( min(rowSums(wordmat)) > 0 )
+wordmat[1:20, 1:20]
+```
+
+## PCA?
+
+```{r wordpca, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim, cache=TRUE, dependson="wordmat"}
+wordpcs <- prcomp(wordmat, scale.=TRUE)
+layout(t(1:2))
+plot(wordpcs$rotation[,1:2], col=sources$source, pch=20, xlab="PC1", ylab="PC2")
+plot(wordpcs$rotation[,2:3], col=sources$source, pch=20, xlab="PC2", ylab="PC3")
+legend("topright", pch=20, col=1:3, legend=levels(sources$source))
+```
+
+## PC1 is shortness
+
+```{r wordlen, fig.width=2.0*fig.dim, fig.height=1.5*fig.dim}
+plot(colSums(wordmat), wordpcs$rotation[,1], col=sources$source, xlab='length', ylab='PC1')
+```
+
+## PC2 is book
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings, echo=FALSE}
+xw <- wordpcs$x
+head(xw[order(xw[,2]),1:3], 50)
+```
+
+:::
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings2, echo=FALSE}
+head(xw[order(xw[,2],decreasing=TRUE),1:3], 50)
+```
+
+:::
+::::::::::::::
+
+
+## PC3 ???
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings3, echo=FALSE}
+head(xw[order(xw[,3]),1:3], 50)
+```
+
+:::
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings4, echo=FALSE}
+head(xw[order(xw[,3],decreasing=TRUE),1:3], 50)
+```
+
+:::
+::::::::::::::
+
+
 
 
 
