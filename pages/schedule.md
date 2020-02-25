@@ -70,6 +70,8 @@ Week 18 (*2/25*)
 
 : Latent factors, deconvolution for mixtures of expression data; nonnegative matrix factorization
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
+
 Week 19 (*3/3*)
 
 : Introduction to spatial statistics: spatial autocorrelation.
