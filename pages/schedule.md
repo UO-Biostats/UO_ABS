@@ -71,6 +71,7 @@ Week 18 (*2/25*)
 : Latent factors, deconvolution for mixtures of expression data; nonnegative matrix factorization
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
+    - [Homework 18](../CLASS_MATERIALS/Homeworks/HW18_W20.html) *(due 3/5)*
 
 Week 19 (*3/3*)
 

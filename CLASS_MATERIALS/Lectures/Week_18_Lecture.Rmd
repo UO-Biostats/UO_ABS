@@ -97,6 +97,7 @@ about ordination in ecology:
 
 
 
+
 # Visualizing expression space
 
 ## A conceptual model
