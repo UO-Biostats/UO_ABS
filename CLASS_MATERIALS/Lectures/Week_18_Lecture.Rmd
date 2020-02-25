@@ -1,5 +1,5 @@
 ---
-title: "Clustering and dimension reduction"
+title: "Deconvolution and dimension reduction"
 author: "Peter Ralph"
 date: "25 February 2020 -- Advanced Biological Statistics"
 ---
