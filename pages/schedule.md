@@ -75,13 +75,12 @@ Week 18 (*2/25*)
 
 Week 19 (*3/3*)
 
-: Introduction to spatial statistics: spatial autocorrelation.
+: Deconvolution continued; introduction to spatial statistics and kernel density estimation.
 
-    - Reading: Otto and Day, Linear Algebra Primer
 
 Week 20 (*3/10*)
 
-: Looking back: example analysis and summary
+: Spatial statistics: spatial autocorrelation and Kriging.
 
 
 # Fall 2019

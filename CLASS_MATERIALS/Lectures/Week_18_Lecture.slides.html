@@ -2207,7 +2207,7 @@ plot(stan_x, cex=2,
 
 <ol start="4" type="1">
 <li><p>Marginal distributions are Beta distributed: <span class="math inline">\(P_i \sim \Beta(\alpha_i, \sum_{j=1}^k \alpha_j - \alpha_i)\)</span>.</p></li>
-<li><p>If <span class="math inline">\(X_i \sim \Gamma(\text{shape}=\alpha_i)\)</span>, and <span class="math display">\[\begin{aligned}
+<li><p>If <span class="math inline">\(X_i \sim \Gam(\text{shape}=\alpha_i)\)</span>, and <span class="math display">\[\begin{aligned}
  P_i = X_i / \sum_{j=1}^k X_j
 \end{aligned}\]</span> then <span class="math inline">\(P \sim \Dirichlet(\alpha)\)</span>.</p></li>
 </ol>
@@ -2328,8 +2328,8 @@ model {
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;027c9a0b92082dc735bfb6350861f7ee&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 4.3e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.43 seconds.
+## Chain 1: Gradient evaluation took 3.8e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.38 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -2354,9 +2354,9 @@ model {
 ## Chain 1: Iteration: 90 / 100 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 100 / 100 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.592548 seconds (Warm-up)
-## Chain 1:                0.943511 seconds (Sampling)
-## Chain 1:                1.53606 seconds (Total)
+## Chain 1:  Elapsed Time: 0.563439 seconds (Warm-up)
+## Chain 1:                0.705124 seconds (Sampling)
+## Chain 1:                1.26856 seconds (Total)
 ## Chain 1:</code></pre>
 <pre><code>## Warning: There were 31 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
 ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded</code></pre>
@@ -2420,7 +2420,7 @@ model {
 ## d_alpha     10.31    1.17  7.34     2.58     4.83     8.50    13.39    29.95    39 0.99
 ## lp__     17330.43    2.49  8.25 17316.13 17325.34 17329.97 17335.56 17347.45    11 1.09
 ## 
-## Samples were drawn using NUTS(diag_e) at Tue Feb 25 09:19:19 2020.
+## Samples were drawn using NUTS(diag_e) at Tue Feb 25 11:24:56 2020.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
 ## convergence, Rhat=1).</code></pre>
