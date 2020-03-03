@@ -582,6 +582,9 @@ sampling(nmf_model,
 
 ## In class
 
+![photo of board](images/the_board.png)
+
+## 
 
 ```{r simit}
 
@@ -593,7 +596,7 @@ num_diff_genes <- 400
 mean_total_expression <- 50e6
 sd_total_expression <- 5e6
 
-gene_names <- apply(matrix(sample(letters, 4*num_genes, replace=TRUE), nrow=num_genes), 1, paste, collapse='')
+gene_names <- paste0("gene_", apply(matrix(sample(letters, 5*num_genes, replace=TRUE), nrow=num_genes), 1, paste, collapse=''))
 stopifnot(length(unique(gene_names)) == num_genes)
 
 # mean expression profiles by cell type:
@@ -610,7 +613,15 @@ for (k in 1:num_cell_types) {
     diffex <- which(diff_gene == k)
     x[k,] <- x_mean
     x[k,diffex] <- x[k,diffex] * runif(length(diffex), min=0, max=3)
+    # x[k,diffex] <- 10 * x[k,diffex]
 }
+
+x_ord <- order(diff_gene, x_mean)
+matplot(t(x[,x_ord]), type='l')
+
+layout(1:5)
+par(mar=c(0,4,0,0))
+for (k in 1:5) plot(x[k,x_ord], type='l', col=k)
 
 # cell type proportions
 # w[i,k] is proportion of sample i of cell type k.
@@ -623,10 +634,14 @@ for (i in 1:num_samples) {
 }
 stopifnot(all(abs(rowSums(w) - 1) < 1e-14))
 
+pairs(w, xlim=c(0,1), ylim=c(0,1))
+
 # total expression per sample:
 # y[i] is total reads for sample i
 # this would be hard: y <- rcauchy(num_samples, location=mean_total_expression, scale=sd_total_expression)
 y <- rnorm(num_samples, mean=mean_total_expression, sd=sd_total_expression)
+
+hist(y, main='total expression by sample')
 
 # put these together to make total expression level
 # Z[i,j] will be read counts of sample i for gene j
@@ -634,10 +649,26 @@ y <- rnorm(num_samples, mean=mean_total_expression, sd=sd_total_expression)
 # 2. matrix multiply mean scaled levels by proportions (x * w)
 # 3. actual expression levels should be (poisson? normal?)
 
+# this will have mean_Z[i,j] = (sum_k w[i,k] x[k,j])
+mean_Z <- (w %*% x)
+# but we want total sequencing to be y[i] so...
+mean_Z <- y * mean_Z / rowSums(mean_Z)
+stopifnot(all(abs(y - rowSums(mean_Z)) < 1e-8))
 
+# we should make this overdispersed, here are two options
+# Z <- rnegbinom(length(mean_Z), lambda=mean_Z) # this is if mean of Poisson is Gamma
+# Z <- rpois(length(mean_Z), lambda=rexp(length(mean_Z), rate=1/mean_Z))
+Z <- rpois(length(mean_Z), lambda=mean_Z)
+dim(Z) <- dim(mean_Z)
 
+# order samples by proportion
+w_ord <- order(apply(w, 1, which.max), rowMaxs(w))
 
-
+Znorm <- Z / colMeans(Z)[col(Z)]
+Znorm <- Znorm / rowMeans(Znorm)
+image(Znorm[w_ord,x_ord])
 
 
 ```
+
+
