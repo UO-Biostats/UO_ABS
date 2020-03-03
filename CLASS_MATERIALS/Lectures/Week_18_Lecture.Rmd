@@ -729,4 +729,6 @@ class_fit <- optimizing(class_model,
                                 Z=Z))
 
 opt_w <- class_fit$par[grepl("^w", names(class_fit$par))]
+dim(opt_w) <- c(num_samples, num_cell_types)
+cor(w, opt_w)
 ```
