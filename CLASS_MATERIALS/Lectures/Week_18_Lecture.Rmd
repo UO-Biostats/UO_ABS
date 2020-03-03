@@ -671,4 +671,29 @@ image(Znorm[w_ord,x_ord])
 
 ```
 
+##
 
+```{r in_class_stan, cache=TRUE}
+class_model_code <- "
+data {
+    int num_genes;
+    int num_samples;
+    int num_cell_types;
+    int Z[num_samples, num_genes]; // Z[i,j] is expression level of jth gene in ith sample
+}
+parameters {
+    simplex[num_cell_types] w[num_samples];
+    //   w[i][k] is proportion of sample i that is cell type k
+    matrix<lower=0>[num_cell_types, num_genes] x;
+    //   x[k,j] is typical expression level of gene j in cell type k
+    vector<lower=0>[num_samples] y;
+    //   y[i] is total expression level of sample i
+    vector<lower=0>[num_genes] x_mean;
+    //   x_mean[j] is 'typical' expression level for cell type j across all cell types
+}
+model {
+
+}
+"
+
+```
