@@ -674,6 +674,7 @@ image(Znorm[w_ord,x_ord])
 ##
 
 ```{r in_class_stan, cache=TRUE}
+
 class_model_code <- "
 data {
     int num_genes;
@@ -690,10 +691,42 @@ parameters {
     //   y[i] is total expression level of sample i
     vector<lower=0>[num_genes] x_mean;
     //   x_mean[j] is 'typical' expression level for cell type j across all cell types
+    real<lower=0> eta; // SD of x about x_mean
+    vector<lower=0>[num_cell_types] alpha; // mean of dirichlet
 }
 model {
-
+    matrix[num_samples, num_genes] mean_Z; // mean_Z[i,j] is 'expected' expression of gene j in sample i
+    for (i in 1:num_samples) {
+        for (j in 1:num_genes) {
+            // matrix mult version?
+            // mean_Z[i,j] = y[i] * (w[i] * x[,j]); // the first * is normal; the second is matrix mult
+            // for loop version:
+            mean_Z[i,j] = 0.0;
+            for (k in 1:num_cell_types) {
+                mean_Z[i,j] += y[i] * w[i][k] * x[k,j];
+            }
+        }
+        Z[i,] ~ poisson(mean_Z[i,]);
+    }
+    y ~ normal(0, 10);
+    for (k in 1:num_cell_types) {
+        x[k,] ~ normal(x_mean, eta * x_mean); // maybe this should be lognormal
+    }
+    for (i in 1:num_samples) {
+        w[i] ~ dirichlet(alpha);
+    }
+    alpha ~ exponential(1);
+    eta ~ normal(0, 4);
+    x_mean ~ gamma(0.5, 0.5e-4);
 }
 "
+class_model <- stan_model(model_code=class_model_code)
 
+class_fit <- optimizing(class_model,
+                      data=list(num_genes=num_genes,
+                                num_samples=num_samples,
+                                num_cell_types=num_cell_types,
+                                Z=Z))
+
+opt_w <- class_fit$par[grepl("^w", names(class_fit$par))]
 ```
