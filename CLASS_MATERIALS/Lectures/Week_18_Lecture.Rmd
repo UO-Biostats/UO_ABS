@@ -587,7 +587,6 @@ sampling(nmf_model,
 ## 
 
 ```{r simit}
-
 num_genes <- 500
 num_cell_types <- 5
 num_samples <- 100
@@ -598,7 +597,11 @@ sd_total_expression <- 5e6
 
 gene_names <- paste0("gene_", apply(matrix(sample(letters, 5*num_genes, replace=TRUE), nrow=num_genes), 1, paste, collapse=''))
 stopifnot(length(unique(gene_names)) == num_genes)
+```
 
+##
+
+```{r simit2}
 # mean expression profiles by cell type:
 # x[k,j] is Mean expression of gene j in cell type k.
 # we wil have num_diff_genes / num_cell_type genes specific to each cell type
@@ -615,14 +618,26 @@ for (k in 1:num_cell_types) {
     x[k,diffex] <- x[k,diffex] * runif(length(diffex), min=0, max=3)
     # x[k,diffex] <- 10 * x[k,diffex]
 }
+```
 
+## Gene expression profiles
+
+```{r simit3, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 x_ord <- order(diff_gene, x_mean)
-matplot(t(x[,x_ord]), type='l')
+matplot(t(x[,x_ord]), type='l', xlab='gene', ylab='mean expression')
+```
 
+## Gene expression profiles
+
+```{r simit4, fig.width=3*fig.dim, fig.height=2.5*fig.dim}
 layout(1:5)
 par(mar=c(0,4,0,0))
 for (k in 1:5) plot(x[k,x_ord], type='l', col=k)
+```
 
+##
+
+```{r simit5}
 # cell type proportions
 # w[i,k] is proportion of sample i of cell type k.
 # use gammas with shapes=vector of low integers;
@@ -633,16 +648,28 @@ for (i in 1:num_samples) {
     w[i,] <- dirich/sum(dirich)
 }
 stopifnot(all(abs(rowSums(w) - 1) < 1e-14))
+```
 
+## Cell types proportions
+
+```{r simit6, fig.width=3*fig.dim, fig.height=2*fig.dim}
 pairs(w, xlim=c(0,1), ylim=c(0,1))
+```
 
+##
+
+```{r simit7}
 # total expression per sample:
 # y[i] is total reads for sample i
 # this would be hard: y <- rcauchy(num_samples, location=mean_total_expression, scale=sd_total_expression)
 y <- rnorm(num_samples, mean=mean_total_expression, sd=sd_total_expression)
 
 hist(y, main='total expression by sample')
+```
 
+##
+
+```{r simit8}
 # put these together to make total expression level
 # Z[i,j] will be read counts of sample i for gene j
 # 1. scale mean expression based on total expression level
@@ -654,34 +681,46 @@ mean_Z <- (w %*% x)
 # but we want total sequencing to be y[i] so...
 mean_Z <- y * mean_Z / rowSums(mean_Z)
 stopifnot(all(abs(y - rowSums(mean_Z)) < 1e-8))
+```
 
+##
+
+```{r simit9}
 # we should make this overdispersed, here are two options
 # Z <- rnegbinom(length(mean_Z), lambda=mean_Z) # this is if mean of Poisson is Gamma
 # Z <- rpois(length(mean_Z), lambda=rexp(length(mean_Z), rate=1/mean_Z))
 Z <- rpois(length(mean_Z), lambda=mean_Z)
 dim(Z) <- dim(mean_Z)
+```
 
+## Expression levels, normalized
+
+```{r simit10}
 # order samples by proportion
 w_ord <- order(apply(w, 1, which.max), rowMaxs(w))
 
 Znorm <- Z / colMeans(Z)[col(Z)]
 Znorm <- Znorm / rowMeans(Znorm)
-image(Znorm[w_ord,x_ord])
-
+image(t(Znorm[w_ord,x_ord]), xlab='gene', ylab='sample')
 
 ```
 
 ##
 
-```{r in_class_stan, cache=TRUE}
-
-class_model_code <- "
+```{r in_class_stan1, cache=TRUE}
+class_model_code1 <- "
 data {
     int num_genes;
     int num_samples;
     int num_cell_types;
     int Z[num_samples, num_genes]; // Z[i,j] is expression level of jth gene in ith sample
-}
+}"
+```
+
+##
+
+```{r in_class_stan2, cache=TRUE}
+class_model_code2 <- "
 parameters {
     simplex[num_cell_types] w[num_samples];
     //   w[i][k] is proportion of sample i that is cell type k
@@ -693,7 +732,13 @@ parameters {
     //   x_mean[j] is 'typical' expression level for cell type j across all cell types
     real<lower=0> eta; // SD of x about x_mean
     vector<lower=0>[num_cell_types] alpha; // mean of dirichlet
-}
+}"
+```
+
+##
+
+```{r in_class_stan3, cache=TRUE}
+class_model_code3 <- "
 model {
     matrix[num_samples, num_genes] mean_Z; // mean_Z[i,j] is 'expected' expression of gene j in sample i
     for (i in 1:num_samples) {
@@ -720,15 +765,45 @@ model {
     x_mean ~ gamma(0.5, 0.5e-4);
 }
 "
-class_model <- stan_model(model_code=class_model_code)
+```
+
+##
+
+```{r in_class_stan4, cache=TRUE, dependson=paste0('in_class_stan', 1:3)}
+class_model <- stan_model(model_code=paste(c(class_model_code1, class_model_code2, class_model_code3), collapse="\n"))
 
 class_fit <- optimizing(class_model,
                       data=list(num_genes=num_genes,
                                 num_samples=num_samples,
                                 num_cell_types=num_cell_types,
                                 Z=Z))
+```
 
+## The results!
+
+We do a very good job of estimating mixture proporitons, $w$:
+
+```{r in_class_results1}
 opt_w <- class_fit$par[grepl("^w", names(class_fit$par))]
 dim(opt_w) <- c(num_samples, num_cell_types)
 cor(w, opt_w)
+```
+
+## 
+
+We are estimating overall mean expression less well:
+
+```{r in_class_results2}
+opt_x_mean <- class_fit$par[grepl("^x_mean", names(class_fit$par))]
+plot(x_mean, opt_x_mean, xlab='true mean expression', ylab='estimated mean expression')
+```
+
+## 
+
+And, similarly, we estimate cell-type-specific expression less well:
+
+```{r in_class_results3}
+opt_x <- class_fit$par[grepl("^x\\[", names(class_fit$par))]
+dim(opt_x) <- c(num_cell_types, num_genes)
+cor(t(x), t(opt_x))
 ```
