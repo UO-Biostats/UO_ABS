@@ -77,11 +77,13 @@ Week 19 (*3/3*)
 
 : Deconvolution continued; introduction to spatial statistics and kernel density estimation.
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_19_Lecture.slides.html)
 
 Week 20 (*3/10*)
 
 : Spatial statistics: spatial autocorrelation and Kriging.
 
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_19_Lecture.slides.html) (continued)
 
 # Fall 2019
 
