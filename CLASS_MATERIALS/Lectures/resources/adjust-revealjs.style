@@ -12,7 +12,7 @@
 
 .centered p { text-align: center; }
 
-.caption p { font-size: 75%; color: grey; }
+.caption p { font-size: 75%; color: grey; text-align: right; }
 
 .greyed { color: grey; }
 

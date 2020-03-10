@@ -1,5 +1,5 @@
 ---
-title: "Spatial data"
+title: "Spatial autocorrelation"
 author: "Peter Ralph"
 date: "5 March 2019 -- Advanced Biological Statistics"
 ---
