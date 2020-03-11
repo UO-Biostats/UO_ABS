@@ -71,7 +71,7 @@ Week 18 (*2/25*)
 : Latent factors, deconvolution for mixtures of expression data; nonnegative matrix factorization
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_18_Lecture.slides.html)
-    - [Homework 18](../CLASS_MATERIALS/Homeworks/HW18_W20.html) *(due 3/5)*
+    - [Homework 18](../CLASS_MATERIALS/Homeworks/HW18_W20.html) *(due 3/10)*
 
 Week 19 (*3/3*)
 
@@ -84,6 +84,7 @@ Week 20 (*3/10*)
 : Spatial statistics: spatial autocorrelation and Kriging.
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_19_Lecture.slides.html) (continued)
+    - [Homework 19](../CLASS_MATERIALS/Homeworks/HW19_W20.html) *(due 3/19)*
 
 # Fall 2019
 
