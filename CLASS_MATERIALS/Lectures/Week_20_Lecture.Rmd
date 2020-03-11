@@ -271,6 +271,7 @@ raster_smooth <- rasterFromXYZ(smooth_df)
 
 plot(raster_smooth)
 setup_map(add=TRUE)
+contour(raster_smooth, add=TRUE)
 ```
 
 ##
@@ -344,7 +345,7 @@ sigma <- 0.25
 for (k in 1:nrow(xygrid)) {
     xy_fhat[k] <- sum( exp(-( (xy[,1] - xygrid[k,1])^2 + (xy[,2] - xygrid[k,2])^2 )/(2*sigma^2) ) / (2 * pi * sigma^2 ) )
 }
-plot(xy, asp=1)
+plot(xy, asp=1, pch=20)
 points(xygrid[,1], xygrid[,2], cex=xy_fhat/6)
 ```
 

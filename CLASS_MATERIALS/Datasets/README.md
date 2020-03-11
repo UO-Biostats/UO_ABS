@@ -44,12 +44,6 @@ Here are links to data from some studies that other people have done, and also s
 
 ## Airbnb_listings_Portland
 
-## COVID-19
-
-A dataset of numbers of cases, by country and/or province of COVID-19:
-
-- [README](COVID-19/README_STATS.md)
-
 ## PanTHERIA:
 
 A dataset containing information about 5,416 extant mammal species.
