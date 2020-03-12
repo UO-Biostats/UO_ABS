@@ -1,5 +1,5 @@
 ---
-title: "Working with spatial data"
+title: "Looking back"
 author: "Peter Ralph"
 date: "12 March 2020 -- Advanced Biological Statistics"
 ---
