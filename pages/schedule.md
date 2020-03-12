@@ -84,6 +84,7 @@ Week 20 (*3/10*)
 : Spatial statistics: spatial autocorrelation and Kriging.
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_19_Lecture.slides.html) (continued)
+    - [Review](../CLASS_MATERIALS/Lectures/Week_20_Review.slides.html)
     - [Homework 19](../CLASS_MATERIALS/Homeworks/HW19_W20.html) *(due 3/19)*
 
 # Fall 2019

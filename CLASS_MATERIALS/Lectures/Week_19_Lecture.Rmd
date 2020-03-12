@@ -1,7 +1,7 @@
 ---
 title: "Spatial autocorrelation"
 author: "Peter Ralph"
-date: "5 March 2019 -- Advanced Biological Statistics"
+date: "5 March 2020 -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
