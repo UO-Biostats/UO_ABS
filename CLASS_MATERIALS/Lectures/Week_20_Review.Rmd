@@ -214,7 +214,7 @@ ALGAE ~ TREAT + (1|PATCH)
 ```
 
 
-# Stanland
+# Models
 
 
 ## Bayesian what-not
