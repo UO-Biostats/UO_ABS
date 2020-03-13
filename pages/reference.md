@@ -7,6 +7,7 @@ description: useful links for Advanced Biological Statistics
 ### Course resources
 
 * A page of [example datasets](datasets.html).
+* A [primer on linear algebra](../CLASS_MATERIALS/Lectures/LA_primer_slides.html)
 * A description of how to [use git](using-git.html) to get the course material.
 * Some notes on [how the slides are made from Rmd](development.html).
 * Tips on [writing Rmd reports](rmarkdown_tips.html)
