@@ -4,7 +4,7 @@ title: about this course // syllabus
 description: Syllabus for UO Advanced Biological Statistics
 ---
 
-See [the schedule](schedule.html) for topics by week and links to slides.
+See [the schedule](schedule.html) for a list of topics by week, with links to slides.
 
 ## Description of the course
 
@@ -19,24 +19,22 @@ that we will move through the material quickly with the goal of providing
 a solid foundation for subsequent learning. Students will learn to use the
 powerful statistical programming language [R](https://r-project.org), and the
 flexible modeling package [Stan](https://mc-stan.org). *Prerequisites:*
-some (basic) programming.
+some (basic) programming, introductory statistics.
 
 ## Instructors:
 
 - [Peter Ralph](https://pages.uoregon.edu/plr/), main instructor: plr@uoregon.edu
-    * office hours: Wednesday 9:00-11:00am or by appointment, 270 Onyx
+    * office hours: Wednesday 9:00-11:00am or by appointment
 
-- [Matt Lukac](https://ie2.uoregon.edu/people/lukac/), graduate teaching assistant: mlukac@uoregon.edu
+- [Gilia Patterson](https://ie2.uoregon.edu/people/patterson/), graduate teaching assistant: gpatters@uoregon.edu
     * office hours: Monday and Wednesday 11:00-12:30pm, 270 Onyx
 
 - [Bill Cresko](https://creskolab.uoregon.edu/), supporting instructor: wcresko@uoregon.edu
     * office hours: by appointment, 312 Pacific Hall
 
-- [Hannah Tavalire](https://creskolab.uoregon.edu/hannah), supporting instructor: tavalire@uoregon.edu
-
 ## Course Information
 
-- *Schedule:* Tue/Thur 10:00 AM - 11:50 AM, 40 Science Library
+- *Schedule:* Tue/Thur 10:15 AM - 11:45 AM
 - *Websites:* besides [the page you are looking at](https://UO-Biostats.github.io/UO_ABS/),
     assignments and announcements will be distributed on the Bi 610 [canvas page](https://canvas.uoregon.edu/)
 - *Assignments:* Assigned, and due, on Thursdays.
@@ -50,23 +48,7 @@ We will use these books in the course:
 * Kruschke, J. 2018. *Doing Bayesian Data Analysis, 2nd ed.* Academic Press. ([website with data and code](https://sites.google.com/site/doingbayesiandataanalysis/))
 
 
-If you are looking for more reference or reading material, these are also good:
-
-* Logan, M. 2010. *Biostatistical Design and Analysis Using R.* Wiley-Blackwell.
-    A fairly comprehensive book that covers how to use R to do many of the topics in Quinn and Keough.
-
-* Wickham, H. & G. Grolemund. 2016. *R for Data Science.* O'Reilly Publishers. (free [web version](https://r4ds.had.co.nz/))
-    How to do many common data analysis tasks in R, specifically in the [tidyverse](http://www.tidyverse.org).
-
-* Wickham, H. *ggplot2: Elegant Graphics for Data Analysis, 2nd edition* (free [web version](https://ggplot2-book.org/) of the in-process 3rd edition)
-    A more comprehensive reference to ggplot2 than the [chapter of *R for data science*](https://r4ds.had.co.nz/data-visualisation.html).
-    Also see [the documentation](https://ggplot2.tidyverse.org/index.html).
-
-
-* Wilke, Claus O. *Fundamentals of Data Visualization.*. O'Reilly Publishers. (free [web version](https://serialmentor.com/dataviz/))
-    How to think about visualization (with source code for plots available!).
-
-* Haddock, S. and C. Dunn. 2011. *Practical Computing for Biologists.* Sinauer and Associates. 
+There is a list of other reading materials on [the page of references](reference.html).
 
 ## Software:
 
@@ -74,12 +56,57 @@ If you are looking for more reference or reading material, these are also good:
 * A working version of [RStan](https://mc-stan.org/users/interfaces/rstan.html)
 * An R scripting environment such as [RStudio](https://www.rstudio.org)
 * [Git](https://git-scm.com/downloads) (here is an [intro](https://jvns.ca/blog/2018/10/27/new-zine--oh-shit--git-/))
-* A good code editor like [Atom](https://atom.io) or [BBEdit](https://www.barebones.com/products/bbedit/) or [https://www.vim.org](vim)
+* A good code editor like [Atom](https://atom.io) or [BBEdit](https://www.barebones.com/products/bbedit/) or [vim](https://www.vim.org)
 
 ## Prerequisites:
 
-None, but students should be comfortable with algebra and the basics of calculus,
+Students should be comfortable with algebra and the basics of calculus,
+have some familiarity of introductory statistics,
 and have some experience with programming.
+
+## Class structure, remote learning, and support
+
+To reduce the risk of transmitting COVID, the course will be *remote*,
+meaning that no physical in-person activities will be required (and indeed, none are planned).
+This is too bad: it's easier to get to interact, and to know everyone if we're all in the same room.
+However, this course is pretty well-suited to remote instruction,
+and we don't feel like we need to compromise on the quality or content of the course.
+That said, if something is not working for you, please tell us:
+we are committed to making the course accessible to everyone,
+and if it's a problem for you, it's almost certainly a problem for others as well.
+
+How will this work?
+Classes will happen over zoom at the regularly scheduled time.
+However, we won't take attendance (just as during a regular year),
+and the classes will be *recorded*, so that they will be accessible
+later if you have problems with internet connectivity.
+We'll split up the 90 minute class periods
+into roughly equal parts lecture/discussion (with slides),
+live coding/data analysis demonstration, and small group activities
+(e.g., discussion or coding in pairs).
+In-class discussions and activities are designed to be an important part of the class,
+so we hope that you can attend:
+let us know if you anticipate this being a problem.
+
+We recognize that it is an extremely challenging time for many people.
+It certainly has been for us,
+given the ongoing pandemic, failure to address systemic racism,
+inaction on climate change, wildfires and other effects of climate change,
+an election increasingly driven by disinformation,
+and ongoing attacks on women's equality and autonomy.
+However: central to many (all?) of these issues are *information*,
+*science*, and *data*.
+One aim of this class is to empower you to engage meaningfully:
+to evaluate disparate sources of information,
+and to process and communicate lessons from data for a broader audience.
+We hope this recognition helps you to focus on the class;
+it certainly does for us.
+
+That said, it is still a challenging time.
+If you need flexibility on assignments or projects,
+or even just someone to talk to,
+please let us know.
+
 
 ## Inclusion and accessibility
 

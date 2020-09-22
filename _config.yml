@@ -8,7 +8,7 @@ highlighter: rouge
 # Themes are encouraged to use these universal variables
 # so be sure to set them if your theme uses them.
 #
-title : UO Advanced Biological Statistics - 2019/2020
+title : UO Advanced Biological Statistics - 2020/2021
 author :
   name : Peter Ralph and Bill Cresko
   email : plr@uoregon.edu, wcresko@uoregon.edu
@@ -16,7 +16,7 @@ author :
   twitter : nil
   feedburner : nil
 
-production_url : http://UO-Biostats.github.io/UO_ABS
+production_url : http://uo-biostats.github.io/UO_ABS
 
 # Tell Github to use the kramdown markdown interpreter
 # (see https://help.github.com/articles/migrating-your-pages-site-from-maruku)

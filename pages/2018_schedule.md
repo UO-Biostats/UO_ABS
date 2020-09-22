@@ -1,6 +1,6 @@
 ---
 layout: page
-title: previous course schedules
+title: Course schedule, 2018/2019
 description: schedule, with links to slides and homeworks
 ---
 

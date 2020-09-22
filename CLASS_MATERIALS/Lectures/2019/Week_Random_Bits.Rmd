@@ -1,0 +1,113 @@
+
+# Missing data: imputation
+
+From Week 10 - NOT WORKING
+
+## Imputation
+
+. . .
+
+is a fancy word for "guessing".
+
+. . .
+
+Often, if some data are missing, it's useful to guess what it probably should be
+
+. . .
+
+... for instance, by sampling from the posterior distribution
+of your missing data given the rest of the data.
+
+## For instance
+
+Suppose that we're missing the *ages* of some of our samples.
+Can we <strike>guess</strike> impute the missing ages?
+
+## 
+
+```{r impute_model, cache=TRUE}
+impute_model <- stan_model(model_code="
+data {
+    int N;  // number of data points
+    int Nm; // number of missing ages
+    vector[N - Nm] notmissing_age;
+    real minage;
+    vector[N] exposure;
+    int missings[Nm]; // indexes of missings
+    int not_missings[N - Nm]; // the complement
+    int counts[N];
+    int genotype[N];
+    int ngenotypes;
+}
+parameters {
+    vector[ngenotypes] a; // intercepts
+    real b; // slope for age
+    vector[ngenotypes] c; // slopes for exposure
+    real<lower=0> sigma; // SD on lognormal
+    vector<lower=0>[N] mu; // mean of the poissons
+    vector<lower=0>[Nm] missing_age;
+}
+model {
+    vector[N] age;
+    vector[N] y; // mean of the lognormals
+    age[missings] = missing_age;
+    age[not_missings] = notmissing_age;
+    y = a[genotype] + b * age + c[genotype] .* exposure;
+    mu ~ lognormal(y, sigma);
+    counts ~ poisson(mu);
+    a ~ normal(0, 100);
+    b ~ normal(0, 10);
+    c ~ normal(0, 20);
+    sigma ~ normal(0, 10);
+    missing_age ~ normal(0, 1);
+}
+")
+```
+
+
+##
+
+```{r impfit, cache=TRUE, dependson="impute"}
+impute_these <- sort(sample(length(data$counts), 40))
+
+impute_data <- with(data,
+      list(N=length(counts),
+           Nm=length(impute_these),
+           notmissing_age=(age[-impute_these] - mean(age))/sd(age),
+           minage=(0 - mean(age))/sd(age),
+           exposure=(exposure - mean(exposure))/sd(exposure),
+           counts=counts,
+           missings=impute_these,
+           not_missings=seq_along(counts)[-impute_these],
+           genotype=genotype,
+           ngenotypes=length(unique(genotype))))
+
+fit4 <- sampling(impute_model,
+                 data=impute_data,
+                 control=list(max_treedepth=12),
+                 iter=100, chains=1)
+```
+
+##
+
+```{r plot_imp, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+imps <- mean(data$age) + sd(data$age) * rstan::extract(fit4, pars="missing_age")$missing_age
+ord <- rank(colMeans(imps))
+plot(ord, colMeans(imps), ylim=c(0,150), xlab='', ylab='age')
+segments(x0=ord,
+         y0=colMins(imps),
+         y1=colMaxs(imps), lty=3, lwd=0.5)
+segments(x0=ord,
+         y0=colQuantiles(imps, probs=0.025),
+         y1=colQuantiles(imps, probs=0.975), col='red')
+segments(x0=ord,
+         y0=colQuantiles(imps, probs=0.25),
+         y1=colQuantiles(imps, probs=0.75), lwd=2)
+points(x=ord, y=data$age[impute_these], cex=2, pch=20)
+legend("topleft",
+       lty=c(3,1,1,NA), pch=c(NA,NA,NA,20), col=c("black", "red", "black", "black"),
+       pt.cex=c(NA,NA,NA,2), lwd=c(3,1,1,NA),
+       legend=c("range", "95% CI", "50% CI", "true value"))
+```
+
+

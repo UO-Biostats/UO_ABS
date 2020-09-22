@@ -31,6 +31,27 @@ description: useful links for Advanced Biological Statistics
 * Vignette on [stanfit objects](https://cran.r-project.org/web/packages/rstan/vignettes/stanfit-objects.html)
 * Brief guide to [Stan's warnings](http://mc-stan.org/misc/warnings)
 
+### Other books
+
+If you are looking for more reference or reading material, these are also good:
+
+* Logan, M. 2010. *Biostatistical Design and Analysis Using R.* Wiley-Blackwell.
+    A fairly comprehensive book that covers how to use R to do many of the topics in Quinn and Keough.
+
+* Wickham, H. & G. Grolemund. 2016. *R for Data Science.* O'Reilly Publishers. (free [web version](https://r4ds.had.co.nz/))
+    How to do many common data analysis tasks in R, specifically in the [tidyverse](http://www.tidyverse.org).
+
+* Wickham, H. *ggplot2: Elegant Graphics for Data Analysis, 2nd edition* (free [web version](https://ggplot2-book.org/) of the in-process 3rd edition)
+    A more comprehensive reference to ggplot2 than the [chapter of *R for data science*](https://r4ds.had.co.nz/data-visualisation.html).
+    Also see [the documentation](https://ggplot2.tidyverse.org/index.html).
+
+
+* Wilke, Claus O. *Fundamentals of Data Visualization.*. O'Reilly Publishers. (free [web version](https://serialmentor.com/dataviz/))
+    How to think about visualization (with source code for plots available!).
+
+* Haddock, S. and C. Dunn. 2011. *Practical Computing for Biologists.* Sinauer and Associates. 
+
+
 ### Miscellaneous R tips
 
 * [knitr chunk options](https://yihui.name/knitr/options/) for control of Rmarkdown code chunks
