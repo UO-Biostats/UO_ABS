@@ -27,10 +27,10 @@ some (basic) programming, introductory statistics.
     * office hours: Wednesday 9:00-11:00am or by appointment
 
 - [Gilia Patterson](https://ie2.uoregon.edu/people/patterson/), graduate teaching assistant: gpatters@uoregon.edu
-    * office hours: Monday and Wednesday 11:00-12:30pm, 270 Onyx
+    * office hours: Wednesdays 11:00 or by appointment
 
 - [Bill Cresko](https://creskolab.uoregon.edu/), supporting instructor: wcresko@uoregon.edu
-    * office hours: by appointment, 312 Pacific Hall
+    * office hours: by appointment
 
 ## Course Information
 
