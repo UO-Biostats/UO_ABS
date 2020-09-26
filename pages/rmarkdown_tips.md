@@ -71,8 +71,8 @@ Getting your output to look nice can be quite frustrating at first,
 and it's more important for you to learn the statistical concepts and how to talk about them.
 So, we encourage you to go for "good enough", but try to improve your homeworks a little
 every week. If something in your homework looks really ugly,
-but you just can't figure out how to fix it, then just say so
-- we'll probably give you some tips.
+but you just can't figure out how to fix it, then just say so:
+we'll probably give you some tips.
 
 * **Output html:** If you're using pdf as an output, keep in mind knitr does not automatically wrap your code chunks, and they will run off the page if too long. Be aware of this and add line breaks where appropriate. With this in mind, it may be optimal to knit to html.
 
