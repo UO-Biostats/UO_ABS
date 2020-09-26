@@ -108,11 +108,23 @@ please let us know.
 
 ## Assignments and evaluation
 
-Homeworks will be assigned on Thursdays, and (usually) due the following Thursday.
-Most homeworks will be in the form of short statistical reports,
-which you will write in [Rmarkdown](rmarkdown_tips.html).
-These will be readable, descriptive, and contain figures,
-but also contain the R code that actually does the analysis and makes the figures.
+Course grades will be based entirely on assignments.
+Most assignments are weekly homeworks,
+assigned on Thursdays and due the following Thursday.
+These will be short, readable, descriptive statistical reports,
+which you will write in Rmarkdown (here are some [tips for doing this](rmarkdown_tips.html)),
+and so also contain the R code that produces the analyses and figures.
+Once or twice during the quarter instead of a report
+we will also assign *peer reviews*,
+where you review a classmate's assignment (here's [how to do this](peer_reviews.html)).
+There will also be a few other types of assignment:
+for instance, filling out a class survey (graded on participation only),
+and (in Winter quarter) a group data analysis project.
+The contribution of these to the final grade will be proportional to the points assigned,
+and thresholds for letter grades will be chosen to reflect a graduate-level course:
+A: good, demonstrates competance in all topics and mastery of many;
+B: acceptible, demonstrates competance in all topics;
+C: unsatisfactory.
 
 ## Inclusion and accessibility
 
