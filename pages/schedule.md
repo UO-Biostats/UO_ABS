@@ -18,8 +18,8 @@ Week 1 (*9/29*)
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.slides.html)
     - [Homework 1](../CLASS_MATERIALS/Homeworks/HW01_F20.html) *(due 10/8)*
-    - [how to git the slides](using-git.html)
-    <!-- - Reading: Quinn & Keough chapters 1-4 -->
+    - [how to git the slide source](using-git.html)
+    - Reading: Quinn & Keough chapters 1-4
     <!-- - Introductory workshop to R and Rmarkdown [lecture](../CLASS_MATERIALS/R_and_Rmd_Review/01.Lecture/01.ABS_2019_IntroR_Doc_Lecture.html) and [exercises](../CLASS_MATERIALS/R_and_Rmd_Review/02.Exercise/02.ABS_2019_Exercises_for_R_Review.html), by Hannah: Friday 9-11am -->
 
 Week 2 (*10/6*)
