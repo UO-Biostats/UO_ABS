@@ -31,27 +31,56 @@ After you have `git` installed, in a console...
     git merge origin/master
     ```
 
-Great: that's it!
+It's that easy!
+
+## But what if I want to take notes on the slides?
 
 Well, there's one more thing.
-The instructions above will work if you don't make any local changes to our files.
-But, what if you want to -say- make notes on the slides?
-If so, when you try to `merge` you could get an error like this:
+If you *change* the files then the next time you try to get our updates,
+git will complain that your changes conflict with ours.
+So, we recommend that if you want to edit one of the files we have,
+to first make a *copy* of it, and edit the copy.
+For instance, you could copy `Week_01_Lecture.Rmd` to `Week_01_Lecture_NOTES.Rmd`,
+and then edit the `NOTES` version. git will ignore your new file, unless you ask it not to.
+
+
+## But what if I *already did* edit some of the files?
+
+If you do modify some of the files,
+when you try to `merge` you could get an error like this:
 ```
 error: Your local changes to the following files would be overwritten by checkout:
     (names of some files you changed)
 Please commit your changes or stash them before you switch branches.
 Aborting
 ```
-You have two options:
+To deal with this, you should (1) get rid of your local changes,
+and then (2) `merge` away.
+First, you should probably do
+```
+    git status
+```
+to see what's changed.
+The message this prints out even gives you a nice reminder of how to remove any local changes:
+say you edited `Week_01_Lecture.Rmd` but didn't mean to.
+You could make those changes go away by doing
+```
+    git checkout -- Week_01_Lecture.Rmd
+```
+This makes the changes go away permanently, so make sure if you actually wanted to keep them,
+that you first copy the file elsewhere.
+Another way to make *all* your changes go away at once is to do
+```
+    git stash
+```
+This is reversible - doing `git stash pop` will bring them back...  if nothing else changes in the meantime.
 
-1. Store your changes away in another "branch" - they won't be visible to you any more, but they will be *there*, somewhere. (Where? See option 2.)
-    To do this, run
-    ```
-    git checkout -b 'my_edits'
-    git commit -a -m 'these were my edits'
-    git checkout master
-    ```
-    Now, your local copy should be "clean" again, and you can `git merge origin/master` like before.
-
-2. Learn how to use git! That's what you'll need to do if you want to *actually* edit our material, and both keep your edits as well as staying up to date with us.
+After you make the local changes dissappear, doing `git status` should tell you
+```
+nothing added to commit but untracked files present (use "git add" to track)
+```
+(Maybe there's some "untracked files"; those are OK.)
+after which you can finally
+```
+    git merge origin/master
+```

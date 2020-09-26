@@ -30,7 +30,6 @@ some (basic) programming, introductory statistics.
     * office hours: Wednesdays 11:00 or by appointment
 
 - [Bill Cresko](https://creskolab.uoregon.edu/), supporting instructor: wcresko@uoregon.edu
-    * office hours: by appointment
 
 ## Course Information
 
@@ -41,14 +40,14 @@ some (basic) programming, introductory statistics.
 
 ## Textbooks
 
-We will use these books in the course:
+We will be assigning reading from these books:
 
 * Quinn, G. & M. Keough. 2002. *Experimental Design and Data Analysis for Biologists.* Cambridge Univ. Press.
 
 * Kruschke, J. 2018. *Doing Bayesian Data Analysis, 2nd ed.* Academic Press. ([website with data and code](https://sites.google.com/site/doingbayesiandataanalysis/))
 
 
-There is a list of other reading materials on [the page of references](reference.html).
+There is a list of other useful reading materials on [the page of references](reference.html).
 
 ## Software:
 
@@ -107,6 +106,13 @@ If you need flexibility on assignments or projects,
 or even just someone to talk to,
 please let us know.
 
+## Assignments and evaluation
+
+Homeworks will be assigned on Thursdays, and (usually) due the following Thursday.
+Most homeworks will be in the form of short statistical reports,
+which you will write in [Rmarkdown](rmarkdown_tips.html).
+These will be readable, descriptive, and contain figures,
+but also contain the R code that actually does the analysis and makes the figures.
 
 ## Inclusion and accessibility
 
