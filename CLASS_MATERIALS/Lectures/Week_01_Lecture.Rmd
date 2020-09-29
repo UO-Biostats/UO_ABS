@@ -1,7 +1,7 @@
 ---
 title: "Uncertainty: (how to) deal with it"
 author: "Peter Ralph"
-date: "1 October -- Advanced Biological Statistics"
+date: "1 October 2020 -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
@@ -17,21 +17,15 @@ nf <- function (x, prefix="", digits=2, ...) {
 }
 ```
 
-# Goals for the week
-
-## 
-
-- Get familiar with course mechanics and resources.
-- Overview of statistics and data science.
-- Ask some questions of some data.
-- Review introductory statistics concepts
-- ... and practice being *active* users of these, with *simulation checks*.
-
 # Course overview
 
 ##
 
 ![a box of tools](images/toolbox.jpeg){width=80%}
+
+::: {.caption}
+image: Frank Klausz, woodandshop.com
+:::
 
 
 ## Steps in data analysis
@@ -51,9 +45,6 @@ nf <- function (x, prefix="", digits=2, ...) {
 Often "statistics" focuses on *querying*.
 Doing that effectively requires all the other steps, too.
 
-##
-
-figure with data -> model -> simulation
 
 ## Prerequisites
 
@@ -70,11 +61,6 @@ x = c(2, 4, 3, 6)
 y = c(5, 12, 4, 10, 2)
 t.test(x, y)
 ```
-
-##
-
-![](images/xkcd_correlation.png)
-![](images/impostor_penguin.jpeg)
 
 
 ## Overview and mechanics

@@ -24,10 +24,10 @@ some (basic) programming, introductory statistics.
 ## Instructors:
 
 - [Peter Ralph](https://pages.uoregon.edu/plr/), main instructor: plr@uoregon.edu
-    * office hours: Wednesday 9:00-11:00am or by appointment
+    * office hours: Tuesdays 2:00-4:00pm or by appointment
 
 - [Gilia Patterson](https://ie2.uoregon.edu/people/patterson/), graduate teaching assistant: gpatters@uoregon.edu
-    * office hours: Wednesdays 11:00 or by appointment
+    * office hours: Wednesdays 11:00am-1:00pm or by appointment
 
 - [Bill Cresko](https://creskolab.uoregon.edu/), supporting instructor: wcresko@uoregon.edu
 
