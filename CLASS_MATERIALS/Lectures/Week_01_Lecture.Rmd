@@ -74,7 +74,7 @@ See [the course website](https://UO-Biostats.github.io/UO_ABS).
 Please take 10 minutes to
 
 1. answer the "Welcome Survey" on Canvas,
-2. try some things from the website out (for instance: pulling down the course notes with git), and/or
+2. [get the course repository from github](https://uo-biostats.github.io/UO_ABS/pages/using-git.html), and/or
 3. move around.
 
 ##
@@ -143,14 +143,17 @@ AirBnB hosts in Portland, OR:
 [website](http://insideairbnb.com/get-the-data.html) and 
 [download link](http://data.insideairbnb.com/united-states/or/portland/2019-07-10/data/listings.csv.gz).
 
-Questions: how much does an AirBnB typically cost in Portland?
-Do "instant bookable" ones cost more?
-
 ```{r airbnb}
 airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
 nrow(airbnb)
 names(airbnb)
 ```
+
+##
+
+
+Questions: how much does an AirBnB typically cost in Portland?
+Do "instant bookable" ones cost more?
 
 
 ## Second, look at the data
@@ -194,7 +197,7 @@ mean(airbnb$price, na.rm=TRUE)
 -------------------
 
 ```{r airbnb_hist, fig.width=2.5*fig.dim}
-hist(airbnb$price, breaks=40, xlab='nightly price ($)', col=grey(.8), xlim=range(airbnb$price, finite=TRUE), main='instant bookable') 
+hist(airbnb$price, breaks=40, xlab='nightly price ($)', col=grey(.8), xlim=range(airbnb$price, finite=TRUE), main='AirBnB prices in Portland, OR')
 ```
 
 . . .
@@ -206,15 +209,15 @@ Conclusion?
 
 ```{r airbnb_hist2, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
 layout(1:2)
-hist(airbnb$price[!airbnb$instant_bookable], breaks=40, xlab='nightly price ($)', col=grey(.8), xlim=range(airbnb$price, finite=TRUE), main='not instant bookable') 
-hist(airbnb$price[airbnb$instant_bookable], breaks=40, xlab='nightly price ($)', col=grey(.8), main='instant bookable')
+instant <- airbnb$price[airbnb$instant_bookable]
+not_instant <- airbnb$price[!airbnb$instant_bookable]
+hist(not_instant, breaks=40, xlab='nightly price ($)', col=grey(.8), xlim=range(airbnb$price, finite=TRUE), main='not instant bookable') 
+hist(instant, breaks=40, xlab='nightly price ($)', col=grey(.8), main='instant bookable')
 ```
 
 --------------
 
 ```{r airbnb_t}
-instant <- airbnb$price[airbnb$instant_bookable]
-not_instant <- airbnb$price[!airbnb$instant_bookable]
 (tt <- t.test(instant, not_instant))
 ```
 
@@ -225,7 +228,7 @@ not_instant <- airbnb$price[!airbnb$instant_bookable]
 
 . . .
 
-*Critique this conclusion.*
+*Critique this conclusion, and write your own.*
 
 
 ## Don't forget Steps 1 and 5!
@@ -247,16 +250,7 @@ Statistical significance does not imply real-world significance.
 
 ## Revised conclusion
 
-The mean nightly price of Portland AirBnB hosts is <span>\$`r nf(mean(airbnb$price, na.rm=TRUE))`,</span>
-with a standard deviation of <span>\$`r format(sd(airbnb$price, na.rm=TRUE), digits=2)`</span>
-and a range of <span>\$`r nf(min(airbnb$price, na.rm=TRUE))`</span> to <span>\$`r nf(max(airbnb$price, na.rm=TRUE))`</span>.
-"Instant bookable" hosts charged on average \$`r format(diff(tt$estimate[2:1]), digits=2)` more than others,
-a difference that is statistically significant (P=`r format(tt$p.value, digits=2)`, t-test with df=`r tt$parameter`).
 
-
-. . .
-
-*Critiques?*
 
 
 ##
@@ -341,17 +335,33 @@ Everyone make a fake dataset with $\theta = 1/2$, e.g.:
 n <- 37 # class size
 sum(rbinom(n, 1, 1/2) > 0)
 ```
+and put the result in [this google doc](https://docs.google.com/document/d/1bHHyvVaxZXrnN55Hpwhv55u9nbYDEHdC3jHXB5uOB6I/edit).
 
 . . .
 
 Now we can estimate the $p$-value for the hypothesis that $\theta = 1/2$.
-Conclusions?
 
-. . .
+##
+
+A faster method:
 
 ```
 replicate(1000, sum(rbinom(n, 1, 1/2) > 0))
 ```
+
+. . .
+
+or, equivalently,
+```
+rbinom(1000, n, 1/2)
+```
+
+. . .
+
+*Exercise:* use this code to estimate a $p$-value,
+write a conclusion,
+and explain why it is a $p$-value by filling in the specifics of the definition.
+
 
 ## So, where do $p$-values come from?
 
@@ -429,7 +439,7 @@ Claim: no matter${}^*$ the distribution we sample from, it should look close to 
 n <- 20
 x <- 2 * runif(n) - 1
 hist(x, xlab='value', col=grey(0.5),
-     main=sprintf("t=%f", mean(x)*sqrt(n-1)/sd(x)))
+     main=sprintf("t=%f", mean(x)*sqrt(n)/sd(x)))
 abline(v=0, lwd=2, lty=3)
 abline(v=mean(x), col='red', lwd=2)
 ```
@@ -442,7 +452,7 @@ layout(matrix(1:20, nrow=4))
 for (k in 1:20) {
     x <- 2 * runif(n) - 1
     hist(x, xlab='value', col=grey(0.5),
-         main=sprintf("t=%f", mean(x)*sqrt(n-1)/sd(x)))
+         main=sprintf("t=%f", mean(x)*sqrt(n)/sd(x)))
     abline(v=0, lwd=2, lty=3)
     abline(v=mean(x), col='red', lwd=3)
 }
@@ -453,7 +463,7 @@ for (k in 1:20) {
 ```{r t_sampling_dist}
 xm <- replicate(1000, {
             x <- 2 * runif(n) - 1;
-            mean(x) * sqrt(n-1) / sd(x) })
+            mean(x) * sqrt(n) / sd(x) })
 xh <- hist(xm, breaks=40, main=sprintf('t of %d samples', n), col='red')
 ```
 

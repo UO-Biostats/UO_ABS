@@ -11,7 +11,9 @@ and distributing it through [github](https://github.com).
 We're doing this for our own sake (git makes our lives much easier!)
 but this also makes it easy for *you* to get the course material (and our updates),
 and to keep them updated.
-This will give you a little bit of practice using git;
+You *can* download files individuals from github's web interface.
+But we don't suggest that!
+"Gitting" them all together will give you a little bit of practice using git;
 if you don't already, we encourage you to get to know it well.
 
 Here is the basic procedure for obtaining the course material and keeping it updated.

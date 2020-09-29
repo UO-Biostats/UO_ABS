@@ -18,8 +18,7 @@ understanding of statistical noise and uncertainty. The course is advanced in
 that we will move through the material quickly with the goal of providing
 a solid foundation for subsequent learning. Students will learn to use the
 powerful statistical programming language [R](https://r-project.org), and the
-flexible modeling package [Stan](https://mc-stan.org). *Prerequisites:*
-some (basic) programming, introductory statistics.
+flexible modeling package [Stan](https://mc-stan.org).
 
 ## Instructors:
 
@@ -53,9 +52,9 @@ There is a list of other useful reading materials on [the page of references](re
 
 * Latest version of R ([install here](https://www.r-project.org))
 * A working version of [RStan](https://mc-stan.org/users/interfaces/rstan.html)
-* An R scripting environment such as [RStudio](https://www.rstudio.org)
-* [Git](https://git-scm.com/downloads) (here is an [intro](https://jvns.ca/blog/2018/10/27/new-zine--oh-shit--git-/))
-* A good code editor like [Atom](https://atom.io) or [BBEdit](https://www.barebones.com/products/bbedit/) or [vim](https://www.vim.org)
+* An R scripting environment such as [RStudio](https://www.rstudio.org),
+* or a good code editor like [Atom](https://atom.io) or [BBEdit](https://www.barebones.com/products/bbedit/) or [vim](https://www.vim.org)
+* *optional:* [Git](https://git-scm.com/downloads) (here is an [intro](https://jvns.ca/blog/2018/10/27/new-zine--oh-shit--git-/))
 
 ## Prerequisites:
 
