@@ -74,8 +74,9 @@ See [the course website](https://UO-Biostats.github.io/UO_ABS).
 Please take 10 minutes to
 
 1. answer the "Welcome Survey" on Canvas,
-2. [get the course repository from github](https://uo-biostats.github.io/UO_ABS/pages/using-git.html), and/or
-3. move around.
+2. [get the course repository from github](https://uo-biostats.github.io/UO_ABS/pages/using-git.html),
+3. [install Rstudio](https://rstudio.com/products/rstudio/download/) and/or
+4. move around.
 
 ##
 
