@@ -231,6 +231,8 @@ hist(instant, breaks=40, xlab='nightly price ($)', col=grey(.8), main='instant b
 
 *Critique this conclusion, and write your own.*
 
+*Scribe:* person with the smallest `sample.int(1000, 1)`.
+
 
 ## Don't forget Steps 1 and 5!
 
