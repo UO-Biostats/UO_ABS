@@ -77,7 +77,8 @@ If you are looking for more reference or reading material, these are also good:
   [talk](https://github.com/kbroman/Talk_ReproRes) and
   [course](http://kbroman.org/Tools4RR)
 - Karl Broman's excellent [short tutorials](http://kbroman.org/pages/tutorials.html) on
-  git/github, make, perl, and more.
+  [rmarkdown](http://kbroman.org/knitr_knutshell/pages/Rmarkdown.html), git/github, make, perl, and more.
+- a [visual introduction to git](https://learngitbranching.js.org/)
 - [Bioinformatics Data Skills](http://shop.oreilly.com/product/0636920030157.do) by Vince Buffalo
 - [Professional Skills for Data Science](http://www.stat.wisc.edu/network-skills) by Brian Yandell,
   and his course on the same topic

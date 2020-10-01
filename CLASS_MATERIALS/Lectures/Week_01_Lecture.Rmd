@@ -326,17 +326,32 @@ How many people have a longer index finger on the hand they write with?
 
 . . .
 
-We want to know
-$$\begin{equation}
-    \theta = \P(\text{random person has writing finger longer}) .
-\end{equation}$$
-
-Everyone make a fake dataset with $\theta = 1/2$, e.g.:
+*(class survey)*
+Everyone flip a coin:
 ```
-n <- 37 # class size
-sum(rbinom(n, 1, 1/2) > 0)
+ifelse(runif(1) < 0.5, "H", "T")
 ```
 and put the result in [this google doc](https://docs.google.com/document/d/1bHHyvVaxZXrnN55Hpwhv55u9nbYDEHdC3jHXB5uOB6I/edit).
+
+. . .
+
+We want to estimate the parameter
+
+$$\begin{equation}
+    \theta = \P(\text{random person has writing finger longer}) ,
+\end{equation}$$
+
+and now we have a *fake dataset with $\theta = 1/2$*.
+
+
+##
+
+Let's get some more data:
+```
+n <- 37 # class size
+sum(ifelse(runif(1) < 1/2, "H", "T") == "H")
+```
+and put the result in [the same google doc](https://docs.google.com/document/d/1bHHyvVaxZXrnN55Hpwhv55u9nbYDEHdC3jHXB5uOB6I/edit).
 
 . . .
 
@@ -357,11 +372,6 @@ or, equivalently,
 rbinom(1000, n, 1/2)
 ```
 
-. . .
-
-*Exercise:* use this code to estimate a $p$-value,
-write a conclusion,
-and explain why it is a $p$-value by filling in the specifics of the definition.
 
 
 ## So, where do $p$-values come from?
@@ -432,7 +442,9 @@ lots of times, and looking at the distribution of those $t$ scores.
 
 . . .
 
-Claim: no matter${}^*$ the distribution we sample from, it should look close to $t$.
+Claim: no matter${}^*$ the distribution we sample from,
+the *sampling distribution* of the $t$ statistics should look close to
+the $t$ distribution.
 
 ## One sample
 
@@ -497,19 +509,18 @@ away from the *true mean* has a $t$ distribution.
 . . .
 
 - ... with $n-2$ degrees of freedom.
-- "standard error" = $s / \sqrt{n}$
+- "standard error" = $s / \sqrt{n}$ = SD of the sample mean
 
 . . .
 
-So: in my sample of size $n=100$, the mean is $\bar x = 1.2$ and the SD is $s = 2.5$.
-Is it reasonable the true mean is $\mu = 0$?
+```{r t_smpling_distx, echo=FALSE}
+plot(xh, main=sprintf('t of %d samples', n), col='red')
+xx <- xh$breaks
+polygon(c(xx[-1] - diff(xx)/2, xx[1]),
+        c(length(xm)* diff(pt(xx, df=(n-1))), 0),
+        col=adjustcolor("blue", 0.4))
+```
 
-. . .
-
-Well, the SE is $s / \sqrt{n} = 0.25$,
-and the chance of getting a sample mean at least $1.2 / 0.25 = 4.8$ SEs above the true mean
-is `pt(4.8, df=98, lower.tail=FALSE) = 2.845217e-06`.
-So: no, it's not reasonable ($p = 2 \times 10^{-6}$, $t$-test with $df=98$).
 
 
 # Confident in confidence intervals?
@@ -537,14 +548,28 @@ then about 950 of these should overlap $\mu$.
 
 ```{r plot_t, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
 xx <- seq(-5, 5, length.out=101)
-plot(c(xx[-1] - diff(xx)/2, xx[1]),
-        c(diff(pt(xx, df=4)), 0), type='l', xlab='t', ylab='probability density')
-polygon(c(xx[-1] - diff(xx)/2, xx[1]),
-        c(diff(pt(xx, df=4)), 0),
-        col=adjustcolor("blue", 0.4))
-# text(-2.5, 0.03, expression(t == (bar(x) - mu)/(sigma/sqrt(n))), cex=3)
-text(-2.5, 0.03, expression(bar(x) == mu + t %*% frac(sigma, sqrt(n))), cex=3)
+a <- xx[-1] - diff(xx)/2
+a <- c(a, a[length(a)], a[1])
+b <- c(diff(pt(xx, df=4)), 0, 0)
+plot(a, b, type='l', xlab='t', ylab='probability density')
+polygon(a, b, col=adjustcolor("blue", 0.4))
+text(-2.5, 0.03, expression(mu == bar(x) + t %*% frac(s, sqrt(n))), cex=3)
 ```
+
+## How's that work?
+
+```{r plot_t2, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+plot(a, b, type='l', xlab='t', ylab='probability density')
+polygon(a, b, col=adjustcolor("blue", 0.4))
+xx <- xx[abs(xx) <= qt(0.975, df=4)]
+a <- xx[-1] - diff(xx)/2
+a <- c(a, a[length(a)], a[1])
+b <- c(diff(pt(xx, df=4)), 0, 0)
+polygon(a, b, col=adjustcolor("red", 0.4))
+text(-2.5, 0.03, expression(mu == bar(x) + t %*% frac(s, sqrt(n))), cex=3)
+text(0.0, 0.01, "95%", cex=3)
+```
+
 
 ## Check this.
 
@@ -590,20 +615,6 @@ By taking random samples from the `price` column of the `airbnb` data, make two 
 
 
 ## In class
-
-```{r sampling, cache=TRUE}
-x <- subset(airbnb, !is.na(price))$price # to save typing
-nvals <- 10 * (2:20)
-props <- rep(NA, length(nvals))
-for (k in 1:length(nvals)) {
-    many_means <- replicate(1e4, mean(sample(x, nvals[k])))
-    props[k] <- mean(abs(many_means - mean(x)) < 10)
-}
-plot(nvals, 1-props,
-     ylab='proportion of sample means not within $10',
-     xlab='sample size',
-     ylim=c(0,1), col='plum', pch=20, cex=2)
-```
 
 
 # Stochastic minute: the Central Limit Theorem and the Normal distribution
