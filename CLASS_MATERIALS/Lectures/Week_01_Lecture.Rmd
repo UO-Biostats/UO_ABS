@@ -251,9 +251,22 @@ Statistical significance does not imply real-world significance.
 
 
 
-## Revised conclusion
+## Revised conclusion (in class)
 
-
+Instant bookable hosts cost on average $10 more than
+not instant bookable,
+with a 95% confidence interval
+of $4.50 to $15.
+The distribution of prices in the two groups was similar,
+and the first and third quantiles in the two groups are X and Y.
+The average instant bookable cost was about $125, with a 95% 
+confidence interval of plus/minus about $4;
+non-instant bookable hosts cost on average $115 per night,
+with a 95% CI of about +/- $3.
+Note that the difference of $10 is smallish compared
+to the price of a room,
+but the difference is highly significant (p=.0003, t-test with 5039 degrees of freedom)
+because of the large sample sizes.
 
 
 ##
@@ -374,6 +387,15 @@ or, equivalently,
 rbinom(1000, n, 1/2)
 ```
 
+## (in class)
+
+```{r in_class_1}
+mean(replicate(10000, rbinom(1, 36, 1/2) >= 20))
+```
+
+Here, we've estimated that the difference in numbers
+of people with a longer finger on each hand is not statistically
+significant ($p \appox 0.3$, by simulation).
 
 
 ## So, where do $p$-values come from?
