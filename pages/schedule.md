@@ -17,6 +17,8 @@ Week 1 (*9/29*)
     with examples for comparing means and linear regression; smoothing.
 
     - [Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.slides.html)
+    - topic: [the t distribution](../CLASS_MATERIALS/Lectures/t-distribution.slides.html)
+    - topic: [the central limit theorem and the Normal distribution](../CLASS_MATERIALS/Lectures/central-limit-theorem.slides.html)
     - [Homework 1](../CLASS_MATERIALS/Homeworks/HW01_F20.html) *(due 10/8)*
     - [how to git the slide source](using-git.html)
     - Reading: Quinn & Keough chapters 1-4
