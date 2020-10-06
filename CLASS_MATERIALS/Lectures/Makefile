@@ -11,7 +11,7 @@ LOCAL_MATHJAX = /usr/share/javascript/mathjax/MathJax.js
 
 # may want to add "--self-contained" to the following
 PANDOC_OPTS = --standalone  --self-contained
-MATHJAX_OPTS = --mathjax=$(MATHJAX)?config=TeX-AMS-MML_HTMLorMML 
+MATHJAX_OPTS = --mathjax
 LOCAL_MATHJAX_OPTS = --mathjax=$(LOCAL_MATHJAX)?config=TeX-AMS-MML_HTMLorMML
 # optionally add in a latex file with macros
 LATEX_MACROS = macros.tex
