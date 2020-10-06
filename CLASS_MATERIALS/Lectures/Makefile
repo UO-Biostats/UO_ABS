@@ -60,6 +60,10 @@ SLIDES_OPTS = $(REVEALJS_OPTS)
 %.local.slides.html : %.md .pandoc.$(LATEX_MACROS)
 	pandoc -o $@ $(SLIDES_OPTS) $(PANDOC_OPTS) $(LOCAL_MATHJAX_OPTS) $<
 
+%.handout.pdf : %.slides.html
+	# a side-by-side printout pdf of the slides for taking notes
+	./make_handout.sh $< $@
+
 ## 
 # Graphics whatnot
 

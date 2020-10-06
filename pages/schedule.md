@@ -16,9 +16,9 @@ Week 1 (*9/29*)
 : Overview of data science - description and estimation, uncertainty and simulation,
     with examples for comparing means and linear regression; smoothing.
 
-    - [Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.slides.html)
-    - topic slides: [the t distribution](../CLASS_MATERIALS/Lectures/t-distribution.slides.html)
-    - topic slides: [the central limit theorem and the Normal distribution](../CLASS_MATERIALS/Lectures/central-limit-theorem.slides.html)
+    - [Slides](../CLASS_MATERIALS/Lectures/Week_01_Lecture.slides.html) and [pdf version](../CLASS_MATERIALS/Lectures/Week_01_Lecture.handout.pdf)
+    - topic slides: [the t distribution](../CLASS_MATERIALS/Lectures/t-distribution.slides.html) and [pdf version](../CLASS_MATERIALS/Lectures/t-distribution.handout.pdf)
+    - topic slides: [the central limit theorem and the Normal distribution](../CLASS_MATERIALS/Lectures/central-limit-theorem.slides.html) and [pdf version](../CLASS_MATERIALS/Lectures/central-limit-theorem.handout.pdf)
     - [Homework 1](../CLASS_MATERIALS/Homeworks/HW01_F20.html) *(due 10/8)*
     - [how to git the slide source](using-git.html)
     - Reading: Quinn & Keough chapters 1-4
@@ -27,9 +27,8 @@ Week 2 (*10/6*)
 
 : Analysis of Variance (ANOVA) and experimental design; tidy data; power and false positives
 
-    - slides: [confidence intervals](../CLASS_MATERIALS/Lectures/Week_02_Confidence_Intervals.slides.html)
-    - slides: [ANOVA](../CLASS_MATERIALS/Lectures/Week_02_ANOVA.slides.html)
-    - [Slides](../CLASS_MATERIALS/Lectures/Week_02_Lecture.slides.html)
+    - slides: [confidence intervals](../CLASS_MATERIALS/Lectures/Week_02_Confidence_Intervals.slides.html) and [pdf version](../CLASS_MATERIALS/Lectures/Week_02_Confidence_Intervals.handout.pdf)
+    - slides: [ANOVA](../CLASS_MATERIALS/Lectures/Week_02_ANOVA.slides.html) and [pdf version](../CLASS_MATERIALS/Lectures/Week_02_ANOVA.handout.pdf)
     - [Homework 2](../CLASS_MATERIALS/Homeworks/HW02_F20.html) *(due 10/15)*
     - Reading: Quinn & Keough chapters 5, 7, 8
 
