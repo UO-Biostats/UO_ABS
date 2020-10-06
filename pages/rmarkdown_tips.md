@@ -5,12 +5,6 @@ description: tips on how to improve r markdown aesthetics
 ---
 
 
-```r
-knitr::opts_chunk$set(fig.path = "")
-knitr::opts_chunk$set(fig.width=5.5,
-                      fig.height=5,
-                      fig.align='center')
-```
 
 In general, you should aim for your report to be *readable*:
 imagine writing this for someone who is interested in the statistical results and general conclusions,
@@ -52,7 +46,7 @@ cor(x, y)
 plot(x, y)
 ```
 
-<img src="bad-1.png" title="plot of chunk bad" alt="plot of chunk bad" style="display: block; margin: auto;" />
+<img src="r bad-1.png" title="plot of chunk r bad" alt="plot of chunk r bad" style="display: block; margin: auto;" />
 
 ## Good example
 
@@ -61,7 +55,7 @@ plot(x, y)
 The weight change across the two weeks are highly correlated with each other
 (r^2 = 0.997), as shown in the following plot:
 
-<img src="good-1.png" title="plot of chunk good" alt="plot of chunk good" style="display: block; margin: auto;" />
+<img src="r good-1.png" title="plot of chunk r good" alt="plot of chunk r good" style="display: block; margin: auto;" />
 
 
 ## Tips
@@ -72,7 +66,7 @@ and it's more important for you to learn the statistical concepts and how to tal
 So, we encourage you to go for "good enough", but try to improve your homeworks a little
 every week. If something in your homework looks really ugly,
 but you just can't figure out how to fix it, then just say so:
-we'll probably give you some tips.
+we'll give you some tips.
 
 * **Output html:** If you're using pdf as an output, keep in mind knitr does not automatically wrap your code chunks, and they will run off the page if too long. Be aware of this and add line breaks where appropriate. With this in mind, it may be optimal to knit to html.
 
