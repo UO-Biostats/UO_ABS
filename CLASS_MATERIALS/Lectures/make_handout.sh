@@ -30,6 +30,8 @@ done
 
 pdfjam -o $PDF_OUTFILE --fitpaper true ${PDFJAM_ARG}
 
-pdfjam -o $PDF_OUTFILE --nup 2x3 --frame true --noautoscale false   --delta "0.2cm 0.3cm" --scale 0.95 $PDF_OUTFILE
+pdfjam -o TEMP_$PDF_OUTFILE --nup 2x3 --frame true --noautoscale false   --delta "0.2cm 0.3cm" --scale 0.95 $PDF_OUTFILE
 
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dPrinted=false -dNOPAUSE -dQUIET -dBATCH -sOutputFile=$PDF_OUTFILE TEMP_$PDF_OUTFILE
 
+rm TEMP_$PDF_OUTFILE 
