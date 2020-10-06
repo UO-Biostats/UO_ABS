@@ -235,3 +235,18 @@ by taking random samples from the `price` column of the `airbnb` data, make two 
 
 2. Probability that a sample of size `n` of Portland AirBnB rooms has a sample mean within \$10 of the (true) mean price of *all* rooms, as a function of `n`.
 
+## In class: part 1
+
+```{r part_1}
+true_mean <- mean(airbnb$price, na.rm=TRUE)
+n <- 20
+sample_mean <- mean(sample(airbnb$price, n))
+nvals <- 10 * 10:100
+nreps <- 100
+sample_means <- matrix(NA, nrow=nreps, ncol=length(nvals))
+for (j in seq_along(nvals)) {
+    n <- nvals[j]
+    sample_means[,j] <- replicate(nreps, mean(sample(airbnb$price, n), na.rm=TRUE))
+}
+plot(nvals, colMeans(abs(sample_means - true_mean)))
+```
