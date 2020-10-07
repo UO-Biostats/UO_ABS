@@ -83,7 +83,7 @@ for (theta in thetavals) {
     for (prob in c(0.025, 0.975)) {
         lines(nvals, colQuantiles(p_hat, probs=prob), lty=3, col='red')
     }
-    legend("topright", title=sprintf("theta = %0.1f%", theta*100),
+    legend("topright", title=sprintf("theta = %0.1f%%", theta*100),
            lty=c(1,1,1,3), lwd=c(1,2,1,1), col=c("green","black", "grey", "red"),
            legend=c("truth", "mean", "middle 50%", "middle 95%"))
 }
