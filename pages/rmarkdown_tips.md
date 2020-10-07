@@ -48,7 +48,7 @@ cor(x, y)
 plot(x, y)
 ```
 
-<img src="figure/rmarkdown_tips/r bad-1.png" title="plot of chunk r bad" alt="plot of chunk r bad" style="display: block; margin: auto;" />
+<img src="r bad-1.png" title="plot of chunk r bad" alt="plot of chunk r bad" style="display: block; margin: auto;" />
 
 ## Good example
 
@@ -57,7 +57,7 @@ plot(x, y)
 The weight change across the two weeks are highly correlated with each other
 (r^2 = 0.997), as shown in the following plot:
 
-<img src="figure/rmarkdown_tips/r good-1.png" title="plot of chunk r good" alt="plot of chunk r good" style="display: block; margin: auto;" />
+<img src="r good-1.png" title="plot of chunk r good" alt="plot of chunk r good" style="display: block; margin: auto;" />
 
 ## A longer example
 
