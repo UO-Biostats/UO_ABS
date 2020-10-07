@@ -6,6 +6,8 @@ description: tips on how to improve r markdown aesthetics
 
 
 
+## General remarks
+
 In general, you should aim for your report to be *readable*:
 imagine writing this for someone who is interested in the statistical results and general conclusions,
 but does not want to see the R code (unless you're using it to make a point).
@@ -46,7 +48,7 @@ cor(x, y)
 plot(x, y)
 ```
 
-<img src="r bad-1.png" title="plot of chunk r bad" alt="plot of chunk r bad" style="display: block; margin: auto;" />
+<img src="figure/rmarkdown_tips/r bad-1.png" title="plot of chunk r bad" alt="plot of chunk r bad" style="display: block; margin: auto;" />
 
 ## Good example
 
@@ -55,8 +57,18 @@ plot(x, y)
 The weight change across the two weeks are highly correlated with each other
 (r^2 = 0.997), as shown in the following plot:
 
-<img src="r good-1.png" title="plot of chunk r good" alt="plot of chunk r good" style="display: block; margin: auto;" />
+<img src="figure/rmarkdown_tips/r good-1.png" title="plot of chunk r good" alt="plot of chunk r good" style="display: block; margin: auto;" />
 
+## A longer example
+
+We have also provided a "full" example:
+
+- [the assignment](../CLASS_MATERIALS/Homeworks/HW_Example.html)
+- a solution: [Rmarkdown source](../CLASS_MATERIALS/Homeworks/HW_Example_solution.Rmd)
+- a solution: [rendered html](../CLASS_MATERIALS/Homeworks/HW_Example_solution.html)
+
+This example is a rather short assignment,
+but it should give you the idea.
 
 ## Tips
 

@@ -5,12 +5,13 @@ description: tips on how to improve r markdown aesthetics
 ---
 
 ```{r setup, echo=FALSE}
-knitr::opts_chunk$set(fig.path = "")
 knitr::opts_chunk$set(fig.width=5.5,
                       fig.height=5,
                       fig.align='center')
 
 ```
+
+## General remarks
 
 In general, you should aim for your report to be *readable*:
 imagine writing this for someone who is interested in the statistical results and general conclusions,
@@ -65,6 +66,16 @@ plot(x, y, xlab='first week weight change (kg)',
            ylab='first week weight change (kg)')
 ```
 
+## A longer example
+
+We have also provided a "full" example:
+
+- [the assignment](../CLASS_MATERIALS/Homeworks/HW_Example.html)
+- a solution: [Rmarkdown source](../CLASS_MATERIALS/Homeworks/HW_Example_solution.Rmd)
+- a solution: [rendered html](../CLASS_MATERIALS/Homeworks/HW_Example_solution.html)
+
+This example is a rather short assignment,
+but it should give you the idea.
 
 ## Tips
 

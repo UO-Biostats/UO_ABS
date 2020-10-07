@@ -1,0 +1,112 @@
+---
+title: "Example homework: COVID prevalence"
+author: "Peter Ralph"
+date: "`r date()`"
+output:
+    html_document:
+        fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 6
+knitr::opts_chunk$set(echo=FALSE,
+                      fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+# set the random seed, so that you get exactly the same
+# output from random functions each time you run the code
+set.seed(23)
+library(matrixStats)
+```
+
+# Introduction
+
+The main question we would like to know is:
+for a given number of randomly applied COVID tests,
+how well can we estimate overall COVID prevalence -
+i.e., the proportion of people in Eugene with COVID?
+Some important difficulties of this problem are beyond the scope of this report,
+like: how can we take a uniform random sample of all people in Eugene?
+Our main goal here is to assume that this is possible,
+and see what we can learn from it.
+We'll also ignore false positive and negatives in testing,
+as well as the fact that people can be infected for some time before testing positive.
+As a result, what we're really estimating is
+the proportion of the population in Eugene that, were we to give them a COVID test,
+would get a positive result.
+
+# The power of testing
+
+```{r params}
+thetavals <- c(0.002, 0.02)
+nreps <- 400
+```
+
+To explore this problem,
+we will simulate datasets by choosing a true prevalence
+(which we call $\theta$) and a sample size ($n$),
+then drawing from the Binomial distribution with parameters $n$ and $\theta$.
+This is equivalent to flipping $n$ coins, each of which comes up "head" with probability $\theta$,
+and counting the number of heads:
+in other words, each person we survey has probability $\theta$ of being infected,
+independently of all others.
+Let's call the proportion of the simulated survey that had a positive test $\hat p$.
+Then, we're interested in how close $\hat p$ is to $\theta$, and how that depends on $n$.
+The results will depend on $\theta$, so we'll pick two reasonable values of $\theta$,
+and show results for each; `r sprintf("%0.1f", 100*thetavals[1])`% and `r sprintf("%0.1f", 100*thetavals[2])`%.
+
+Let's look at how close $\hat p$ tends to be to $\theta$.
+The figure below shows the range of estimated prevalences
+across a range of sample sizes:
+the black line, grey lines, and red lines, respectively,
+show the mean, middle 50%, and middle 95% of the estimated prevalences
+across `r nreps` simulated surveys.
+So, for instance, the results of a new survey of sample size `n`
+will fall between the grey lines above that value of `n` with probability 50%,
+and between the red lines with probability 95%.
+```{r range, fig.cap="Range of estimated prevalences."}
+nvals <- seq(100, 4000, length.out=101)
+
+layout(t(1:2))
+for (theta in thetavals) {
+    p_hat <- matrix(nrow=nreps, ncol=length(nvals))
+    for (j in seq_along(nvals)) {
+        n <- nvals[j]
+        p_hat[,j] <- rbinom(nreps, size=n, prob=theta) / n
+    }
+    plot(nvals, colMeans(p_hat), type='l', lwd=2,
+         xlab='sample size (n)', ylab='COVID prevalence', ylim=range(p_hat))
+    abline(h=theta, col='green')
+    for (prob in c(0.25, 0.75)) {
+        lines(nvals, colQuantiles(p_hat, probs=prob), lty=1, col='grey')
+    }
+    for (prob in c(0.025, 0.975)) {
+        lines(nvals, colQuantiles(p_hat, probs=prob), lty=3, col='red')
+    }
+    legend("topright", title=sprintf("theta = %0.1f%", theta*100),
+           lty=c(1,1,1,3), lwd=c(1,2,1,1), col=c("green","black", "grey", "red"),
+           legend=c("truth", "mean", "middle 50%", "middle 95%"))
+}
+```
+
+Here, we see that the mean always tracks the truth,
+and that accuracy improves as sample size increases.
+Notice that at the lower prevalence ($\theta = 0.2$%),
+the grey line is at zero until around 800, indicating that with sample sizes less than this,
+there is at least a 25% chance that the survey finds no cases.
+This makes sense, since 0.2% is only 2 in 1,000.
+
+# Conclusions
+
+The results above show that, unsurprisingly,
+the ability to estimate the true COVID prevalence increases with the sample size,
+seen above by how the red and grey lines get closer to the true value.
+At a higher prevalence (around 2%),
+the estimated prevalence is unlikely to be more than 1% away from the truth
+if the sample size is above 1,000.
+At the lower prevalence of 0.2%,
+estimates are less accurate in relative terms
+(e.g., there is a reasonable probability with `n=2000` that the estimated prevalence is off by a factor of 2),
+but they are at least as accurate in absolute terms
+(estimates are within 1% of the truth in all cases, except perhaps below `n=100`).
+
