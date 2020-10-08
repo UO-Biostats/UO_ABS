@@ -16,6 +16,8 @@
 
 .greyed { color: grey; }
 
+.smaller { font-size: 75% }
+
 div.floatright { float: right; text-align: right; }
 
 .reveal figcaption { display: none; }
