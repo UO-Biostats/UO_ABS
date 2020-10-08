@@ -239,14 +239,30 @@ by taking random samples from the `price` column of the `airbnb` data, make two 
 
 ```{r part_1}
 true_mean <- mean(airbnb$price, na.rm=TRUE)
+# do it once
 n <- 20
 sample_mean <- mean(sample(airbnb$price, n))
+# do it a lot of times
 nvals <- 10 * 10:100
 nreps <- 100
 sample_means <- matrix(NA, nrow=nreps, ncol=length(nvals))
-for (j in seq_along(nvals)) {
+for (n in 1:length(nvals)) {
     n <- nvals[j]
     sample_means[,j] <- replicate(nreps, mean(sample(airbnb$price, n), na.rm=TRUE))
 }
-plot(nvals, colMeans(abs(sample_means - true_mean)))
+plot(nvals, colMeans(abs(sample_means - true_mean)),
+     main="distance from the true mean, by sample size",
+     xlab="sample size",
+     ylab="mean absolute error",
+     pch=20)
+```
+
+## In class: part 2
+
+```{r part_2}
+plot(nvals, colMeans(abs(sample_means - true_mean) < 10),
+     xlab='sample size',
+     ylab='Prob(error < 10)',
+     main='probability sample mean is within $10 of true mean',
+     pch=20)
 ```

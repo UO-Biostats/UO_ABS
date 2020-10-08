@@ -80,10 +80,7 @@ If you are looking for more reference or reading material, these are also good:
   [rmarkdown](http://kbroman.org/knitr_knutshell/pages/Rmarkdown.html), git/github, make, perl, and more.
 - a [visual introduction to git](https://learngitbranching.js.org/)
 - [Bioinformatics Data Skills](http://shop.oreilly.com/product/0636920030157.do) by Vince Buffalo
-- [Professional Skills for Data Science](http://www.stat.wisc.edu/network-skills) by Brian Yandell,
-  and his course on the same topic
-  [Stat 627](https://github.com/datascience-uwmadison/stat627).
-- [Jenny Bryan's stat 545](http://stat545-ubc.github.io/) at UBC
+- [Jenny Bryan's stat 545](https://stat545.com/): Data wrangling, exploration, and analysis with R
 
 ### Probability and statistics
 
