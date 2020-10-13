@@ -29,8 +29,8 @@ Week 2 (*10/6*)
 
     - slides: [confidence intervals](../CLASS_MATERIALS/Lectures/Week_02_Confidence_Intervals.slides.html) and [pdf version](../CLASS_MATERIALS/Lectures/Week_02_Confidence_Intervals.handout.pdf)
     - slides: [ANOVA](../CLASS_MATERIALS/Lectures/Week_02_ANOVA.slides.html) and [pdf version](../CLASS_MATERIALS/Lectures/Week_02_ANOVA.handout.pdf)
-    - slides: [experimental design and tidy data](../CLASS_MATERIALS/Lectures/Week_02_Experimental_design_and_tidy_data.slides.html)
-        and [pdf version](../CLASS_MATERIALS/Lectures/Week_02_Experimental_design_and_tidy_data.handout.pdf)
+    - slides: [experimental design](../CLASS_MATERIALS/Lectures/Week_02_Experimental_design.slides.html)
+        and [pdf version](../CLASS_MATERIALS/Lectures/Week_02_Experimental_design.handout.pdf)
     - [Homework 2](../CLASS_MATERIALS/Homeworks/HW02_F20.html) *(due 10/15)*
     - Reading: Quinn & Keough chapters 5, 7, 8
 
@@ -38,6 +38,8 @@ Week 3 (*10/13*)
 
 : Plotting/visualization, and permutation/bootstrapping
 
+    - slides: [tidy data](../CLASS_MATERIALS/Lectures/Week_02_Tidy_data.slides.html)
+        and [pdf version](../CLASS_MATERIALS/Lectures/Week_02_Tidy_data.handout.pdf)
     - Reading: Quinn & Keough chapter 9
 
 Week 4 (*10/20*)

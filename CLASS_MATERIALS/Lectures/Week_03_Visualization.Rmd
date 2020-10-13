@@ -1,0 +1,380 @@
+---
+title: "Visualization of data"
+author: "Peter Ralph"
+date: "13 October -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+library(tidyverse)
+```
+```{r setup_data, include=FALSE}
+read_pantheria <- function(dirname) {
+    pantheria <- read.table(file.path(dirname, "PanTHERIA_WR05_mammals.txt"),
+                            header=TRUE, check.names=FALSE, stringsAsFactors=FALSE, sep="\t")
+    names(pantheria) <- gsub("^MSW05_", "", gsub("^[0-9-]*_", "", names(pantheria)))
+    pantheria$Order <- factor(pantheria$Order)
+    pantheria$Family <- factor(pantheria$Family)
+    pantheria$Genus <- factor(pantheria$Genus)
+    translations <- list(ActivityCycle = c("nocturnal", "crepuscular", "diurnal"),
+                         Terrestriality = c("fossorial", "ground_dwelling"),
+                         TrophicLevel = c("herbivore", "omnivore", "carnivore"))
+    for (col in names(pantheria)) {
+        a <- pantheria[[col]]
+        if (is.numeric(a)) {
+            a[a == -999] <- NA
+        }
+        if (col %in% names(translations)) {
+            a <- factor(translations[[col]][a], levels=translations[[col]])
+        }
+        pantheria[[col]] <- a
+    }
+    return(pantheria)
+}
+```
+
+# Visualization
+
+## Goals
+
+- pattern discovery
+
+- efficient summary of information
+
+- visual/spatial analogy for quantitative patterns
+
+
+. . .
+
+aim to *maximize information and minimize ink*
+
+::: {.caption}
+paraphrased from Edward Tufte
+:::
+
+
+## Considerations
+
+- Is the visual analogy appropriate for the *type* of data? 
+
+::: {.caption}
+counts? quantities? multivariate? relationships?
+:::
+
+- Are important *comparisons* clear?
+
+::: {.caption}
+between groups? differences? time trend? 
+:::
+
+- Are *units* easily interpretable?
+
+::: {.caption}
+meters? dollars? percent? relative change? is it isometric?
+:::
+
+## Principles of effective display
+
+- Show the data
+- Encourage the eye to compare differences
+- Represent magnitudes honestly and accurately
+- Draw graphical elements clearly, minimizing clutter
+- Make displays easy to interpret
+
+## 
+
+> Above all else show the data.
+
+::: {.caption}
+Tufte 1983
+:::
+
+![honeybees](images/honeybees_figure.jpeg){width=60%}
+
+
+## Case study:
+
+Distributions of litter sizes by Order, and Family, in the [PanTHERIA](../Datasets/PanTHERIA/README.html) dataset:
+
+```{r get_pantheria, echo=1:4}
+pantheria <- read_pantheria("../Datasets/PanTHERIA")
+# look at most common orders
+order_nums <- sort(table(pantheria$Order))
+big_orders <- names(order_nums)[order_nums > 150]
+order_nums
+```
+
+## note the pipe
+
+```{r subset_pantheria}
+px <- (pantheria %>% filter(Order %in% big_orders)
+       %>% filter(!is.na(LitterSize))
+       %>% select(Order, Family, Genus, Species, LitterSize))
+for (xn in c("Order", "Family", "Genus")) px[[xn]] <- factor(px[[xn]])
+summary(px)
+```
+
+## Raw numbers
+
+```{r nums}
+px$LitterSize
+```
+
+
+## stem-and-leaf "plot"
+
+```{r stem}
+stem(px$LitterSize)
+```
+
+## five(-ish) number summary
+
+```{r fivenum}
+summary(px$LitterSize)
+```
+
+## Points
+
+```{r points, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+plot(px$LitterSize, xlab='', ylab='Litter size', pch=20, cex=0.5)
+```
+
+## Points, sorted
+
+```{r points2, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+plot(sort(px$LitterSize), xlab='rank', ylab='Litter size', pch=20, cex=0.5)
+```
+
+## Points, sorted and colored
+
+```{r points3, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+plot(sort(px$LitterSize), col=px$Order, xlab='rank', ylab='Litter size', pch=20, cex=0.5)
+legend("topleft", pch=20, col=1:nlevels(px$Order), legend=levels(px$Order))
+```
+
+
+## Histogram
+
+
+```{r hist, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+layout(t(1:2))
+with(px, hist(LitterSize))
+with(px, hist(LitterSize, breaks=40))
+```
+
+## Histograms
+
+```{r many_hist_code, eval=FALSE}
+layout(matrix(1:6, ncol=3, byrow=TRUE), heights=c(1, 1.2))
+opar <- par(mar=c(1, 3, 1, 1)+.1)
+xh <- hist(px$LitterSize, plot=FALSE, breaks=30)
+for (k in 1:nlevels(px$Order)) {
+    ord <- levels(px$Order)[k]
+    if (k == 4) par(opar)
+    with(subset(px, Order == ord), 
+        hist(LitterSize, xlim=c(0, max(px$LitterSize)),
+             breaks=xh$breaks, main=ord,
+             xaxt=if (k > 3) 's' else 'n',
+             xlab=if (k > 3) 'litter size' else '') )
+}
+```
+
+## Histograms
+
+```{r many_hist, echo=FALSE, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+layout(matrix(1:6, ncol=3, byrow=TRUE), heights=c(1, 1.2))
+opar <- par(mar=c(1, 3, 1, 1)+.1)
+xh <- hist(px$LitterSize, plot=FALSE, breaks=30)
+for (k in 1:nlevels(px$Order)) {
+    ord <- levels(px$Order)[k]
+    if (k == 4) par(opar)
+    with(subset(px, Order == ord), 
+        hist(LitterSize, xlim=c(0, max(px$LitterSize)),
+             breaks=xh$breaks, main=ord,
+             xaxt=if (k > 3) 's' else 'n',
+             xlab=if (k > 3) 'litter size' else '') )
+}
+```
+
+
+## Overlaid histograms
+
+```{r stacked_hist}
+overlay_hist <- function (x, f, breaks=30, ...) {
+    xh <- hist(x, breaks=breaks, plot=FALSE)
+    ymax <- do.call(max, with(px, lapply(tapply(LitterSize, Order, hist, plot=FALSE), "[[", "counts")))
+    for (k in 1:nlevels(f)) {
+        hist(x[f==levels(f)[k]], breaks=xh$breaks, ...,
+             add=(k>1), col=adjustcolor(k, 0.4), ylim=c(0, ymax))
+    }
+    legend("topright", fill=adjustcolor(1:nlevels(f), 0.4),
+           legend=levels(f))
+}
+```
+
+## Overlaid histograms
+
+```{r do_stacked_hists, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+with(px, overlay_hist(LitterSize, Order, xlab='litter size', main=''))
+```
+
+## boxplots
+
+```{r boxplot, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+with(px, boxplot(LitterSize ~ Order))
+```
+
+::: {.caption}
+introduced by [Mary Eleanor Spear](https://en.wikipedia.org/wiki/Mary_Eleanor_Spear)
+:::
+
+## Many boxes
+
+
+```{r boxplot3, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+par(mar=c(9, 3, 1, 1) + 0.1)
+with(px, boxplot(LitterSize ~ Family, las=2, xlab=''))
+```
+
+
+##
+
+```{r boxplot4, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+par(mar=c(9, 4, 1, 1) + 0.1)
+famsize <- aggregate(LitterSize ~ Order + Family, data=px, mean)
+famorder <- rank(with(famsize, LitterSize + 100 * as.numeric(Order)))
+with(px, boxplot(LitterSize ~ Family, las=2, xlab='',
+                 col=as.numeric(famsize$Order),
+                 at=famorder))
+text(x=tapply(famorder, famsize$Order, mean),
+     y=10, label=levels(famsize$Order))
+```
+
+## Your turn
+
+*Challenge:* visualize `LitterSize` by `TeatNumber`, using a boxplot.
+
+# The Grammar of Graphics
+
+## or, "`gg`"
+
+- introduced by [Leland Wilkinson](https://www.springer.com/gp/book/9780387245447)
+
+- adopted by [Hadley Wickham](http://hadley.nz/) in the `ggplot` library
+
+- thinks of plots as *objects*
+
+- see [this chapter](https://r4ds.had.co.nz/data-visualisation.html) of *R for Data Science*
+
+## Ingredients of a visualization
+
+> - data
+> 
+> - coordinate axes
+> 
+> - a `geom`etric representation of numbers
+> 
+> - a mapping from (summaries of) variables to properties of the geoms
+> 
+> - maybe more plots
+
+
+## basic template
+
+```{r basic, eval=FALSE}
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+
+```
+
+## more options
+
+```{r notbasic, eval=FALSE}
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(
+     mapping = aes(<MAPPINGS>),
+     stat = <STAT>, 
+     position = <POSITION>
+  ) +
+  <COORDINATE_FUNCTION> +
+  <FACET_FUNCTION>
+```
+
+*Reference:* the [ggplot2 book](https://ggplot2-book.org/index.html).
+
+## Points
+
+```{r ggpoints}
+ggplot(px, mapping=aes(x=Order, y=LitterSize)) + geom_point()
+```
+
+
+##
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```{r ggplot, fig.width=1.5*fig.dim}
+(ggplot(px,
+        mapping=aes(x=1:nrow(px),
+                    y=LitterSize,
+                    col=Order))
+ + xlab("")
+ + geom_point())
+```
+
+:::
+::::::: {.column width=50%}
+
+```{r ggplot2, fig.width=1.5*fig.dim}
+(ggplot(px,
+        mapping=aes(x=rank(LitterSize,
+                           ties.method='first'),
+                    y=LitterSize,
+                    col=Order))
+ + xlab("rank")
+ + geom_point())
+```
+
+:::
+:::::::
+
+## Histogram
+
+```{r gghist, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+ggplot(px, mapping=aes(LitterSize)) + geom_histogram(bins=40) + facet_wrap(~ Order)
+```
+
+## Histogram, stacked
+
+```{r gghist2, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+ggplot(px, mapping=aes(LitterSize, fill=Order)) + geom_histogram(bins=40)
+```
+
+## Boxplot
+
+```{r boxplot2, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+ggplot(px, mapping=aes(y=LitterSize, x=Order)) + geom_boxplot()
+```
+
+## Your turn, again
+
+*Challenge:* make this plot.
+
+```{r fancyplot, echo=FALSE, fig.width=3*fig.dim, fig.height=1.5*fig.dim, warning=FALSE}
+# hey, no peeking!
+ggplot(pantheria, mapping=aes(x=factor(TeatNumber), y=LitterSize)) +
+    geom_boxplot(fill=adjustcolor('blue', 0.5)) +
+    geom_jitter(col=adjustcolor('black', 0.4)) +
+    xlab("Teat number")
+```
+
+
+The [cheatsheet](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) might be helpful.
+
+
