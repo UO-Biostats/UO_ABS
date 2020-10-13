@@ -96,6 +96,15 @@ Tufte 1983
 
 ![honeybees](images/honeybees_figure.jpeg){width=60%}
 
+## Think about what you want to communicate
+
+::: {.centered}
+![cumulative COVID test numbers](images/covid-test-numbers.jpg)
+:::
+::: {.caption}
+[AP Images: Alex Brandon](http://www.apimages.com/metadata/Index/Virus-Outbreak-Trump/f2c5f8d116a24062b563a32cea88235e/1/0)
+:::
+
 
 ## Case study:
 
@@ -105,7 +114,7 @@ Distributions of litter sizes by Order, and Family, in the [PanTHERIA](../Datase
 pantheria <- read_pantheria("../Datasets/PanTHERIA")
 # look at most common orders
 order_nums <- sort(table(pantheria$Order))
-big_orders <- names(order_nums)[order_nums > 150]
+big_orders <- names(order_nums)[order_nums > 140]
 order_nums
 ```
 

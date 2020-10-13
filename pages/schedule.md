@@ -38,8 +38,12 @@ Week 3 (*10/13*)
 
 : Plotting/visualization, and permutation/bootstrapping
 
-    - slides: [tidy data](../CLASS_MATERIALS/Lectures/Week_02_Tidy_data.slides.html)
-        and [pdf version](../CLASS_MATERIALS/Lectures/Week_02_Tidy_data.handout.pdf)
+    - slides: [permutation tests](../CLASS_MATERIALS/Lectures/Week_03_Permutation_tests.slides.html)
+        and [pdf version](../CLASS_MATERIALS/Lectures/Week_03_Permutation_tests.handout.pdf)
+    - slides: [tidy data](../CLASS_MATERIALS/Lectures/Week_03_Tidy_data.slides.html)
+        and [pdf version](../CLASS_MATERIALS/Lectures/Week_03_Tidy_data.handout.pdf)
+    - slides: [visualizing data](../CLASS_MATERIALS/Lectures/Week_03_Visualization.slides.html)
+        and [pdf version](../CLASS_MATERIALS/Lectures/Week_03_Visualization.handout.pdf)
     - Reading: Quinn & Keough chapter 9
 
 Week 4 (*10/20*)

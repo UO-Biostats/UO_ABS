@@ -18,9 +18,9 @@ library(matrixStats)
 
 # Tidy data
 
-## Rules of thumb for data tidiness
+## Checklist for data tidiness
 
-- Store a copy of data in a nonproprietary format, such as plain ASCII text
+- Store a copy of data in a nonproprietary format, (e.g. plain ASCII text)
 - Leave an uncorrected file when doing analyses
 - Use descriptive names for your data files and variables
 - Include a header line with descriptive variable names
@@ -30,7 +30,7 @@ library(matrixStats)
 - A column of data should contain only one data type
 - All measurements of the same type should be in the same column
 
-## 
+## Critique:
 
 :::{.centered}
 images of lab notebooks pasted into an Excel document
@@ -66,9 +66,22 @@ knitr::kable(eggs)
 
 ## Exercise
 
-Design a tidy data format for the stickleback experiment:
+::: {.columns}
+::::::: {.column width=50%}
 
-![stickleback experiment](images/stickleback_experiment.jpeg){width=50%}
+Design a tidy data format for the stickleback experiment:
+two strains of stickleback were made microbe free,
+placed in tanks and either innoculated with microbes or not,
+then had their gene expression measured with RNA-seq.
+Sex is recorded, also.
+
+:::
+::::::: {.column width=50%}
+
+![stickleback experiment](images/stickleback_experiment.jpeg){width=100%}
+
+:::
+:::::::
 
 ## Tools for tidy data
 
@@ -124,6 +137,37 @@ a2 <- filter(a1, neighbourhood == "Richmond"
 ```
 a3 <- arrange(a2, price, neighbourhood)
 ```
+
+## Also, the "pipe"
+
+```
+a3 <- (select(airbnb, neighbourhood, price, host_id, beds, bathrooms)
+        %>% filter(neighbourhood == "Richmond" 
+                     | neighbourhood == "Woodlawn"
+                     | neighbourhood == "Downtown")
+        %>% arrange(price, neighbourhood))
+```
+
+## 
+
+Tidyverse:
+```
+a3 <- (select(airbnb, neighbourhood, price, host_id, beds, bathrooms)
+        %>% filter(neighbourhood == "Richmond" 
+                     | neighbourhood == "Woodlawn"
+                     | neighbourhood == "Downtown")
+        %>% arrange(price, neighbourhood))
+```
+
+. . .
+
+Base:
+```
+a1 <- airbnb[,c("neighbourhood", "price", "host_id", "beds", "bathrooms")]
+a2 <- subset(a1, neighbourhood %in% c("Richmond", "Woodlawn", "Downtown"))
+a3 <- a2[order(a2$price, a2$price), ]
+```
+
 
 ## `mutate()` and `transmutate()`
 
