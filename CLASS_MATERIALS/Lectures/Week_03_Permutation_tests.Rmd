@@ -92,7 +92,7 @@ mean(abs(permuted_diffs) > abs(real_diff))
 . . .
 
 > The difference in price between instant bookable and not instant bookable
-> is highly statistically significant ($p \approx 0.001$, permutation test).
+> is highly statistically significant ($p \approx 0.0003$, permutation test).
 
 
 ## Our turn
@@ -102,3 +102,61 @@ comparing price between neighbourhoods:
 ```{r anvoa_again}
 anova(lm(price ~ neighbourhood, data=airbnb))
 ```
+
+## In class:
+
+```{r in_class}
+do_perm_test <- function (dataset) {
+    anova_true <- anova(lm(price ~ neighbourhood, data=dataset))
+    true_F <- anova_true[["F value"]][1]
+    
+    # do it once
+    shuffled_hood <- sample(dataset$neighbourhood)
+    perm_F <- anova(lm(price ~ shuffled_hood, data=dataset))[["F value"]][1]
+    
+    # do it lots of times
+    perm_F_multiple <- replicate(1000, {
+        shuffled_hood <- sample(dataset$neighbourhood)
+        anova(lm(price ~ shuffled_hood, data=dataset))[["F value"]][1]
+      })
+    
+    # get a p-value = proportion of permuted
+    #    F statistics that are bigger than
+    #    the observed value
+    return(mean(perm_F_multiple >= true_F))
+}
+
+# look at the values
+# hist(perm_F_multiple, breaks=40,
+#      xlab='permuted F statistic',
+#      main='sampling distribution of F')
+
+# get the p-value:
+do_perm_test(airbnb)
+```
+There is strongly statistically significant heterogeneity in prices
+between neighbourhoods
+(p < 0.001, permutation test).
+
+## In class, no downtown:
+
+```{r in_class_no_dtn}
+sub_airbnb <- subset(airbnb, neighbourhood != "Downtown")
+do_perm_test(sub_airbnb)
+```
+There remains significant heterogeneity even after removing Downtown.
+
+## Coding:
+
+- Don't
+- Repeat
+- Yourself
+
+not
+
+- Write
+- Everything
+- Twice
+
+
+
