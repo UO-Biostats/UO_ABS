@@ -13,30 +13,6 @@ set.seed(23)
 library(matrixStats)
 library(tidyverse)
 ```
-```{r setup_data, include=FALSE}
-read_pantheria <- function(dirname) {
-    pantheria <- read.table(file.path(dirname, "PanTHERIA_WR05_mammals.txt"),
-                            header=TRUE, check.names=FALSE, stringsAsFactors=FALSE, sep="\t")
-    names(pantheria) <- gsub("^MSW05_", "", gsub("^[0-9-]*_", "", names(pantheria)))
-    pantheria$Order <- factor(pantheria$Order)
-    pantheria$Family <- factor(pantheria$Family)
-    pantheria$Genus <- factor(pantheria$Genus)
-    translations <- list(ActivityCycle = c("nocturnal", "crepuscular", "diurnal"),
-                         Terrestriality = c("fossorial", "ground_dwelling"),
-                         TrophicLevel = c("herbivore", "omnivore", "carnivore"))
-    for (col in names(pantheria)) {
-        a <- pantheria[[col]]
-        if (is.numeric(a)) {
-            a[a == -999] <- NA
-        }
-        if (col %in% names(translations)) {
-            a <- factor(translations[[col]][a], levels=translations[[col]])
-        }
-        pantheria[[col]] <- a
-    }
-    return(pantheria)
-}
-```
 
 # Visualization
 
@@ -111,6 +87,7 @@ Tufte 1983
 Distributions of litter sizes by Order, and Family, in the [PanTHERIA](../Datasets/PanTHERIA/README.html) dataset:
 
 ```{r get_pantheria, echo=1:4}
+source("../Datasets/PanTHERIA/read_pantheria.R")
 pantheria <- read_pantheria("../Datasets/PanTHERIA")
 # look at most common orders
 order_nums <- sort(table(pantheria$Order))

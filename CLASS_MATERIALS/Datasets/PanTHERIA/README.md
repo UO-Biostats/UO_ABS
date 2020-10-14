@@ -9,28 +9,10 @@ which is
 - Metadata and varianble definitions: http://esapubs.org/archive/ecol/E090/184/metadata.htm
 - the [dataset](PanTHERIA_WR05_mammals.txt)
 
-Code to read in the data and assign levels in columns appropriately:
-```
-read_pantheria <- function(dirname) {
-    pantheria <- read.table(file.path(dirname, "PanTHERIA_WR05_mammals.txt"),
-                            header=TRUE, check.names=FALSE, stringsAsFactors=FALSE, sep="\t")
-    names(pantheria) <- gsub("^MSW05_", "", gsub("^[0-9-]*_", "", names(pantheria)))
-    pantheria$Order <- factor(pantheria$Order)
-    pantheria$Family <- factor(pantheria$Family)
-    pantheria$Genus <- factor(pantheria$Genus)
-    translations <- list(ActivityCycle = c("nocturnal", "crepuscular", "diurnal"),
-                         Terrestriality = c("fossorial", "ground_dwelling"),
-                         TrophicLevel = c("herbivore", "omnivore", "carnivore"))
-    for (col in names(pantheria)) {
-        a <- pantheria[[col]]
-        if (is.numeric(a)) {
-            a[a == -999] <- NA
-        }
-        if (col %in% names(translations)) {
-            a <- factor(translations[[col]][a], levels=translations[[col]])
-        }
-        pantheria[[col]] <- a
-    }
-    return(pantheria)
-}
+Code to read in the data and assign levels in columns appropriately
+is provided in the file `[read_pantheria.R](read_pantheria.R)`,
+which you can use as follows:
+```r
+source("read_pantheria.R")
+pantheria <- read_pantheria("<name of directory with PanTHERIA_WR05_mammals.txt in it>")
 ```

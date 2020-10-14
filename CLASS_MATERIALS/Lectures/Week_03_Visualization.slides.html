@@ -517,10 +517,10 @@ background-color: #fff; } }
 <section id="case-study" class="slide level2">
 <h2>Case study:</h2>
 <p>Distributions of litter sizes by Order, and Family, in the <a href="../Datasets/PanTHERIA/README.html">PanTHERIA</a> dataset:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>pantheria &lt;-<span class="st"> </span><span class="kw">read_pantheria</span>(<span class="st">&quot;../Datasets/PanTHERIA&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="co"># look at most common orders</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>order_nums &lt;-<span class="st"> </span><span class="kw">sort</span>(<span class="kw">table</span>(pantheria<span class="op">$</span>Order))</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>big_orders &lt;-<span class="st"> </span><span class="kw">names</span>(order_nums)[order_nums <span class="op">&gt;</span><span class="st"> </span><span class="dv">140</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">source</span>(<span class="st">&quot;../Datasets/PanTHERIA/read_pantheria.R&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>pantheria &lt;-<span class="st"> </span><span class="kw">read_pantheria</span>(<span class="st">&quot;../Datasets/PanTHERIA&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="co"># look at most common orders</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>order_nums &lt;-<span class="st"> </span><span class="kw">sort</span>(<span class="kw">table</span>(pantheria<span class="op">$</span>Order))</span></code></pre></div>
 <pre><code>## 
 ##   Microbiotheria    Tubulidentata       Dermoptera Notoryctemorphia      Proboscidea       Hyracoidea      Monotremata          Sirenia Paucituberculata        Pholidota           Pilosa    Macroscelidea 
 ##                1                1                2                2                3                4                5                5                6                8               10               15 
