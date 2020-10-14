@@ -526,6 +526,59 @@ background-color: #fff; } }
 ## Residuals     5510 47749952    8666                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</section>
+<section id="in-class" class="slide level2">
+<h2>In class:</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>do_perm_test &lt;-<span class="st"> </span><span class="cf">function</span> (dataset) {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>    anova_true &lt;-<span class="st"> </span><span class="kw">anova</span>(<span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span>neighbourhood, <span class="dt">data=</span>dataset))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>    true_F &lt;-<span class="st"> </span>anova_true[[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>    </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>    <span class="co"># do it once</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>    shuffled_hood &lt;-<span class="st"> </span><span class="kw">sample</span>(dataset<span class="op">$</span>neighbourhood)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>    perm_F &lt;-<span class="st"> </span><span class="kw">anova</span>(<span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span>shuffled_hood, <span class="dt">data=</span>dataset))[[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a>    </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a>    <span class="co"># do it lots of times</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>    perm_F_multiple &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">1000</span>, {</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a>        shuffled_hood &lt;-<span class="st"> </span><span class="kw">sample</span>(dataset<span class="op">$</span>neighbourhood)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a>        <span class="kw">anova</span>(<span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span>shuffled_hood, <span class="dt">data=</span>dataset))[[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a>      })</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>    </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a>    <span class="co"># get a p-value = proportion of permuted</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true"></a>    <span class="co">#    F statistics that are bigger than</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true"></a>    <span class="co">#    the observed value</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true"></a>    <span class="kw">return</span>(<span class="kw">mean</span>(perm_F_multiple <span class="op">&gt;=</span><span class="st"> </span>true_F))</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true"></a>}</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true"></a><span class="co"># look at the values</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true"></a><span class="co"># hist(perm_F_multiple, breaks=40,</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true"></a><span class="co">#      xlab=&#39;permuted F statistic&#39;,</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true"></a><span class="co">#      main=&#39;sampling distribution of F&#39;)</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true"></a><span class="co"># get the p-value:</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true"></a><span class="kw">do_perm_test</span>(airbnb)</span></code></pre></div>
+<pre><code>## [1] 0</code></pre>
+<p>There is strongly statistically significant heterogeneity in prices between neighbourhoods (p &lt; 0.001, permutation test).</p>
+</section>
+<section id="in-class-no-downtown" class="slide level2">
+<h2>In class, no downtown:</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a>sub_airbnb &lt;-<span class="st"> </span><span class="kw">subset</span>(airbnb, neighbourhood <span class="op">!=</span><span class="st"> &quot;Downtown&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="kw">do_perm_test</span>(sub_airbnb)</span></code></pre></div>
+<pre><code>## [1] 0</code></pre>
+<p>There remains significant heterogeneity even after removing Downtown.</p>
+</section>
+<section id="coding" class="slide level2">
+<h2>Coding:</h2>
+<ul>
+<li>Don’t</li>
+<li>Repeat</li>
+<li>Yourself</li>
+</ul>
+<p>not</p>
+<ul>
+<li>Write</li>
+<li>Everything</li>
+<li>Twice</li>
+</ul>
 </section></section>
     </div>
   </div>

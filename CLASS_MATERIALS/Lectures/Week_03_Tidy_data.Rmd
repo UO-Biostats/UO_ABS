@@ -14,6 +14,16 @@ library(tidyverse)
 library(matrixStats)
 ```
 
+```{r get_data, include=FALSE}
+de_dollar <- function(x) {
+    # strip off a leading "$" and convert to numeric
+    return(as.numeric(gsub("$", "", x, fixed=TRUE)))
+}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv", stringsAsFactors=TRUE)
+airbnb$price <- de_dollar(airbnb$price)
+airbnb$cleaning_fee <- de_dollar(airbnb$cleaning_fee)
+airbnb$neighbourhood[airbnb$neighbourhood == ""] <- NA
+```
 
 
 # Tidy data
@@ -210,5 +220,49 @@ summarise(by_hood, price = mean(price, na.rm = TRUE))
 
 5. Edit your code in (1) to add a new variable giving the number of characters in the `house_rules` (use `nchar( )`).
 
+## Only top ten neighbourhoods
 
+```{r top_ten}
+neighbourhood_counts <- (airbnb
+                         %>% group_by(neighbourhood) %>% summarize(count=n())
+                         %>% arrange(count))
+top_ten <- neighbourhood_counts$neighbourhood[nrow(neighbourhood_counts) - 0:9]
+sub_bnb <- filter(airbnb, neighbourhood %in% top_ten) %>% droplevels
+```
 
+## Find mean price, cleaning fee, and ratio by hood
+
+```{r step_two}
+cleaning <- (sub_bnb
+                 %>% group_by(neighbourhood)
+                 %>% summarise(mean_price=mean(price, na.rm=TRUE),
+                               mean_cleaning_fee=mean(cleaning_fee, na.rm=TRUE),
+                               prop_cleaning=mean(cleaning_fee/price, na.rm=TRUE)))
+cleaning
+```
+
+## Add quartiles
+
+```{r step_three}
+cleaning <- (sub_bnb
+                 %>% group_by(neighbourhood)
+                 %>% summarise(mean_price=mean(price, na.rm=TRUE),
+                               first_quartile_price=quantile(price, probs=0.25, na.rm=TRUE),
+                               third_quartile_price=quantile(price, probs=0.75, na.rm=TRUE),
+                               mean_cleaning_fee=mean(cleaning_fee, na.rm=TRUE),
+                               prop_cleaning=mean(cleaning_fee/price, na.rm=TRUE)))
+cleaning
+```
+
+## split also by room type
+
+```{r step_four}
+cleaning <- (sub_bnb
+                 %>% group_by(neighbourhood, room_type)
+                 %>% summarise(mean_price=mean(price, na.rm=TRUE),
+                               first_quartile_price=quantile(price, probs=0.25, na.rm=TRUE),
+                               third_quartile_price=quantile(price, probs=0.75, na.rm=TRUE),
+                               mean_cleaning_fee=mean(cleaning_fee, na.rm=TRUE),
+                               prop_cleaning=mean(cleaning_fee/price, na.rm=TRUE)))
+cleaning
+```
