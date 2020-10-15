@@ -44,6 +44,8 @@ Week 3 (*10/13*)
         and [pdf version](../CLASS_MATERIALS/Lectures/Week_03_Tidy_data.handout.pdf)
     - slides: [visualizing data](../CLASS_MATERIALS/Lectures/Week_03_Visualization.slides.html)
         and [pdf version](../CLASS_MATERIALS/Lectures/Week_03_Visualization.handout.pdf)
+    - slides: [the bootstrap](../CLASS_MATERIALS/Lectures/Week_03_Bootstrap.slides.html)
+        and [pdf version](../CLASS_MATERIALS/Lectures/Week_03_Bootstrap.handout.pdf)
     - Reading: Quinn & Keough chapter 9
 
 Week 4 (*10/20*)
