@@ -41,7 +41,7 @@ This is amazing!
 
 . . .
 
-Sadly, most other types of estimates don't have this amazing property.
+Sadly, it's not so easy to simply compute a standard error for most estimates.
 
 . . .
 

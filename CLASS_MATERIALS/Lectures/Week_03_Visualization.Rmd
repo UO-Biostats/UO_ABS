@@ -36,6 +36,9 @@ paraphrased from Edward Tufte
 
 ## Considerations
 
+::: {.columns}
+:::::: {.column width=60%}
+
 - Is the visual analogy appropriate for the *type* of data? 
 
 ::: {.caption}
@@ -54,12 +57,41 @@ between groups? differences? time trend?
 meters? dollars? percent? relative change? is it isometric?
 :::
 
+:::
+:::::: {.column width=10%}
+
+:::
+:::::: {.column width=30%}
+
+<div style="position: relative; top: -3em">
+```{r plots, echo=FALSE, fig.width=fig.dim, fig.height=1.8*fig.dim}
+par(mar=c(2,2,2,1)+.1)
+n <- 50
+k <- 4
+m <- 1 + rpois(k, 10)
+x <- data.frame( a = factor(sample(LETTERS[1:k], n, replace=TRUE)))
+x$y <- rnorm(n, sd=0.5) + m[x$a]
+x$z <- rpois(n, m[x$a])
+layout(1:3)
+barplot(table(x$a))
+boxplot(z ~ a, xlab='', ylab='', main='', data=x)
+plot(z ~ y, pch=as.numeric(x$a), xlab='', ylab='', main='', data=x)
+```
+</div>
+
+:::
+:::::: 
+
 ## Principles of effective display
 
 - Show the data
+
 - Encourage the eye to compare differences
+  
 - Represent magnitudes honestly and accurately
+
 - Draw graphical elements clearly, minimizing clutter
+
 - Make displays easy to interpret
 
 ## 
@@ -75,12 +107,20 @@ Tufte 1983
 ## Think about what you want to communicate
 
 ::: {.centered}
-![cumulative COVID test numbers](images/covid-test-numbers.jpg)
+![cumulative COVID test numbers](images/covid-test-numbers.jpg){width=80%}
 :::
 ::: {.caption}
 [AP Images: Alex Brandon](http://www.apimages.com/metadata/Index/Virus-Outbreak-Trump/f2c5f8d116a24062b563a32cea88235e/1/0)
 :::
 
+##
+
+::: {.centered}
+![Broman's bad graphs 1](images/bad-graph1.png){width=80%}
+:::
+::: {.caption}
+from *Roeder K (1994), Statistical Science 9:222-278, Figure 4* via [Karl Broman](https://www.biostat.wisc.edu/~kbroman/topten_worstgraphs/)
+:::
 
 ## Case study:
 
@@ -91,7 +131,7 @@ source("../Datasets/PanTHERIA/read_pantheria.R")
 pantheria <- read_pantheria("../Datasets/PanTHERIA")
 # look at most common orders
 order_nums <- sort(table(pantheria$Order))
-big_orders <- names(order_nums)[order_nums > 140]
+big_orders <- names(order_nums)[order_nums > 150]
 order_nums
 ```
 
@@ -111,12 +151,6 @@ summary(px)
 px$LitterSize
 ```
 
-
-## stem-and-leaf "plot"
-
-```{r stem}
-stem(px$LitterSize)
-```
 
 ## five(-ish) number summary
 
@@ -157,7 +191,7 @@ with(px, hist(LitterSize, breaks=40))
 
 ```{r many_hist_code, eval=FALSE}
 layout(matrix(1:6, ncol=3, byrow=TRUE), heights=c(1, 1.2))
-opar <- par(mar=c(1, 3, 1, 1)+.1)
+opar <- par(mar=c(1, 4, 1, 1)+.1)
 xh <- hist(px$LitterSize, plot=FALSE, breaks=30)
 for (k in 1:nlevels(px$Order)) {
     ord <- levels(px$Order)[k]
@@ -174,7 +208,7 @@ for (k in 1:nlevels(px$Order)) {
 
 ```{r many_hist, echo=FALSE, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 layout(matrix(1:6, ncol=3, byrow=TRUE), heights=c(1, 1.2))
-opar <- par(mar=c(1, 3, 1, 1)+.1)
+opar <- par(mar=c(1, 4, 1, 1)+.1)
 xh <- hist(px$LitterSize, plot=FALSE, breaks=30)
 for (k in 1:nlevels(px$Order)) {
     ord <- levels(px$Order)[k]
