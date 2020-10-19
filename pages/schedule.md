@@ -52,6 +52,10 @@ Week 4 (*10/20*)
 
 : Multivariate ANOVA, regression, least-squares likelihood
 
+    - slides: [multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_04_Multivariate_ANOVA.slides.html)
+        and [pdf version](../CLASS_MATERIALS/Lectures/Week_04_Multivariate_ANOVA.handout.pdf)
+    - slides: [multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_04_Formulas.slides.html)
+        and [pdf version](../CLASS_MATERIALS/Lectures/Week_04_Formulas.handout.pdf)
     - Reading: Quinn & Keough chapter 6
 
 Week 5 (*10/27*)

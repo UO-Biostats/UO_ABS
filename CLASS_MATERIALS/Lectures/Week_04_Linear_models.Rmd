@@ -1,0 +1,168 @@
+---
+title: "Linear models"
+author: "Peter Ralph"
+date: "22 October -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+library(tidyverse)
+```
+
+# Linear models
+
+## Parent-offspring "regression"
+
+```{r plot_galton, echo=FALSE, fig.width=2.0*fig.dim, fig.height=1.5*fig.dim}
+galton <- read.table("../Datasets/galton/galton-all.tsv", header=TRUE)
+gdiff <- diff(with(galton, tapply(height, gender, mean)))
+galton$midparent <- (galton$mother + galton$father - gdiff)/2
+galton$adj_height <- galton$height - (galton$gender == "M") * gdiff
+(ggplot(galton, mapping=aes(x=adj_height, y=midparent)) + geom_jitter(cex=3)
+ + geom_smooth(method='lm') + geom_abline(aes(intercept=0, slope=1), lwd=2, col='red')
+ + coord_fixed() + xlab("midparent height") + ylab("child height"))
+```
+
+## A note on history
+
+![Galton and consequences](images/galton-eugenics.jpeg)
+
+## A note on history
+
+![Galton and consequences](images/galton-zimmer.jpeg)
+
+## A note on history
+
+> This resulted in Galton's formulation of the Law of Ancestral Heredity, which
+> states that the two parents of an offspring jointly contribute one half of an
+> offspring's heritage, while more-removed ancestors constitute a
+> smaller proportion of the offspring's heritage. Galton viewed reversion as a
+> spring, that when stretched, would return the distribution of traits back to
+> the normal distribution. 
+> When Mendel's principles were rediscovered in 1900, this resulted in a fierce
+> battle between the followers of Galton's Law of Ancestral Heredity, the
+> biometricians, and those who advocated Mendel's principles.
+
+::: {.caption}
+[Francis Galton, Wikipedia](https://en.wikipedia.org/wiki/Francis_Galton)
+:::
+
+## Covariance and correlation
+
+Pearson's product-moment correlation coefficient:
+$$
+r = \frac{\sum_{i=1}^n (x_i - \bar x) (y_i - \bar y)}{\sqrt{\sum_{i=1}^n (y_i - \bar y)^2} \sqrt{\sum_{i=1}^n (y_i - \bar y)^2}}
+$$
+
+. . .
+
+```
+> help(cor)
+
+Correlation, Variance and Covariance (Matrices)
+
+Description:
+
+     ‘var’, ‘cov’ and ‘cor’ compute the variance of ‘x’ and the
+     covariance or correlation of ‘x’ and ‘y’ if these are vectors.  If
+     ‘x’ and ‘y’ are matrices then the covariances (or correlations)
+     between the columns of ‘x’ and the columns of ‘y’ are computed.
+
+     ‘cov2cor’ scales a covariance matrix into the corresponding
+     correlation matrix _efficiently_.
+
+Usage:
+
+     var(x, y = NULL, na.rm = FALSE, use)
+     
+     cov(x, y = NULL, use = "everything",
+         method = c("pearson", "kendall", "spearman"))
+     
+     cor(x, y = NULL, use = "everything",
+         method = c("pearson", "kendall", "spearman"))
+
+```
+
+## Covariance and correlation
+
+```{r plot_cors, echo=FALSE, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
+layout(matrix(1:6, nrow=2))
+par(mar=c(5,4,1,1)+.1)
+for (r in c(0, 0.2, 0.5, 0.7, -0.7, 0.9)) {
+    n <- 100
+    x <- rnorm(n)
+    y <- r * x + sqrt(1 - r^2) * rnorm(n)
+    plot(x, y, main=sprintf("r = %0.1f", r))
+    abline(coef(lm(y~x)))
+}
+```
+
+## Anscombe's quartet
+
+```{r plot_ansc, echo=FALSE, fig.width=2.0*fig.dim, fig.height=1.5*fig.dim}
+data(anscombe)
+layout(matrix(1:4, nrow=2))
+par(mar=c(5,4,1,1)+.1)
+for (k in 1:4) {
+    x <- anscombe[[paste0("x", k)]]
+    y <- anscombe[[paste0("y", k)]]
+    plot(x, y, main=sprintf("r = %0.3f, var(x) = %0.0f, var(y) = %0.0f", cor(x,y), var(x), var(y)), pch=20, cex=2)
+    abline(coef(lm(y~x)))
+}
+```
+
+## Linear models
+
+$$
+\text{(response)} = \text{(intercept)} + \text{(explanatory variables)} + \text{("error"})
+$$
+in the general form:
+$$
+    y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_k x_{ik} + \epsilon_i ,
+$$
+where $\beta_0, \beta_1, \ldots, \beta_k$ are the *parameters* of the linear model.
+
+. . .
+
+Goal: find $b_0, \ldots, b_k$ to *best fit* the model:
+$$
+    y_i = b_0 + b_1 x_{i1} + \cdots + b_k x_{ik} + e_i,
+$$
+so that $b_i$ is an *estimate* of $\beta_i$ and $e_i$ is the *residual*, an estimate of $\epsilon_i$.
+
+## Least-squares fitting of a linear model
+
+Define the *predicted values*:
+$$
+    \hat y_i = b_0 + b_1 x_{i1} + \cdots + b_k x_{ik},
+$$
+and find $b_0, \ldots, b_k$ to minimize the *sum of squared residuals*, or
+$$
+    \sum_i \left(y_i - \hat y_i\right)^2 .
+$$
+
+. . .
+
+Amazing fact:
+if $k=1$ then $$b_1 = r \frac{\text{sd}(y)}{\text{sd}(x)} .$$
+
+. . .
+
+Relationship to likelihood: the Normal distribution.
+
+## Demonstration: heights
+
+Let's recreate Galton's classic analysis:
+midparent height, adjusted for gender, is a good predictor of child height.
+*(How good?)*
+
+Link to [the data](../Datasets/galton/galton-all.tsv).
+```{r read_galton}
+galton <- read.table("../Datasets/galton/galton-all.tsv", header=TRUE)
+head(galton)
+```

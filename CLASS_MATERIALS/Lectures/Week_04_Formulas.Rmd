@@ -1,0 +1,180 @@
+---
+title: "Formulas in R"
+author: "Peter Ralph"
+date: "20 October -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+library(tidyverse)
+```
+
+# Set-up
+
+## Example data
+
+Continuing with the "pumpkin data":
+
+```{r get_data}
+(pumpkins <- read.table("data/pumpkins.tsv"))
+```
+
+# Formulas
+
+## Anatomy of a formula
+
+```
+  weight ~ fertilizer + water
+```
+
+is read something like
+
+> mean weight is determined by additive effects of fertlizer and of water
+
+. . .
+
+$$\begin{equation}\begin{split}
+    y &\sim x \qquad \text{means} \\
+    y &= a + b x + \text{(mean-zero noise)} .
+\end{split}\end{equation}$$
+
+## Intercepts
+
+The intercept is included implicitly, so these are equivalent:
+```
+  weight ~ fertilizer + water
+  weight ~ 1 + fertilizer + water
+```
+
+. . .
+
+... so if you *don't* want an intercept, do
+```
+  weight ~ 0 + fertilizer + water
+```
+
+## Interactions
+
+To assign an effect to each element of a *crossed* design, use `:`, e.g.
+```
+  weight ~ fertilizer + water + fertilizer:water
+```
+
+. . .
+
+which is the same as
+```
+  weight ~ fertilizer * water
+```
+since lower-order effects are included implicitly.
+
+
+## A translation table
+
+- `~` : depends on
+- `+` : and also, independently
+- `:` : in combination with
+- `*` : and also
+- `I(x+y)` : actually `x` plus `y`
+- `I(x^2)` : actually `x` squared
+
+. . .
+
+Trickier things:
+
+- `1` : an intercept
+- `0` : but not an intercept
+- `-` : but not
+- `.` : all columns not otherwise in the formula
+- `x/y` : `x`, and `y` nested within `x` (same as `x + x:y`)
+
+## The secret to formulas
+
+
+
+. . .
+
+If you want to know what a formula is *really* doing,
+look at its `model.matrix( )`,
+whose columns correspond to the coefficients of the resulting model.
+
+```{r model_matrix}
+model.matrix(~ fertilizer, data=pumpkins)
+```
+
+-----------------
+
+```{r plot_model_matrix}
+matplot(
+    model.matrix(~ fertilizer, data=pumpkins),
+    type='l')
+```
+
+------------
+
+```{r model_matrix2}
+model.matrix(~ fertilizer + water, data=pumpkins)
+```
+
+
+------------
+
+```{r plot_model_matrix2}
+matplot(
+    model.matrix(~ fertilizer + water, data=pumpkins),
+    type='l')
+```
+
+------------
+
+```{r model_matrix3, echo=2}
+options(width=200)
+model.matrix(~ 0 + fertilizer * water, data=pumpkins)
+```
+
+------------
+
+```{r plot_model_matrix3}
+matplot(
+    model.matrix(~ 0 + fertilizer * water, data=pumpkins),
+    type='l')
+```
+
+## Note:
+
+For fine control of factors in linear models, either
+
+- `relevel()` them, or
+- manually set their `contrasts()`.
+
+## Exercise:
+
+Make formulas that give you estimates of
+
+1. A global mean ($\mu$), two fertilizer effects ($\alpha_\text{medium}$ and $\alpha_\text{high}$),
+    and one water effect ($\beta_\text{water}$).
+
+2. Three fertilizer effects ($\alpha_\text{low}$, $\alpha_\text{medium}$ and $\alpha_\text{high}$),
+    and one water effect ($\beta_\text{water}$).
+
+3. Two fertilizer effects ($\alpha_\text{medium}$ and $\alpha_\text{high}$),
+    and two water effect ($\beta_\text{no water}$ and $\beta_\text{water}$).
+
+4. A single mean for each of the six conditions 
+   ($\gamma_\text{high, water}$, $\gamma_\text{medium, water}$, $\gamma_\text{low, water}$, 
+   $\gamma_\text{high, no water}$, $\gamma_\text{medium, no water}$, $\gamma_\text{low, no water}$).
+
+## Example:
+
+1. A global mean ($\mu$), two fertilizer effects ($\alpha_\text{medium}$ and $\alpha_\text{high}$),
+    and one water effect ($\gamma_\text{water}$).
+
+*Example:*
+```{r lm1}
+summary(lm(weight ~ fertilizer + water, data=pumpkins))
+```
