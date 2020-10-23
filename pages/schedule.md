@@ -57,6 +57,7 @@ Week 4 (*10/20*)
         and [pdf version](../CLASS_MATERIALS/Lectures/Week_04_Multivariate_ANOVA.handout.pdf)
     - slides: [formulas](../CLASS_MATERIALS/Lectures/Week_04_Formulas.slides.html)
         and [pdf version](../CLASS_MATERIALS/Lectures/Week_04_Formulas.handout.pdf)
+    - [Homework 4](../CLASS_MATERIALS/Homeworks/HW04_F20.html) *(due 10/29)*
     - Reading: Quinn & Keough chapter 6
 
 Week 5 (*10/27*)
