@@ -46,6 +46,7 @@ Week 3 (*10/13*)
         and [pdf version](../CLASS_MATERIALS/Lectures/Week_03_Visualization.handout.pdf)
     - slides: [the bootstrap](../CLASS_MATERIALS/Lectures/Week_03_Bootstrap.slides.html)
         and [pdf version](../CLASS_MATERIALS/Lectures/Week_03_Bootstrap.handout.pdf)
+    - [Homework 3](../CLASS_MATERIALS/Homeworks/HW03_F20.html) *(due 10/22)*
     - Reading: Quinn & Keough chapter 9
 
 Week 4 (*10/20*)
@@ -54,7 +55,7 @@ Week 4 (*10/20*)
 
     - slides: [multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_04_Multivariate_ANOVA.slides.html)
         and [pdf version](../CLASS_MATERIALS/Lectures/Week_04_Multivariate_ANOVA.handout.pdf)
-    - slides: [multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_04_Formulas.slides.html)
+    - slides: [formulas](../CLASS_MATERIALS/Lectures/Week_04_Formulas.slides.html)
         and [pdf version](../CLASS_MATERIALS/Lectures/Week_04_Formulas.handout.pdf)
     - Reading: Quinn & Keough chapter 6
 
