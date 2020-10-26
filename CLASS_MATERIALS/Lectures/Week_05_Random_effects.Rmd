@@ -1,0 +1,233 @@
+---
+title: "Random effects, and mixed models"
+author: "Peter Ralph"
+date: "27 October -- Advanced Biological Statistics"
+---
+
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(matrixStats)
+library(lme4)
+```
+
+
+```{r pumpkins, include=FALSE}
+pumpkins <- read.table("data/pumpkins.tsv", header=TRUE)
+pumpkins$plot <- factor(pumpkins$plot)
+head(pumpkins)
+```
+
+# Random effects
+
+## An example: urchins eat algae
+
+From Logan:
+
+> To investigate density-dependent grazing effects of sea urchin Andrew and Underwood
+> (1993) on filamentous algae measured the percentage of filamentous algae within five
+> quadrats randomly positioned within each of four random patches of reef that were in turn
+> nested within four sea urchin density treatments (no urchins, 33% of natural density, 66%
+> natural density and 100% natural density). The sea urchin density treatment was considered
+> a fixed factor and patch within density treatment as well as the individual quadrats were
+> treated as random factors.
+
+## An example: urchins eat algae
+
+```{r andrewdata}
+andrew_data <- read.table('../Datasets/Logan_data/andrew.tsv', header=T, sep='\t')
+head(andrew_data)
+```
+
+There are four variables: `TREAT`, `PATCH`, `QUAD` and `ALGAE`
+
+Main effect factor: `TREAT`
+
+. . .
+
+Both `QUAD` and `PATCH` are factors:
+```{r factorit}
+andrew_data$QUAD <- factor(andrew_data$QUAD)
+andrew_data$PATCH <- factor(andrew_data$PATCH)
+andrew_data$TREAT <- factor(andrew_data$TREAT, levels=c("0%", "33%", "66%", "100%"))
+```
+
+
+
+## Experimental design
+
+```{r tableit}
+with(andrew_data, table(PATCH, QUAD, TREAT))
+```
+
+## Response distribution
+
+```{r boxit, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
+plot(ALGAE ~ TREAT, data=andrew_data)
+points(ALGAE ~ jitter(as.numeric(TREAT)), data=andrew_data, pch=20, col=1+as.numeric(PATCH)%%4)
+```
+
+##
+
+Why is this wrong?
+
+```{r lme_urchins}
+summary(lm(ALGAE ~ TREAT, data=andrew_data))
+```
+
+##
+
+What we really want:
+$$
+\text{(algae)} = \text{(mean for treatment)} + \text{(mean offset for patch)} + \text{("noise")} .
+$$
+
+. . .
+
+We *could* do:
+```
+ALGAE ~ TREAT + PATCH
+```
+... but do we care about all those patch means?
+
+##
+
+```{r do_biglm}
+summary(lm(ALGAE ~ TREAT + PATCH, data=andrew_data))
+```
+
+## Random effects
+
+Small modification:
+$$
+\text{(algae)} = \text{(mean for treatment)} + \text{(random offset for patch)} + \text{("noise")} .
+$$
+
+. . .
+
+We add a *random intercept*:
+```
+ALGAE ~ TREAT + (1|PATCH)
+```
+
+## 
+
+```{r do_lmer}
+library(lme4)
+alglm <- lmer(ALGAE ~ TREAT + (1|PATCH), data=andrew_data)
+summary(alglm)
+```
+
+##
+
+```{r compare_lmer}
+anova(
+      lmer(ALGAE ~ TREAT + (1|PATCH), data=andrew_data),
+      lm(ALGAE ~ TREAT, data=andrew_data))
+```
+
+##
+
+```{r compare_lmer2}
+anova(
+      lmer(ALGAE ~ TREAT + (1|PATCH), data=andrew_data),
+      lmer(ALGAE ~ (1|PATCH), data=andrew_data))
+```
+
+
+## What *are* the random effects?
+
+```{r ranef}
+ranef(alglm)
+```
+
+##
+
+```{r plot_ranef}
+rfs <- ranef(alglm)$PATCH
+ses <- rfs[,1] + outer(sqrt(as.vector(attr(rfs, "postVar"))), c(-2, 2), "*")
+plot(rfs[,1], 1:nrow(rfs), xlab='patch mean', xlim=range(ses), ylab='')
+segments(x0=ses[,1], x1=ses[,2], y0=1:nrow(rfs))
+abline(v=0, col='red')
+```
+
+# Notes on mixed models
+
+## The math is a lot harder.
+
+For simple linear regression (with *fixed effects*),
+the *log-likelihood function* is just the sum of the squared residuals.
+
+. . .
+
+But with a *mixed model*, the likelihood *averages* over the values of the random effects,
+which makes everything more difficult.
+
+## You sometimes have to worry about *convergence*.
+
+Since the math is harder,
+mixed-model-fitting functions like `lmer( )` have to use various sorts of *numerical optimization* methods
+to find the best-fitting parameters.
+
+. . .
+
+Sometimes, these may fail.
+
+. . .
+
+Notably, many use the [`REML`](https://en.wikipedia.org/wiki/Restricted_maximum_likelihood) approximation:
+```
+Usage:
+
+     lmer(formula, data = NULL, REML = TRUE, control = lmerControl(),
+          start = NULL, verbose = 0L, subset, weights, na.action,
+          offset, contrasts = NULL, devFunOnly = FALSE, ...)
+```
+
+## Hypothesis testing?
+
+With fixed effects, for a factor `f`, the comparison
+```
+anova( lm(y ~ f - 1), lm(y ~ 1) )
+```
+uses the model that
+$$ y_i = \beta_{f_i} + \epsilon_i $$
+to test against the null hypothesis that
+$$ H_0 : \beta_1 = \beta_2 = \cdots = \beta_m = 0. $$
+
+. . .
+
+With *random* effects,
+```
+anova( lm(y ~ (1|f) - 1), lm(y ~ 1) )
+```
+uses the model that
+$$\begin{aligned} 
+    y_i &= \beta_{f_i} + \epsilon_i   \\
+    \beta_a &\sim \Normal(0, \eta) 
+\end{aligned}$$
+to test against the null hypothesis that
+$$ H_0 : \eta = 0. $$
+
+
+# Back to the pumpkins
+
+## Your turn
+
+1. Add a *random effect* of `plot` to the model.
+2. How big is the "plot" effect?
+3. Assess significance by using `anova( )` to compare to a nested model.
+
+
+Data: [data/pumpkins.tsv](data/pumpkins.tsv)
+```{r read_galton2}
+pumpkins <- read.table("data/pumpkins.tsv", header=TRUE)
+pumpkins$plot <- factor(pumpkins$plot)
+```
+
+## IN CLASS

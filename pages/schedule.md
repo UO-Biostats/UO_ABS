@@ -64,6 +64,11 @@ Week 5 (*10/27*)
 
 : Model selection; random effects and mixed models - a first look.
 
+    - slides: [Linear models](../CLASS_MATERIALS/Lectures/Week_05_Linear_models.slides.html)
+    - slides: [Model comparison](../CLASS_MATERIALS/Lectures/Week_05_Model_comparison.slides.html)
+    - slides: [Random effects](../CLASS_MATERIALS/Lectures/Week_05_Random_effects.slides.html)
+    - slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_05_Multiple_testing.slides.html)
+    - Homework: [peer review](peer_reviews.html)
     - Reading: Quinn & Keough chapter 13
 
 Week 6 (*11/3*)
