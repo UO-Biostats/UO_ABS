@@ -9,8 +9,7 @@ As budding scientists, peer reviews will be increasingly more important
 throughout your careers.
 Below is an outline of some things to consider when writing peer reviews,
 although you are not limited to this list and need not treat it like a checklist.
-Your review should be between one and two paragraphs, 
-and you should aim to spend no more than an hour on it.
+Your review should be less than a page.
 
 * **Be constructive.** 
 Emphasize positive aspects and suggest how to improve the not-so-positive ones.
