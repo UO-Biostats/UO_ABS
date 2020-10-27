@@ -20,15 +20,17 @@ library(lme4)
 
 ## Parent-offspring "regression"
 
-```{r plot_galton, echo=FALSE, fig.width=2.0*fig.dim, fig.height=1.5*fig.dim}
+```{r plot_galton, echo=FALSE, fig.width=2.0*fig.dim, fig.height=2.0*fig.dim}
 galton <- read.table("../Datasets/galton/galton-all.tsv", header=TRUE)
 gdiff <- diff(with(galton, tapply(height, gender, mean)))
 galton$midparent <- (galton$mother + galton$father - gdiff)/2
 galton$adj_height <- galton$height - (galton$gender == "M") * gdiff
-(ggplot(galton, mapping=aes(x=adj_height, y=midparent)) + geom_jitter(cex=3)
- + geom_smooth(method='lm', formula=y~x)
- + geom_abline(aes(intercept=0, slope=1), lwd=2, col='red')
- + coord_fixed() + xlab("midparent height") + ylab("child height"))
+plot(jitter(adj_height) ~ jitter(midparent), data=galton, asp=1, xlab="midparent", ylab="adjusted height", pch=20)
+abline(0, 1, col='red', lwd=2)
+abline(coef(lm(adj_height ~ midparent, data=galton)), col='blue', lwd=2)
+mh <- cut(galton$midparent, breaks=21)
+with(galton, points(tapply(midparent, mh, mean), tapply(adj_height, mh, mean), col='blue', pch=20, cex=3))
+legend("topleft", lty=1, col=c('red', 'blue'), legend=c('y=x', 'mean(y|x)'))
 ```
 
 ## "Regression"???
@@ -51,7 +53,7 @@ galton$adj_height <- galton$height - (galton$gender == "M") * gdiff
 
 Pearson's product-moment correlation coefficient:
 $$
-r = \frac{\sum_{i=1}^n (x_i - \bar x) (y_i - \bar y)}{\sqrt{\sum_{i=1}^n (y_i - \bar y)^2} \sqrt{\sum_{i=1}^n (y_i - \bar y)^2}}
+r^2 = \frac{\sum_{i=1}^n (x_i - \bar x) (y_i - \bar y)}{\sqrt{\sum_{i=1}^n (y_i - \bar y)^2} \sqrt{\sum_{i=1}^n (y_i - \bar y)^2}}
 $$
 
 . . .

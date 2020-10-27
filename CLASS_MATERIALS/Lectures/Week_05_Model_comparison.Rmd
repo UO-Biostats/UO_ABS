@@ -21,7 +21,7 @@ library(lme4)
 
 ## Recall the pumpkins
 
-![pumpkin experiment](images/pumpkins.jpg){width=100%}
+![pumpkin experiment](images/pumpkins.jpg){width=90%}
 
 ## 
 
@@ -103,3 +103,31 @@ Make sure they are nested!
 Data: [data/pumpkins.tsv](data/pumpkins.tsv)
 
 
+## IN CLASS
+
+```{r nested_anova}
+anova(
+      lm(weight ~ water, data=pumpkins),
+      lm(weight ~ fertilizer + water, data=pumpkins),
+      lm(weight ~ fertilizer * water, data=pumpkins),
+    lm(weight ~ plot * fertilizer * water, data=pumpkins)
+)
+```
+
+Conclusion: we don't have evidence that plots differ systematically.
+
+```
+# NOT THESE:
+lm(weight ~ fertilizer + water + plot, data=pumpkins)
+lm(weight ~ fertilizer * water + plot, data=pumpkins)
+
+# THESE ARE EQUIVALENT 
+summary(lm(weight ~ plot * fertilizer * water, data=pumpkins))
+summary(lm(weight ~ plot * water * fertilizer, data=pumpkins))
+summary(lm(weight ~ fertilizer * water * plot, data=pumpkins))
+summary(lm(weight ~ fertilizer * plot * water, data=pumpkins))
+
+# THIS IS EQUIVALENT TO THE ABOVE FOR ANOVA,
+# but GIVES DIFFERENT PARAMETERS
+summary(lm(weight ~ (fertilizer * water) / plot, data=pumpkins))
+```
