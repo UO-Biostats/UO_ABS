@@ -782,14 +782,15 @@ background-color: #fff; } }
 <p>With fixed effects, for a factor <code>f</code>, the comparison</p>
 <pre><code>anova( lm(y ~ f - 1), lm(y ~ 1) )</code></pre>
 <p>uses the model that <span class="math display">\[ y_i = \beta_{f_i} + \epsilon_i \]</span> to test against the null hypothesis that <span class="math display">\[ H_0 : \beta_1 = \beta_2 = \cdots = \beta_m = 0. \]</span></p>
-<div class="fragment">
+</section>
+<section class="slide level2">
+
 <p>With <em>random</em> effects,</p>
 <pre><code>anova( lm(y ~ (1|f) - 1), lm(y ~ 1) )</code></pre>
 <p>uses the model that <span class="math display">\[\begin{aligned} 
     y_i &amp;= \beta_{f_i} + \epsilon_i   \\
     \beta_a &amp;\sim \Normal(0, \eta) 
 \end{aligned}\]</span> to test against the null hypothesis that <span class="math display">\[ H_0 : \eta = 0. \]</span></p>
-</div>
 </section></section>
 <section>
 <section id="back-to-the-pumpkins" class="title-slide slide level1">

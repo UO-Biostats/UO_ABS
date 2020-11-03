@@ -160,7 +160,7 @@ abline(v=0, col='red')
 
 ## The math is a lot harder.
 
-For simple linear regression (with *fixed effects*),
+For a simple linear model fit by `lm( )` (with *fixed effects*),
 the *log-likelihood function* is just the sum of the squared residuals.
 
 . . .
@@ -200,7 +200,7 @@ $$ y_i = \beta_{f_i} + \epsilon_i $$
 to test against the null hypothesis that
 $$ H_0 : \beta_1 = \beta_2 = \cdots = \beta_m = 0. $$
 
-. . .
+-----------
 
 With *random* effects,
 ```
@@ -231,3 +231,46 @@ pumpkins$plot <- factor(pumpkins$plot)
 ```
 
 ## IN CLASS
+
+This is *not* right,
+since it puts a separate random effect for each plot *number*,
+which each unique combination of plot-water-fertilizer is actually a "plot":
+```{r inclass1}
+model1 <- lmer(weight ~ water * fertilizer + (1|plot), data=pumpkins)
+# this looks ok!
+summary(model1)
+# but, investigating more, we see trouble:
+ranef(model1)
+```
+
+-------------
+
+To make sure we're doing the right thing, we could construct a new factor
+by hand that does what we want
+(i.e., associates a unique level to each distinct plot):
+```{r inclass2}
+pumpkins$unique_plot <- with(pumpkins, gsub(" ", "_", paste(fertilizer, water, plot, sep=".")))
+model2 <- lmer(weight ~ water * fertilizer + (1|unique_plot), data=pumpkins)
+# now we get an effect for every unique plot!
+ranef(model2)
+```
+
+-------------
+
+How would we do this with formulas?
+After some playing around:
+```{r ranef_pump}
+model3 <- lmer(weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
+summary(model3)
+```
+
+How big is the plot effect?
+Well, above we saw that the SD of plot effects is estimated to be (roughly) 0.
+```{r plot_effect}
+rfs <- ranef(model3)$plot
+ses <- rfs[,1] + outer(sqrt(as.vector(attr(rfs, "postVar"))), c(-2, 2), "*")
+plot(rfs[,1], 1:nrow(rfs), xlab='plot mean', xlim=range(ses), ylab='')
+segments(x0=ses[,1], x1=ses[,2], y0=1:nrow(rfs))
+abline(v=0, col='red')
+```
+

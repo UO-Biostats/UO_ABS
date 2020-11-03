@@ -35,12 +35,13 @@ Would any find a large effect size?
 ## A less silly example
 
 Suppose someone conducts a well-controlled study
-that records the salary and the mean daily consumption of 100 different foods
+that records coronavirus infection rates
+and the mean daily consumption of 100 different foods
 in a bunch of people.
 
 . . .
 
-How many of the foods would be statistically significantly correlated with income at $p < 0.05$?
+How many of the foods would be statistically significantly associated with lower infection rates at $p < 0.05$?
 
 . . .
 
@@ -94,19 +95,16 @@ To tolerate *some* errors, control the *false discovery rate*.
 
 . . . 
 
-Suppose you test 1,000 different songs to see if they make snails go faster, \
-obtain a $p$-value for each song, \
-set a threshold $p_0$, \
+Suppose you test 1,000 different songs to see if they make snails go faster, 
+obtain a $p$-value for each song, 
+set a threshold $p_0$, 
 and study further those with $p < p_0$. 
 
 . . . 
 
 We expect* *no* false positives 
 if $p_0 = 0.05 / 1000 = 0.00005$ (**Bonferroni**). 
-
-:::{.floatright .aside}
-at the 5% level
-:::
+($*$*at the 5% level*)
 
 . . .
 
@@ -384,8 +382,7 @@ pairs(t(all_coefs[2:4,]), pch=20, col=ifelse(pvals < 0.05, 'red', adjustcolor('b
 
 Coefficents, with $p < 0.05/n$ in red:
 ```{r signif2, fig.width=2*fig.dim, fig.height=2*fig.dim, echo=FALSE}
-pairs(t(all_coefs[2:4,]), pch=20,
-      col=ifelse(pvals < 0.05/length(pop_lms), adjustcolor('black',0.2)))
+pairs(t(all_coefs[2:4,]), pch=20, col=ifelse(pvals < 0.05/length(pop_lms), 'red', adjustcolor('black',0.2)))
 ```
 
 
