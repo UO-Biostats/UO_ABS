@@ -72,10 +72,11 @@ Week 5 (*10/27*)
 
 Week 6 (*11/3*)
 
-: Bayesian statistics - prior distributions and uncertainty - using [Stan](https://mc-stan.org))
+: Multiple testing, error rates, and introduction to Bayesian statistics
 
     - slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_06_Multiple_testing.slides.html)
     - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
+    - install [Stan](https://mc-stan.org))
 
 Week 7 (*11/10*)
 
