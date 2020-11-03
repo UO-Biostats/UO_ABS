@@ -299,6 +299,21 @@ abline(h=c(0.05, 0.05/length(tp)), col=1:2)
 legend("topright", lty=1, col=1:2, legend=paste("p=", c(0.05, 0.05/length(tp))))
 ```
 
+## In class
+
+```{r in_Class}
+mu <- 1
+num_true <- 20
+tp <- c(replicate(num_true, t.test(rnorm(20, mean=mu))$p.value),
+        replicate(1000-num_true, t.test(rnorm(20, mean=0))$p.value))
+sprintf("%d of the %d p-values are below 0.05.", sum(tp < 0.05), length(tp))
+sprintf("%d of the %d p-values are below the 5%% Bonferroni level of %f.",
+        sum(p.adjust(tp, method='bonferroni') < 0.05), length(tp), 0.05/length(tp))
+sprintf("%d of the %d p-values are below the 5%% Bonferroni level of %f.",
+        sum(p.adjust(tp, method='fdr') < 0.05), length(tp), 0.05/length(tp))
+```
+
+
 
 
 # Many linear models
