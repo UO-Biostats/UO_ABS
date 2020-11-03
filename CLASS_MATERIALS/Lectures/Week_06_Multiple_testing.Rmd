@@ -280,6 +280,25 @@ plot(sort(p.adjust(tp, method='fdr')), xlim=c(1,100), ylim=c(0, 1.0), ylab='FDR-
 abline(h=0.05, col=1:2)
 ```
 
+## Exercise:
+
+Modify the code so that 20 of the datasets have a mean of $\mu=1$ (not zero, like below).
+See how many of the $p$-values are below 0.05
+
+- with no correction
+- with Bonerroni correction
+- with an FDR correction
+
+```
+tp <- replicate(1000, t.test(rnorm(20))$p.value)
+sprintf("%d of the %d p-values are below 0.05.", sum(tp < 0.05), length(tp))
+layout(t(1:2))
+hist(tp, breaks=40, xlab='p-value')
+plot(sort(tp), xlim=c(1,100), ylim=c(0, 0.1), ylab='p-values, sorted')
+abline(h=c(0.05, 0.05/length(tp)), col=1:2)
+legend("topright", lty=1, col=1:2, legend=paste("p=", c(0.05, 0.05/length(tp))))
+```
+
 
 
 # Many linear models
