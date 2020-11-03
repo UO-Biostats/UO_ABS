@@ -1,7 +1,7 @@
 ---
 title: "Multiple testing"
 author: "Peter Ralph"
-date: "27 October -- Advanced Biological Statistics"
+date: "3 November -- Advanced Biological Statistics"
 ---
 
 
@@ -56,7 +56,11 @@ A $p$-value is
 . . .
 
 So, if the null hypothesis *is* true, then **by definition**,
-$p$-values are uniformly distributed between 0 and 1.
+$p$-values are uniformly distributed between 0 and 1,
+
+. . .
+
+and so $\P\{ p < 0.05 \} = 0.05$.
 
 ## The Bonferroni Correction
 
@@ -72,13 +76,10 @@ To keep the probability of not wrongly rejecting *any* of the $n$ null hypothese
 to 5%,
 take a cutoff of $p < 0.05/n$.
 
-. . .
-
-To tolerate *some* errors, use the *false discovery rate*.
 
 ## Example: Bonferroni
 
-```{r null}
+```{r null, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 tp <- replicate(1000, t.test(rnorm(20))$p.value)
 layout(t(1:2))
 hist(tp, breaks=40, xlab='p-value')
@@ -87,9 +88,193 @@ abline(h=c(0.05, 0.05/length(tp)), col=1:2)
 legend("topright", lty=1, col=1:2, legend=paste("p=", c(0.05, 0.05/length(tp))))
 ```
 
+## False Discovery Rate
+
+To tolerate *some* errors, control the *false discovery rate*.
+
+. . . 
+
+Suppose you test 1,000 different songs to see if they make snails go faster, \
+obtain a $p$-value for each song, \
+set a threshold $p_0$, \
+and study further those with $p < p_0$. 
+
+. . . 
+
+We expect* *no* false positives 
+if $p_0 = 0.05 / 1000 = 0.00005$ (**Bonferroni**). 
+
+:::{.floatright .aside}
+at the 5% level
+:::
+
+. . .
+
+If $p_0$ is set to have a 5% *false discovery rate*, \
+and 100 songs fall below the threshold, \
+then we expect about 5 of these to be *false positives*.
+
+## 
+
+```
+> help(p.adjust)
+
+p.adjust                 package:stats                 R Documentation
+
+Adjust P-values for Multiple Comparisons
+
+Description:
+
+     Given a set of p-values, returns p-values adjusted using one of
+     several methods.
+
+Usage:
+
+     p.adjust(p, method = p.adjust.methods, n = length(p))
+     
+     p.adjust.methods
+     # c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY",
+     #   "fdr", "none")
+     
+Arguments:
+
+       p: numeric vector of p-values (possibly with ‘NA’s).  Any other
+          R object is coerced by ‘as.numeric’.
+
+  method: correction method, a ‘character’ string.  Can be abbreviated.
+
+       n: number of comparisons, must be at least ‘length(p)’; only set
+          this (to non-default) when you know what you are doing!
+
+Details:
+
+     The adjustment methods include the Bonferroni correction
+     (‘"bonferroni"’) in which the p-values are multiplied by the
+     number of comparisons.  Less conservative corrections are also
+     included by Holm (1979) (‘"holm"’), Hochberg (1988)
+     (‘"hochberg"’), Hommel (1988) (‘"hommel"’), Benjamini & Hochberg
+     (1995) (‘"BH"’ or its alias ‘"fdr"’), and Benjamini & Yekutieli
+     (2001) (‘"BY"’), respectively.  A pass-through option (‘"none"’)
+     is also included.  The set of methods are contained in the
+     ‘p.adjust.methods’ vector for the benefit of methods that need to
+     have the method as an option and pass it on to ‘p.adjust’.
+
+     The first four methods are designed to give strong control of the
+     family-wise error rate.  There seems no reason to use the
+     unmodified Bonferroni correction because it is dominated by Holm's
+     method, which is also valid under arbitrary assumptions.
+
+     Hochberg's and Hommel's methods are valid when the hypothesis
+     tests are independent or when they are non-negatively associated
+     (Sarkar, 1998; Sarkar and Chang, 1997).  Hommel's method is more
+     powerful than Hochberg's, but the difference is usually small and
+     the Hochberg p-values are faster to compute.
+
+     The ‘"BH"’ (aka ‘"fdr"’) and ‘"BY"’ methods of Benjamini,
+     Hochberg, and Yekutieli control the false discovery rate, the
+     expected proportion of false discoveries amongst the rejected
+     hypotheses.  The false discovery rate is a less stringent
+     condition than the family-wise error rate, so these methods are
+     more powerful than the others.
+
+     Note that you can set ‘n’ larger than ‘length(p)’ which means the
+     unobserved p-values are assumed to be greater than all the
+     observed p for ‘"bonferroni"’ and ‘"holm"’ methods and equal to 1
+     for the other methods.
+
+Value:
+
+     A numeric vector of corrected p-values (of the same length as ‘p’,
+     with names copied from ‘p’).
+
+References:
+
+     Benjamini, Y., and Hochberg, Y. (1995).  Controlling the false
+     discovery rate: a practical and powerful approach to multiple
+     testing.  _Journal of the Royal Statistical Society Series B_,
+     *57*, 289-300.  <URL: http://www.jstor.org/stable/2346101>.
+
+     Benjamini, Y., and Yekutieli, D. (2001).  The control of the false
+     discovery rate in multiple testing under dependency.  _Annals of
+     Statistics_, *29*, 1165-1188.  doi: 10.1214/aos/1013699998 (URL:
+     https://doi.org/10.1214/aos/1013699998).
+
+     Holm, S. (1979).  A simple sequentially rejective multiple test
+     procedure.  _Scandinavian Journal of Statistics_, *6*, 65-70.
+     <URL: http://www.jstor.org/stable/4615733>.
+
+     Hommel, G. (1988).  A stagewise rejective multiple test procedure
+     based on a modified Bonferroni test.  _Biometrika_, *75*, 383-386.
+     doi: 10.2307/2336190 (URL: https://doi.org/10.2307/2336190).
+
+     Hochberg, Y. (1988).  A sharper Bonferroni procedure for multiple
+     tests of significance.  _Biometrika_, *75*, 800-803.  doi:
+     10.2307/2336325 (URL: https://doi.org/10.2307/2336325).
+
+     Shaffer, J. P. (1995).  Multiple hypothesis testing.  _Annual
+     Review of Psychology_, *46*, 561-584.  doi:
+     10.1146/annurev.ps.46.020195.003021 (URL:
+     https://doi.org/10.1146/annurev.ps.46.020195.003021).  (An
+     excellent review of the area.)
+
+     Sarkar, S. (1998).  Some probability inequalities for ordered MTP2
+     random variables: a proof of Simes conjecture.  _Annals of
+     Statistics_, *26*, 494-504.  doi: 10.1214/aos/1028144846 (URL:
+     https://doi.org/10.1214/aos/1028144846).
+
+     Sarkar, S., and Chang, C. K. (1997).  The Simes method for
+     multiple hypothesis testing with positively dependent test
+     statistics.  _Journal of the American Statistical Association_,
+     *92*, 1601-1608.  doi: 10.2307/2965431 (URL:
+     https://doi.org/10.2307/2965431).
+
+     Wright, S. P. (1992).  Adjusted P-values for simultaneous
+     inference.  _Biometrics_, *48*, 1005-1013.  doi: 10.2307/2532694
+     (URL: https://doi.org/10.2307/2532694).  (Explains the adjusted
+     P-value approach.)
+
+See Also:
+
+     ‘pairwise.*’ functions such as ‘pairwise.t.test’.
+
+Examples:
+
+     require(graphics)
+     
+     set.seed(123)
+     x <- rnorm(50, mean = c(rep(0, 25), rep(3, 25)))
+     p <- 2*pnorm(sort(-abs(x)))
+     
+     round(p, 3)
+     round(p.adjust(p), 3)
+     round(p.adjust(p, "BH"), 3)
+     
+     ## or all of them at once (dropping the "fdr" alias):
+     p.adjust.M <- p.adjust.methods[p.adjust.methods != "fdr"]
+     p.adj    <- sapply(p.adjust.M, function(meth) p.adjust(p, meth))
+     p.adj.60 <- sapply(p.adjust.M, function(meth) p.adjust(p, meth, n = 60))
+     stopifnot(identical(p.adj[,"none"], p), p.adj <= p.adj.60)
+     round(p.adj, 3)
+     ## or a bit nicer:
+     noquote(apply(p.adj, 2, format.pval, digits = 3))
+     
+     
+     ## and a graphic:
+     matplot(p, p.adj, ylab="p.adjust(p, meth)", type = "l", asp = 1, lty = 1:6,
+             main = "P-value adjustments")
+     legend(0.7, 0.6, p.adjust.M, col = 1:6, lty = 1:6)
+     
+     ## Can work with NA's:
+     pN <- p; iN <- c(46, 47); pN[iN] <- NA
+     pN.a <- sapply(p.adjust.M, function(meth) p.adjust(pN, meth))
+     ## The smallest 20 P-values all affected by the NA's :
+     round((pN.a / p.adj)[1:20, ] , 4)
+
+```
+
 ## Example: False Discovery Rate
 
-```{r null2}
+```{r null2, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 layout(t(1:2))
 plot(sort(tp), xlim=c(1,100), ylim=c(0, 1.0), ylab='p-values, sorted', main='p')
 abline(h=0.05, col=1:2)
@@ -99,7 +284,7 @@ abline(h=0.05, col=1:2)
 
 
 
-# Many regressions
+# Many linear models
 
 ## Gene expression levels
 
@@ -122,13 +307,15 @@ fish <- read.table("../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata
 tmp <- read.table("../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv", header=TRUE, sep='\t', stringsAsFactors=FALSE, check.names=FALSE)
 genes <- tmp[,1:5]
 expression <- as.matrix(tmp[,6:ncol(tmp)])
-# sanity check
+# consistency check
 stopifnot(all(match(colnames(expression), fish$Individual) == 1:nrow(fish)))
 ```
 
 There are `r nrow(genes)` genes whose expression is measured in `r nrow(fish)` fish.
 
-```{r plot_data, echo=FALSE}
+--------------
+
+```{r plot_data, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
 plot(rowMedians(expression), rowMads(expression), log='xy',
      xlab='median expression', ylab='MAD expression')
 ```
@@ -140,7 +327,7 @@ To put coefficients on the same scale:
 ```{r parse_data2}
 expr <- sweep(expression, 1, rowMeans(expression), "/")
 ```
-```{r plotdata2, echo=FALSE}
+```{r plotdata2, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
 plot(rowMedians(expr), rowMads(expr), log='xy',
      xlab='median normalized expression', ylab='MAD normalized expression')
 ```
@@ -180,6 +367,14 @@ hist(pvals, breaks=500, xlab='p-values')
 
 ##
 
+`r sum(pvals < 0.05)` $p$-values are less than 0.05.
+
+. . .
+
+But, out of `r length(pvals)`, we'd *expect* about `r round(0.05 * length(pvals))` to be less than 0.05.
+
+##
+
 Coefficents, with $p < 0.05$ in red:
 ```{r signif, fig.width=2*fig.dim, fig.height=2*fig.dim, echo=FALSE}
 pairs(t(all_coefs[2:4,]), pch=20, col=ifelse(pvals < 0.05, 'red', adjustcolor('black',0.2)))
@@ -189,8 +384,10 @@ pairs(t(all_coefs[2:4,]), pch=20, col=ifelse(pvals < 0.05, 'red', adjustcolor('b
 
 Coefficents, with $p < 0.05/n$ in red:
 ```{r signif2, fig.width=2*fig.dim, fig.height=2*fig.dim, echo=FALSE}
-pairs(t(all_coefs[2:4,]), pch=20, col=ifelse(pvals < 0.05/length(pop_lms), 'red', adjustcolor('black',0.2)))
+pairs(t(all_coefs[2:4,]), pch=20,
+      col=ifelse(pvals < 0.05/length(pop_lms), adjustcolor('black',0.2)))
 ```
+
 
 ## The Bonferroni Bunch
 
@@ -236,3 +433,170 @@ subset(genes, pvals < 0.05/nrow(genes))
 > Benjamini and Hochberg (1995), as implemented by the limma topTable function.
 
 </div>
+
+# What's up with $p < 0.05$?
+
+##
+
+::: {.scrollable height=500}
+![xkcd:882](images/xkcd-significant.png){width=50%}
+:::
+
+::: {.caption .floatright}
+[xkcd:882](https://xkcd.com/882/)
+:::
+
+
+---------
+
+![xkcd:1478](images/xkcd-p-values.png){width=30%}
+
+
+::: {.caption .floatright}
+[xkcd:1478](https://xkcd.com/1478/)
+:::
+
+##
+
+![Fisher quote on p-value thresholds](images/fisher_p_value.jpg){width=60%}
+
+
+## $p$-values control the Type I error rate
+
+![Neyman & Pearson](images/neyman_pearson_type_I_and_II.png)
+
+
+# Another look at error rates
+
+##
+
+Suppose that I got a positive result on an HIV test.
+What's the chance I am HIV positive?
+(Here we *really* mean that "I" am a randomly chosen person
+from the US population.)
+
+## Background data
+
+OraQUICK advance rapid test:
+99.4% specificity and 99.8% sensitivity
+(from [MLO online](https://www.mlo-online.com/the-changing-landscape-of-hiv-diagnostics.php).
+
+. . .
+
+Refreshing from [Wikipedia](https://en.wikipedia.org/wiki/Sensitivity_and_specificity),
+specificity is the "true positive" rate and the sensitivity is the "true negative" rate:
+
+- if you have HIV, the chance that it (wrongly) comes out negative is .006 = 0.6%;
+- if you *don't* have HIV, the chance that it (wrongly) comes out positive is .002 = 0.2%.
+
+##
+
+There are currently around [1.1 million people with HIV in the US](https://www.hiv.gov/hiv-basics/overview/data-and-trends/statistics),
+out of a total of [328 million](https://www.census.gov/popclock/),
+giving an overall rate of 0.00335 = 0.335%.
+
+```{r rates}
+true_pos <- .994
+true_neg <- .998
+pop_rate <- 1.1 / 328
+```
+
+
+## Probabilities
+
+We want to know
+$$\begin{aligned}
+  & \P\{ \text{HIV+} | \text{postive test} \} \\
+    \qquad & =  \frac{\P\{ \text{HIV+ and getting a positive test} \} }{ \P\{ \text{getting a positive test} \} }
+\end{aligned}$$
+
+
+## Making that concrete with simulation
+
+Start with a large sample from the US population,
+some of whom have HIV and others do not,
+and then give them all HIV tests.
+
+```{r do_sim}
+N <- 1e6
+people <- data.frame(
+    hiv = runif(N) < pop_rate)
+people$test <- NA
+people$test[people$hiv] <- ifelse(runif(sum(people$hiv)) < true_pos, "+", "-")
+people$test[!people$hiv] <- ifelse(runif(sum(!people$hiv)) < true_neg, "-", "+")
+addmargins(table(status=people$hiv, test=people$test))
+```
+
+------------
+
+```{r table_again}
+addmargins(table(status=people$hiv, test=people$test))
+```
+
+For example, there are `r table(people$hiv, people$test)["FALSE", "+"]`
+who do not have HIV but got a positive test result.
+
+------------
+
+Now let's compute:
+the probability we want is
+the **proportion of people who got a positive test result
+who actually have HIV**:
+```{r get_number}
+hiv_given_plus <- sum(people$hiv & (people$test == "+")) / sum(people$test == "+")
+```
+The proportion of the `r sum(people$test == "+")` in this sample of `r N`
+that had a positive test result
+that *actually* have HIV is `r sprintf("%0.2f", 100 * hiv_given_plus)`%.
+
+## Conditional probabilities
+
+We want to compute the theoretical probability of having HIV given a positive test result,
+or
+$$
+  P(\text{HIV} \;|\; + ) = \frac{P(\text{HIV and}\; +)}{P(+)}
+$$
+
+-----------------
+
+The probability that a randomly chosen person from the population has HIV
+*and* got a positive test on this test is
+$$\begin{aligned}
+P(\text{HIV}\; \text{and}\; +) &= 
+  P(\text{HIV}) \times P(+ \;|\; \text{HIV}) \\
+  &= 0.00335 \times 0.994 \\
+  &=  0.0033299
+\end{aligned}$$
+
+------------------
+
+We'll also need the complementary probability,
+$$\begin{aligned}
+P(\text{not HIV}\; \text{and}\; +) &= 
+  P(\text{not HIV}) \times P(+ \;|\; \text{not HIV}) \\
+  &= (1 - 0.00335) \times (1 - 0.998) \\
+  &=  0.0019933
+\end{aligned}$$
+
+------------------
+
+And, the probability that a randomly chosen person from the population
+has a positive test result is
+$$\begin{aligned}
+ P(+)
+   &= P(\text{HIV and}\; +) + P(\text{not HIV and}\; +) \\
+   &= 0.0033299 + 0.0019933 \\
+   &= 0.0053232.
+\end{aligned}$$
+
+------------------
+
+Putting these together, we get that
+$$\begin{aligned}
+  P(\text{HIV} \;|\; + ) &= \frac{0.0033299}{0.0053232} \\
+  &= 0.6255448.
+\end{aligned}$$
+In other words, we get a predicted probability of 62.5%.
+
+
+

@@ -67,7 +67,6 @@ Week 5 (*10/27*)
     - slides: [Linear models](../CLASS_MATERIALS/Lectures/Week_05_Linear_models.slides.html)
     - slides: [Model comparison](../CLASS_MATERIALS/Lectures/Week_05_Model_comparison.slides.html)
     - slides: [Random effects](../CLASS_MATERIALS/Lectures/Week_05_Random_effects.slides.html)
-    - slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_05_Multiple_testing.slides.html)
     - Homework: [peer review](peer_reviews.html)
     - Reading: Quinn & Keough chapter 13
 
@@ -75,6 +74,7 @@ Week 6 (*11/3*)
 
 : Bayesian statistics - prior distributions and uncertainty - using [Stan](https://mc-stan.org))
 
+    - slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_06_Multiple_testing.slides.html)
     - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
 
 Week 7 (*11/10*)

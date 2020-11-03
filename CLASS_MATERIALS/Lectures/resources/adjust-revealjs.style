@@ -28,6 +28,8 @@ code { white-space: pre; }
 
 .reveal section img { border: 0; }
 
+.scrollable { overflow-y: auto !important; height: 500px; }
+
 </style>
 
 
