@@ -87,7 +87,7 @@ legend("topleft", lty=1, col=c('red', 'blue'), legend=c('y=x', 'mean(y|x)'))
 :::
 ::::::: {.column width=50%}
 
-![Statistical Methods for Research Workers 1932 cover](images/statistical-methods-for-research-workers.jpg)
+![Statistical Methods for Research Workers 1932 cover](images/statistical-methods-for-research-workers.jpg){width=80%}
 
 :::
 :::::::
@@ -125,7 +125,7 @@ Eugenics Laboratory Lecture Series, IX
 
 ![Eugenics poster](images/eugenics.png)
 
-## Who gets to decide? {data-background-image="images/runquist-science-large.jpg" data-background-position=center data-background-size=25%}
+## Who gets to "direct"? {data-background-image="images/runquist-science-large.jpg" data-background-position=center data-background-size=25%}
 
 
 <!-- ![Runquist mural at Knight library](images/runquist-science-large.jpg){width=20%} -->
@@ -160,7 +160,7 @@ Society.
 :::
 ::::::: {.column width=50%}
 
-![She has her mother's laugh](images/zimmer-she-has-her-mothers-laugh.jpg)
+![She has her mother's laugh](images/zimmer-she-has-her-mothers-laugh.jpg){width=70%}
 
 :::
 :::::::
@@ -239,8 +239,9 @@ Opponents:
 ##
 
 ::: {.centered}
-*being good at math doesn't remove a person's prior beliefs*
+*what **is** being "smart", anyways?*
 :::
+
 
 
 # Has this affected how we do statistics?

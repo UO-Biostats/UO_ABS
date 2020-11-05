@@ -77,7 +77,8 @@ Week 6 (*11/3*)
     - slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_06_Multiple_testing.slides.html)
     - slides: [Statistics and Eugenics](../CLASS_MATERIALS/Lectures/Week_06_Statistics_and_eugenics.slides.html)
     - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
-    - install [Stan](https://mc-stan.org))
+    - install [Stan](https://mc-stan.org)
+    - [Homework 6](../CLASS_MATERIALS/Homeworks/HW06_F20.html) *(due 11/12)*
 
 Week 7 (*11/10*)
 

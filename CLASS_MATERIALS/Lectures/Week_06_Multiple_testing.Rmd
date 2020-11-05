@@ -510,7 +510,7 @@ from the US population.)
 
 OraQUICK advance rapid test:
 99.4% specificity and 99.8% sensitivity
-(from [MLO online](https://www.mlo-online.com/the-changing-landscape-of-hiv-diagnostics.php).
+(from [MLO online](https://www.mlo-online.com/the-changing-landscape-of-hiv-diagnostics.php)).
 
 . . .
 
@@ -538,7 +538,7 @@ pop_rate <- 1.1 / 328
 We want to know
 $$\begin{aligned}
   & \P\{ \text{HIV+} | \text{postive test} \} \\
-    \qquad & =  \frac{\P\{ \text{HIV+ and getting a positive test} \} }{ \P\{ \text{getting a positive test} \} }
+    & \qquad =  \frac{\P\{ \text{HIV+ and getting a positive test} \} }{ \P\{ \text{getting a positive test} \} }
 \end{aligned}$$
 
 
@@ -567,6 +567,11 @@ addmargins(table(status=people$hiv, test=people$test))
 For example, there are `r table(people$hiv, people$test)["FALSE", "+"]`
 who do not have HIV but got a positive test result.
 
+. . .
+
+What is the **proportion of people who got a positive test result
+who actually have HIV**?
+
 ------------
 
 Now let's compute:
@@ -578,7 +583,7 @@ hiv_given_plus <- sum(people$hiv & (people$test == "+")) / sum(people$test == "+
 ```
 The proportion of the `r sum(people$test == "+")` in this sample of `r N`
 that had a positive test result
-that *actually* have HIV is `r sprintf("%0.2f", 100 * hiv_given_plus)`%.
+that *actually* have HIV is `r sum(sum(people$hiv & (people$test == "+")))`/`r sum(people$test == "+")` = `r sprintf("%0.2f", 100 * hiv_given_plus)`%.
 
 ## Conditional probabilities
 
