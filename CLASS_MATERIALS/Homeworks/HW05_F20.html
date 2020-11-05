@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>HW05_F20</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <div style="display: none">
+  \[
+  %%
+  % Add your macros here; they&#39;ll be included in pdf and html output.
+  %%
+
+  \newcommand{\R}{\mathbb{R}}    % reals
+  \newcommand{\E}{\mathbb{E}}    % expectation
+  \renewcommand{\P}{\mathbb{P}}  % probability
+  \DeclareMathOperator{\logit}{logit}
+  \DeclareMathOperator{\logistic}{logistic}
+  \DeclareMathOperator{\sd}{sd}
+  \DeclareMathOperator{\var}{var}
+  \DeclareMathOperator{\cov}{cov}
+  \DeclareMathOperator{\cor}{cor}
+  \DeclareMathOperator{\Normal}{Normal}
+  \DeclareMathOperator{\LogNormal}{logNormal}
+  \DeclareMathOperator{\Poisson}{Poisson}
+  \DeclareMathOperator{\Beta}{Beta}
+  \DeclareMathOperator{\Binom}{Binomial}
+  \DeclareMathOperator{\Gam}{Gamma}
+  \DeclareMathOperator{\Exp}{Exponential}
+  \DeclareMathOperator{\Cauchy}{Cauchy}
+  \DeclareMathOperator{\Unif}{Unif}
+  \DeclareMathOperator{\Dirichlet}{Dirichlet}
+  \DeclareMathOperator{\Wishart}{Wishart}
+  \DeclareMathOperator{\StudentsT}{StudentsT}
+  \DeclareMathOperator{\Weibull}{Weibull}
+
+  \newcommand{\given}{\;\vert\;}
+  \]
+  </div>
+</head>
+<body>
+<h2 id="homework-5-mixed-effects-models">Homework 5: Mixed Effects Models</h2>
+<p><strong>Assignment:</strong> Your task is to use Rmarkdown to write a short report, readable by a technically literate person. The code you used should not be visible in the final report (unless you have a good reason to show it).</p>
+<p><strong>Due:</strong> Submit your work via Canvas by the end of the day (midnight) on Thursday, November 12th. Please submit <strong>both the Rmd file and the resulting html file.</strong> You can work with other members of class, but I expect each of you to construct and run all of the scripts yourself.</p>
+<h2 id="the-problem">The Problem</h2>
+<p>For this assignment, you’ll be using a dataset from Hannah Tavaliere’s MSc research. In this project Hannah sampled 21 lakes across New England to evaluate the growth characteristics of three genetic lineages of an invasive aquatic plant (variable-leaf watermilfoil). The main objective of this study was to investigate whether the hybrid lineage (<code>HYB</code>) grows more aggressively than the parental lineages (<code>CON</code> and <code>ACP</code>). For each lake, you have plant growth and environmental data obtained from 2-3 100m transects randomly placed in each lake. For each transect you have data on three metrics of growth: average dry mass per plant (<code>Dry_Mass_per_Plant_g</code>), average total branch count(<code>Total_Branches_per_Plant</code>), and density of individual plants per square meter (<code>Density_per_m2</code>). These three measures capture different aspects of aggressive growth by describing individual plant mass, spread in the water column, and density of plant beds. You can find the data <a href="Tavalire_et_al_2012_field_data_for_ABS.csv">here</a>.</p>
+<p>Ignore for now that some of our dependent variables are counts… we will talk about what to do with those later in the term.</p>
+<p>Your report should contain (and describe) the results of the following. Make sure to report conclusions in real terms, referring to the biological quantities of interest.</p>
+<ul>
+<li><p>Create a multi-panel plot for each growth metric by lineage and describe what you see.</p></li>
+<li><p>Now focus only on total branches per plant. Fit linear models to describe whether total branches per plant differs between lineages (and by how much) and determine whether any of the environmental parameters (Dissolved_O2, Temperature, Conductivity, Alkalinity, or pH) are important covariates. Instead of running a lot of <code>anova</code> model comparisons, try selecting your model based on <a href="https://en.wikipedia.org/wiki/Akaike_information_criterion">Akaike’s Information Criterion (AIC)</a>. AIC works by comparing log-likelihoods of successive models, but penalizing models by how many parameters they have (so that more complex models are slightly disfavored). You can do this by hand, or use the function <code>stepAIC</code> in the library <code>MASS</code>. Use <code>help</code> to guide you. (Note: do not include the whole <code>stepAIC</code> output to your homework- it will be long). Provide output from your final models based on AIC. Describe how your analysis supports or refutes the prediction that the ‘HYB’ lineage of variable-leaf watermilfoil grows more aggressively than the parental lineages.</p></li>
+<li><p>You have not so far accounted for variation between lakes. Add a random effect for <code>Lake</code> in the final model you selected for each growth metric above. Did your results change?</p></li>
+<li><p>Test whether the random effect improved the fit of the model using an ANOVA comparison. What can you conclude about this random effect as a source of variation, based on these results? Which model is a better fit- linear or mixed effects?</p></li>
+<li><p><em>(optional)</em>: Run the same analyses on the other two measures of plant growth: dry mass per plant and density per square meter. Incorporate these results into your conclusions.</p></li>
+</ul>
+</body>
+</html>
