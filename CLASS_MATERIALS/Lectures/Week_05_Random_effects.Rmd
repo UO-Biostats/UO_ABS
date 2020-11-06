@@ -225,52 +225,113 @@ $$ H_0 : \eta = 0. $$
 
 
 Data: [data/pumpkins.tsv](data/pumpkins.tsv)
-```{r read_galton2}
+```{r read_pumpkins2}
 pumpkins <- read.table("data/pumpkins.tsv", header=TRUE)
 pumpkins$plot <- factor(pumpkins$plot)
+pumpkins$fertilizer <- factor(pumpkins$fertilizer)
+pumpkins$water <- factor(pumpkins$water)
 ```
 
 ## IN CLASS
 
-This is *not* right,
-since it puts a separate random effect for each plot *number*,
-which each unique combination of plot-water-fertilizer is actually a "plot":
-```{r inclass1}
-model1 <- lmer(weight ~ water * fertilizer + (1|plot), data=pumpkins)
-# this looks ok!
-summary(model1)
-# but, investigating more, we see trouble:
-ranef(model1)
+**(1)** Add a random effect to the linear model.
+```{r fit_pumpkin_model}
+library(lme4)
+
+fixed_fit <- lm(
+          weight ~ water * fertilizer, data=pumpkins)
+
+mixed_fit <- lmer(
+          weight ~ water * fertilizer + (1|plot:water:fertilizer),
+          data=pumpkins)
+
+summary(mixed_fit)
 ```
 
--------------
-
-To make sure we're doing the right thing, we could construct a new factor
-by hand that does what we want
-(i.e., associates a unique level to each distinct plot):
-```{r inclass2}
-pumpkins$unique_plot <- with(pumpkins, gsub(" ", "_", paste(fertilizer, water, plot, sep=".")))
-model2 <- lmer(weight ~ water * fertilizer + (1|unique_plot), data=pumpkins)
-# now we get an effect for every unique plot!
-ranef(model2)
-```
-
--------------
-
-How would we do this with formulas?
-After some playing around:
-```{r ranef_pump}
-model3 <- lmer(weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
-summary(model3)
-```
-
-How big is the plot effect?
-Well, above we saw that the SD of plot effects is estimated to be (roughly) 0.
+**(2)** How big is the "plot" effect?
+The estimated standard deviation of the plot effects is
+`r attr(summary(mixed_fit)$varcor[["plot:water:fertilizer"]], "stddev")`.
+We can also look at the estimated random effects visually,
+by plotting the estimated mean plot effects,
+with a bar showing plus/minus 2 standard errors.
 ```{r plot_effect}
-rfs <- ranef(model3)$plot
+rfs <- ranef(mixed_fit)[["plot:water:fertilizer"]]
 ses <- rfs[,1] + outer(sqrt(as.vector(attr(rfs, "postVar"))), c(-2, 2), "*")
-plot(rfs[,1], 1:nrow(rfs), xlab='plot mean', xlim=range(ses), ylab='')
+plot(rfs[,1], 1:nrow(rfs), xlab='plot effect mean',
+     xlim=range(ses), ylab='')
 segments(x0=ses[,1], x1=ses[,2], y0=1:nrow(rfs))
 abline(v=0, col='red')
 ```
+Overall, our best guess is that plots differ by around 0.2 pounds,
+but no more than 0.6 pounds from each other
+(in terms of average pumpkin weight, with 95% confidence).
 
+**(3)**
+
+Compare the models with/without random effects,
+to see if the random effects seem to have added anything useful.
+
+```{r compare_models}
+anova(mixed_fit, fixed_fit)
+```
+Hm, a $p$-value of 1. That's suspicious. We know there *shouldn't* be an effect of plot,
+but are things really working right?
+
+## See what happens if there *is* a plot effect
+
+```{r new_sim}
+sim_pumpkins <- function (plot_sd=0) {
+    resid_sd <- 1.2
+    plants_per_plot <- 5
+    plots_per_treatment <- 4
+    pumpkins <- expand.grid(
+                  fertilizer=c("low", "medium", "high"),
+                  water=c("no water", "water"),
+                  plot=1:plots_per_treatment,
+                  plant=1:plants_per_plot,
+                  weight=NA)
+    # true values
+    mu <- 20
+    alpha <- c('high'=0, 'medium'=-6, 'low'=-12)
+    beta <- c('no water'=0, 'water'=0)
+    gamma <- c('high.no water'=0,
+               'high.water'=0,
+               'medium.no water'=0,
+               'medium.water'=2,
+               'low.no water'=0,
+               'low.water'=-2)
+    plot_delta <- rnorm(plots_per_treatment
+                        * nlevels(pumpkins$fertilizer)
+                        * nlevels(pumpkins$water),
+                        mean=0, sd=plot_sd)
+    k <- 1
+    for (p in 1:plots_per_treatment) {
+        for (f in levels(pumpkins$fertilizer)) {
+            for (w in levels(pumpkins$water)) {
+                names(plot_delta)[k] <- paste(p, f, w, sep='.')
+                k <- k + 1
+            }
+        }
+    }
+    pumpkins$mean_weight <- (mu
+        + alpha[as.character(pumpkins$fertilizer)]
+        + beta[as.character(pumpkins$water)]
+        + gamma[paste(pumpkins$fertilizer, pumpkins$water, sep='.')]
+        + plot_delta[paste(pumpkins$plot, pumpkins$fertilizer, pumpkins$water, sep='.')])
+    pumpkins$weight <- rnorm(nrow(pumpkins),
+                             mean=pumpkins$mean_weight,
+                             sd=resid_sd)
+    return(pumpkins)
+}
+
+new_pumpkins <- sim_pumpkins(plot_sd=3)
+new_fixed_fit <- lm(
+          weight ~ water * fertilizer, data=new_pumpkins)
+
+new_mixed_fit <- lmer(
+          weight ~ water * fertilizer + (1|plot:water:fertilizer),
+          data=new_pumpkins)
+
+anova(new_mixed_fit, new_fixed_fit)
+```
+Yes, they seem to be working right!
