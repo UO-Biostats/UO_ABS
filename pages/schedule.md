@@ -72,35 +72,36 @@ Week 5 (*10/27*)
 
 Week 6 (*11/3*)
 
-: Multiple testing, error rates, and introduction to Bayesian statistics
+: Multiple testing, error rates, and some history.
 
     - slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_06_Multiple_testing.slides.html)
     - slides: [Statistics and Eugenics](../CLASS_MATERIALS/Lectures/Week_06_Statistics_and_eugenics.slides.html)
-    - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
     - install [Stan](https://mc-stan.org)
     - [Homework 6](../CLASS_MATERIALS/Homeworks/HW06_F20.html) *(due 11/12)*
 
 Week 7 (*11/10*)
 
+: Introduction to Bayesian statistics
+
+    - slides: [Prior distributions and uncertainty](../CLASS_MATERIALS/Lectures/Week_07_Prior_distributions.slides.html)
+    - slides: [Probability rules](../CLASS_MATERIALS/Lectures/Week_07_Probability_rules.slides.html)
+    - slides: [the Beta distribution](../CLASS_MATERIALS/Lectures/Week_07_Beta_distribution.slides.html)
+    - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
+
+Week 8 (*11/17*)
+
 : Bayesian hierarchical modeling - shrinkage, and sharing power
 
     - Reading: Kruschke, chapters 9, 10
 
-Week 8 (*11/17*)
+Week 9 (*11/24*)
 
 : Logistic regression - simulation, posterior predictive sampling - robust regression
 
     - Reading: Kruschke, chapters 13, 21
 
-Week 9 (*11/24*)
-
-: Robust multiple linear regression; scale mixtures; model selection with crossvalidation; introduction to Generalized Linear Models (GLM).
-
-    - Reading: Kruschke, chapters 15, 16, 17
-
 Week 10 (*12/1*)
 
-: More GLMs; Poisson regression; detecting and modeling overdispersion; quantifying goodness-of-fit.
+: Robust multiple linear regression; Generalized Linear Models (GLM).
 
-    - Reading: Kruschke, chapter 24
-
+    - Reading: Kruschke, chapters 15, 16, 17

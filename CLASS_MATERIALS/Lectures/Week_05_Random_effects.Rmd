@@ -237,16 +237,12 @@ pumpkins$water <- factor(pumpkins$water)
 **(1)** Add a random effect to the linear model.
 ```{r fit_pumpkin_model}
 library(lme4)
-
-fixed_fit <- lm(
-          weight ~ water * fertilizer, data=pumpkins)
-
-mixed_fit <- lmer(
-          weight ~ water * fertilizer + (1|plot:water:fertilizer),
-          data=pumpkins)
-
+fixed_fit <- lm( weight ~ water * fertilizer, data=pumpkins)
+mixed_fit <- lmer( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
 summary(mixed_fit)
 ```
+
+------------
 
 **(2)** How big is the "plot" effect?
 The estimated standard deviation of the plot effects is
@@ -262,13 +258,17 @@ plot(rfs[,1], 1:nrow(rfs), xlab='plot effect mean',
 segments(x0=ses[,1], x1=ses[,2], y0=1:nrow(rfs))
 abline(v=0, col='red')
 ```
+
+----------------
+
+
 Overall, our best guess is that plots differ by around 0.2 pounds,
 but no more than 0.6 pounds from each other
 (in terms of average pumpkin weight, with 95% confidence).
 
-**(3)**
+------------------
 
-Compare the models with/without random effects,
+**(3)** Compare the models with/without random effects,
 to see if the random effects seem to have added anything useful.
 
 ```{r compare_models}
@@ -277,7 +277,9 @@ anova(mixed_fit, fixed_fit)
 Hm, a $p$-value of 1. That's suspicious. We know there *shouldn't* be an effect of plot,
 but are things really working right?
 
-## See what happens if there *is* a plot effect
+---------------
+
+See what happens if there *is* a plot effect
 
 ```{r new_sim}
 sim_pumpkins <- function (plot_sd=0) {
@@ -323,7 +325,11 @@ sim_pumpkins <- function (plot_sd=0) {
                              sd=resid_sd)
     return(pumpkins)
 }
+```
 
+---------------
+
+```{r new_sim2}
 new_pumpkins <- sim_pumpkins(plot_sd=3)
 new_fixed_fit <- lm(
           weight ~ water * fertilizer, data=new_pumpkins)
@@ -334,4 +340,11 @@ new_mixed_fit <- lmer(
 
 anova(new_mixed_fit, new_fixed_fit)
 ```
-Yes, they seem to be working right!
+Yes, everything seems to be working right!
+
+---------------
+
+In conclusion, there's no good evidence that we need a random effect for plots
+(i.e., that plots are inducing unmodeled correlation in our data).
+But it's not hurting our model to include them, either.
+
