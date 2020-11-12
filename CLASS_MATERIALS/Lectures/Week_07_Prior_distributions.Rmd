@@ -665,6 +665,207 @@ generated quantities {
 }
 ```
 
+
+# Markov Chain Monte Carlo
+
+## When you can't do the integrals: MCMC
+
+**Goal:** 
+Given:
+
+- a model with parameters $\theta$,
+- a prior distribution $p(\theta)$ on $\theta$, and
+- data, $D$,
+
+
+"find"/ask questions of the posterior distribution on $\theta$,
+
+$$\begin{aligned}
+    p(\theta \given D) = \frac{ p(D \given \theta) p(\theta) }{ p(D) } .
+\end{aligned}$$
+
+. . .
+
+**Problem:** usually we can't write down an expression for this
+(because of the "$p(D)$").
+
+. . .
+
+**Solution:**
+we'll make up a way to *draw random samples* from it.
+
+-------------
+
+**Toy example:** 
+
+*(from beta-binomial coin example)*
+
+Do we think that $\theta < 0.5$?
+
+*(before:)* 
+```r
+pbeta(0.5, post_a, post_b)
+```
+
+*(now:)* 
+```r
+mean(rbeta(1e6, post_a, post_b) < 0.5)
+```
+
+
+## How? Markov chain Monte Carlo!
+
+i.e., "random-walk-based stochastic integration"
+
+
+**Example:**
+Gibbs sampling for uniform distribution on a region.
+*(picture)*
+
+
+## Overview of MCMC
+
+Produces a random sequence of samples $\theta_1, \theta_2, \ldots, \theta_N$.
+
+0. Begin somewhere (at $\theta_1$).
+
+At each step, starting at $\theta_k$:
+
+1. **Propose** a new location (nearby?): $\theta_k'$
+
+2. Decide whether to **accept** it.
+
+    - if so: set $\theta_{k+1} \leftarrow \theta_k'$
+    - if not: set $\theta_{k+1} \leftarrow \theta_k$
+
+3. Set $k \leftarrow k+1$; if $k=N$ then stop.
+
+. . .
+
+The magic comes from doing *proposals* and *acceptance* 
+so that the $\theta$'s are samples from the distribution we want.
+
+## Key concepts
+
+- Rules are chosen so that $p(\theta \given D)$ is the *stationary* distribution
+  (long-run average!) of the random walk (the "Markov chain").
+
+- The chain must *mix* fast enough so the distribution of visited states
+  *converges* to $p(\theta \given D)$.
+
+- Because of *autocorrelation*, $(\theta_1, \theta_2, \ldots, \theta_N)$ 
+  are not $N$ independent samples:
+  they are roughly equivalent to $N_\text{eff} < N$ independent samples.
+
+- For better *mixing*, acceptance probabilities should not be too high or too low.
+
+- Starting *several chains* far apart can help diagnose failure to mix:
+  Gelman's $r$ quantifies how different they are.
+
+
+## Let's "walk around":
+
+::: {.columns}
+::::::: {.column width=50%}
+
+
+In each group, have one *walker* directed by others:
+
+0. Start somewhere at "random", then repeat:
+
+1. Pick a random $\{N,S,E,W\}$.
+
+2. Take a step in that direction,
+
+    * *unless* you'd run into a wall or a table.
+
+
+Take a screenshot of your path after:
+
+- 10 steps
+- 50 steps
+
+
+:::
+::::::: {.column width=50%}
+
+![image of floor plan of Knight library](images/knight-library-floor-plan.png)
+
+:::
+:::::::
+
+
+------------------------
+
+
+
+::: {.columns}
+::::::: {.column width=50%}
+
+Imagine the heatmap of how much time your "walker" has spent in each place in the library.
+
+**Question:** What distribution does this sample from?
+
+
+:::
+::::::: {.column width=50%}
+
+![image of floor plan of Knight library](images/knight-library-floor-plan.png)
+
+:::
+:::::::
+
+-------------------
+
+
+**Now:**
+
+1. Pick a random $\{N,S,E,W\}$.
+
+2. Take a $1+\Poisson(5)$ number of steps in that direction,
+
+    * *unless* you'd run into a wall.
+
+
+Again, take a screenshot of your path after:
+
+- 10 steps
+- 50 steps
+
+
+--------------------
+
+Does it mix faster?
+
+. . .
+
+Would $1 + \Poisson(50)$ steps be better?
+
+
+## How it works
+
+Imagine the walkers are on a hill, and:
+
+1. Pick a random $\{N,S,E,W\}$.
+
+2. If 
+
+    * the step is *uphill*, then take it.
+    * the step is *downhill*, then flip a $p$-coin;
+      if you get Heads, stay were you are.
+
+
+What would *this* do?
+
+. . .
+
+Thanks to *Metropolis-Hastings*,
+if "elevation" is $p(\theta \given D)$, 
+then setting $p = p(\theta' \given D) / p(\theta \given D)$
+makes the stationary distribution $p(\theta \given D)$. 
+
+
+
 # Beta-Binomial with Stan
 
 ## First, in words:
@@ -818,7 +1019,7 @@ model {
 ::::::::::::::
 
 
-## The Stan model
+## Compiling Stan model, in R
 
 ```{r stan_setup, cache=TRUE}
 library(rstan)
@@ -870,7 +1071,7 @@ Usage:
 ## Maximum posterior
 
 
-```{r run_rstan, cache=TRUE, dependson="stan_setup"}
+```{r optim_rstan, cache=TRUE, dependson="stan_setup"}
 library(rstan)
 (fit <- optimizing(bb_model,  # stan model from above
                    data=list(N=10, Z=6)))
@@ -915,39 +1116,247 @@ points(fit$par, post_fun(fit$par), col='red', pch=20, cex=2)
 :::
 ::::::::::::::
 
-# Wrap-up
 
-## Summary
-
-posterior $=$ prior $\times$ likelihood
-
-. . .
-
-"updating prior ideas based on (more) data"
-
-. . .
-
-Stan lets us find *best fitting* parameters for *models*.
-
-. . .
+## Sampling from the posterior distribution
 
 
-Next time: **uncertainty**, with Stan.
+```{r run_rstan, cache=TRUE}
+library(rstan)
+fit <- stan(model_code=stan_block,  # stan block from above
+            data=list(N=10, Z=6),
+            chains=3, iter=10000)
+
+```
+
+---------------
+
+`lp__` is the log posterior density.
+Note `n_eff`.
+
+```{r print_rstan}
+print(fit)
+```
+
+---------------
+
+Fuzzy caterpillars are good.
+
+```{r trace_rstan}
+stan_trace(fit)
+```
+
+---------------
+
+Stan uses ggplot2.
+
+```{r plot_rstan}
+stan_hist(fit, bins=20) + xlim(0,1)
+```
+
+---------------
+
+What's the posterior probability that $\theta < 0.5$?
+
+```{r results_rstan}
+samples <- extract(fit)
+mean(samples$theta < 0.5)
+
+# compare to analytic solution
+pbeta(0.5, shape1=10+6, shape2=10+4)
+```
 
 
-# Appendix
+# Hierarchical Coins
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
 
 
-## Exercise: check the Beta-Binomial
+```
+data {
+    // the data (input)
+}
+parameters {
+    // the parameters (output)
+}
+model {
+    // how they are related
+}
+```
 
-1. Simulate $10^6$ coin *probabilities*, called $\theta$, from Beta(5,5). (`rbeta`)
+:::
+::::::::::::::
 
-2. For *each coin*, simulate 10 flips. (`rbinom`)
+-----------------------
 
-3. Make a histogram of the true probabilities (values of $\theta$)
-   of *only* those coins having 3 of 10 heads.
 
-4. Compare the distribution to Beta($a$,$b$) -- with what $a$ and $b$? (`dbeta`)
+:::::::::::::: {.columns}
+::: {.column width="50%"}
 
-5. Explain what happened.
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // the parameters (output)
+}
+model {
+    // how they are related
+}
+```
+
+:::
+::::::::::::::
+
+-----------------------
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta[n];
+    real<lower=0,upper=100> alpha;
+    real<lower=0,upper=100> beta;
+}
+model {
+    // how they are related
+}
+```
+
+:::
+::::::::::::::
+
+-----------------------
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\alpha, \beta) \\
+    \alpha &\sim \Unif(0, 100) \\
+    \beta &\sim \Unif(0, 100)
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta[n];
+    real<lower=0, upper=100> alpha;
+    real<lower=0, upper=100> beta;
+}
+model {
+    Z ~ binomial(N, theta);
+    theta ~ beta(alpha, beta);
+    // uniform priors "go without saying"
+    // alpha ~ uniform(0, 100);
+    // beta ~ uniform(0, 100);
+}
+```
+
+:::
+::::::::::::::
+
+
+## Demonstration
+
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+Data:
+```
+set.seed(23)
+ncoins <- 100
+true_theta <- rbeta(ncoins, 20, 50)
+N <- rep(50, ncoins)
+Z <- rbinom(ncoins, size=N, prob=true_theta)
+```
+
+Find the posterior distribution on `alpha` and `beta`:
+check convergence with `print()` and `stan_trace()`,
+then plot using `stan_hist()` and/or `stan_scat()`..
+
+
+:::
+::: {.column width="50%"}
+
+
+```
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta[n];
+    real<lower=0,upper=100> alpha;
+    real<lower=0,upper=100> beta;
+}
+model {
+    Z ~ binomial(N, theta);
+    theta ~ beta(alpha, beta);
+    // uniform priors 'go without saying'
+    // alpha ~ uniform(0, 100);
+    // beta ~ uniform(0, 100);
+}
+```
+
+:::
+::::::::::::::
+
 
