@@ -86,6 +86,7 @@ Week 7 (*11/10*)
     - slides: [Prior distributions and uncertainty](../CLASS_MATERIALS/Lectures/Week_07_Prior_distributions.slides.html)
     - slides: [Probability rules](../CLASS_MATERIALS/Lectures/Week_07_Probability_rules.slides.html)
     - slides: [the Beta distribution](../CLASS_MATERIALS/Lectures/Week_07_Beta_distribution.slides.html)
+    - slides: [Sampling from the posterior with Markov chain Monte Carlo](../CLASS_MATERIALS/Lectures/Week_07_Posterior_sampling.slides.html)
     - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
     - [Homework 7](../CLASS_MATERIALS/Homeworks/HW07_F20.html) *(due 11/19)*
 
