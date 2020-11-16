@@ -26,7 +26,7 @@ You will be prompted for a password. Type your uoregon password and hit RETURN.
 
 Now navigate to the UO biostats directory
 ``` 
-cd /projects/bi607/
+cd /projects/bi610/
 ```
 You can list (with `ls`) all directories here, one of which is `<username>`.
 If you move to it with `cd <username>` you will likely see that it is empty.
@@ -35,7 +35,7 @@ Suppose I wanted to work on homework 7, then typing `mkdir hw7`
 will create a new directory named `hw7` where you can store all homework 7 files.
 You can look at the full path to this directory by typing `pwd`.
 Do it, you'll need that path for the next step.
-It should be `/projects/bi607/<username>/hw7/`.
+It should be `/projects/bi610/<username>/hw7/`.
 
 ## 2 Become BFFs with `rsync`
 Now you need to populate your shiny new homework directory with some files.
@@ -43,7 +43,7 @@ Let's start with our data file, `BattingAverage.csv`.
 In a different tab or window for your terminal, navigate to where
 you have `BattingAverage.csv` stored and run the command
 ```
-rsync -vzP BattingAverage.csv <username>@talapas-uoregon.edu:/projects/bi607/<username>/hw7/
+rsync -vzP BattingAverage.csv <username>@talapas-uoregon.edu:/projects/bi610/<username>/hw7/
 ```
 You will be prompted to enter your uoregon password to initiate the transfer.
 
@@ -120,7 +120,7 @@ saveRDS(model_fit, file='baseball_model.rds')
 And here is an example `sbatch` file named `run_rstan.sbatch`
 ```
 #!/bin/bash
-#SBATCH --account=bi607
+#SBATCH --account=bi610
 #SBATCH --partition=short
 #SBATCH --job-name=rstan
 #SBATCH --time 1:00:00
