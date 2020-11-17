@@ -1,7 +1,7 @@
 ---
 title: "Adding levels of randomness"
 author: "Peter Ralph"
-date: "17 November 2019 -- Advanced Biological Statistics"
+date: "17 November 2020 -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
@@ -15,17 +15,6 @@ library(rstan)
 library(matrixStats)
 options(mc.cores = parallel::detectCores())
 ```
-
-## Outline
-
-1. Hierarchical coins
-
-2. Introduction to MCMC with Stan
-
-3. Sharing power, and shrinkage
-
-4. Baseball
-
 
 # Hierarchical coins
 
@@ -352,7 +341,7 @@ fit <- sampling(bb_model,  # compiled stan model from above
 ---------------
 
 `lp__` is the log posterior density.
-Note `n_eff`.
+Note `n_eff` and `Rhat`.
 
 ```{r print_rstan}
 print(fit)
@@ -405,6 +394,8 @@ pbeta(0.5, shape1=10+6, shape2=10+4)
 
 
 # Hierarchical Coins
+
+--------------
 
 :::::::::::::: {.columns}
 ::: {.column width="50%"}
@@ -548,8 +539,7 @@ model {
 ::::::::::::::
 
 
-## Your turn
-
+## Exercise
 
 
 :::::::::::::: {.columns}
@@ -566,7 +556,8 @@ Z <- rbinom(ncoins, size=N, prob=true_theta)
 
 Find the posterior distribution on `alpha` and `beta`:
 check convergence with `print()` and `stan_trace()`,
-then plot using `stan_hist()` and/or `stan_scat()`..
+then plot using `stan_hist()`, `pairs()`, and/or `stan_scat()`
+(with e.g., `pars=c("alpha", "beta", "theta[1]", "theta[2]")`).
 
 
 :::
@@ -596,372 +587,5 @@ model {
 
 :::
 ::::::::::::::
-
-
-
-# Baseball
-
-## Baseball
-
-We have [a dataset](data/BattingAverage.csv) of batting averages of baseball players,
-having
-
-1. name
-2. position
-3. number of at bats
-4. number of hits
-
-
-```{r basedata}
-batting <- read.csv("data/BattingAverage.csv", header=TRUE, stringsAsFactors=TRUE)
-head(batting)
-```
-
-------------------------
-
-The *overall* batting average of the `r nrow(batting)` players is `r sum(batting$Hits)/sum(batting$AtBats)`.
-
-Here is the average by position.
-```{r by_pos}
-batting %>% group_by(PriPos) %>% 
-    summarise(num=n(), BatAvg=sum(Hits)/sum(AtBats)) %>% 
-    select(PriPos, num, BatAvg)
-```
-
-## Questions?
-
-1. What's the overall batting average?
-
-2. Do some positions tend to be better batters?
-
-3. How much variation is there?
-
-
-## Everyone is the same
-
-```{r start, cache=TRUE}
-first_model <- "
-data {
-    int N;
-    int hits[N];
-    int at_bats[N];
-}
-parameters {
-    real<lower=0, upper=1> theta;
-}
-model {
-    hits ~ binomial(at_bats, theta);
-    theta ~ beta(1, 1);
-} "
-first_fit <- stan(model_code=first_model, chains=3, iter=1000,
-                  data=list(N=nrow(batting),
-                            hits=batting$Hits,
-                            at_bats=batting$AtBats))
-```
-
------------------
-
-```{r start_res}
-stan_hist(first_fit, bins=20)
-```
-
-## Every pitcher is the same
-
-```{r pos_model, cache=TRUE}
-pos_model <- "
-data {
-    int N;
-    int hits[N];
-    int at_bats[N];
-    int npos; // number of positions
-    int position[N];
-}
-parameters {
-    real<lower=0, upper=1> theta[npos];
-}
-model {
-    real theta_vec[N];
-    for (k in 1:N) {
-        theta_vec[k] = theta[position[k]];
-    }
-    hits ~ binomial(at_bats, theta_vec);
-    theta ~ beta(1, 1);
-} "
-pos_fit <- stan(model_code=pos_model, chains=3, iter=1000,
-                  data=list(N=nrow(batting),
-                            hits=batting$Hits,
-                            at_bats=batting$AtBats,
-                            npos=nlevels(batting$PriPos),
-                            position=as.numeric(batting$PriPos)))
-```
-
------------------
-
-```{r pos_res, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
-theta_samples <- extract(pos_fit)$theta
-layout(matrix(1:9, nrow=3))
-for (k in 1:ncol(theta_samples)) {
-    hist(theta_samples[,k], main=levels(batting$PriPos)[k], xlim=c(0.1, 0.3),
-         col=adjustcolor('red',0.6), xlab='batting avg', freq=FALSE)
-}
-```
-
-
-
-## Your turn : Every individual different.
-
-:::::::::::::: {.columns}
-::: {.column width="50%"}
-
-$$\begin{aligned}
-    Z_i &\sim \Binom(N_i, \theta_i) \\
-    \theta_i &\sim \Beta(\alpha_{p_i}, \beta_{p_i}) \\
-    \alpha_p &= \mu_p \kappa_p \\
-    \beta_p &= (1-\mu_p) \kappa_p \\
-    \mu_p &\sim \Beta(1, 1) \\
-    \kappa_p &\sim \Gam(0.1, 0.1) .
-\end{aligned}$$
-
-::::::::::::::
-::: {.column width="50%"}
-
-Variable types in Stan:
-```
-int x;       // an integer
-int y[10];   // ten integers
-real z;      // a number
-real z[2,5]; // a 2x5 array of numbers
-
-vector[10] u;      // length 10 vector
-matrix[10,10] v;   // 10x10 matrix
-vector[10] w[10];  // ten length 10 vectors
-```
-
-* don't forget the `;`
-* make sure R types match
-* read the error messages
-
-:::
-::::::::::::::
-
-## In class
-
-```{r inclass}
-ind_model <- "
-data {
-    int N;
-    int hits[N];
-    int at_bats[N];
-    int npos; // number of positions
-    int position[N];
-}
-parameters {
-    vector<lower=0, upper=1>[N] theta;
-    vector<lower=0, upper=1>[npos] mu;
-    vector<lower=0>[npos] kappa;
-}
-model {
-    vector[npos] alpha;
-    vector[N] alpha_vec;
-    vector[npos] beta;
-    vector[N] beta_vec;
-    alpha = mu .* kappa;
-    beta = (1-mu) .* kappa;
-    alpha_vec = alpha[position];
-    beta_vec = beta[position];
-    hits ~ binomial(at_bats, theta);
-    theta ~ beta(alpha_vec, beta_vec);
-    mu ~ beta(1, 1);
-    kappa ~ gamma(0.1, 0.1);
-} "
-# ind_model <- stan_model(model_code=ind_model)
-# ind_fit <- sampling(ind_model,
-#                    data=list(
-#                              ))
-```
-
-
-# Back to baseball
-
-## The model
-
-<!--
-
-$$\begin{aligned}
-    Z_i &\sim \Binom(N_i, \theta_i) \\
-    \theta_i &\sim \Beta(\mu_{p_i} \kappa_{p_i}, (1-\mu_{p_i})\kappa_{p_i}) \\
-    \mu &\sim \Beta(1, 1) \\
-    \kappa_p &\sim \Gam(0.1, 0.1) .
-\end{aligned}$$
-
--->
-
-:::::::::::::: {.columns}
-::: {.column width="50%"}
-
-$$\begin{aligned}
-    Z_i &\sim \Binom(N_i, \theta_i) \\
-    \theta_i &\sim \Beta(\mu_{p_i} \kappa_{p_i}, (1-\mu_{p_i})\kappa_{p_i}) \\
-    \mu &\sim \Beta(1, 1) \\
-    \kappa_p &\sim \Gam(0.1, 0.1) .
-\end{aligned}$$
-
-::::::::::::::
-::: {.column width="50%"}
-
-
-```{r fake_stan_model, eval=FALSE}
-pos_model <- "
-data {
-    int N;   // number of players
-    int hits[N];
-    int at_bats[N];
-    int npos; // number of positions
-    int position[N];
-}
-parameters {
-    real<lower=0, upper=1> theta[N];
-    real<lower=0, upper=1> mu[npos];
-    real<lower=0> kappa[npos];
-}
-model {
-    real alpha;
-    real beta;
-    hits ~ binomial(at_bats, theta);
-    for (i in 1:N) {
-        alpha = mu[position[i]] * kappa[position[i]];
-        beta = (1 - mu[position[i]]) * kappa[position[i]];
-        theta[i] ~ beta(alpha, beta);
-    }
-    mu ~ beta(1,1);
-    kappa ~ gamma(0.1,0.1);
-}"
-```
-
-
-```{r stan_model, cache=TRUE, include=FALSE}
-pos_model <- "
-data {
-    int N;   // number of players
-    int hits[N];
-    int at_bats[N];
-    int npos; // number of positions
-    int position[N];
-}
-parameters {
-    real<lower=0, upper=1> theta[N];
-    real<lower=0, upper=1> mu[npos];
-    real<lower=0> kappa[npos];
-}
-model {
-    real alpha;
-    real beta;
-    hits ~ binomial(at_bats, theta);
-    for (i in 1:N) {
-        alpha = mu[position[i]] * kappa[position[i]];
-        beta = (1 - mu[position[i]]) * kappa[position[i]];
-        theta[i] ~ beta(alpha, beta);
-    }
-    mu ~ beta(1,1);
-    kappa ~ gamma(0.1,0.1);
-} "
-```
-
-:::
-:::::::::::
-
-
-##
-
-
-```{r fit_pos_model, cache=TRUE, dependson="stan_model"}
-system.time(pos_fit <- stan(model_code=pos_model, chains=3, iter=100,
-                            data=list(N=nrow(batting),
-                                      hits=batting$Hits,
-                                      at_bats=batting$AtBats,
-                                      npos=nlevels(batting$PriPos),
-                                      position=as.numeric(batting$PriPos))))
-```
-
-## Diagnostics
-
-```{r print_fit}
-print(pos_fit, pars=c("mu", "kappa"))
-```
-
-----------------
-
-Is it mixing?
-
-```{r plot_trace}
-stan_trace(pos_fit, pars="mu")
-```
-
-
-## Run longer!
-
-```{r fit_pos_model_again, cache=TRUE, dependson="stan_model"}
-system.time(pos_fit <- stan(model_code=pos_model, chains=3, iter=1000,
-                            control=list(max_treedepth=15),
-                            data=list(N=nrow(batting),
-                                      hits=batting$Hits,
-                                      at_bats=batting$AtBats,
-                                      npos=nlevels(batting$PriPos),
-                                      position=as.numeric(batting$PriPos))))
-```
-
--------------
-
-```{r print_fit_again}
-print(pos_fit, pars=c("mu", "kappa"))
-```
-
-
--------------
-
-Is it mixing?
-
-```{r plot_trace_again}
-stan_trace(pos_fit, pars="mu")
-```
-
--------------
-
-```{r plot_kappa_again}
-stan_trace(pos_fit, pars="kappa")
-```
-
-## Let's look at the results!
-
-```{r first_hist}
-stan_hist(pos_fit, pars="mu", bins=30) + xlim(0, 0.4)
-```
-
------------
-
-With labels: position means $\mu_p$:
-
-```{r plot_mu, echo=FALSE, fig.width=2.0*fig.dim, fig.height=1.5*fig.dim}
-param_samples <- extract(pos_fit)
-layout(matrix(1:9, ncol=3))
-par(mar=c(4,3,1,1)+.1)
-for (k in 1:9) {
-    hist(param_samples$mu[,k], main=levels(batting$PriPos)[k],
-         xlim=c(0, 0.4), xlab='batting average', ylab=expression(mu))
-}
-```
-
------------
-
-Position "concentrations", $\kappa_p$:
-
-```{r plot_kappa, echo=FALSE, fig.width=2.0*fig.dim, fig.height=1.5*fig.dim}
-layout(matrix(1:9, ncol=3))
-par(mar=c(4,3,1,1)+.1)
-for (k in 1:9) {
-    hist(param_samples$kappa[,k], main=levels(batting$PriPos)[k],
-         xlab='batting average', ylab=expression(kappa))
-}
-```
 
 
