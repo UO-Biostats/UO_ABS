@@ -380,7 +380,7 @@ samples <- extract(fit)
 mean(samples$theta < 0.5)
 
 # compare to analytic solution
-pbeta(0.5, shape1=10+6, shape2=10+4)
+pbeta(0.5, shape1=20+6, shape2=20+4)
 ```
 
 
