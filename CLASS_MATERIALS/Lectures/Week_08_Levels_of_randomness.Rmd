@@ -298,7 +298,7 @@ curve(post_fun, 0, 1, xlab=expression(theta), ylab='posterior prob')
 points(fit$par, post_fun(fit$par), col='red', pch=20)
 ```
 
-*Note:* If the prior was *uniform*, then this would be the
+*Note:* Since the prior was *uniform*, then this is the
 *maximum likelihood estimate* (MLE) also.
 
 :::
