@@ -102,8 +102,6 @@ $$\begin{aligned}
     \theta &\sim \Beta(20, 20) 
 \end{aligned}$$
 
-What's our *best guess* at $\theta$?
-
 :::
 ::: {.column width="50%"}
 
@@ -137,8 +135,6 @@ $$\begin{aligned}
     \theta &\sim \Beta(20, 20) 
 \end{aligned}$$
 
-What's our *best guess* at $\theta$?
-
 :::
 ::: {.column width="50%"}
 
@@ -168,8 +164,6 @@ $$\begin{aligned}
     Z &\sim \Binom(10, \theta) \\
     \theta &\sim \Beta(20, 20) 
 \end{aligned}$$
-
-What's our *best guess* at $\theta$?
 
 :::
 ::: {.column width="50%"}
@@ -203,8 +197,6 @@ $$\begin{aligned}
     Z &\sim \Binom(10, \theta) \\
     \theta &\sim \Beta(20, 20) 
 \end{aligned}$$
-
-What's our *best guess* at $\theta$?
 
 :::
 ::: {.column width="50%"}
