@@ -95,7 +95,7 @@ Week 8 (*11/17*)
 : Bayesian hierarchical modeling - shrinkage, and sharing power
 
     - slides: [Hierarchical models: adding levels of randomness](../CLASS_MATERIALS/Lectures/Week_08_Levels_of_randomness.slides.html)
-    - slides: [Hierarchical models: Basseball data](../CLASS_MATERIALS/Lectures/Week_08_Baseball.slides.html)
+    - slides: [Hierarchical models: Baseball data](../CLASS_MATERIALS/Lectures/Week_08_Baseball.slides.html)
     - Reading: Kruschke, chapters 9, 10
 
 Week 9 (*11/24*)
