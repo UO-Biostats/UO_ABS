@@ -884,6 +884,38 @@ model {
 </div>
 </div>
 </section></section>
+<section>
+<section id="some-notes-on-stan" class="title-slide slide level1">
+<h1>Some notes on Stan</h1>
+
+</section>
+<section id="variable-types-in-stan" class="slide level2">
+<h2>Variable types in Stan:</h2>
+<pre><code>int x;       // an integer
+int y[10];   // ten integers
+real z;      // a number
+real z[2,5]; // a 2x5 array of numbers
+
+vector[10] u;      // length 10 vector
+matrix[10,10] v;   // 10x10 matrix
+vector[10] w[10];  // ten length 10 vectors</code></pre>
+<ul>
+<li>don’t forget the <code>;</code></li>
+<li>make sure R types match</li>
+<li>read the error messages</li>
+</ul>
+</section>
+<section id="steps-in-fitting-a-model" class="slide level2">
+<h2>Steps in fitting a model</h2>
+<ol type="1">
+<li>Write model as a text block.</li>
+<li>Compile the model with <code>stan_model( )</code>.</li>
+<li>Sample from the model with <code>sampling( )</code>.</li>
+<li>Read warnings and errors.</li>
+<li>Check convergence diagnostics (<code>Rhat</code>, <code>stan_trace( )</code>, <code>pairs( )</code>, etc).</li>
+<li>Summarize result (credible intervals, <code>stan_plot( )</code>, <code>stan_hist( )</code>, etc).</li>
+</ol>
+</section></section>
     </div>
   </div>
 

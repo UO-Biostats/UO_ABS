@@ -589,3 +589,31 @@ model {
 ::::::::::::::
 
 
+# Some notes on Stan
+
+## Variable types in Stan:
+
+```
+int x;       // an integer
+int y[10];   // ten integers
+real z;      // a number
+real z[2,5]; // a 2x5 array of numbers
+
+vector[10] u;      // length 10 vector
+matrix[10,10] v;   // 10x10 matrix
+vector[10] w[10];  // ten length 10 vectors
+```
+
+* don't forget the `;`
+* make sure R types match
+* read the error messages
+
+
+## Steps in fitting a model
+
+1. Write model as a text block.
+2. Compile the model with `stan_model( )`.
+3. Sample from the model with `sampling( )`.
+4. Read warnings and errors.
+5. Check convergence diagnostics (`Rhat`, `stan_trace( )`, `pairs( )`, etc).
+6. Summarize result (credible intervals, `stan_plot( )`, `stan_hist( )`, etc).
