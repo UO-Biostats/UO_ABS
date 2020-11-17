@@ -580,6 +580,104 @@ model {
 :::
 ::::::::::::::
 
+## In class
+
+Write down and compile the model:
+```{r class_setup}
+bag_block <- "
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta[n];
+    real<lower=0,upper=100> alpha;
+    real<lower=0,upper=100> beta;
+}
+model {
+    Z ~ binomial(N, theta);
+    theta ~ beta(alpha, beta);
+    // uniform priors 'go without saying'
+    // alpha ~ uniform(0, 100);
+    // beta ~ uniform(0, 100);
+}
+"
+bag_model <- stan_model(model_code=bag_block)
+```
+
+-------------
+
+Sample from the model:
+```{r next_step}
+bag_fit <- sampling(bag_model,
+                    data=list(n=ncoins,
+                              N=N,
+                              Z=Z),
+                    chains=3, iter=100)
+```
+
+-------------
+
+Sample more from the model:
+```{r next_step_again}
+bag_fit <- sampling(bag_model,
+                    data=list(n=ncoins,
+                              N=N,
+                              Z=Z),
+                    chains=3, iter=10000)
+```
+
+------------
+
+Check for convergence:
+`n_eff` are all pretty big, and `Rhat` are all equal to 1!
+```{r print_bag}
+print(bag_fit)
+```
+
+------------
+
+Check diagnostic plots:
+-- whoops, the upper bound of $\beta \le 100$ is constraining
+things; we should probably increase that.
+```{r plot_bag}
+stan_trace(bag_fit, pars=c("theta[1]", "theta[2]", "alpha", "beta"))
+```
+
+------------
+
+More plots:
+Hm, the posteriors of $\alpha$ and $\beta$ are correlated.
+```{r plot_bag_pairs}
+pairs(bag_fit, pars=c("theta[1]", "theta[2]", "alpha", "beta"))
+```
+
+-----------
+
+Results:
+```{r post_alpha_beta}
+stan_hist(bag_fit, pars=c("alpha", "beta"))
+```
+
+----------
+
+What about the mean $\theta$ in the bag?
+The mean of a Beta distribution is $\alpha / (\alpha + \beta)$,
+so let's get the posterior distribution of that:
+```{r post_mean}
+samples <- extract(bag_fit)
+post_mean <- samples$alpha / (samples$alpha + samples$beta)
+hist(post_mean, main='posterior distribution of mu', xlab=expression(alpha / (alpha + beta)))
+```
+The posterior mean of $\mu = \alpha / (\alpha + \beta)$ is
+`r mean(post_mean)`,
+and a 95% credible interval is from
+`r quantile(post_mean, 0.025)` to 
+`r quantile(post_mean, 0.975)`.
+
+
 
 # Some notes on Stan
 
