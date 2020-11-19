@@ -68,6 +68,7 @@ If you are looking for more reference or reading material, these are also good:
 
 * Strongly recommended global configuration: 
 ![Never save or restore .RData](rstudio_config_1.png)
+![output not inline](rstudio_config_2.png)
 
 ### General resources
 

@@ -131,6 +131,43 @@ for (k in 1:ncol(theta_samples)) {
 }
 ```
 
+# Reparameterization
+
+##
+
+Recall that if
+$$\begin{aligned}
+    B \sim \Beta(\alpha, \beta)
+\end{aligned}$$
+then
+$$\begin{aligned}
+   \E[B] &= \frac{\alpha}{\alpha + \beta} \\ 
+   \text{and}
+   \sd[B] &= \frac{1}{\alpha + \beta} \sqrt{\frac{\alpha \beta}{\alpha + \beta + 1}}.
+\end{aligned}$$
+
+-----------
+
+Gee, it'd be nice to think about it's *location* and *scale* instead.
+
+. . .
+
+Well, if
+$$\begin{aligned}
+   \mu &= \frac{\alpha}{\alpha + \beta} \quad \text{(the mean)}\\ 
+   \kappa &= \alpha + \beta \quad \text{(the concentration)},
+\end{aligned}$$
+then
+$$\begin{aligned}
+    B \sim \Beta(\mu \kappa, (1-\mu) \kappa)
+\end{aligned}$$
+has
+$$\begin{aligned}
+   \E[B] &= \mu \\
+   \text{and} \qquad
+   \sd[B] &\propto \frac{1}{\kappa} .
+\end{aligned}$$
+
 
 
 # More Baseball
@@ -219,7 +256,8 @@ model {
 
 
 ```{r fit_pos_model, cache=TRUE, dependson="stan_model"}
-system.time(pos_fit <- stan(model_code=pos_model, chains=3, iter=100,
+pos_model <- stan_model(model_code=pos_model)
+system.time(pos_fit <- sampling(pos_model, chains=3, iter=100,
                             data=list(N=nrow(batting),
                                       hits=batting$Hits,
                                       at_bats=batting$AtBats,
@@ -245,7 +283,7 @@ stan_trace(pos_fit, pars="mu")
 ## Run longer!
 
 ```{r fit_pos_model_again, cache=TRUE, dependson="stan_model"}
-system.time(pos_fit <- stan(model_code=pos_model, chains=3, iter=1000,
+system.time(pos_fit <- sampling(pos_model, chains=3, iter=1000,
                             control=list(max_treedepth=15),
                             data=list(N=nrow(batting),
                                       hits=batting$Hits,
@@ -316,5 +354,229 @@ for (k in 1:9) {
          xlab=if (k %% 3 == 0) 'batting average' else '', ylab=expression(kappa))
 }
 ```
+
+
+
+# Simulation
+
+## Wouldn't it be nice if we knew the truth?
+
+. . .
+
+**Discuss:**
+
+Write down a procedure to simulate data
+that looks like the baseball data.
+
+
+------------
+
+```{r simulate_fake_data}
+batting$post_mean <- colMeans(param_samples$theta)
+batting$fake_hits <- rbinom(nrow(batting), 
+                            size=batting$AtBats, 
+                            prob=batting$post_mean)
+```
+
+
+:::::::: {.columns}
+::: {.column width=50%}
+
+*Option 1:* By simulating draws from the posterior mean on $\theta$,
+we can check that our model is accurately describing the data.
+Here is the real data against data simulated under the posterior mean $\theta$ values.
+They look similar, which is good.
+
+:::::::::::
+::: {.column width=50%}
+
+```{r plot_simfakedata, echo=FALSE, fig.width=fig.dim}
+with(batting, plot(Hits, fake_hits, xlab='actual hits', ylab='simulated hits'))
+```
+
+:::
+:::::::::::
+
+------------
+
+**But** if we want to know if we're accurately estimating $\mu$ and $\kappa$, 
+then we have to start with them, and *simulate* $\theta$.
+```{r simulate_with_thetas}
+post_mean_mu <- colMeans(param_samples$mu)
+post_mean_kappa <- colMeans(param_samples$kappa)
+names(post_mean_mu) <- names(post_mean_kappa) <- levels(batting$PriPos)
+batting$sim_theta <- rbeta(nrow(batting),
+                           shape1=post_mean_mu[batting$PriPos] *
+                                   post_mean_kappa[batting$PriPos],
+                           shape2=(1-post_mean_mu[batting$PriPos]) * 
+                                   post_mean_kappa[batting$PriPos])
+batting$sim_theta_hits <- rbinom(nrow(batting), 
+                                 size=batting$AtBats, 
+                                 prob=batting$sim_theta)
+```
+
+------------
+
+Fit the model to the *simulated* data:
+
+```{r fit_sim_data, cache=TRUE}
+sim_fit <- sampling(pos_model, chains=3, iter=1000, control=list(max_treedepth=13),
+                data=list(N=nrow(batting),
+                          hits=batting$sim_theta_hits,
+                          at_bats=batting$AtBats,
+                          npos=nlevels(batting$PriPos),
+                          position=as.numeric(batting$PriPos)))
+```
+
+----------
+
+Can we estimate $\mu$ and $\kappa$?
+```{r check_sim_mu}
+sim_samples <- rstan::extract(sim_fit)
+layout(t(1:2))
+boxplot(sim_samples$mu, main="posterior distribution of mu")
+points(1:9, post_mean_mu, col='red', pch=20, cex=2)
+boxplot(sim_samples$kappa, main="posterior distribution of kappa")
+points(1:9, post_mean_kappa, col='red', pch=20, cex=2)
+```
+
+
+## General questions with simulated data
+
+1. Does my statistical inference method work?
+
+. . .
+
+
+2. Do the credible intervals contain the true value? 
+
+    (i.e., Is the method "well-calibrated"?)
+
+    *They usually should.*
+
+. . .
+
+3. How wide are credible intervals, typically?
+
+    This is (one kind of) **statistical power.** 
+
+
+# Posterior predictive sampling
+
+## How to choose parameter values for simulation?
+
+It depends, but one good choice is
+*from the posterior distribution* -
+then you can see how the model behaves
+with data close to the real data.
+
+This is known as **posterior predictive sampling**.
+
+---------------------------
+
+![Kruschke figure 13.2: posterior predictive sampilng](images/post_pred_kruschke.png)
+
+
+# Sharing power // Shrinkage
+
+## Example
+
+Suppose that I have a large pot of coins
+that are all similar to each other.
+I flip each one ten times, and record the number of Heads.
+What is *each coin's* probability of Heads?
+
+- Treated *separately*,
+  we would be very uncertain about each coin.
+
+- Together, they should tell us very accurately 
+  what are *likely* values of $\theta$.
+
+- This information can improve the estimate of each separate $\theta$.
+
+- The more similar the coins are, the more information we gain.
+
+. . .
+
+By *shrinking* each estimate towards their *common* mean,
+we hope to gain *power*.
+
+
+## Shrinkage and baseball
+
+Some players were at bat very few times.
+How does the information about their position affect our inference about their batting averages?
+
+```{r baseball_shrinkage}
+batting$post_med <- colMedians(param_samples$theta)
+batting$post_Q1 <- colQuantiles(param_samples$theta, probs=0.25)
+batting$post_Q3 <- colQuantiles(param_samples$theta, probs=0.75)
+pos_means <- colMeans(param_samples$mu)
+names(pos_means) <- levels(batting$PriPos)
+pos_means
+```
+
+--------------
+
+Pitchers had posterior mean $\mu$ of `r pos_means["Pitcher"]`
+
+````{r pitchers}
+with(subset(batting[order(batting$post_med),], PriPos=="Pitcher"), {
+     plot(Hits / AtBats, main="Pitchers", xaxt='n', ylim=c(0, 0.4),
+         xlab='player', ylab="posterior median theta");
+     segments(x0=seq_along(Hits), y0=post_Q1, y1=post_Q3,
+         col=adjustcolor('red',0.5));
+     points(post_med, pch=20) })
+abline(h=pos_means["Pitcher"], lwd=2, col=adjustcolor("blue", 0.5))
+```
+
+---------------
+
+Catchers had posterior mean $\mu$ of `r pos_means["Catcher"]`
+
+````{r catchers}
+with(subset(batting[order(batting$post_med),], PriPos=="Catcher"), {
+     plot(Hits / AtBats, main="Catchers", xaxt='n', ylim=c(0, 0.4),
+         xlab='player', ylab="posterior median theta");
+     segments(x0=seq_along(Hits), y0=post_Q1, y1=post_Q3,
+         col=adjustcolor('red',0.5));
+     points(post_med, pch=20) })
+abline(h=pos_means["Catcher"], lwd=2, col=adjustcolor("blue", 0.5))
+```
+
+## Is shrinkage here a good idea?
+
+With *simulated data*, compare median absolute error for
+
+- posterior mean $\theta_i$
+
+- empirical batting average
+
+------------
+
+How'd we do?  Let's look at the *true* values of $\theta$
+(we know because we generated them)
+against the posterior means.
+Red lines are 95% credible intervals.
+```{r check_sim_result}
+post_sim_theta <- colMeans(sim_samples$theta)
+plot(batting$sim_theta, post_sim_theta, type='n', xlab="true theta", ylab="posterior mean theta", ylim=c(0,0.4))
+segments(x0=batting$sim_theta,  col='red',
+         y0=colQuantiles(sim_samples$theta, probs=0.05),
+         y1=colQuantiles(sim_samples$theta, probs=0.95))
+points(batting$sim_theta, post_sim_theta, pch=20)
+abline(0, 1, lwd=3, col=adjustcolor('blue', 0.5))
+```
+
+-------------
+
+Did we do better?
+
+The mean absolute difference between the *truth* and
+
+- posterior mean: `r mean(abs(batting$sim_theta - post_sim_theta))`
+- empirical batting average (hits/at bats): `r mean(abs(batting$sim_theta - batting$fake_hits/batting$AtBats))`
+
+Using information about groups **reduced our error by a factor of 4!**
 
 
