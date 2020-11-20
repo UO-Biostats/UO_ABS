@@ -215,6 +215,8 @@ anova(lm(weight ~ fertilizer + water, data=pumpkins))
 
 ## What are all those numbers?
 
+**Note: this table assumes exactly $n$ observations in every cell.**
+
 ![Quinn & Keough, table 9.8](images/qk-table_9_8.png)
 
 ## What do they mean?
