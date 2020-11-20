@@ -97,12 +97,14 @@ Week 8 (*11/17*)
     - slides: [Hierarchical models: adding levels of randomness](../CLASS_MATERIALS/Lectures/Week_08_Levels_of_randomness.slides.html)
     - slides: [Hierarchical models: Baseball data](../CLASS_MATERIALS/Lectures/Week_08_Baseball.slides.html)
     - Reading: Kruschke, chapters 9, 10
+    - [Homework 8](../CLASS_MATERIALS/Homeworks/HW08_F20.html) *(due 12/03)*
 
 Week 9 (*11/24*)
 
 : Logistic regression - simulation, posterior predictive sampling - robust regression
 
     - Reading: Kruschke, chapters 13, 21
+    - no new homework this week (catch up on reading?)
 
 Week 10 (*12/1*)
 
