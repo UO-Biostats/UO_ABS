@@ -45,7 +45,7 @@ baseball_model <- function(){
 		print("MODEL NOT COMPILED. GRRR")
 	}
 
-	batting <- read.csv("../Lectures/BattingAverage.csv", header=TRUE)
+	batting <- read.csv("../Lectures/data/BattingAverage.csv", header=TRUE)
 	batting_dat <- list(N=nrow(batting),
                             hits=batting$Hits,
         	            at_bats=batting$AtBats,
