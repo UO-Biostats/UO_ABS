@@ -1,0 +1,57 @@
+---
+title: "Exponential and Gamma distributions"
+author: "Peter Ralph"
+date: "24 November 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+```
+
+
+# Stochastic minute
+
+## Exponential, and Gamma
+
+If $T \sim \Exp(\text{rate}=\lambda)$, then
+
+$$\begin{aligned}
+   \P\{ T \in dt \} = \lambda e^{-\lambda t} dt .
+\end{aligned}$$
+
+1. $T$ can be any nonnegative real number.
+
+2. $T$ is *memoryless*: 
+   $$\begin{aligned}
+        \P\{ T > x + y \given T > x \} = \P\{ T > y \} .
+   \end{aligned}$$
+
+3. A machine produces $n$ widgets per second;
+   each widget has probability $\lambda/n$ of being broken.
+   The time until the first broken widget appears (in seconds)
+   is approximately $\sim \Exp(\lambda)$.
+
+---------------------
+
+If $S \sim \Gam(\text{shape}=\alpha, \text{rate}=\lambda)$, then
+
+$$\begin{aligned}
+   \P\{ S \in dt \} = \frac{\alpha^\lambda}{\Gamma(\alpha)} t^{\alpha - 1} e^{-\lambda t} dt .
+\end{aligned}$$
+
+1. $S$ has mean $\alpha \lambda$ and variance $\alpha/\lambda^2$.
+
+1. If $T_1, \ldots, T_k$ are independent $\Exp(\lambda)$, then
+   $S = T_1 + \cdots + T_k$ is $\Gam(k, \lambda)$.
+
+
+2. A machine produces $n$ widgets per second;
+   each widget has probability $\lambda/n$ of being broken.
+   The time until the $k^\text{th}$ broken widget appears (in seconds)
+   is approximately $\sim \Gam(k, \lambda)$.
+

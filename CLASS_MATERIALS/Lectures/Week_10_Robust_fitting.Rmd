@@ -1,0 +1,252 @@
+---
+title: "Robust linear models"
+author: "Peter Ralph"
+date: "1 December 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+
+# Fitting linear models, robustly
+
+
+## Standard "least-squares" fits
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    \hat y_i &= b_0 + b_1 x_i \\
+    y_i &\sim \Normal(\hat y_i, \sigma^2) .
+\end{aligned}$$
+
+Simulate data:
+
+```r
+truth <- list(b0=1.0, b1=2.0, sigma=0.5)
+n <- 200
+x <- rnorm(n, mean=0, sd=1)
+y <- ( truth$b0 + truth$b1 * x 
+        + rnorm(n, mean=0, sd=truth$sigma) )
+```
+
+:::
+::: {.column width="50%"}
+
+
+```{r simdata, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+truth <- list(b0=1.0, b1=2.0, sigma=0.5)
+n <- 200
+x <- rnorm(n, mean=0, sd=1)
+y <- truth$b0 + truth$b1 * x + rnorm(n, mean=0, sd=truth$sigma)
+plot(x,y)
+abline(truth$b0, truth$b1, col='red')
+```
+
+:::
+::::::::::::::
+
+
+
+------------------
+
+Least-squares fit:
+```{r slr}
+system.time( slr <- lm(y ~ x) )
+summary(slr)
+```
+
+-----------------
+
+with Stan
+```{r stanlr, cache=TRUE}
+slr_block <- "
+data {
+    int N;
+    vector[N] x;
+    vector[N] y;
+}
+parameters {
+    real b0;
+    real b1;
+    real<lower=0> sigma;
+}
+model {
+    y ~ normal(b0 + b1*x, sigma);
+}"
+system.time(
+    stanlr <- stan(model_code=slr_block,
+                   data=list(N=length(x), x=x, y=y), iter=1e3))
+```
+
+----------------
+
+
+```{r summary_stanlr}
+print(stanlr)
+```
+
+
+## Cauchy noise?
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+
+Relative axon growth
+for neurons after $x$ hours:
+
+```r
+truth <- list(b0=1.0, b1=2.0, sigma=0.5)
+n <- 200
+x <- rnorm(n, mean=0, sd=1)
+y <- ( truth$b0 + truth$b1 * x 
+        + rcauchy(n, location=0, 
+                  scale=truth$sigma) )
+```
+
+:::
+::: {.column width="50%"}
+
+```{r simdata_rr, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+set.seed(12)
+truth <- list(b0=1.0, b1=2.0, sigma=0.5)
+n <- 200
+x <- rnorm(n, mean=0, sd=1)
+y <- truth$b0 + truth$b1 * x + rcauchy(n, location=0, scale=truth$sigma)
+plot(x,y)
+abline(truth$b0, truth$b1, col='red')
+```
+
+:::
+::::::::::::::
+
+
+------------------
+
+Least-squares fit:
+```{r slrr}
+system.time( slr2 <- lm(y ~ x) )
+summary(slr2)
+```
+
+-----------------
+
+with Stan
+```{r stanrr, cache=TRUE}
+srr_block <- "
+data { 
+    int N;
+    vector[N] x;
+    vector[N] y;
+}
+parameters {
+    real b0;
+    real b1;
+    real<lower=0> sigma;
+}
+model {
+    y ~ cauchy(b0 + b1*x, sigma);
+}"
+system.time(
+    stanrr <- stan(model_code=srr_block,
+                   data=list(N=length(x), x=x, y=y), iter=1e3))
+```
+
+----------------
+
+
+```{r summary_stanrr}
+print(stanrr)
+```
+
+----------------
+
+
+```{r plot_simdata_rr, fig.width=3.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+make_lm_poly <- function (min_coefs, max_coefs, xlim, ...) {
+    polygon(x=c(xlim[1], 0, xlim[2], xlim[2], 0, xlim[1]),
+            y=c(max_coefs[1] + xlim[1] * min_coefs[2],
+                max_coefs[1],
+                max_coefs[1] + xlim[2] * max_coefs[2],
+                min_coefs[1] + xlim[2] * min_coefs[2],
+                min_coefs[1],
+                min_coefs[1] + xlim[1] * max_coefs[2]) , ...)
+}
+stancoefs <- rstan::extract(stanrr)
+layout(t(1:2))
+plot(x,y, main='lm()')
+make_lm_poly(coef(slr2)-2*summary(slr2)$coefficients[,"Std. Error"], 
+             coef(slr2)+2*summary(slr2)$coefficients[,"Std. Error"], 
+             range(x),
+             col=adjustcolor("purple", 0.2))
+abline(coef=coef(slr2), col='purple', lwd=2)
+abline(truth$b0, truth$b1, col='red', lwd=2)
+plot(x,y, main='stan()')
+make_lm_poly(c(quantile(stancoefs$b0, 0.025), quantile(stancoefs$b1, 0.025)),
+             c(quantile(stancoefs$b0, 0.975), quantile(stancoefs$b1, 0.975)),
+             range(x),
+             col=adjustcolor("green", 0.2))
+abline(truth$b0, truth$b1, col='red', lwd=2)
+abline(mean(stancoefs$b0), mean(stancoefs$b1), col='green', lwd=2)
+```
+
+----------------
+
+
+```{r plot_simdata_rr_again, fig.width=3.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+layout(t(1:2))
+plot(x,y, main='lm()', ylim=c(-10,10))
+make_lm_poly(coef(slr2)-2*summary(slr2)$coefficients[,"Std. Error"], 
+             coef(slr2)+2*summary(slr2)$coefficients[,"Std. Error"], 
+             range(x),
+             col=adjustcolor("purple", 0.2))
+abline(coef=coef(slr2), col='purple', lwd=2)
+abline(truth$b0, truth$b1, col='red', lwd=2)
+plot(x,y, main='stan()', ylim=c(-10,10))
+make_lm_poly(c(quantile(stancoefs$b0, 0.025), quantile(stancoefs$b1, 0.025)),
+             c(quantile(stancoefs$b0, 0.975), quantile(stancoefs$b1, 0.975)),
+             range(x),
+             col=adjustcolor("green", 0.2))
+abline(truth$b0, truth$b1, col='red', lwd=2)
+abline(mean(stancoefs$b0), mean(stancoefs$b1), col='green', lwd=2)
+```
+
+
+
+
+# Wrap-up
+
+## Modeling, and Stan
+
+1. How well a statistical method works depends on the situation.
+
+2. We can describe the "situation" with a *probability model*.
+
+3. Inference usually works best if the probabilistic model reflects reality .
+
+4. Stan lets you do inference using (almost) arbitrary models.
+
+5. Explicit models make it easy to simulate, and therefore test your methods.
+
+## Hierarchical Bayesian models
+
+1. It is often possible to infer things about *populations* that we can't infer about individuals.
+
+2. Doing so leads to *sharing of information* (or, "power") between samples,
+   and can improve accuracy.
+
+3. Priors (and hyperpriors) on individual parameters provides a good way to do this.
+
+

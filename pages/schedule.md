@@ -103,6 +103,9 @@ Week 9 (*11/24*)
 
 : Logistic regression - simulation, posterior predictive sampling - robust regression
 
+    - slides: [The logistic model](../CLASS_MATERIALS/Lectures/Week_09_Logistic_model.slides.html)
+    - slides: [Sharing power and shrinkage](../CLASS_MATERIALS/Lectures/Week_09_Sharing_power.slides.html)
+    - slides: [The Gamma and Exponential distributions](../CLASS_MATERIALS/Lectures/Week_09_Gamma_distribution.slides.html)
     - Reading: Kruschke, chapters 13, 21
     - no new homework this week (catch up on reading?)
 
@@ -110,4 +113,6 @@ Week 10 (*12/1*)
 
 : Robust multiple linear regression; Generalized Linear Models (GLM).
 
+    - slides: [Fitting linear models, robustly](../CLASS_MATERIALS/Lectures/Week_10_Robust_fitting.slides.html)
+    - slides: [The Cauchy distribution](../CLASS_MATERIALS/Lectures/Week_10_Cauchy_distribution.slides.html)
     - Reading: Kruschke, chapters 15, 16, 17

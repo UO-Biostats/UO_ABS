@@ -1,0 +1,358 @@
+---
+title: "The logistic model"
+author: "Peter Ralph"
+date: "24 November 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+```{r last_time, cache=TRUE, include=FALSE}
+batting <- read.csv("data/BattingAverage.csv", header=TRUE, stringsAsFactors=TRUE)
+pos_model_block <- "
+data {
+    int N;   // number of players
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+}
+parameters {
+    real<lower=0, upper=1> theta[N];
+    real<lower=0, upper=1> mu[npos];
+    real<lower=0> kappa[npos];
+}
+model {
+    real alpha;
+    real beta;
+    hits ~ binomial(at_bats, theta);
+    for (i in 1:N) {
+        alpha = mu[position[i]] * kappa[position[i]];
+        beta = (1 - mu[position[i]]) * kappa[position[i]];
+        theta[i] ~ beta(alpha, beta);
+    }
+    mu ~ beta(1,1);
+    kappa ~ gamma(0.1,0.1);
+} "
+pos_model <- stan_model(model_code=pos_model_block)
+pos_fit <- sampling(pos_model, chains=3, iter=1000,
+                    data=list(N=nrow(batting),
+                              hits=batting$Hits,
+                              at_bats=batting$AtBats,
+                              npos=nlevels(batting$PriPos),
+                              position=as.numeric(batting$PriPos)))
+param_samples <- extract(pos_fit)
+batting$post_mean <- colMeans(param_samples$theta)
+```
+
+
+# The logistic model, a.k.a. "logistic regression"
+
+## Motivation
+
+There's a good bit [more information available](BattingAveragePlus.csv) about the baseball players.
+```{r more_batting, cache=TRUE}
+batplus <- read.csv("data/BattingAveragePlus.csv",
+                    header=TRUE, stringsAsFactors=TRUE)
+head(batplus)
+```
+
+. . .
+
+Is batting average predicted by weight and height?
+
+-------------
+
+1. Each player has their own batting avg, $\theta_i$.
+
+2. Batting averages tend to be different for different positions.
+
+3. After accounting for position ($p_i$),
+   $\theta$ varies with height ($h_i$) and/or weight ($w_i$).
+
+# Relating values to probabilities
+
+## The logistic function
+
+$$\begin{aligned}
+   f(x) = \frac{1}{1 + e^{-x}} . 
+\end{aligned}$$
+
+```{r logistic_intro, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
+curve(1/(1+exp(-x)), from=-5, to=5, main="logistic function")
+```
+
+## ... is the inverse of the logit function
+
+
+$$\begin{aligned}
+   f^{-1}(x) = \log\left(\frac{x}{1-x}\right) . 
+\end{aligned}$$
+
+```{r logit, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
+curve(log(x/(1-x)), from=0.005, to=0.995, main="logit function")
+```
+
+# Back to Stan
+
+##
+
+::::::::: {.columns}
+::: {.column width=50%}
+
+1. Each player has their own batting avg, $\theta_i$.
+
+2. Batting averages tend to be different for different positions.
+
+3. After accounting for position ($p_i$),
+   $\theta$ varies with height ($h_i$) and/or weight ($w_i$).
+
+```{r logistic, echo=FALSE}
+curve(1/(1+exp(-x)), from=-5, to=5, main="logistic function")
+```
+
+:::::::::
+::: {.column width=50%}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\mu_i \kappa_{p_i}, (1-\mu_i) \kappa_{p_i}) \\
+    \mu_i &= \logistic(\gamma_{p_i} + \alpha_h h_i + \alpha_w w_i) \\
+    \kappa_p &\sim \Gam(0.1, 0.1) \\
+    \gamma_{p} &\sim \Normal(0, 5) \\
+    \alpha_h &\sim \Normal(0, 5) \\
+    \alpha_w &\sim \Normal(0, 5) 
+\end{aligned}$$
+
+:::
+:::::::::
+
+
+## Questions:
+
+1. How much do we expect $\gamma$ to differ for pitchers versus catchers?
+
+2. What would a value of $\alpha_h = 1$ mean?
+
+3. What would be a range of plausible values for $\alpha_h$ and $\alpha_w$?
+
+4. Are the priors sensible?
+
+. . .
+
+*Note:* we'll **center and scale** weight and height,
+so that $h$ and $w$ will be in units of *standard deviations from the mean*.
+
+
+## Stan
+
+::::::::: {.columns}
+::: {.column width=50%}
+
+```{r stan_logistic, cache=TRUE}
+logistic_model <- "
+data {
+    int N;   // number of players
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+    vector[N] height;
+    vector[N] weight;
+}
+parameters {
+    real<lower=0, upper=1> theta[N];
+    vector[npos] gamma;
+    real alpha_w;
+    real alpha_h;
+    vector<lower=0>[npos] kappa;
+}
+model {
+    vector[N] mu;
+    mu = inv_logit(gamma[position] + alpha_h * height + alpha_w * weight);
+    theta ~ beta(mu .* kappa[position], (1-mu) .* kappa[position]);
+    hits ~ binomial(at_bats, theta);
+    kappa ~ gamma(0.1, 0.1);
+    gamma ~ normal(0, 5);
+    alpha_h ~ normal(0, 5);
+    alpha_w ~ normal(0, 5);
+} "
+```
+
+:::::::::
+::: {.column width=50%}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &\sim \Beta(\mu_i \kappa_{p_i}, (1-\mu_i) \kappa_{p_i}) \\
+    \mu_i &= \logistic(\gamma_{p_i} + \alpha_h h_i + \alpha_w w_i) \\
+    \kappa_p &\sim \Gam(0.1, 0.1) \\
+    \gamma_{p} &\sim \Normal(0, 5) \\
+    \alpha_h &\sim \Normal(0, 5) \\
+    \alpha_w &\sim \Normal(0, 5) 
+\end{aligned}$$
+
+:::
+:::::::::
+
+----------
+
+## New features
+
+::::::::: {.columns}
+::: {.column width=50%}
+
+```r
+logistic_model <- "
+data {
+    int N;   // number of players
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+    vector[N] height;
+    vector[N] weight;
+}
+parameters {
+    real<lower=0, upper=1> theta[N];
+    vector[npos] gamma;
+    real alpha_w;
+    real alpha_h;
+    vector<lower=0>[npos] kappa;
+}
+model {
+    vector[N] mu;
+    mu = inv_logit(gamma[position] + alpha_h * height + alpha_w * weight);
+    theta ~ beta(mu .* kappa[position], (1-mu) .* kappa[position]);
+    hits ~ binomial(at_bats, theta);
+    kappa ~ gamma(0.1, 0.1);
+    gamma ~ normal(0, 5);
+    alpha_h ~ normal(0, 5);
+    alpha_w ~ normal(0, 5);
+} "
+```
+
+:::::::::
+::: {.column width=50%}
+
+1. `vector[N] height;` instead of `real height[N];`: to allow `alpha_h * height`.
+
+2. `gamma[position]` for vectorized indexing
+
+3. `x .* y` for component-wise multiplication
+
+:::
+:::::::::
+
+
+## 
+
+```
+data {
+    int N;   // number of players
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+    vector[N] height;
+    vector[N] weight;
+}
+parameters {
+    real<lower=0, upper=1> theta[N];
+    vector[npos] gamma;
+    real alpha_w;
+    real alpha_h;
+    vector<lower=0>[npos] kappa;
+}
+model {
+    vector[N] mu;
+    mu = inv_logit(gamma[position] + alpha_h * height + alpha_w * weight);
+    theta ~ beta(mu .* kappa[position], (1-mu) .* kappa[position]);
+    hits ~ binomial(at_bats, theta);
+    kappa ~ gamma(0.1, 0.1);
+    gamma ~ normal(0, 5);
+    alpha_h ~ normal(0, 5);
+    alpha_w ~ normal(0, 5);
+} 
+```
+
+
+
+-------------------
+
+
+```{r fit_logistic_model, cache=TRUE, dependson=c("stan_logistic", "more_batting")}
+scaled_height <- (batplus$height - mean(batplus$height))/sd(batplus$height)
+scaled_weight <- (batplus$weight - mean(batplus$weight))/sd(batplus$weight)
+system.time(logistic_fit <- stan(model_code=logistic_model, chains=3, iter=1000,
+                               control=list(adapt_delta=0.9, max_treedepth=12),
+                               data=list(N=nrow(batplus),
+                                      hits=batplus$Hits,
+                                      at_bats=batplus$AtBats,
+                                      npos=nlevels(batplus$PriPos),
+                                      position=as.numeric(batplus$PriPos),
+                                      height=scaled_height,
+                                      weight=scaled_weight) ))
+```
+
+------------------
+
+```{r results}
+logistic_summary <- rstan::summary(logistic_fit)$summary
+print(logistic_summary)
+```
+
+## Pitchers still don't bat well
+
+```{r logistic_gamma}
+stan_plot(logistic_fit, pars="gamma")
+```
+
+----------------
+
+Recall the *mean* of $\theta_i$ is
+$$\begin{aligned}
+\mu_i = \frac{1}{1 + \exp(-\gamma_{p_i} - \alpha_h h_i - \alpha_w w_i)} .
+\end{aligned}$$
+
+```{r logistic_mu}
+gamma_samples <- rstan::extract(logistic_fit)$gamma
+colnames(gamma_samples) <- levels(batplus$PriPos)
+mu_samples <- 1/(1+exp(-gamma_samples))
+boxplot(mu_samples, ylab="posterior distrn, mean batting avg", las=3)
+```
+
+
+## No effect of height or weight
+
+```{r logistic_alpha}
+stan_plot(logistic_fit, pars=c("alpha_w", "alpha_h")) + geom_vline(xintercept=0)
+```
+
+## Same $\theta$ as before?
+
+```{r log_theta, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim}
+new_post_theta <- colMeans(rstan::extract(logistic_fit)$theta)
+old_post_theta <- batting$post_mean[match(batplus$Player, batting$Player)]
+plot(old_post_theta, new_post_theta, xlab="theta, model 1", ylab="theta, model 2")
+abline(0,1, col='red')
+```
+
+
+## Conclusions
+
+1. We don't have good evidence that batting average varies substantially
+   with height or weight.
+
+2. Changing the model from a Beta prior on class means
+   to a logistic transform of a Normal prior
+   did not substantially affect the results.
