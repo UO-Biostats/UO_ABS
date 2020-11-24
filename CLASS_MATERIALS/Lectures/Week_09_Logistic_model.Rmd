@@ -79,6 +79,13 @@ Is batting average predicted by weight and height?
 3. After accounting for position ($p_i$),
    $\theta$ varies with height ($h_i$) and/or weight ($w_i$).
 
+. . .
+
+*Motivation:*
+```r
+lm( Hits/AtBats ~ PriPos + weight + height, data=batplus )
+```
+
 # Relating values to probabilities
 
 ## The logistic function
@@ -350,8 +357,8 @@ abline(0,1, col='red')
 
 ## Conclusions
 
-1. We don't have good evidence that batting average varies substantially
-   with height or weight.
+1. It doesn't look like batting average varies substantially
+   with height or weight, if at all.
 
 2. Changing the model from a Beta prior on class means
    to a logistic transform of a Normal prior
