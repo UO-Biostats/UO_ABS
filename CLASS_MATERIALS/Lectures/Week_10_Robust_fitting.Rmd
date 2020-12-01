@@ -28,6 +28,13 @@ options(mc.cores = parallel::detectCores())
 Huber, *Robust Statistics*.
 :::
 
+##
+
+Methods for dealing with "outliers":
+
+> 1. (Look at them carefully and) **remove them** (if appropriate).
+> 
+> 2. Use methods that are *robust* to the presence of outliers.
 
 
 # Fitting linear models, robustly
@@ -57,6 +64,7 @@ y <- ( truth$b0 + truth$b1 * x
 
 
 ```{r simdata, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+set.seed(12)
 truth <- list(b0=1.0, b1=2.0, sigma=0.5)
 n <- 200
 x <- rnorm(n, mean=0, sd=1)
@@ -143,13 +151,26 @@ abline(truth$b0, truth$b1, col='red')
 :::
 ::::::::::::::
 
+## Compare:
+
+```{r compare, echo=FALSE, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+layout(t(1:2))
+nnl <- list(Gaussian=rnorm, Cauchy=rcauchy)
+for (nn in c("Gaussian", "Cauchy")) {
+    set.seed(12)
+    x <- rnorm(n, mean=0, sd=1)
+    y <- truth$b0 + truth$b1 * x + nnl[[nn]](n, 0, truth$sigma)
+    plot(x, y, main=sprintf("%s noise", nn))
+    abline(truth$b0, truth$b1, col='red')
+}
+```
+
 
 ------------------
 
 Least-squares fit:
 ```{r slrr}
-system.time( slr2 <- lm(y ~ x) )
-summary(slr2)
+summary(slr2 <- lm(y ~ x))
 ```
 
 -----------------
@@ -182,7 +203,7 @@ system.time(
 print(stanrr)
 ```
 
-----------------
+## Inferred lines, with uncertainty
 
 
 ```{r plot_simdata_rr, fig.width=3.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
@@ -211,9 +232,10 @@ make_lm_poly(c(quantile(stancoefs$b0, 0.025), quantile(stancoefs$b1, 0.025)),
              col=adjustcolor("green", 0.2))
 abline(truth$b0, truth$b1, col='red', lwd=2)
 abline(mean(stancoefs$b0), mean(stancoefs$b1), col='green', lwd=2)
+legend("topleft", lty=1, col=c("red", "purple", "green"), legend=c("truth", "lm", "stan"))
 ```
 
-----------------
+## Same, zoomed in
 
 
 ```{r plot_simdata_rr_again, fig.width=3.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
@@ -232,6 +254,7 @@ make_lm_poly(c(quantile(stancoefs$b0, 0.025), quantile(stancoefs$b1, 0.025)),
              col=adjustcolor("green", 0.2))
 abline(truth$b0, truth$b1, col='red', lwd=2)
 abline(mean(stancoefs$b0), mean(stancoefs$b1), col='green', lwd=2)
+legend("topleft", lty=1, col=c("red", "purple", "green"), legend=c("truth", "lm", "stan"))
 ```
 
 # Why does it work?

@@ -16,6 +16,60 @@ library(matrixStats)
 options(mc.cores = parallel::detectCores())
 ```
 
+# Notation note
+
+## Matrix multiplication
+
+If 
+
+- $b$ is a $k$-vector
+- $X$ is an $n \times k$ matrix
+
+then "$X b$" is shorthand for the $n$-vector
+$$ (Xb)_i = \sum_{j=1}^k X_{ij} b_j . $$
+
+. . .
+
+- In R, we use `%*%`.
+- In Stan, we use `*`.
+
+## Example
+
+Let's say we want to predict
+apple `yield` using `leaf_area`, `tree_age`, and `fertilizer`:
+$$\begin{aligned}
+\text{yield}_i &= \beta_0 + \beta_1 \times \text{leaf_area}_i \\
+    &\qquad {} + \beta_2 \times \text{tree_age}_i
+    + \beta_3 \times \text{fertilizer}_i + \epsilon_i.
+\end{aligned}$$
+
+. . .
+
+If we set the columns of $X$ to be
+
+1. all 1s
+2. `leaf_area`
+3. `tree_age`
+4. `fertilizer`
+
+. . .
+
+and $\beta = (\beta_0, \beta_1, \beta_2, \beta_3),$
+then this is
+$$
+\text{yield}_i = (X \beta)_i + \epsilon_i .
+$$
+
+##
+
+Or,
+$$
+  \text{yield} = X \beta + \epsilon .
+$$
+
+. . .
+
+The `model.matrix( )` function gives you back an `X` matrix appropriate for *factors* as well.
 
 # Generalized Linear Models
 
@@ -163,7 +217,8 @@ model {
 ## Stan: fit the model
 
 ```{r run_stan_logistic, cache=TRUE, dependson="stan_logistic"}
-fit <- stan(model_code=logistic_block,
+logistic_model <- stan_model(model_code=logistic_block)
+fit <- sampling(logistic_model, chains=3, iter=1000,
             data=list(N=100, X=x, Z=z))
 rstan::summary(fit)$summary
 ```
