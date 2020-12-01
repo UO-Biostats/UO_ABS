@@ -1,0 +1,78 @@
+---
+title: "Matrix multiplication"
+author: "Peter Ralph"
+date: "1 December 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+```
+
+
+# Math minute: matrix multiplication
+
+## 
+
+To simulate from:
+$$\begin{aligned}
+    \mu_i &= b_0 + b_1 X_{i1} + \cdots + b_k X_{ik} \\
+    Y_i &\sim \Normal(\mu_i, \sigma) .
+\end{aligned}$$
+
+either
+
+```{r simdata_mv}
+coefs <- list(b0=1.0, b=c(3.0, -1.0, 0.0, 0.0),
+              sigma=0.5)
+n <- 200
+X <- matrix(rnorm(4*n, mean=0, sd=3), ncol=4)
+Y <- coefs$b0 
+for (k in 1:ncol(X)) {
+    Y <- Y + coefs$b[k] * X[,k]
+}
+Y <- Y + rnorm(n, mean=0, sd=coefs$sigma)
+```
+
+##
+
+To simulate from:
+$$\begin{aligned}
+    \mu_i &= b_0 + b_1 X_{i1} + \cdots + b_k X_{i1} \\
+    Y_i &\sim \Normal(\mu_i, \sigma) .
+\end{aligned}$$
+
+of
+
+```{r simdata_mv2}
+coefs <- list(b0=1.0, b=c(3.0, -1.0, 0.0, 0.0),
+              sigma=0.5)
+n <- 200
+X <- matrix(rnorm(4*n, mean=0, sd=3), ncol=4)
+Y <- coefs$b0 + X %*% coefs$b + rnorm(n, mean=0, sd=coefs$sigma)
+```
+
+## Because
+
+In R, `%*%` is *matrix multiplication*: if
+
+- $b$ is a $k$-vector
+- $X$ is an $n \times k$ matrix
+
+then `X %*% b` (or, $X b$ in math notation) is shorthand for the $n$-vector
+$$ (Xb)_i = \sum_{j=1}^k X_{ij} b_j . $$
+
+<!-- NOTE:
+    Pictures on the board.
+-->
+
+
+. . .
+
+In Stan, matrix multiplication is `*`.
+
+
