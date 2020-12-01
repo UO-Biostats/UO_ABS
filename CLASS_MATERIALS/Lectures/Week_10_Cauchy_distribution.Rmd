@@ -115,11 +115,32 @@ the *accuracy* of your measurements varies widely.
 A model of the measured rate, $R_i$,
 for a mouse at temperature $T_i$ is
 $$\begin{aligned}
-    R &\sim \Normal(120 + 0.7 * (T_i - 37), 1/E) \\
-    E &\sim \Normal(0, 1) .
+    R_i &\sim \Normal(120 + 0.7 * (T_i - 37), 1/|E_i|) \\
+    E_i &\sim \Normal(0, 1) .
 \end{aligned}$$
 
 Simulate 200 measurements from this model,
 for temperatures between 36 and 38,
 and try to infer the true slope (`0.7`).
 
+
+## IN CLASS
+
+```{r sim_class}
+n <- 200
+mice <- data.frame(
+       T = runif(n, 36, 38) )
+mice$E <- rnorm(n)
+mice$R <- rnorm(n,
+                mean=120 + 0.7 * (mice$T - 37),
+                sd=1/abs(mice$E))
+plot(R ~ T, data=mice, xlab='temperature', ylab='metabolic rate')
+abline(120 - 0.7 * 37, 0.7, col='red')
+# zoom in
+plot(R ~ T, data=mice, xlab='temperature',
+     ylab='metabolic rate',
+     ylim=c(110, 130))
+abline(120 - 0.7 * 37, 0.7, col='red')
+
+summary(lm(R ~ T, data=mice))
+```
