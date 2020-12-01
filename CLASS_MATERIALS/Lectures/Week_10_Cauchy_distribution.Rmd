@@ -5,11 +5,11 @@ date: "30 November 2020 -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
-fig.dim <- 4
+fig.dim <- 5
 knitr::opts_chunk$set(fig.width=2*fig.dim,
                       fig.height=fig.dim,
                       fig.align='center')
-set.seed(23)
+set.seed(24)
 library(matrixStats)
 ```
 
@@ -27,22 +27,19 @@ $$\begin{aligned}
 > 1. The Cauchy is a good example of a distribution with "heavy tails":
 >    rare, very large values.
 > 
-> 2. If $Z \sim \Normal(0, 1)$ and $X ~ \Normal(0,1/Z)$ then $X \sim \Cauchy(0,1)$.
+> 2. If $Z \sim \Normal(0, 1)$ and $X \sim \Normal(0,1/Z)$ then $X \sim \Cauchy(0,1)$.
 >
 > 3. If $X_1, X_2, \ldots, X_n$ are independent $\Cauchy(0,1)$ then
 >    $\max(X_1, \ldots, X_n)$ is of size $n$.
->
-> 4. If $X_1, X_2, \ldots, X_n$ are independent $\Cauchy(0,1)$ then
->    $$\begin{aligned}
->     \frac{1}{n} \left(X_1 + \cdots + X_n\right) \sim \Cauchy(0,1) .
->    \end{aligned}$$
 
 ----------------
 
-5. If $X_1, X_2, \ldots, X_n$ are independent $\Cauchy(0,1)$ then
+4. If $X_1, X_2, \ldots, X_n$ are independent $\Cauchy(0,1)$ then
    $$\begin{aligned}
     \frac{1}{n} \left(X_1 + \cdots + X_n\right) \sim \Cauchy(0,1) .
    \end{aligned}$$
+
+. . .
 
 *Wait, what?!?*
 

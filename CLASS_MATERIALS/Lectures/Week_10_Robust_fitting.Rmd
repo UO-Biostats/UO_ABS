@@ -16,10 +16,21 @@ library(matrixStats)
 options(mc.cores = parallel::detectCores())
 ```
 
+# Robustness
+
+##
+
+**Statistical robustness:**
+
+![Huber, *Robust statistics*, p.1](images/huber-robustness.png){width=80%}
+
+::: {.caption}
+Huber, *Robust Statistics*.
+:::
+
 
 
 # Fitting linear models, robustly
-
 
 ## Standard "least-squares" fits
 
@@ -223,30 +234,36 @@ abline(truth$b0, truth$b1, col='red', lwd=2)
 abline(mean(stancoefs$b0), mean(stancoefs$b1), col='green', lwd=2)
 ```
 
+# Why does it work?
+
+##
+
+::: {.columns}
+::::::: {.column width=50%}
+
+The Cauchy distribution has "heavy tails":
+extreme values are much more likely.
+
+So, a point that's far from the line is less surprising,
+
+and the line with the highest likelihood
+isn't as strongly affected by outliers.
 
 
+:::
+::::::: {.column width=50%}
 
-# Wrap-up
+```{r dx, fig.height=2*fig.dim, echo=FALSE}
+layout(1:2, height=c(1,1.1))
+par(mar=c(1,4,1,1)+.1)
+x <- seq(-20, 20, length.out=501)
+plot(x, dnorm(x), type='l', xlab='', ylab='probability density')
+lines(x, dcauchy(x), col='red')
+legend("topright", lty=1, col=1:2, legend=c("dnorm", "dcauchy"))
+par(mar=c(5,4,1,1)+.1)
+plot(x, dcauchy(x), type='l', col='red', log='y', xlab='value', ylab='probability density')
+lines(x, dnorm(x))
+```
 
-## Modeling, and Stan
-
-1. How well a statistical method works depends on the situation.
-
-2. We can describe the "situation" with a *probability model*.
-
-3. Inference usually works best if the probabilistic model reflects reality .
-
-4. Stan lets you do inference using (almost) arbitrary models.
-
-5. Explicit models make it easy to simulate, and therefore test your methods.
-
-## Hierarchical Bayesian models
-
-1. It is often possible to infer things about *populations* that we can't infer about individuals.
-
-2. Doing so leads to *sharing of information* (or, "power") between samples,
-   and can improve accuracy.
-
-3. Priors (and hyperpriors) on individual parameters provides a good way to do this.
-
-
+:::
+:::::::

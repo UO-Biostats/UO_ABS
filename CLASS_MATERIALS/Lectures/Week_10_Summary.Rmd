@@ -1,0 +1,117 @@
+---
+title: "Wrap-up"
+author: "Peter Ralph"
+date: "1 December 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+```
+
+
+
+
+# Wrap-up
+
+## Modeling, and Stan
+
+1. How well a statistical method works depends on the situation.
+
+2. We can describe the "situation" with a *probability model*.
+
+3. Inference usually works best if the probabilistic model reflects reality .
+
+4. Stan lets you do inference using (almost) arbitrary models.
+
+5. Explicit models make it easy to simulate, and therefore test your methods.
+
+## Hierarchical Bayesian models
+
+1. It is often possible to infer things about *populations* that we can't infer about individuals.
+
+2. Doing so leads to *sharing of information* (or, "power") between samples,
+   and can improve accuracy.
+
+3. Priors (and hyperpriors) on individual parameters provides a good way to do this.
+
+
+# Review
+
+## Concepts
+
+::: {.columns}
+:::::::: {.column width="50%"}
+
+
+- statistic versus parameter
+- quantifying uncertainty
+- experiment vs observation
+- controls
+- statistical power/sensitivity
+- tidy data
+- Markov chain Monte Carlo
+- permutation test
+- multiple comparisons
+- shrinkage and sharing power
+
+:::
+:::::::: {.column width="50%"}
+
+- probability models
+- simulation
+- $p$-values
+- hypothesis testing
+- confidence and credible intervals
+- linear models
+- random effects
+- prior, likelihood, and posterior
+- goodness-of-fit
+
+:::
+::::::::
+
+------------------
+
+::: {.columns}
+:::::::: {.column width="50%"}
+
+**Distributions:**
+
+- Central Limit Theorem
+- Gaussian/Normal
+- Student's $t$
+- Binomial
+- Beta
+- Beta-Binomial
+- Exponential
+- Cauchy
+- Poisson
+
+:::
+:::::::: {.column width="50%"}
+
+**Visualization:**
+
+- center, spread, outliers
+- histograms
+- scatter plots
+- boxplots
+- maximize information per unit of ink
+
+**Statistical models:**
+
+- ANOVA, partition of variance
+- least-squares fitting $\sim$ Gaussian
+- Beta-Binomial
+- logistic regression
+- robust regression
+- General Linear (Mixed) Models
+
+:::
+::::::::
+

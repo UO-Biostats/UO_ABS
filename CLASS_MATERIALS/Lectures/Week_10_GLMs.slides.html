@@ -472,13 +472,14 @@ background-color: #fff; } }
 <section id="common-choices" class="slide level2">
 <h2>Common choices:</h2>
 <ul>
-<li><p>Linear regression: <span class="math display">\[ Y \sim \Normal(X \beta, \sigma) .\]</span></p></li>
-<li><p>Logistic regression: <span class="math display">\[ Y \sim \Binom(n, \logistic(X\beta)) .\]</span></p></li>
-<li><p>Gamma regression: <span class="math display">\[ Y \sim \Gam(\text{scale}=\exp(X\beta)/k, \text{shape}=k) .\]</span></p></li>
+<li><p>Linear: <span class="math display">\[ Y \sim \Normal(X \beta, \sigma) .\]</span></p></li>
+<li><p>Binomial (“Logistic”): <span class="math display">\[ Y \sim \Binom(n, \logistic(X\beta)) .\]</span></p></li>
+<li><p>Poisson: <span class="math display">\[ Y \sim \Poisson(\exp(X\beta)) .\]</span></p></li>
+<li><p>Gamma: <span class="math display">\[ Y \sim \Gam(\text{scale}=\exp(X\beta)/k, \text{shape}=k) .\]</span></p></li>
 </ul>
 </section>
-<section id="logistic-regression-in-r" class="slide level2">
-<h2>Logistic regression, in R</h2>
+<section id="logistic-glm-in-r" class="slide level2">
+<h2>Logistic GLM, in R</h2>
 <pre><code>glm(y ~ x, family=binomial)</code></pre>
 <div class="fragment">
 <pre><code>family {stats}
@@ -523,8 +524,8 @@ links log, identity, and sqrt; and the inverse.gaussian family the links
 </div>
 </section></section>
 <section>
-<section id="unpacking-logistic-regression" class="title-slide slide level1">
-<h1>Unpacking logistic regression</h1>
+<section id="unpacking-the-logistic-glm" class="title-slide slide level1">
+<h1>Unpacking the logistic GLM</h1>
 
 </section>
 <section id="simulate-data" class="slide level2">
@@ -645,45 +646,6 @@ model {
 <p><strong>Then,</strong> simulate from it.</p>
 </div>
 </div>
-</section>
-<section id="in-class" class="slide level2">
-<h2>in class</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a>N &lt;-<span class="st"> </span><span class="dv">100</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="co"># Matrix of X, Y</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a>XY &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">X=</span><span class="kw">rnorm</span>(N), </span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>            <span class="dt">Y=</span><span class="kw">rnorm</span>(N))</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>beta &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">-3</span>)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a><span class="co"># Xbeta &lt;- beta[1] * X + beta[2] * Y</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>Xbeta &lt;-<span class="st"> </span>XY <span class="op">%*%</span><span class="st"> </span>beta</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a>Z &lt;-<span class="st"> </span><span class="kw">rgamma</span>(N, <span class="dt">shape=</span><span class="dv">1</span>, <span class="dt">scale=</span><span class="kw">exp</span>(<span class="op">-</span>Xbeta))</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a>gZ &lt;-<span class="st"> </span><span class="kw">glm</span>(Z <span class="op">~</span><span class="st"> </span>XY[,<span class="st">&quot;X&quot;</span>] <span class="op">+</span><span class="st"> </span>XY[,<span class="st">&quot;Y&quot;</span>], <span class="dt">family=</span><span class="kw">Gamma</span>(<span class="dt">link=</span><span class="st">&#39;log&#39;</span>))</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a><span class="kw">summary</span>(gZ)</span></code></pre></div>
-<pre><code>## 
-## Call:
-## glm(formula = Z ~ XY[, &quot;X&quot;] + XY[, &quot;Y&quot;], family = Gamma(link = &quot;log&quot;))
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -3.3130  -0.9182  -0.3895   0.3900   1.7129  
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  0.10181    0.09629   1.057    0.293    
-## XY[, &quot;X&quot;]   -2.03873    0.10828 -18.829   &lt;2e-16 ***
-## XY[, &quot;Y&quot;]    3.00499    0.09137  32.888   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## (Dispersion parameter for Gamma family taken to be 0.9192264)
-## 
-##     Null deviance: 1151.41  on 99  degrees of freedom
-## Residual deviance:  126.36  on 97  degrees of freedom
-## AIC: 233.01
-## 
-## Number of Fisher Scoring iterations: 8</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="kw">plot</span>(Xbeta, Z)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" title="plot of chunk r siminclass" alt="plot of chunk r siminclass" style="display: block; margin: auto;" /></p>
 </section></section>
     </div>
   </div>
