@@ -21,7 +21,7 @@ options(mc.cores = parallel::detectCores())
 
 ## A hypothetical situation:
 
-1. We have **counts** of transcript numbers,
+1. We have **counts** of mutations,
 
 2. from some individuals of different **ages**
    and past **exposures** to solar irradiation,
@@ -89,6 +89,30 @@ $$\begin{aligned}
 :::
 :::::::::::
 
+-------------------------
+
+::: {.columns}
+::::::::: {.column width="50%"}
+
+
+1. Counts are **Poisson**,
+
+2. with mean that depends on age and exposure,
+
+3. but effect of exposure depends on genotype.
+
+:::
+:::::::::: {.column width="50%"}
+
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\mu_i) \\
+    \mu_i &= a_{g_i} + b \times \text{age}_i + c_{g_i} \times \text{exposure}_i
+\end{aligned}$$
+
+:::
+:::::::::::
+
 
 
 -------------------------
@@ -109,7 +133,8 @@ $$\begin{aligned}
 
 $$\begin{aligned}
     Z_i &\sim \Poisson(\mu_i) \\
-    \mu_i &= \exp\left( a_{g_i} + b \times \text{age}_i + c_{g_i} \times \text{exposure}_i \right)
+    \mu_i &= \exp\left( a_{g_i} + b \times \text{age}_i \right. \\
+        &\qquad \left. {} + c_{g_i} \times \text{exposure}_i \right)
 \end{aligned}$$
 
 :::
@@ -126,8 +151,8 @@ true_params <- list(a=c(0, 2),
                     c=c(1/10, -1/10),
                     sigma=0.7)
 nsamples <- 500
-data <- data.frame(genotype=sample(c(1,2), nsamples, 
-                                   replace=TRUE),
+data <- data.frame(genotype=factor(sample(c('A','B'), nsamples, 
+                                          replace=TRUE)),
                    age = rgamma(nsamples, 10, 1),
                    exposure = rexp(nsamples, 0.2))
 data$y <- with(data, true_params$a[genotype] +
@@ -146,20 +171,18 @@ write.table(data[,c(1,2,3,6)], file="data/poisson_counts.tsv", row.names=FALSE)
 ```{r plot_counts, echo=FALSE, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 layout(t(1:2))
 plot(counts ~ age, col=genotype, data=data, pch=20)
-for (g in seq_along(unique(data$genotype))) {
-    # abline(coef(lm(counts ~ age, data=subset(data, genotype == g))), col=g)
-    with(subset(data, genotype == g), lines(lowess(age, counts), col=g))
+for (g in levels(data$genotype)) {
+    abline(coef(lm(counts ~ age, data=subset(data, genotype == g))), col=match(g, levels(data$genotype)))
 }
 plot(counts ~ exposure, col=genotype, data=data, pch=20)
-for (g in seq_along(unique(data$genotype))) {
-    # abline(coef(lm(counts ~ exposure, data=subset(data, genotype == g))), col=g)
-    with(subset(data, genotype == g), lines(lowess(exposure, counts), col=g))
+for (g in unique(data$genotype)) {
+    abline(coef(lm(counts ~ exposure, data=subset(data, genotype == g))), col=match(g, levels(data$genotype)))
 }
 legend("topright", pch=20, col=1:2,
        legend=paste("genotype", 1:2))
 ```
 
-## Your turn: use `glm( )`
+## Let's do it, with `glm( )`
 
 
 $$\begin{aligned}
@@ -170,8 +193,7 @@ $$\begin{aligned}
 
 Here are [the data](data/poisson_counts.tsv):
 ```{r show_data}
-countdata <- read.table("data/poisson_counts.tsv", header=TRUE)
-head(countdata)
+head( countdata <- read.table("data/poisson_counts.tsv", header=TRUE, stringsAsFactors=TRUE) )
 ```
 
 ## Write a Stan block
@@ -237,7 +259,7 @@ fit1 <- stan(file="data/simple_poisson.stan",
                                counts=counts,
                                age=age,
                                expo=exposure,
-                               geno=genotype)),
+                               geno=as.numeric(genotype))),
              control=list(max_treedepth=12),
              iter=1000, chains=3)
 ```
@@ -308,9 +330,9 @@ do_sim <- function () {
                     b=post1$b[k],
                     c=post1$c[k,])
     mu1 <- with(data,
-                    exp(params1$a[genotype] 
+                    exp(params1$a[as.numeric(genotype)] 
                         + params1$b * age
-                        + params1$c[genotype] * exposure))
+                        + params1$c[as.numeric(genotype)] * exposure))
     rpois(length(mu1), mu1)
 }
 # 100 datasets:
@@ -337,9 +359,9 @@ model {
 
 ```{r plot_post_sims1, echo=FALSE, fig.height=1.5*fig.dim}
 post_mean_mu <- with(list2env(data),
-                     exp(colMeans(post1$a)[genotype]
+                     exp(colMeans(post1$a)[as.numeric(genotype)]
                          + mean(post1$b) * age
-                         + colMeans(post1$c)[genotype] * exposure))
+                         + colMeans(post1$c)[as.numeric(genotype)] * exposure))
 plot(data$counts[order(post_mean_mu)], ylab="counts", ylim=range(sim1), type='n')
 segments(x0=seq_len(nrow(data)),
          y0=rowMins(sim1)[order(post_mean_mu)],
@@ -347,4 +369,19 @@ segments(x0=seq_len(nrow(data)),
 points(data$counts[order(post_mean_mu)], pch=20, col='red')
 legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "simulated range"), col=c('red', 'black'))
 ```
+
+## Possible solutions
+
+- use the `quasipoisson` family in `glm( )`
+
+. . . 
+
+- introduce more randomness:
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(y_i) \\
+    y_i &= \exp(\mu_i) \\
+    \mu_i &\sim \Normal(a_{g_i} + b \times \text{age}_i \\
+        &\qquad {} + c_{g_i} \times \text{exposure}_i, \sigma)
+\end{aligned}$$
 

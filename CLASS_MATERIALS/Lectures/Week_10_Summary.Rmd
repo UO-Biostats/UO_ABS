@@ -13,63 +13,6 @@ set.seed(23)
 library(matrixStats)
 ```
 
-# Identify the GLM
-
-## Which response distribution for the GLM?
-
-1. How number of pumpkins per vine
-   depends on fertilizer and water amount.
-
-2. How distance from home to workplace is predicted by
-   income, job category, and city.
-
-3. How (presence or absence of) hip dysplasia in dogs
-   depends on age and breed.
-
-4. How doughnut weight varies between and within bakeries and doughnut types.
-
-5. How house prices are predicted by elevation, distance to stores,
-   and square footage.
-
-## An advertisement:
-
-The [`brms`](https://github.com/paul-buerkner/brms) package lets you
-
-. . .
-
-::: {.centered}
-fit hierarchical models using Stan
-:::
-
-. . .
-
-::: {.flushright}
-with mixed-model syntax!!!
-:::
-
-. . .
-
-::: {.columns}
-::::::: {.column width=70%}
-
-
-```
-# e.g.
-brm(formula = z ~ x + y + (1 + y|f), data = xy,
-    family = poisson(link='log'))
-# or
-brm(formula = z ~ x + y + (1 + y|f), data = xy,
-    family = student(link='identity'))
-```
-
-:::
-::::::: {.column width=30%}
-
-![brms logo](images/brms.png)
-
-:::
-:::::::
-
 # Wrap-up
 
 ## Modeling, and Stan
@@ -169,3 +112,62 @@ brm(formula = z ~ x + y + (1 + y|f), data = xy,
 :::
 ::::::::
 
+
+# Identify the GLM
+
+## Which response distribution for the GLM?
+
+1. How number of pumpkins per vine
+   depends on fertilizer and water amount.
+
+2. How distance from home to workplace is predicted by
+   income, job category, and city.
+
+3. How (presence or absence of) hip dysplasia in dogs
+   depends on age and breed.
+
+4. How doughnut weight varies between and within bakeries and doughnut types.
+
+5. How house prices are predicted by elevation, distance to stores,
+   and square footage.
+
+*Options:* normal / binomial / poisson / gamma / cauchy
+
+## An advertisement:
+
+The [`brms`](https://github.com/paul-buerkner/brms) package lets you
+
+. . .
+
+::: {.centered}
+fit hierarchical models using Stan
+:::
+
+. . .
+
+::: {.flushright}
+with mixed-model syntax!!!
+:::
+
+. . .
+
+::: {.columns}
+::::::: {.column width=70%}
+
+
+```
+# e.g.
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = poisson(link='log'))
+# or
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = student(link='identity'))
+```
+
+:::
+::::::: {.column width=30%}
+
+![brms logo](images/brms.png)
+
+:::
+:::::::
