@@ -115,6 +115,7 @@ Week 10 (*12/1*)
 
     - slides: [Fitting linear models, robustly](../CLASS_MATERIALS/Lectures/Week_10_Robust_fitting.slides.html)
     - slides: [Generalized Linear Models](../CLASS_MATERIALS/Lectures/Week_10_GLMs.slides.html)
+    - slides: [Summary and wrap-up](../CLASS_MATERIALS/Lectures/Week_10_Summary.slides.html)
     - slides: [Poisson linear models](../CLASS_MATERIALS/Lectures/Week_10_Poisson_linear_models.slides.html)
     - slides: [The Cauchy distribution](../CLASS_MATERIALS/Lectures/Week_10_Cauchy_distribution.slides.html)
     - slides: [The Poisson distribution](../CLASS_MATERIALS/Lectures/Week_10_Poisson_distribution.slides.html)
