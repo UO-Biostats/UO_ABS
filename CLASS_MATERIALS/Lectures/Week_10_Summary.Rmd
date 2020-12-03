@@ -15,6 +15,19 @@ library(matrixStats)
 
 # Wrap-up
 
+## Steps in data analysis
+
+1. Care, or at least think, about the data.
+
+2. Look at the data.
+
+3. Query the data.
+
+4. Check the results.
+
+5. Communicate.
+
+
 ## Modeling, and Stan
 
 1. How well a statistical method works depends on the situation.
