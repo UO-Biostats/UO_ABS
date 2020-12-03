@@ -12,6 +12,8 @@
 
 .centered p { text-align: center; }
 
+.flushright p { text-align: right; }
+
 .caption p { font-size: 75%; color: grey; text-align: right; }
 
 .greyed { color: grey; }

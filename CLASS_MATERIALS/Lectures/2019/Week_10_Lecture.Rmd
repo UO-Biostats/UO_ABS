@@ -536,12 +536,14 @@ How much do genotype and parasite dose affect parasite production?
 
 Here's the [data](../Datasets/Snail_Parasite_Data/Tavalire_et_al_2016_snail_parasite_data.csv)
 ```{r snails}
-head(snails <- read.csv("../Datasets/Snail_Parasite_Data/Tavalire_et_al_2016_snail_parasite_data.csv"))
+head(snails <- read.csv("../Datasets/Snail_Parasite_Data/Tavalire_et_al_2016_snail_parasite_data.csv", stringsAsFactors=TRUE))
 ```
 
 ## in class
 
 ```
+snails <- subset(snails, Inf_Dose > 0)
+snails$dose <- (snails$Inf_Dose > 1)
 mod1 <- glm(Total_Parasites ~ Strain * Total_weeks_shed + Strain : dose, data=snails, family=poisson("log"))
 summary(mod1)
 
@@ -557,6 +559,7 @@ exp(-.66)
 # plot data and predicted means
 plot(Total_Parasites ~ Total_weeks_shed, data=snails, col=Strain, pch=20)
 newdata <- expand.grid(Strain=levels(snails$Strain), Total_weeks_shed=0:30, dose=TRUE)
+preds <- predict(mod1, newdata=newdata)
 for (st in levels(snails$Strain)) {
   lines(0:30, exp(preds[newdata$Strain == st]), col=match(st, levels(snails$Strain)))
 }

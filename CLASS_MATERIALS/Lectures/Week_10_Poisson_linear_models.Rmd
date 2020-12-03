@@ -5,7 +5,7 @@ date: "1 December 2020 -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
-fig.dim <- 4
+fig.dim <- 5
 knitr::opts_chunk$set(fig.width=2*fig.dim,
                       fig.height=fig.dim,
                       fig.align='center')
@@ -121,14 +121,14 @@ $$\begin{aligned}
 
 
 ```{r sim_counts, include=FALSE, cache=TRUE}
-true_params <- list(a=c(0, 0.2),
+true_params <- list(a=c(0, 2),
                     b=1/20,
-                    c=c(1/30, -1/15),
-                    sigma=1.0)
+                    c=c(1/10, -1/10),
+                    sigma=0.7)
 nsamples <- 500
 data <- data.frame(genotype=sample(c(1,2), nsamples, 
                                    replace=TRUE),
-                   age = rgamma(nsamples, 3, 0.1),
+                   age = rgamma(nsamples, 10, 1),
                    exposure = rexp(nsamples, 0.2))
 data$y <- with(data, true_params$a[genotype] +
                       true_params$b * age +
@@ -143,10 +143,18 @@ write.table(data, file="data/poisson_counts_data.tsv", row.names=FALSE)
 write.table(data[,c(1,2,3,6)], file="data/poisson_counts.tsv", row.names=FALSE)
 ```
 
-```{r plot_counts, echo=FALSE, fig.width=2*fig.dim}
+```{r plot_counts, echo=FALSE, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 layout(t(1:2))
 plot(counts ~ age, col=genotype, data=data, pch=20)
+for (g in seq_along(unique(data$genotype))) {
+    # abline(coef(lm(counts ~ age, data=subset(data, genotype == g))), col=g)
+    with(subset(data, genotype == g), lines(lowess(age, counts), col=g))
+}
 plot(counts ~ exposure, col=genotype, data=data, pch=20)
+for (g in seq_along(unique(data$genotype))) {
+    # abline(coef(lm(counts ~ exposure, data=subset(data, genotype == g))), col=g)
+    with(subset(data, genotype == g), lines(lowess(exposure, counts), col=g))
+}
 legend("topright", pch=20, col=1:2,
        legend=paste("genotype", 1:2))
 ```
@@ -208,7 +216,8 @@ parameters {
 }
 model {
     vector[N] y; // means
-    y = exp(a[genotype] + b .* age + c[genotype] .* exposure);
+    y = exp(a[genotype] + b .* age 
+            + c[genotype] .* exposure);
     counts ~ poisson(y);
     // implicitly flat priors
 }
@@ -223,13 +232,12 @@ model {
 *Note:* scaling the data helps Stan find the right scale to move on.
 
 ```{r run_simple_pois, cache=TRUE, dependson=c("sim_counts", "simple_poisson")}
-scaled_data <- with(data, list(N=length(counts),
-                               counts=counts,
-                               age=(age - mean(age))/sd(age),
-                               expo=(exposure - mean(exposure))/sd(exposure),
-                               geno=genotype))
 fit1 <- stan(file="data/simple_poisson.stan",
-             data=scaled_data,
+             data=with(data, list(N=length(counts),
+                               counts=counts,
+                               age=age,
+                               expo=exposure,
+                               geno=genotype)),
              control=list(max_treedepth=12),
              iter=1000, chains=3)
 ```
@@ -247,37 +255,30 @@ print(fit1)
 stan_trace(fit1, pars=c("a","b","c","lp__"), inc_warmup=FALSE)
 ```
 
-## How'd we do?
+## 
 
-Here are posterior distributions of the parameters,
-with **the true values in red**.
+Posterior distributions of the parameters:
 ```{r true_fit_1, echo=FALSE}
-# a[g] + b * (age - ma)/sa + c[g] * (exp - me)/se
-# = a[g] - b * ma / sa - c[g] * me / se + (b/sa) * age  + (c[g]/se) * exp
-post1$true_a <- with(data, post1$a - cbind(post1$b,post1$b) * mean(age)/sd(age) - post1$c * mean(exposure)/sd(exposure))
 layout(matrix(1:6, nrow=2, byrow=TRUE))
 with(data, {
-    hist(post1$true_a[,1], breaks=50, main='a[1]', 
-         xlim=range(post1$true_a[,1], true_params$a[1]))
-    abline(v=true_params$a[1], col='red', lwd=2)
-    hist(post1$true_a[,2], breaks=50, main='a[2]',
-         xlim=range(post1$true_a[,2], true_params$a[2]))
-    abline(v=true_params$a[2], col='red', lwd=2)
-    hist(post1$b/sd(age), breaks=50, main='b',
-         xlim=range(true_params$b, post1$b/sd(age)))
-    abline(v=true_params$b, col='red', lwd=2)
-    hist(post1$c[,1]/sd(exposure), breaks=50, main='c[1]',
-         xlim=range(post1$c[,1]/sd(exposure), true_params$c[1]))
-    abline(v=true_params$c[1], col='red', lwd=2)
-    hist(post1$c[,2]/sd(exposure), breaks=50, main='c[2]',
-         xlim=range(post1$c[,2]/sd(exposure), true_params$c[2]))
-    abline(v=true_params$c[2], col='red', lwd=2)
+    hist(post1$a[,1], breaks=50, main='a[1]')
+    #     xlim=range(post1$a[,1], true_params$a[1]))
+    # abline(v=true_params$a[1], col='red', lwd=2)
+    hist(post1$a[,2], breaks=50, main='a[2]')
+    #     xlim=range(post1$a[,2], true_params$a[2]))
+    # abline(v=true_params$a[2], col='red', lwd=2)
+    hist(post1$b/sd(age), breaks=50, main='b')
+    #     xlim=range(true_params$b, post1$b/sd(age)))
+    # abline(v=true_params$b, col='red', lwd=2)
+    hist(post1$c[,1]/sd(exposure), breaks=50, main='c[1]')
+    #     xlim=range(post1$c[,1]/sd(exposure), true_params$c[1]))
+    # abline(v=true_params$c[1], col='red', lwd=2)
+    hist(post1$c[,2]/sd(exposure), breaks=50, main='c[2]')
+    #     xlim=range(post1$c[,2]/sd(exposure), true_params$c[2]))
+    # abline(v=true_params$c[2], col='red', lwd=2)
  })
 ```
 
-. . .
-
-*What happened?*
 
 # Goodness of fit
 
@@ -287,25 +288,33 @@ Let's simulate up data *under this model* to check for goodness of fit.
 
 . . .
 
-We expect to **not** see a good fit. (*Why?*)
+One hundred times, we'll
+
+1. pick a set of parameters from the posterior
+2. compute the vector of means (`mu`)
+3. simulate a vector of Poisson counts with mean `mu`
 
 
-## 100 datasets from the posterior distribution
+## 
 
 
 ::: {.columns}
 :::::::: {.column width="60%"}
 
 ```{r post_sims1}
-params1 <- list(a=colMeans(post1$a),
-                b=mean(post1$b),
-                c=colMeans(post1$c))
-mu1 <- with(list2env(scaled_data), 
-                exp(params1$a[geno] 
-                    + params1$b * age
-                    + params1$c[geno] * expo))
+do_sim <- function () {
+    k <- sample.int(nrow(post1$a), 1)
+    params1 <- list(a=post1$a[k,],
+                    b=post1$b[k],
+                    c=post1$c[k,])
+    mu1 <- with(data,
+                    exp(params1$a[genotype] 
+                        + params1$b * age
+                        + params1$c[genotype] * exposure))
+    rpois(length(mu1), mu1)
+}
 # 100 datasets:
-sim1 <- replicate(100, rpois(length(mu1), mu1))
+sim1 <- replicate(100, do_sim())
 ```
 
 :::
@@ -326,12 +335,16 @@ model {
 
 ## True data are *overdispersed* relative to our simulations
 
-```{r plot_post_sims1}
-plot(data$counts[order(mu1)], ylab="counts", ylim=range(sim1), type='n')
+```{r plot_post_sims1, echo=FALSE, fig.height=1.5*fig.dim}
+post_mean_mu <- with(list2env(data),
+                     exp(colMeans(post1$a)[genotype]
+                         + mean(post1$b) * age
+                         + colMeans(post1$c)[genotype] * exposure))
+plot(data$counts[order(post_mean_mu)], ylab="counts", ylim=range(sim1), type='n')
 segments(x0=seq_len(nrow(data)),
-         y0=rowMins(sim1)[order(mu1)],
-         y1=rowMaxs(sim1)[order(mu1)])
-points(data$counts[order(mu1)], pch=20, col='red')
+         y0=rowMins(sim1)[order(post_mean_mu)],
+         y1=rowMaxs(sim1)[order(post_mean_mu)])
+points(data$counts[order(post_mean_mu)], pch=20, col='red')
 legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "simulated range"), col=c('red', 'black'))
 ```
 

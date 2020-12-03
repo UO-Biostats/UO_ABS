@@ -1,7 +1,7 @@
 ---
-title: "Wrap-up"
+title: "Summary"
 author: "Peter Ralph"
-date: "1 December 2020 -- Advanced Biological Statistics"
+date: "3 December 2020 -- Advanced Biological Statistics"
 ---
 
 ```{r setup, include=FALSE}
@@ -13,8 +13,62 @@ set.seed(23)
 library(matrixStats)
 ```
 
+# Identify the GLM
+
+## Which response distribution for the GLM?
+
+1. How number of pumpkins per vine
+   depends on fertilizer and water amount.
+
+2. How distance from home to workplace is predicted by
+   income, job category, and city.
+
+3. How (presence or absence of) hip dysplasia in dogs
+   depends on age and breed.
+
+4. How doughnut weight varies between and within bakeries and doughnut types.
+
+5. How house prices are predicted by elevation, distance to stores,
+   and square footage.
+
+## An advertisement:
+
+The [`brms`](https://github.com/paul-buerkner/brms) package lets you
+
+. . .
+
+::: {.centered}
+fit hierarchical models using Stan
+:::
+
+. . .
+
+::: {.flushright}
+with mixed-model syntax!!!
+:::
+
+. . .
+
+::: {.columns}
+::::::: {.column width=70%}
 
 
+```
+# e.g.
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = poisson(link='log'))
+# or
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = student(link='identity'))
+```
+
+:::
+::::::: {.column width=30%}
+
+![brms logo](images/brms.png)
+
+:::
+:::::::
 
 # Wrap-up
 
@@ -40,7 +94,6 @@ library(matrixStats)
 3. Priors (and hyperpriors) on individual parameters provides a good way to do this.
 
 
-# Review
 
 ## Concepts
 
@@ -89,6 +142,7 @@ library(matrixStats)
 - Beta
 - Beta-Binomial
 - Exponential
+- Gamma
 - Cauchy
 - Poisson
 
@@ -108,9 +162,9 @@ library(matrixStats)
 - ANOVA, partition of variance
 - least-squares fitting $\sim$ Gaussian
 - Beta-Binomial
-- logistic regression
-- robust regression
-- General Linear (Mixed) Models
+- logistic linear models
+- robust linear models
+- Generalized Linear (Mixed) Models
 
 :::
 ::::::::
