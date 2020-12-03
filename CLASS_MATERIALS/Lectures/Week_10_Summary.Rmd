@@ -23,9 +23,9 @@ library(matrixStats)
 
 3. Inference usually works best if the probabilistic model reflects reality .
 
-4. Stan lets you do inference using (almost) arbitrary models.
+4. Explicit models make it easy to simulate, and therefore test your methods.
 
-5. Explicit models make it easy to simulate, and therefore test your methods.
+5. Stan lets you do inference using (almost) arbitrary models.
 
 ## Hierarchical Bayesian models
 
