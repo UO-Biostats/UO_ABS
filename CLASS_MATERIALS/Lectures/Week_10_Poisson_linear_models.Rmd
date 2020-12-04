@@ -196,6 +196,16 @@ Here are [the data](data/poisson_counts.tsv):
 head( countdata <- read.table("data/poisson_counts.tsv", header=TRUE, stringsAsFactors=TRUE) )
 ```
 
+## IN CLASS
+
+```{r the_glm}
+gm <- glm(counts ~ 0 + age + genotype + exposure : genotype, data=countdata, family=poisson)
+summary(gm)
+```
+
+
+## 
+
 ## Write a Stan block
 
 ::: {.columns}
@@ -316,8 +326,6 @@ One hundred times, we'll
 2. compute the vector of means (`mu`)
 3. simulate a vector of Poisson counts with mean `mu`
 
-
-## 
 
 
 ::: {.columns}
