@@ -120,4 +120,5 @@ Week 10 (*12/1*)
     - slides: [The Cauchy distribution](../CLASS_MATERIALS/Lectures/Week_10_Cauchy_distribution.slides.html)
     - slides: [The Poisson distribution](../CLASS_MATERIALS/Lectures/Week_10_Poisson_distribution.slides.html)
     - slides: [Matrix multiplication](../CLASS_MATERIALS/Lectures/Week_10_Matrix_multiplication.slides.html)
+    - [Homework 9](../CLASS_MATERIALS/Homeworks/HW09_F20.html) *(due 12/10)*
     - Reading: Kruschke, chapters 15, 16, 17
