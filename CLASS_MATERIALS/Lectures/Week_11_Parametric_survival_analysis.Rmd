@@ -1,0 +1,184 @@
+---
+title: "Parametric Survival Analysis"
+author: "Peter Ralph"
+date: "5 January 2021 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center',
+                      warning=FALSE)
+set.seed(42)
+library(brms)
+library(survival)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+
+# Fully parametric models
+
+## Modeling
+
+The idea: choose a (parametric) distribution for the time-until-event.
+
+. . .
+
+Some choices:
+
+- Exponential (constant rate)
+- Weibull
+- Gompertz
+- logNormal
+
+##
+
+::: {.columns}
+:::::: {.column width=50%}
+
+Model:
+
+- lifetimes are Weibull distributed
+- mean lifetime depends on covariates
+
+:::
+:::::: {.column width=50%}
+
+:::
+::::::
+
+##
+
+::: {.columns}
+:::::: {.column width=50%}
+
+Model:
+
+- lifetimes are Weibull distributed
+- mean lifetime depends on covariates
+
+:::
+:::::: {.column width=50%}
+
+$$\begin{aligned}
+    T_i &\sim \Weibull(\text{shape}=k, \text{mean}=\mu_i) \\
+    \mu_i &= \exp(y_i) \\
+    y_i &= \beta_0 + \sum_j \beta_j x_{ij} 
+\end{aligned}$$
+
+:::
+::::::
+
+## 
+
+Three ways to do parametric survival analysis:
+
+- `survival::survreg` : maximum likelihood
+- `brms::brm` : Baysian, with Stan
+- MC Stan
+
+## Maximum likelihood: survreg
+
+```{r survreg}
+weifit <- survreg(Surv(time, status) ~ sex + ph.ecog + ph.karno,
+                  data = lung, dist='weibull')
+```
+
+## Bayesian: brms
+
+```{r brms, cache=TRUE}
+lung$censored <- ifelse(lung$status == 1, 'right', 'none')
+
+brmfit <- brm(time | cens(censored) ~ sex + ph.ecog + ph.karno,
+              data=lung, family='weibull')
+```
+
+##
+
+```{r dummy, include=FALSE}
+summary(weifit)
+summary(brmfit)
+```
+
+::: {.columns}
+:::::: {.column width=50%}
+
+<pre style="width:150%; margin-left:-50%;">
+```{r ssum, echo=FALSE, results='asis', message=FALSE}
+summary(weifit)
+```
+</pre>
+
+:::
+:::::: {.column width=50%}
+
+<pre style="width:150%;">
+```{r bsum, echo=FALSE, results='asis', message=FALSE}
+summary(brmfit)
+```
+</pre>
+
+:::
+::::::
+
+
+## Random effects, with brms
+
+```{r brms2, cache=TRUE, echo=2:3}
+lung$inst[is.na(lung$inst)] <- 100
+brmfit2 <- brm(time | cens(censored) ~ sex + ph.ecog + ph.karno + (1|inst),
+               data=lung, family='weibull')
+```
+
+##
+
+```{r sb2, message=FALSE}
+summary(brmfit2)
+```
+
+##
+
+```{r insts}
+ranef(brmfit2)
+```
+
+
+# Application
+
+## 
+
+Fit (and select) a proportional hazards model to the `veteran` dataset.
+What are the most important predictors of survival?
+
+```{r vetdata, eval=1}
+data(veteran)
+help(veteran)
+```
+```
+Veterans' Administration Lung Cancer study
+
+Description:
+
+     Randomised trial of two treatment regimens for lung cancer.  This
+     is a standard survival analysis data set.
+
+Usage:
+
+     veteran
+     
+Format:
+
+       trt:       1=standard 2=test                            
+       celltype:  1=squamous,  2=smallcell,  3=adeno,  4=large 
+       time:      survival time                                
+       status:    censoring status                             
+       karno:     Karnofsky performance score (100=good)       
+       diagtime:  months from diagnosis to randomisation       
+       age:       in years                                     
+       prior:     prior therapy 0=no, 10=yes      
+```
+

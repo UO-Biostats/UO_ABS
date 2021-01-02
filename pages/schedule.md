@@ -15,7 +15,12 @@ Week 11 (*1/4*)
 
 : Survival analysis and [introductiom to `brms`](https://github.com/paul-buerkner/brms)
 
-    <!-- - [Homework 11](../CLASS_MATERIALS/Homeworks/HW11_W21.html) *(due 1/16)* -->
+    - slides: [Survival curves](../CLASS_MATERIALS/Lectures/Week_11_Survival_curves.slides.html)
+    - slides: [Cox's Proportional Hazards](../CLASS_MATERIALS/Lectures/Week_11_Cox_proportional_hazards.slides.html)
+    - slides: [the Weibull distribution](../CLASS_MATERIALS/Lectures/Week_11_Weibull_distribution.slides.html)
+    - slides: [Parametric survival analysis](../CLASS_MATERIALS/Lectures/Week_11_Parametric_survival_analysis.slides.html)
+    - slides: [Introduction to brms](../CLASS_MATERIALS/Lectures/Week_11_Intro_to_brms.slides.html)
+    - [Homework 11](../CLASS_MATERIALS/Homeworks/HW11_W21.html) *(due 1/14)*
 
 Week 12 (*1/11*)
 
