@@ -12,8 +12,9 @@ description: useful links for Advanced Biological Statistics
 * How to [use `rstan` on the cluster](rstan_on_talapas.html)
 * How to [check if `rstan` is installed correctly](check_stan_install.html)
 * A description of how to [use git](using-git.html) to get the course material.
-* A [primer on linear algebra](../CLASS_MATERIALS/Lectures/LA_primer_slides.html)
+* A [primer on linear algebra](../CLASS_MATERIALS/Tutorials/LA_primer_slides.html)
 * Some notes on [how the slides are made from Rmd](development.html).
+* A [technical look at brms](../CLASS_MATERIALS/Tutorials/using_brms.html)
 
 ### Stan
 
@@ -30,6 +31,7 @@ description: useful links for Advanced Biological Statistics
     each contains a Stan program, code for simulating data, real data, and model output and diagnostics
 * Vignette on [stanfit objects](https://cran.r-project.org/web/packages/rstan/vignettes/stanfit-objects.html)
 * Brief guide to [Stan's warnings](http://mc-stan.org/misc/warnings)
+* Rewrite of [Kruschke's models using brms (and tidyverse)](https://bookdown.org/content/3686/), by A. Solomon Kurz.
 
 ### Other books
 
@@ -82,6 +84,7 @@ If you are looking for more reference or reading material, these are also good:
 - a [visual introduction to git](https://learngitbranching.js.org/)
 - [Bioinformatics Data Skills](http://shop.oreilly.com/product/0636920030157.do) by Vince Buffalo
 - [Jenny Bryan's stat 545](https://stat545.com/): Data wrangling, exploration, and analysis with R
+- [Yaniv Brandvain's Applied Biostats course](https://bookdown.org/ybrandvain/Applied-Biostats/)
 
 ### Probability and statistics
 

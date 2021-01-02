@@ -9,6 +9,66 @@ or by replacing the `.slides.html` suffix to `.Rmd` in the link below;
 the slides are made using [reveal.js](https://github.com/hakimel/reveal.js/).
 Here are the slides from [Fall 2018/Winter 2019](2018_schedule.html) and from [Fall 2019/Winter 2020](2019_schedule.html).
 
+# Winter 2021
+
+Week 11 (*1/4*)
+
+: Survival analysis and [introductiom to `brms`](https://github.com/paul-buerkner/brms)
+
+    <!-- - [Homework 11](../CLASS_MATERIALS/Homeworks/HW11_W21.html) *(due 1/16)* -->
+
+Week 12 (*1/11*)
+
+: Time series: temporal autocorrelation, autoregressive models; mechanistic models
+
+
+
+Week 13 (*1/18*)
+
+: Categorical data: chi-square for contingency tables, permutation tests.
+
+    - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
+        chapter 24 (Poisson, contingency tables)
+
+Week 14 (*1/25*)
+
+: Categorical prediction; crossvalidation for model comparison.
+
+    - Reading: Kruschke, chapter 22 (softmax regression)
+
+Week 15 (*2/1*)
+
+: Many dimensions: Sparsifying priors and variable selection.
+
+    - Reading: Kruschke, chapters 17 (one-variable linear regression), 18 (multivariate linear regression)
+
+Week 16 (*2/8*)
+
+: Many response variables; data analysis example (cream cheese)
+
+    - [Primer on linear algebra](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.html)
+    - [Rmd file for the primer](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.Rmd)
+
+Week 17 (*2/15*)
+
+: Factor analysis, dimensionality reduction, and visualization; clustering; PCA, PCoA, MDS, t-SNE, UMAP
+
+
+Week 18 (*2/22*)
+
+: Latent factors, deconvolution for mixtures of expression data; nonnegative matrix factorization
+
+
+Week 19 (*3/1*)
+
+: Deconvolution continued; introduction to spatial statistics and kernel density estimation.
+
+
+Week 20 (*3/8*)
+
+: Spatial statistics: spatial autocorrelation and Kriging.
+
+
 # Fall 2020
 
 Week 1 (*9/29*)
