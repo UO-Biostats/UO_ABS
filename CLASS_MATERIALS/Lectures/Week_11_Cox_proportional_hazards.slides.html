@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="author" content="Peter Ralph">
-  <title>Survival Analysis</title>
+  <title>Cox’s Proportional Hazards</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -440,9 +440,9 @@ background-color: #fff; } }
     <div class="slides">
 
 <section id="title-slide">
-  <h1 class="title">Survival Analysis</h1>
+  <h1 class="title">Cox’s Proportional Hazards</h1>
   <p class="author">Peter Ralph</p>
-  <p class="date">7 January 2020 – Advanced Biological Statistics</p>
+  <p class="date">5 January 2021 – Advanced Biological Statistics</p>
 </section>
 
 <section>
@@ -512,9 +512,9 @@ wt.loss:    Weight loss in last six months     </code></pre>
 <section id="fitting-a-cox-model" class="slide level2">
 <h2>Fitting a Cox model</h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>fullcox &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(time, status)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>             <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>ph.ecog <span class="op">+</span><span class="st"> </span>ph.karno <span class="op">+</span><span class="st"> </span>pat.karno</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>             <span class="op">+</span><span class="st"> </span>meal.cal <span class="op">+</span><span class="st"> </span>wt.loss,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>         <span class="dt">data =</span> lung)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>                     <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>ph.ecog <span class="op">+</span><span class="st"> </span>ph.karno <span class="op">+</span><span class="st"> </span>pat.karno</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>                     <span class="op">+</span><span class="st"> </span>meal.cal <span class="op">+</span><span class="st"> </span>wt.loss,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>                 <span class="dt">data =</span> lung)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="kw">summary</span>(fullcox)</span></code></pre></div>
 <pre><code>## Call:
 ## coxph(formula = Surv(time, status) ~ age + sex + ph.ecog + ph.karno + 
@@ -569,34 +569,7 @@ wt.loss:    Weight loss in last six months     </code></pre>
 </section>
 <section id="in-class-interpretation" class="slide level2">
 <h2>In class: interpretation</h2>
-<ul>
-<li>physicians evaluation matters
-<ul>
-<li>lowest to highest ECOG: 20% to 80% survival at one year</li>
-</ul></li>
-<li>sex and ECOG have large, significant effects
-<ul>
-<li>males have lower survival</li>
-<li>50% lower survival rate for males</li>
-</ul></li>
-<li>higher weight loss =&gt; higher survival rate, strangely
-<ul>
-<li>but not significant</li>
-</ul></li>
-<li>age, caloric intake, patient assessment not significant
-<ul>
-<li>specifics?</li>
-</ul></li>
-<li>institutional differences
-<ul>
-<li>specifics?</li>
-</ul></li>
-</ul>
 </section></section>
-<section id="section-1" class="title-slide slide level1">
-<h1>``</h1>
-
-</section>
     </div>
   </div>
 

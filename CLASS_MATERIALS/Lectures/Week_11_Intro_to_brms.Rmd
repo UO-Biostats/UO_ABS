@@ -13,6 +13,7 @@ set.seed(23)
 library(matrixStats)
 library(rstan)
 options(mc.cores = parallel::detectCores())
+library(lme4)
 library(brms)
 ```
 
@@ -205,7 +206,6 @@ ggplot(pumpkins) + geom_boxplot(aes(x=fertilizer:water, y=weight, fill=water))
 
 Then, we fit a *mixed model* with `lme4`:
 ```{r fit_lme4}
-library(lme4)
 lme_pumpkins <- lmer( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
 summary(lme_pumpkins)
 ```
@@ -215,6 +215,15 @@ summary(lme_pumpkins)
 Here's the "same thing" with `brms`:
 ```{r fit_brms, cache=TRUE, dependson="read_pumpkins"}
 brms_pumpkins <- brm( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
+```
+
+----------
+
+```r
+brms_pumpkins <- brm( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
+```
+
+```{r fit_brms_summary}
 summary(brms_pumpkins)
 ```
 
@@ -366,9 +375,18 @@ summary(baseball_brms)
 
 ```{r the_coefs}
 rstan::summary(baseball_stan, pars=c("gamma", "alpha_w", "alpha_h"))$summary
-summary(batglm)$coefficients
-summary(baseball_brms)$fixed
+```
 
+--------------
+
+```{r glm_coefs}
+summary(batglm)$coefficients
+```
+
+--------------
+
+```{r brms_coefs}
+summary(baseball_brms)$fixed
 ```
 
 ------------
@@ -611,18 +629,3 @@ However, note that Stan predicts that the best pitchers
 are nearly as good as the worst of other positions,
 while brms predicts that they are more than 5% worse.
 Which is more plausible? I don't know!
-
-## brms with position-specific dispersion?
-
-```{r new_brms, cache=TRUE}
-baseball_bf2 <- brmsformula(Hits | trials(AtBats) ~ PriPos + weight + height + (1|PriPos/Player))
-get_prior(baseball_bf2, data=batplus, family=binomial)
-baseball_brms2 <- brm(baseball_bf2, data=batplus, family=binomial(), prior=baseball_bp)
-```
-
-----------------
-
-```{r predict_brms2, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
-brms_pred2 <- inv_logit_scaled(fitted(baseball_brms2, scale='linear'))
-plot_preds(brms_pred2, main="brms predictions, v2")
-```

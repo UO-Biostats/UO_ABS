@@ -107,7 +107,7 @@ summary(brmfit)
 ::: {.columns}
 :::::: {.column width=50%}
 
-<pre style="width:150%; margin-left:-50%;">
+<pre style="width:120%; margin-left:-20%;">
 ```{r ssum, echo=FALSE, results='asis', message=FALSE}
 summary(weifit)
 ```
@@ -116,7 +116,7 @@ summary(weifit)
 :::
 :::::: {.column width=50%}
 
-<pre style="width:150%;">
+<pre style="width:120%;">
 ```{r bsum, echo=FALSE, results='asis', message=FALSE}
 summary(brmfit)
 ```
@@ -182,3 +182,36 @@ Format:
        prior:     prior therapy 0=no, 10=yes      
 ```
 
+
+# Review
+
+##
+
+Nonparametric:
+
+- simple
+- does not depend on model fit
+
+. . .
+
+Parametric:
+
+- makes more sense: real hazard rates are not piecewise constant
+- better power, *if* the model fits
+- can simulate
+
+
+
+## The Kaplan-Meier curve, by hand:
+
+```{r byhand}
+f1 <- survfit(Surv(time, status) ~ 1, data = lung)
+
+y <- data.frame(time=sort(unique(lung$time[lung$status == 2])))
+y$k <- sapply(y$time, function (t) sum(lung$status == 2 & lung$time == t))
+y$n <- sapply(y$time, function (t) sum(lung$time > t | (lung$time == t & lung$status == 2)))
+y$p <- cumprod(1 - y$k/y$n)
+
+plot(f1)
+points(p ~ time, data=y, col='red', pch=20, cex=0.5)
+```

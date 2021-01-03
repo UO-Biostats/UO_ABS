@@ -43,7 +43,7 @@ which allows rates to go down ($k<1$), up ($k>1$), or stay constant ($k=1$) over
 
 ##
 
-```{r plot_wei, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
+```{r plot_wei, fig.height=2*fig.dim, fig.width=3*fig.dim, echo=FALSE}
 kvals <- c(0.5, 0.75, 1, 1.5, 2)
 xx <- seq(0, 1.5, length.out=101)
 x <- sapply(kvals, function (k) dweibull(xx, shape=k)/pweibull(xx, shape=k, lower.tail=FALSE))

@@ -108,9 +108,9 @@ $$\begin{aligned}
 
 ```{r fitcox}
 fullcox <- coxph(Surv(time, status)
-             ~ age + sex + ph.ecog + ph.karno + pat.karno
-             + meal.cal + wt.loss,
-         data = lung)
+                     ~ age + sex + ph.ecog + ph.karno + pat.karno
+                     + meal.cal + wt.loss,
+                 data = lung)
 summary(fullcox)
 ```
 
@@ -131,20 +131,3 @@ legend("topright", lty=1, col=1:4, legend=paste("ECOG=", 0:3))
 
 
 ## In class: interpretation
-
-- physicians evaluation matters
-    * lowest to highest ECOG: 20% to 80% survival at one year
-- sex and ECOG have large, significant effects
-    * males have lower survival
-    * 50% lower survival rate for males
-- higher weight loss => higher survival rate, strangely
-    * but not significant
-- age, caloric intake, patient assessment not significant
-    * specifics?
-- institutional differences
-    * specifics?
-
-
-# ``
-
-

@@ -62,7 +62,7 @@ i.e., our data collection does not depend on the status of the subjects.
 
 . . .
 
-Examples of *informative* censoring:
+Example of *informative* censoring:
 patient dropout due to worsening symptoms.
 
 
@@ -97,6 +97,18 @@ $$\begin{aligned}
     h(t) = - \frac{d}{dt} \log S(t) .
 \end{aligned}$$
 
+-------------
+
+The *hazard rate*,
+
+::: {.centered}
+the rate the event of interest happens at,
+:::
+
+::: {.flushright}
+is the slope of the survival curve on a log scale.
+:::
+
 ## Nonparametric versus parametric?
 
 We'll look at some methods across the
@@ -109,12 +121,13 @@ nonparametric-to-parametric continuum.
 
 ## 
 
-Interpret the differences between these *survival curves*:
-```{r exs, echo=FALSE, fig.height=1.5 * fig.dim}
-x <- cbind(pweibull(1:1000, shape=2, scale=400, lower.tail=FALSE),
-           pweibull(1:1000, shape=1, scale=300, lower.tail=FALSE),
-           pweibull(1:1000, shape=1/2, scale=200, lower.tail=FALSE))
-matplot(1:1000, x, ylim=c(0,1), xlab="number of days (t)", ylab="Prob(survival until t)", type='l')
+Replacing "death" with "your next donut",
+which of these curves would you rather describe the distribution of time until your next donut?
+```{r exs, echo=FALSE, fig.height=2 * fig.dim, fig.width=2.5*fig.dim}
+x <- cbind(pweibull((1:1000)/50, shape=2, scale=40/5, lower.tail=FALSE),
+           pweibull((1:1000)/50, shape=1, scale=30/5, lower.tail=FALSE),
+           pweibull((1:1000)/50, shape=1/2, scale=20/5, lower.tail=FALSE))
+matplot((1:1000)/50, x, ylim=c(0,1), xlab="number of days (t)", ylab="Prob(no donut yet by time t)", type='l')
 ```
 
 ## More information:
@@ -210,6 +223,13 @@ neutrinos <- data.frame(
         time = rexp(nobs, rate=nrate))
 neutrinos$status <- (neutrinos$time < study_time)
 neutrinos$time <- pmin(study_time, neutrinos$time)
+head(neutrinos)
+```
+
+-----------
+
+```{r plot_neutrs, echo=FALSE}
+hist(neutrinos$time, breaks=20, xlab='time', main='neutrino arrival')
 ```
 
 ## Simulation: Increasing hazard rate
@@ -224,6 +244,12 @@ bulbs <- data.frame(
         time = abs(rnorm(nobs, sd=lmean)))
 bulbs$status <- (bulbs$time < study_time)
 bulbs$time <- pmin(study_time, bulbs$time)
+```
+
+------------
+
+```{r plot_lightbulbs, echo=FALSE}
+hist(bulbs$time, breaks=20, xlab='time', ylab='lightbulb burnout')
 ```
 
 # Kaplan-Meier curves
@@ -245,7 +271,6 @@ Suppose that:
 - What percent survived each year? (of those that began that year alive)
 - Find the probability of surviving to 1, 2, 3, and 4 years,
 - and draw the survival curve.
-- Find a confidence interval for each probability.
 
 ## 
 
@@ -281,7 +306,7 @@ plot(bulb_sf, xlab='number of days', ylab='prob of detection', main="Lightbulb f
 lines(1:study_time, 2 * pnorm(1:study_time, sd=lmean, lower.tail=FALSE), col='red')
 ```
 
-## Compared
+## Hazard rate is slope of survival on a log scale:
 
 ```{r plot_both, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
 layout(t(1:2))
