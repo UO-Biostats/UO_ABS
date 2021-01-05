@@ -165,7 +165,6 @@ Summaries of, or samples from, the posteriors of:
 - `fitted( )`: posterior distribution of *mean* response (see `posterior_epred`)
 - `predict( )`: posterior distribution of actual responses (see `posterior_predict`)
 - `hypothesis( )`: get posterior distributions of *functions* of various parameters (e.g., difference between two classes)
-- `marginal_effects( )`: effect of one predictor averaged over values of others
 - `conditional_effects( )`: effect of one predictor conditioned on values of others
 
 ## More tools:

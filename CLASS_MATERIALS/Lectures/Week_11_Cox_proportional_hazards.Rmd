@@ -131,3 +131,88 @@ legend("topright", lty=1, col=1:4, legend=paste("ECOG=", 0:3))
 
 
 ## In class: interpretation
+
+The data:
+
+- 168 patients with 121 observed survival times, over 1000 days.
+- (say more about the data)
+- Few (maybe no?) patients survived 1000 days.
+- Less than half survived to 50%.
+- More than half of males who survived to 1 year died in the following year.
+- Females more likely to survive longer than males: 20% higher survival rates until at least 800 days
+- 50% of males have died by 1 year, while for females this is 1.5 years
+
+------------
+
+- Fitting a Cox's PH model, sex and ECOG score are strongly predictive of survival times,
+  while other variables have a weak effect, if at all.
+- ECOG and Karnofsky score are correlated, so ECOG seems to be the best predictor,
+  with physician-reported Karnofsky score more reliable than patient-reported.
+
+```{r correlation}
+pairs(jitter(as.matrix(lung[,c("ph.ecog", "ph.karno", "pat.karno")])))
+cor(lung[,c("ph.ecog", "ph.karno", "pat.karno")], use='pairwise')
+```
+
+-----------
+
+Females tend to live longer: here are predicted survival curves for males and females
+with all other variables set to their mean values.
+There is a predicted difference in survivorship of around 20%;
+the difference reflects that seen in the Kaplan-Meier curves above.
+
+```{r prediction2}
+mean_vals <- as.data.frame(lapply(lung[,c("age", "ph.ecog", "ph.karno", "pat.karno", "meal.cal", "wt.loss")], mean, na.rm=TRUE))
+fullcox_sex <- survfit(fullcox,
+                        newdata=cbind(mean_vals, sex=c(1, 2)))
+plot(fullcox_sex, lty=1, col=1:4, main='predicted survival, mean values')
+legend("topright", lty=1, col=1:4, legend=c("males", "females"))
+```
+
+
+-----------
+
+Now, here are predicted survival curves for females, separately by ECOG score,
+showing a huge difference by ECOG score:
+survivorship ranges from about 10% for ECOG score 0 to 80% for ECOG score 3,
+and around 40% of ECOG score 0 patients surviving past 1000 days.
+
+
+```{r prediction3}
+fullcox_ecog <- survfit(fullcox,
+                        newdata=cbind(expand.grid(ph.ecog=0:3, sex=2),
+                                      mean_vals[,-2]))
+plot(fullcox_ecog, lty=1, col=1:4, main='predicted survival, females')
+legend("topright", lty=1, col=1:4, legend=paste("ECOG=", 0:3))
+```
+
+-----------
+
+In that model, we used *numerical* ECOG scores, assuming that the difference between
+scores 1 and 2 was the same as that between 2 and 3. If we change ECOG to a factor,
+we can see how well this holds up:
+it looks like the difference between ECOG 2 and 3 is bigger than between 0 and 1,
+although the predictions are not wildly different than in the simpler model.
+
+```{r prediction4}
+newcox <- coxph(Surv(time, status)
+                     ~ age + sex + factor(ph.ecog) + ph.karno + pat.karno
+                     + meal.cal + wt.loss,
+                 data = lung)
+newcox_ecog <- survfit(newcox,
+                        newdata=cbind(expand.grid(ph.ecog=0:3, sex=2),
+                                      mean_vals[,-2]))
+plot(newcox_ecog, lty=1, col=1:4, main='predicted survival, females')
+legend("topright", lty=1, col=1:4, legend=paste("ECOG=", 0:3))
+```
+
+---------
+
+Indeed, using an ANOVA to compare the models,
+we don't get a strong indication that allowing separate effects of each ECOG level
+is making the model fit much better.
+
+```{r compare_mods}
+anova(fullcox, newcox)
+```
+
