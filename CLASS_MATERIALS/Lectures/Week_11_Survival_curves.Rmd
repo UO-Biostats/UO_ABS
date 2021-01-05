@@ -128,6 +128,7 @@ x <- cbind(pweibull((1:1000)/50, shape=2, scale=40/5, lower.tail=FALSE),
            pweibull((1:1000)/50, shape=1, scale=30/5, lower.tail=FALSE),
            pweibull((1:1000)/50, shape=1/2, scale=20/5, lower.tail=FALSE))
 matplot((1:1000)/50, x, ylim=c(0,1), xlab="number of days (t)", ylab="Prob(no donut yet by time t)", type='l')
+legend("topright", lty=1:3, col=1:3, legend=LETTERS[1:3])
 ```
 
 ## More information:
@@ -244,12 +245,13 @@ bulbs <- data.frame(
         time = abs(rnorm(nobs, sd=lmean)))
 bulbs$status <- (bulbs$time < study_time)
 bulbs$time <- pmin(study_time, bulbs$time)
+head(bulbs)
 ```
 
 ------------
 
 ```{r plot_lightbulbs, echo=FALSE}
-hist(bulbs$time, breaks=20, xlab='time', ylab='lightbulb burnout')
+hist(bulbs$time, breaks=20, xlab='time', ylab='lightbulb burnout', main="lightbulb lifetime")
 ```
 
 # Kaplan-Meier curves
@@ -269,7 +271,7 @@ Suppose that:
 **Questions:**
 
 - What percent survived each year? (of those that began that year alive)
-- Find the probability of surviving to 1, 2, 3, and 4 years,
+- Find the probability of surviving for 1, 2, and 3 years,
 - and draw the survival curve.
 
 ## 

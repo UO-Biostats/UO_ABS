@@ -247,16 +247,6 @@ summary(lme_pumpkins)
 :::
 :::::::
 
-## (Demonstration: what happened?)
-
-```r
-
-pf <- brmsformula( weight ~ water * fertilizer + (1|plot:water:fertilizer))
-get_prior(pf, data=pumpkins)
-pp <- c(set_prior("normal(0, 10);", class="b"))
-
-pfit <- brm(pf, data=pumpkins, family=gaussian(), prior=pp)
-```
 
 # Example: baseball
 
