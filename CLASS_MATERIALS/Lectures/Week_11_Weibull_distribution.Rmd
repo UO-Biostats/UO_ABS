@@ -39,7 +39,7 @@ because its *hazard rate* is:
 $$\begin{aligned}
     h(t) = k \frac{1}{\lambda} \left(\frac{t}{\lambda}\right)^{k-1} .
 \end{aligned}$$
-which allows rates to go down ($k<1$), up ($k>1$), or stay constant ($k=1$) over time.
+which allows rates to go down ($k<1$), up ($k>1$), or stay flat ($k=1$) over time.
 
 ##
 
@@ -47,7 +47,20 @@ which allows rates to go down ($k<1$), up ($k>1$), or stay constant ($k=1$) over
 kvals <- c(0.5, 0.75, 1, 1.5, 2)
 xx <- seq(0, 1.5, length.out=101)
 x <- sapply(kvals, function (k) dweibull(xx, shape=k)/pweibull(xx, shape=k, lower.tail=FALSE))
-matplot(xx, x, type='l', lty=1, xlab='time', ylab='hazard rate', lwd=2)
+y <- sapply(kvals, function (k) dweibull(xx, shape=k))
+layout(t(1:2))
+matplot(xx, y, type='l', lty=1, xlab='time', ylab='probability density', lwd=2, main='density', ylim=c(0, 2.5))
+legend("top", lty=1, col=1:5, legend=sprintf("shape=%0.2f", kvals))
+matplot(xx, x, type='l', lty=1, xlab='time', ylab='hazard rate', lwd=2, main='hazard rate')
 legend("top", lty=1, col=1:5, legend=sprintf("shape=%0.2f", kvals))
 ```
+
+## Examples:
+
+- *Time until arrival of cosmic particles:* constant hazard rate, so `shape = 1`.
+
+- *Heights of trees hit by lightning:* hazard rate is higher for taller trees, so `shape > 1`.
+
+- *Lifetime of iphones:* some phones have faulty manufacturing, so will fail soon, but if not then they'll probably last longer - decreasing hazard rate, so `shape < 1`.
+
 

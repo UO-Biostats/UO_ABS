@@ -169,6 +169,7 @@ Summaries of, or samples from, the posteriors of:
 
 ## More tools:
 
+- `parnames( )`: list of parameter names
 - `pp_check( )`: compare response distribution to posterior predictive simulations
 - `loo( )` leave-one-out crossvalidation for model comparison
 - `bayes_R2( )`: [Bayesian $r^2$](https://doi.org/10.1080/00031305.2018.1549100)
@@ -181,6 +182,31 @@ Summaries of, or samples from, the posteriors of:
 - get the Stan code: `stancode(the_fit)` (and `standata(the_fit)`)
 - compare models with `loo( )`
 - more technical notes at [this tutorial](../Tutorials/using_brms.html)
+
+# `pp_check`
+
+## 
+
+*Question:* does our model fit the data?
+
+. . .
+
+*Possible answer:* gee, I dunno, let's simulate from it and see?
+
+
+## Posterior predictive simulations
+
+1. Fit a model.
+
+2. Draw a set of parameters from the posterior distribution.
+
+3. With these, simulate a new data set.
+
+4. Do this a few times, and compare the results to the original dataset.
+
+. . .
+
+`brms` lets you do this with the `pp_check(brms_fit, type='xyz')` method
 
 
 # Example: pumpkins
@@ -246,375 +272,14 @@ summary(lme_pumpkins)
 :::
 :::::::
 
-
-# Example: baseball
-
-##
-
-Goal: how is batting average predicted by position, height, and weight?
-
-```{r read_baseball}
-batplus <- read.csv("data/BattingAveragePlus.csv",
-                    header=TRUE, stringsAsFactors=TRUE)
-head(batplus)
-```
-
-## A GLM
-
-```{r glm_baseball}
-batglm <- glm(cbind(Hits, AtBats - Hits) ~ PriPos + weight + height,
-              family='quasibinomial', data=batplus)
-summary(batglm)
-```
-
-
-## A GLMM
-
-```{r glmm_baseball, cache=TRUE}
-batplus$scaled_height <- scale(batplus$height)
-batplus$scaled_weight <- scale(batplus$weight)
-batglmm <- glmer(cbind(Hits, AtBats - Hits) ~ PriPos + scaled_weight + scaled_height + (1|Player),
-                 family='binomial', data=batplus)
-summary(batglmm)
-```
-
-
-## Our Stan model
-
-```{r stan_baseball, cache=TRUE}
-logistic_model_code <- "
-data {
-    int N;   // number of players
-    int hits[N];
-    int at_bats[N];
-    int npos; // number of positions
-    int position[N];
-    vector[N] height;
-    vector[N] weight;
-}
-parameters {
-    real<lower=0, upper=1> theta[N];
-    vector[npos] gamma;
-    real alpha_w;
-    real alpha_h;
-    vector<lower=0>[npos] kappa;
-}
-model {
-    vector[N] mu;
-    mu = inv_logit(gamma[position] + alpha_h * height + alpha_w * weight);
-    theta ~ beta(mu .* kappa[position], (1-mu) .* kappa[position]);
-    hits ~ binomial(at_bats, theta);
-    kappa ~ student_t(3, 0, 100);
-    gamma ~ normal(0, 5);
-    alpha_h ~ normal(0, 5);
-    alpha_w ~ normal(0, 5);
-} "
-logistic_model <- stan_model(model_code=logistic_model_code)
-```
-
-```{r fit_stan_baseball, cache=TRUE, dependson="stan_baseball"}
-batplus$scaled_height <- scale(batplus$height)
-batplus$scaled_weight <- scale(batplus$weight)
-baseball_stan <- sampling(logistic_model,
-                          data=list(N=nrow(batplus),
-                                    hits=batplus$Hits,
-                                    at_bats=batplus$AtBats,
-                                    npos=nlevels(batplus$PriPos),
-                                    position=as.numeric(batplus$PriPos),
-                                    height=as.vector(batplus$scaled_height),
-                                    weight=as.vector(batplus$scaled_weight)))
-
-```
-
-------------------
-
-```{r summary_stan}
-rstan::summary(baseball_stan, pars=c("gamma", "alpha_w", "alpha_h"))$summary
-```
-
-## Now, in brms:
-
-```{r baseball_brms, cache=TRUE}
-baseball_bf <- brmsformula(Hits | trials(AtBats) ~ PriPos + weight + height + (1|Player))
-get_prior(baseball_bf, data=batplus, family=binomial)
-baseball_bp <- c(set_prior("normal(0, 5)", class="b", coef="weight"),
-        set_prior("normal(0, 5)", class="b", coef="height"))
-```
-
----------------------
-
-```{r fit_baseball_brms, cache=TRUE, dependson="baseball_brms"}
-baseball_brms <- brm(baseball_bf, data=batplus, family=binomial(), prior=baseball_bp)
-```
-
----------------------
-
-```{r viz_baseball_brms}
-ce <- conditional_effects(baseball_brms)
-plot(ce, ask=FALSE)
-```
-
----------------------
-
-```{r summary_baseball_brms}
-summary(baseball_brms)
-```
-
-## Comparison
-
-```{r the_coefs}
-rstan::summary(baseball_stan, pars=c("gamma", "alpha_w", "alpha_h"))$summary
-```
-
---------------
-
-```{r glm_coefs}
-summary(batglm)$coefficients
-```
-
---------------
-
-```{r brms_coefs}
-summary(baseball_brms)$fixed
-```
-
-------------
-
-```{r predict_setup, echo=FALSE}
-plot_order <- with(batplus, with(batplus, order(PriPos, Hits/AtBats, AtBats)))
-pos_cols <- sample(wesanderson::wes_palette("FantasticFox1", n=9, type="continuous"))
-names(pos_cols) <- levels(batplus$PriPos)
-
-plot_preds <- function (pred, ...) {
-    par(mar=c(8,4,1,1)+.1)
-    plot(1:nrow(batplus), pred[plot_order,"Estimate"],
-         pch=20, ylim=range(pred[,c("Estimate","Q2.5","Q97.5")]), col=pos_cols[batplus$PriPos[plot_order]],
-         xaxt='n', xlab='', ylab='estimated batting average', ...)
-    segments(x0=1:nrow(batplus), y0=pred[plot_order,"Q2.5"],
-             y1=pred[plot_order,"Q97.5"],
-             col=adjustcolor(pos_cols[batplus$PriPos[plot_order]], 0.9))
-    axis(1, at=tapply(1:nrow(batplus), sort(batplus$PriPos), mean),
-         labels=levels(batplus$PriPos), las=3)
-}
-
-plot_preds2 <- function (pred, ...) {
-    obs_p <- batplus$Hits/batplus$AtBats
-    obs_lb <- pred[,"Estimate"] - 2 * sqrt(0.2 * 0.8 / batplus$Hits)
-    obs_ub <- pred[,"Estimate"] + 2 * sqrt(0.2 * 0.8 / batplus$Hits)
-    obs_cols <- ifelse(obs_p > obs_lb & obs_p < obs_ub,
-                       adjustcolor(pos_cols[batplus$PriPos], 0.1),
-                       adjustcolor(pos_cols[batplus$PriPos], 0.9))
-    plot(obs_p, pred[,"Estimate"],
-         pch=20, ylim=c(0,1),
-         col=obs_cols,
-         xlab='observed batting average', ylab='estimated batting average',
-         cex=sqrt(batplus$Hits), ...)
-    segments(x0=obs_p, y0=obs_lb, y1=obs_ub,
-             col=obs_cols)
-    abline(0, 1)
-}
-```
-
-```{r predict_brms, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
-brms_pred <- inv_logit_scaled(fitted(baseball_brms, scale="linear"))
-plot_preds(brms_pred, main="brms predictions")
-```
-
-------------
-
-```{r predict_stan, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
-stan_samples <- rstan::extract(baseball_stan, pars='theta')$theta
-stan_pred <- cbind(
-                "Estimate" = colMeans(stan_samples),
-                "Q2.5" = colQuantiles(stan_samples, probs=0.025),
-                "Q97.5" = colQuantiles(stan_samples, probs=0.975))
-plot_preds(stan_pred, main="stan predictions")
-```
-
------------
-
-```{r predict_glm, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
-glm_est <- predict(batglm, se.fit=TRUE, type='response')
-glm_pred <- cbind("Estimate" = glm_est$fit,
-                  "Q2.5" = glm_est$fit - 2 * glm_est$se.fit,
-                  "Q97.5" = glm_est$fit + 2 * glm_est$se.fit)
-plot_preds(glm_pred, main="glm predictions")
-
-```
-
------------
-
-```
-predict.merMod              package:lme4               R Documentation
-
-Predictions from a model at new data values
-
-Description:
-
-     The ‘predict’ method for ‘merMod’ objects, i.e. results of
-     ‘lmer()’, ‘glmer()’, etc.
-...
-        • There is no option for computing standard errors of
-          predictions because it is difficult to define an efficient
-          method that incorporates uncertainty in the variance
-          parameters; we recommend ‘bootMer’ for this task.
-```
-
--------------
-
-```{r predict_glmm, echo=FALSE, cache=TRUE, dependson="glmm_baseball"}
-glmm_est <- predict(batglmm, type='response')
-glmm_boot <- bootMer(batglmm, function (f) predict(f, type="response"), nsim=20)
-glmm_ses <- colSds(glmm_boot$t)
-glmm_pred <- cbind("Estimate" = glmm_est,
-                  "Q2.5" = glmm_est - 2 * glmm_ses,
-                  "Q97.5" = glmm_est + 2 * glmm_ses)
-```
-
-```{r plot_predict_glmm, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
-plot_preds(glmm_pred, main="glmm predictions")
-```
-
-## Comparison of estimates
-
-```{r compare_ests, echo=FALSE, fig.width=2*fig.dim, fig.width=3*fig.dim, fig.height=2*fig.dim}
-baseball_ests <- data.frame(glm=glm_pred[,"Estimate"],
-                            glmm=glmm_pred[,"Estimate"],
-                            brms=brms_pred[,"Estimate"],
-                            stan=stan_pred[,"Estimate"])
-baseball_lqs <- data.frame(glm=glm_pred[,"Q2.5"],
-                            glmm=glmm_pred[,"Q2.5"],
-                            brms=brms_pred[,"Q2.5"],
-                            stan=stan_pred[,"Q2.5"])
-baseball_uqs <- data.frame(glm=glm_pred[,"Q97.5"],
-                            glmm=glmm_pred[,"Q97.5"],
-                            brms=brms_pred[,"Q97.5"],
-                            stan=stan_pred[,"Q97.5"])
-
-layout(matrix(1:6, nrow=2))
-par(mar=c(5,4,0,0)+.1)
-for (k in 1:6) {
-    mm <- combn(1:4, 2)[,k]
-    plot(baseball_ests[,mm], pch=20, col=pos_cols[batplus$PriPos],
-         xlim=c(0.05, 0.32), ylim=c(0.05, 0.32), asp=1)
-    abline(0, 1)
-}
-
-```
-
-## and uncertainties
-
-```{r compare_ses, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
-
-layout(matrix(1:6, nrow=2))
-par(mar=c(5,4,0,0)+.1)
-for (k in 1:6) {
-    mm <- combn(1:4, 2)[,k]
-    plot(baseball_ests[,mm],
-         type='n', xlim=c(0.05, 0.32), ylim=c(0.05, 0.32), asp=1)
-    segments(x0=baseball_ests[,mm[1]],
-             y0=baseball_lqs[,mm[2]],
-             y1=baseball_uqs[,mm[2]],
-             col=adjustcolor(pos_cols[batplus$PriPos], 0.2))
-    segments(x0=baseball_lqs[,mm[1]],
-             x1=baseball_uqs[,mm[1]],
-             y0=baseball_ests[,mm[2]],
-             col=adjustcolor(pos_cols[batplus$PriPos], 0.2))
-    points(baseball_ests[,mm], pch=21, bg=pos_cols[batplus$PriPos])
-    abline(0, 1)
-}
-
-```
+# Your turn
 
 ##
 
-```{r compare_brms_glmm, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
-plot((baseball_uqs - baseball_lqs)$brms,
-     (baseball_uqs - baseball_lqs)$glmm,
-     xlab='brms uncertainty',
-     ylab='GLMM uncertainty',
-     col=pos_cols[batplus$PriPos])
-legend("topright", pch=1, col=pos_cols, legend=levels(batplus$PriPos))
-abline(0,1)
-```
+Try out:
 
+1. `launch_shinystan(brms_pumpkins)`
 
-##
+2. `conditional_effects(brms_pumpkins)`
 
-```{r compare_brms_stan, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
-plot((baseball_uqs - baseball_lqs)$brms,
-     (baseball_uqs - baseball_lqs)$stan,
-     xlab='brms uncertainty',
-     ylab='stan uncertainty',
-     col=pos_cols[batplus$PriPos])
-abline(0,1)
-```
-
-##
-
-Well, the models give different estimates.
-
-- **GLM**: no between-individual variation, so e.g. "all pitchers are the same".
-- **GLMM**: random effects by player allows individual variation, so more realistic predictions.
-- **brms**: nearly identical estimates to GLMM, but with wider (more realistic?) uncertainties
-- **stan**: much wider range of predictions for pitchers; also much wider uncertainties for pitchers,
-    but less uncertainty for right fielders
-
-In Stan we allowed different widths of the distributions of batting averages within each position.
-
-## Which is better?
-
-These differ most in their predictions about *pitchers*.
-And, it's possible they're not fitting pitchers well because they look different
-than the rest of the positions.
-So, let's compare predictions to the *empirical batting averages*,
-for those pitchers we know the most about,
-with more than 50 at bats.
-
----------------
-
-```{r big_pitchers, echo=FALSE, fig.height=2*fig.dim}
-pitchers <- which(batplus$PriPos == "Pitcher"
-                  & batplus$AtBats > 50)
-
-layout(matrix(1:4, nrow=2))
-obs_ba <- (batplus$Hits / batplus$AtBats)[pitchers]
-obs_se <- sqrt(obs_ba * (1-obs_ba) / batplus$AtBats[pitchers])
-for (m in names(baseball_ests)) {
-    if (match(m, names(baseball_ests)) %% 2 == 0) {
-        par(mar=c(5,4,1,1)+.1)
-    } else {
-        par(mar=c(1,4,1,1)+.1)
-    }
-    plot(obs_ba, baseball_ests[pitchers,m], type='n', asp=1, ylab=m,
-         ylim=range(obs_ba))
-    if (match(m, names(baseball_ests)) %% 2 == 0)
-         title(xlab='Observed batting average')
-    segments(x0=obs_ba,
-             y0=baseball_ests[pitchers,m] - 2 * obs_se,
-             y1=baseball_ests[pitchers,m] + 2 * obs_se,
-             col=pos_cols[batplus$PriPos[pitchers]])
-    abline(0, 1)
-    points(obs_ba, baseball_ests[pitchers,m], pch=20,
-           col=pos_cols[batplus$PriPos[pitchers]])
-}
-```
-
---------------
-
-We see that out of `r length(pitchers)`,
-there are two that have batting averages predicted by Stan
-that are outside of the frequentist average plus/minus two SEs.
-
-Furthermore, that pitcher has an observed batting average of
-`r max(obs_ba)`, which is very high for a pitcher.
-
-So, we don't have a good way to distinguish the two here:
-we need to rely on prior information.
-
----------------
-
-However, note that Stan predicts that the best pitchers
-are nearly as good as the worst of other positions,
-while brms predicts that they are more than 5% worse.
-Which is more plausible? I don't know!
+3. `pp_check(brms_pumpkins, type='scatter')`

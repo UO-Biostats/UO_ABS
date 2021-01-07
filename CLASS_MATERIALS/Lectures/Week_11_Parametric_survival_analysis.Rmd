@@ -65,7 +65,8 @@ Model:
 :::::: {.column width=50%}
 
 $$\begin{aligned}
-    T_i &\sim \Weibull(\text{shape}=k, \text{mean}=\mu_i) \\
+    T_i &\sim \Weibull(\text{shape}=k, \\
+        &\qquad \text{mean}=\mu_i) \\
     \mu_i &= \exp(y_i) \\
     y_i &= \beta_0 + \sum_j \beta_j x_{ij} 
 \end{aligned}$$
@@ -128,10 +129,14 @@ summary(brmfit)
 
 ## Random effects, with brms
 
+Recall there are 19 different institutions:
+```{r do_insts}
+table( lung$inst <- factor(lung$inst) )
+```
+
 ```{r brms2, cache=TRUE, echo=2:3}
-lung$inst[is.na(lung$inst)] <- 100
 brmfit2 <- brm(time | cens(censored) ~ sex + ph.ecog + ph.karno + (1|inst),
-               data=lung, family='weibull')
+               data=subset(lung, !is.na(inst)), family='weibull')
 ```
 
 ##
@@ -140,10 +145,79 @@ brmfit2 <- brm(time | cens(censored) ~ sex + ph.ecog + ph.karno + (1|inst),
 summary(brmfit2)
 ```
 
-##
+-------------
 
-```{r insts}
-ranef(brmfit2)
+The conditional effect of sex on mean survival time (with mean values of other variables):
+```{r insts_sex}
+conditional_effects(brmfit2, effects='sex')
+```
+
+-------------
+
+The conditional effect of ECOG on mean survival time:
+```{r insts_ecog}
+conditional_effects(brmfit2, effects='ph.ecog')
+```
+
+
+-------------
+
+The conditional effect of Karnofsky score on mean survival time:
+```{r insts_karno}
+conditional_effects(brmfit2, effects='ph.karno')
+```
+
+-------------
+
+A posterior predictive check: data are dark points, posterior medians are large points,
+and lines give 50% and 90% posterior ranges:
+```{r ppcheck}
+pp_check(brmfit2, type='intervals', subset=TRUE)
+```
+
+---------------
+
+Consulting [vignette("brms_families")](https://cran.r-project.org/web/packages/brms/vignettes/brms_families.html),
+the survival curve is $\exp(-(t / \lambda)^k)$ where $\lambda = \mu / \Gamma(1 + 1/k)$. Here are 100 samples from the posterior:
+```{r surv_curvs, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+post_means <- posterior_epred(brmfit2, newdata=data.frame(age=60, sex=2, ph.ecog=0:3, ph.karno=50), re_formula=NA, dpar="mu")[1:100,]
+post_shape <- posterior_epred(brmfit2, newdata=data.frame(age=60, sex=2, ph.ecog=0:3, ph.karno=50), re_formula=NA, dpar="shape")[1:100,]
+tvals <- seq(0, 2000, length.out=101)
+Svals <- array(NA, dim=c(length(tvals), nrow(post_means), ncol(post_means)))
+for (k in 1:nrow(post_means)) {
+    lambda <- post_means[k,] / gamma(1 + 1/post_shape[k,])
+    for (j in 1:ncol(post_means)) {
+        Svals[,k,j] <- exp(- (tvals / lambda[j])^post_shape[k,j])
+    }
+}
+layout(matrix(1:4, nrow=2, byrow=TRUE))
+for (j in 1:dim(Svals)[3]) {
+    plot(tvals, rowMeans(Svals[,,j]), lty=1, ylim=c(0,1), type='l', xlab='time (t)', ylab='S(t)', col=j, main=paste("ECOG =", j-1))
+    matlines(tvals, Svals[,,j], type='l', col=adjustcolor(j, 0.25), lty=1)
+    abline(v=1000, lty=3)
+}
+```
+
+----------
+
+Here's the code for that last one:
+```{r surv_curvs2, eval=FALSE}
+post_means <- posterior_epred(brmfit2, newdata=data.frame(age=60, sex=2, ph.ecog=0:3, ph.karno=50), re_formula=NA, dpar="mu")[1:100,]
+post_shape <- posterior_epred(brmfit2, newdata=data.frame(age=60, sex=2, ph.ecog=0:3, ph.karno=50), re_formula=NA, dpar="shape")[1:100,]
+tvals <- seq(0, 2000, length.out=101)
+Svals <- array(NA, dim=c(length(tvals), nrow(post_means), ncol(post_means)))
+for (k in 1:nrow(post_means)) {
+    lambda <- post_means[k,] / gamma(1 + 1/post_shape[k,])
+    for (j in 1:ncol(post_means)) {
+        Svals[,k,j] <- exp(- (tvals / lambda[j])^post_shape[k,j])
+    }
+}
+layout(matrix(1:4, nrow=2, byrow=TRUE))
+for (j in 1:dim(Svals)[3]) {
+    plot(tvals, rowMeans(Svals[,,j]), lty=1, ylim=c(0,1), type='l', xlab='time (t)', ylab='S(t)', col=j, main=paste("ECOG =", j-1))
+    matlines(tvals, Svals[,,j], type='l', col=adjustcolor(j, 0.25), lty=1)
+    abline(v=1000, lty=3)
+}
 ```
 
 
