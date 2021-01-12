@@ -201,6 +201,26 @@ legend("topright", lty=c(1, NA), pch=c(NA,1), col=c("red","black"),
        legend=c("xy", "XY"))
 ```
 
+## Exercise:
+
+1. Suppose $\alpha = \beta = 0.1$ and $\sigma_\epsilon = 1$ and $\sigma_{xy} = 0.01$.
+   How well do you think we can estimate $\alpha$ and $\beta$?
+   (Play around with them, to see how much they change the data.)
+
+2. What if $\sigma_{\epsilon} = 10$?
+
+. . .
+
+Plotting code:
+```r
+plot(xy, type='l', col='red', xlab='x', ylab='y')
+points(XY, col=rainbow(N))
+legend("topright", lty=c(1, NA), pch=c(NA,1), col=c("red","black"),
+       legend=c("xy", "XY"))
+```
+
+
+
 # Write a Stan model, and check it works.
 
 ## A Stan block
@@ -411,64 +431,5 @@ for (k in 1:6) {
             xlab='observed Y', ylab='simulated Y', mgp=c(1,1,0), xaxt='n', yaxt='n')
     abline(0,1, col='red', lwd=2)
 }
-```
-
-
-```{r debug}
-save(real_fit, file="temp.RData")
-stan_trace(real_fit, pars=c("alpha", "beta", "sigma_xy", "sigma_eps", "x[1]", "y[1]", "x[2]", "y[2]"))
-```
-
-```{r osc_stan2, cache=TRUE}
-osc_block2 <- "
-data {
-    int N;
-    vector[N] X;
-    vector[N] Y;
-}
-parameters {
-    real alpha;
-    real beta;
-    real<lower=0> sigma_xy;
-    real<lower=0> sigma_eps;
-    real x1;
-    real y1;
-    vector[N-1] dx;
-    vector[N-1] dy;
-}
-transformed parameters {
-    vector[N] x;
-    vector[N] y;
-    x[1] = x1;
-    y[1] = y1;
-    for (k in 1:(N-1)) {
-        x[k+1] = x[k] + alpha * y[k] + sigma_xy * dx[k];
-        y[k+1] = y[k] - beta * x[k] + sigma_xy * dy[k];
-    }
-}
-model {
-    x1 ~ normal(0, 5);
-    y1 ~ normal(0, 5);
-    dx ~ normal(0, 1);
-    dy ~ normal(0, 1);
-    X ~ normal(x, sigma_eps);
-    Y ~ normal(y, sigma_eps);
-    alpha ~ normal(0, 1);
-    beta ~ normal(0, 1);
-    sigma_xy ~ normal(0, 1);
-    sigma_eps ~ normal(0, 1);
-}
-"
-osc_model2 <- stan_model(model_code=osc_block2)
-```
-
-
-```{r run_osc_for_reals, cache=TRUE, dependson="load_osc_data"}
-real_fit2 <- sampling(osc_model2,
-                    data=list(N=nrow(osc_data),
-                              X=osc_data[,1],
-                              Y=osc_data[,2]),
-                    iter=1000, chains=3,
-                    control=list(max_treedepth=14))
 ```
 
