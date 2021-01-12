@@ -1,0 +1,163 @@
+---
+title: "Imputation of missing data"
+author: "Peter Ralph"
+date: "12 January 2021 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(brms)
+library(rstan)
+library(matrixStats)
+library(tidyverse)
+options(mc.cores = parallel::detectCores())
+```
+
+
+
+# Missing data
+
+## 
+
+Sometimes the data isn't all there.
+
+What to do?
+
+##
+
+Options:
+
+1. Restrict to non-missing observations.
+
+2. Impute the missing data and fit a model.
+
+3. Fit a model that also imputes the missing data.
+
+ . . .
+
+*Notes:*
+
+- beware of *informative missingness*
+
+- "impute" is a fancy word for "guess"
+
+
+# A partially observed oscillator
+
+##
+
+The system itself does
+$$\begin{aligned}
+    x_{t+1} - x_t &= \alpha y_t + \Normal(0, \sigma_{xy}) \\
+    y_{t+1} - y_t &= - \beta x_t + \Normal(0, \sigma_{xy}) 
+\end{aligned}$$
+but we only get to observe
+$$\begin{aligned}
+    X_t &= x_t + \Normal(0, \sigma_\epsilon) \\
+    Y_t &= y_t + \Normal(0, \sigma_\epsilon) .
+\end{aligned}$$
+
+
+
+## Even more realism?
+
+Now what if we actually *don't observe* most of the $Y$ values?
+
+Here's what this looks like.
+```{r sim_osc, cache=TRUE, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+N <- 500
+true_osc <- list(alpha=.1,
+                 beta=.05,
+                 sigma_xy=.05,
+                 sigma_eps=.5)
+xy <- matrix(nrow=N, ncol=2)
+xy[1,] <- c(3,0)
+for (k in 1:(N-1)) {
+    xy[k+1,] <- (xy[k,] 
+                + c(true_osc$alpha * xy[k,2],
+                    (-1) * true_osc$beta * xy[k,1])
+                + rnorm(2, 0, true_osc$sigma_xy))
+}
+XY <- xy + rnorm(N*2, 0, true_osc$sigma_eps)
+obs_y <- sample.int(N, size=10)
+XY[setdiff(1:N, obs_y), 2] <- NA
+```
+
+-----------------
+
+```{r plot_osc, echo=FALSE}
+matplot(xy, xlab='time', ylab='x and y', type='l')
+matpoints(XY)
+```
+
+## A new Stan block
+
+```{r osc_stan, cache=TRUE}
+osc_block_missing <- "
+data {
+    int N;
+    vector[N] X;
+    int k; // number of observed Y
+    int obs_y[k]; // which Y values are observed
+    vector[k] Y;
+}
+parameters {
+    real alpha;
+    real beta;
+    real<lower=0> sigma_xy;
+    real<lower=0> sigma_eps;
+    vector[N] x;
+    vector[N] y;
+}
+model {
+    x[1] ~ normal(0, 5);
+    y[1] ~ normal(0, 5);
+    x[2:N] ~ normal(x[1:(N-1)] + alpha * y[1:(N-1)], sigma_xy);
+    y[2:N] ~ normal(y[1:(N-1)] - beta * x[1:(N-1)], sigma_xy);
+    X ~ normal(x, sigma_eps);
+    Y ~ normal(y[obs_y], sigma_eps);
+    alpha ~ normal(0, 1);
+    beta ~ normal(0, 1);
+    sigma_xy ~ normal(0, 1);
+    sigma_eps ~ normal(0, 1);
+}
+"
+osc_model_missing <- stan_model(model_code=osc_block_missing)
+```
+
+-------------------
+
+```{r run_osc, cache=TRUE, dependson=c("osc_stan", "sim_osc")}
+osc_fit <- sampling(osc_model_missing,
+                    data=list(N=N,
+                              X=XY[,1],
+                              k=length(obs_y),
+                              obs_y=obs_y,
+                              Y=XY[obs_y,2]),
+                    iter=1000, chains=3,
+                    control=list(max_treedepth=12))
+```
+
+## How'd we do?
+
+```{r summarize_osc}
+cbind(truth=c(true_osc$alpha, true_osc$beta, true_osc$sigma_xy, true_osc$sigma_eps),
+      rstan::summary(osc_fit, pars=c("alpha", "beta", "sigma_xy", "sigma_eps"))$summary)
+```
+
+-------------------
+
+Here is a density plot of 100 estimated trajectories (of `x` and `y`) from the Stan fit.
+
+```{r show_osc_fit, echo=FALSE, fig.height=1.5*fig.dim, fig.width=1.5*fig.dim}
+osc_results <- rstan::extract(osc_fit)
+plot(xy, lwd=2, xlab='x', ylab='y', type='l')
+for (k in 1:100) {
+    lines(osc_results$x[k,], osc_results$y[k,],
+          col=adjustcolor('black', 0.2))
+}
+```
