@@ -219,6 +219,45 @@ legend("topright", lty=c(1, NA), pch=c(NA,1), col=c("red","black"),
        legend=c("xy", "XY"))
 ```
 
+## IN CLASS
+
+```{r sim_explore}
+sim_osc <- function (alpha, beta, sigma_xy, sigma_eps, N=500, add=FALSE,
+                     pch=1, lty=1) {
+    xy <- matrix(nrow=N, ncol=2)
+    xy[1,] <- c(3,0)  # maybe this should be a param also
+    for (k in 1:(N-1)) {
+        xy[k+1,] <- (xy[k,] 
+            + c(alpha * xy[k,2],
+                (-1) * beta * xy[k,1])
+            + rnorm(2, 0, sigma_xy))
+    }
+    XY <- (xy
+       + rnorm(N*2, 0, sigma_eps))
+
+    if (!add) {
+        plot(xy, type='l', col='red', xlab='x', ylab='y', lty=lty)
+    } else {
+        lines(xy, col='red', lty=lty)
+    }
+    points(XY, col=rainbow(N), pch=pch)
+
+    return(invisible(list(xy=xy, XY=XY)))
+}
+
+# can tell the difference!
+sim_osc(0.1, 0.1, sigma_eps=1, sigma_xy=0.01)
+sim_osc(0.09, 0.1, sigma_eps=1, sigma_xy=0.01, add=TRUE, pch=20, lty=2)
+
+# can't
+sim_osc(0.1, 0.1, sigma_eps=1, sigma_xy=0.01)
+sim_osc(0.100001, 0.1, sigma_eps=1, sigma_xy=0.01, add=TRUE, pch=20, lty=2)
+
+# bigger process error: maybe at the edge of detectability
+sim_osc(0.1, 0.1, sigma_eps=1, sigma_xy=0.1)
+sim_osc(0.09, 0.1, sigma_eps=1, sigma_xy=0.1, add=TRUE, pch=20, lty=2)
+```
+
 
 
 # Write a Stan model, and check it works.
@@ -424,10 +463,10 @@ lines(osc_data[,1], osc_data[,2], col='red', lwd=2)
 layout(matrix(1:12, nrow=3))
 par(mar=c(2,2,1,1)+.1)
 for (k in 1:6) {
-    matplot(osc_data[,1], pp_XY[,1,], pch=20,
+    matplot(osc_data[,1], pp_XY[,1,k], pch=20,
             xlab='observed X', ylab='simulated X', mgp=c(1,1,0), xaxt='n', yaxt='n', asp=1)
     abline(0,1, col='red', lwd=2)
-    matplot(osc_data[,2], pp_XY[,2,], pch=20,
+    matplot(osc_data[,2], pp_XY[,2,k], pch=20,
             xlab='observed Y', ylab='simulated Y', mgp=c(1,1,0), xaxt='n', yaxt='n')
     abline(0,1, col='red', lwd=2)
 }
