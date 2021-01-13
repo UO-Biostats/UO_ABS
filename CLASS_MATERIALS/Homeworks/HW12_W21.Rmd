@@ -1,0 +1,271 @@
+---
+output: html_document
+---
+
+# Homework, week 12: Population cycling
+
+**Assignment:** Your task is to use Rmarkdown to write a short report, readable by a technically literate person.
+The code you used should not be visible in the final report (unless you have a good reason to show it).
+
+**Due:** Submit your work via Canvas by the end of the day (midnight) on Thursday, January 21th.
+Please submit **both the Rmd file and the resulting html or pdf file.**
+You can work with other members of class, but I expect each of you to write the report yourselves.
+
+
+## The Problem
+
+In the file [mice_and_foxes.tsv](mice_and_foxes.tsv) you will find (fake) data
+consisting of the total number of mice and foxes on a certain large island across 100 years.
+We'd like to fit a *Lotka-Volterra*-type model to these data,
+in which mice reproduce, but are eaten by foxes,
+and fox reproduction rate depends on how many mice they eat.
+Skipping over a lot of details,
+we'd like to fit the following model of how next year's numbers of mice ($M_{t+1}$) and foxes ($F_{t+1}$)
+depend on the current year's numbers ($M_t$ and $F_t$):
+$$\begin{aligned}
+    r_t &= \exp(- \epsilon F_t / 1000) \\
+    M_{t+1} &\sim \Poisson( (\lambda + r_t) M_t ) \\
+    F_{t+1} &\sim \Poisson( p F_t + \gamma (1 - r_t) M_t ) .
+\end{aligned}$$
+In this model, the parameters are:
+
+- $r = \exp(-\epsilon F)$ is the chance that a mouse escapes all foxes when there are $F$ foxes, and so
+- $\epsilon$ is the per fox encounter rate, scaled
+- $\lambda$ is the per capita mouse fecundity
+- $p$ is the probability of survival until the next year for each fox
+- $\gamma$ is the conversion rate from mice eaten to baby foxes
+
+Below is some R code that builds, evaluates, and fits this model,
+in particular:
+
+1. Simulates from this model
+2. Writes a Stan model
+3. Evaluates its performance estimating $\lambda$ and $\gamma$
+4. Fits the model to real data
+5. Simulates dynamics using a few draws from the posterior
+6. Looks at the posterior distribution on the parameters.
+
+Your goal is to build on this code to create an Rmarkdown report:
+the report should, as usual, explain what is happening in the code
+(i.e., explain the method of inference, model validation results, the results in real terms,
+and associated uncertainty),
+but not show the actual code.
+You are also welcome to add code of your own, of course.
+
+*Note:* [This Stan case study](https://mc-stan.org/users/documentation/case-studies/lotka-volterra-predator-prey.html)
+addresses a similar question but using very different methods
+(that are more confusing, in my opinion, since it fits a differential equation model).
+
+The [Rmd source](HW12_W21.Rmd) to this document is also available.
+
+
+```{r no_eval, echo=FALSE}
+# REMOVE THIS CHUNK TO GET THE CODE TO RUN
+knitr::opts_chunk$set(eval=FALSE)
+```
+
+
+```{r sim_code}
+# simulation code
+generation <- function (mf, p) {
+    oM = mf[1]
+    oF = mf[2]
+    er <- exp( - p$erate * oF / 1000)
+    nM <- rpois(1, (p$lambda + er) * oM)
+    nF <- rpois(1, p$lsurv * oF + p$conv * (1 - er) * oM)
+    return(c(nM, nF))
+}
+
+run_sim <- function (mf0, params) {
+    MF <- matrix(0, nrow=params$T, ncol=2)
+    MF[1,] <- as.vector(mf0)
+    for (k in 2:nrow(MF)) {
+        MF[k,] <- generation(MF[k-1,], params)
+    }
+    MF <- data.frame(MF)
+    names(MF) <- c("mice", "foxes")
+    MF$year = 1750 + 1:params$T
+    MF <- MF[,c(3,1,2)]
+    return(MF)
+}
+
+plot_MF <- function (MF, layout=TRUE, ...) {
+    if (layout) layout(t(1:2))
+    matplot(MF$year, MF[,2:3], type='l', xlab='time', ylab='population', lty=2, ...)
+    legend("topright", lty=1, col=1:2, legend=c("mice", "foxes"))
+    plot(foxes ~ mice, data=MF, type='l', xlab='mice', ylab='foxes', ...)
+}
+
+# example simulation
+set.seed(123)
+sim_params <- list(
+                   lambda = 0.75, # prey fecundity per year
+                   lsurv = 0.4,   # predator survival prob
+                   erate = 1,     # pred-prey encounter rate
+                   conv = 0.8,    # prey->pred conversion rate
+                   T = 100  # number of time steps
+               )
+
+plot_MF(run_sim(c(1200, 1000), sim_params), main='simulated data')
+
+# but beware: mice die out with no foxes
+bad_params <- sim_params
+bad_params$lambda <- 0.2
+plot_MF(run_sim(c(1200, 1000), bad_params), main='oops!')
+```
+
+
+
+```{r setup}
+library(rstan)
+options(mc.cores = parallel::detectCores())
+rstan_options(auto_write = TRUE)
+
+MF <- read.table("mice_and_foxes.tsv", header=TRUE)
+```
+
+```{r plot_mf}
+plot_MF(MF)
+```
+
+
+```{r thestan, cache=TRUE}
+pp_block <- "
+data {
+    int N;
+    int M[N];
+    int F[N];
+}
+parameters {
+    real<lower=0> lambda;
+    real<lower=0, upper=1> lsurv;
+    real<lower=0> erate;
+    real<lower=0> conv;
+}
+model {
+    vector[N-1] h;
+    vector[N-1] l;
+    vector[N-1] er;
+    h = to_vector(M[1:(N-1)]);
+    l = to_vector(F[1:(N-1)]);
+    er = exp(-erate * l / 1000);
+    M[2:N] ~ poisson((lambda + er) .* h);
+    F[2:N] ~ poisson(lsurv * l + conv * (1-er) .* h);
+    lambda ~ normal(0, 1);
+    erate ~ normal(0, 1);
+    conv ~ normal(0, 1);
+}
+"
+pp_model <- stan_model(model_code=pp_block)
+```
+
+```{r check_lambda_inference, cache=TRUE, dependson="thestan"}
+lambda_vals <- seq(0.5, 0.9, length.out=19)
+lambda_results <- data.frame(lambda=lambda_vals)
+summary_names <- c("2.5%", "25%", "50%", "75%", "97.5%", "n_eff")
+for (x in summary_names) { lambda_results[[x]] <- NA }
+
+for (k in seq_along(lambda_vals)) {
+    p <- sim_params
+    p$lambda <- lambda_vals[k]
+    sim_MF <- run_sim(c(1200, 1000), p)
+    # plot_MF(sim_MF)  # uncomment to get visual check on simulations
+    sim_pp_fit <- sampling(pp_model,
+                       data=list(N=nrow(sim_MF),
+                                 M=sim_MF$mice,
+                                 F=sim_MF$foxes),
+                       iter=1000, chains=3,
+                       control=list(max_treedepth=12))
+    post_summary <- rstan::summary(sim_pp_fit)$summary
+    for (x in summary_names) {
+        lambda_results[k, x] <- post_summary["lambda", x]
+    }
+}
+
+plot(lambda_results$lambda, lambda_results[["50%"]], ylim=range(lambda_results[,1:6]), type='n',
+     xlab="true value of lambda", ylab="inferred value")
+segments(x0=lambda_results$lambda,
+         y0=lambda_results[["2.5%"]],
+         y1=lambda_results[["97.5%"]])
+segments(x0=lambda_results$lambda,
+         y0=lambda_results[["25%"]],
+         y1=lambda_results[["75%"]], lwd=2, col='red')
+points(lambda_results$lambda, lambda_results[["50%"]], pch=20, cex=2)
+abline(0,1)
+legend("topleft", pch=c(20, NA, NA), lty=c(NA, 1, 1), lwd=c(NA, 1, 2), col=c("black", "black", "red"),
+       legend=c("posterior median", "posterior 50%", "posterior 95%"))
+```
+
+```{r check_gamma_inference, cache=TRUE, dependson="thestan"}
+gamma_vals <- seq(0.3, 0.5, length.out=19)
+gamma_results <- data.frame(gamma=gamma_vals)
+for (x in summary_names) { gamma_results[[x]] <- NA }
+
+for (k in seq_along(gamma_vals)) {
+    p <- sim_params
+    p$conv <- gamma_vals[k]
+    sim_MF <- run_sim(c(1200, 1000), p)
+    # plot_MF(sim_MF)  # uncomment to get visual check on simulations
+    sim_pp_fit <- sampling(pp_model,
+                       data=list(N=nrow(sim_MF),
+                                 M=sim_MF$mice,
+                                 F=sim_MF$foxes),
+                       iter=1000, chains=3,
+                       control=list(max_treedepth=12))
+    post_summary <- rstan::summary(sim_pp_fit)$summary
+    for (x in summary_names) {
+        gamma_results[k, x] <- post_summary["conv", x]
+    }
+}
+
+plot(gamma_results$gamma, gamma_results[["50%"]], ylim=range(gamma_results[,1:6]), type='n',
+     xlab='true value of gamma', ylab='inferred value')
+segments(x0=gamma_results$gamma,
+         y0=gamma_results[["2.5%"]],
+         y1=gamma_results[["97.5%"]])
+segments(x0=gamma_results$gamma,
+         y0=gamma_results[["25%"]],
+         y1=gamma_results[["75%"]], lwd=2, col='red')
+points(gamma_results$gamma, gamma_results[["50%"]], pch=20, cex=2)
+abline(0,1)
+legend("topleft", pch=c(20, NA, NA), lty=c(NA, 1, 1), lwd=c(NA, 1, 2), col=c("black", "black", "red"),
+       legend=c("posterior median", "posterior 50%", "posterior 95%"))
+```
+
+
+
+```{r fitstan, cache=TRUE, dependson="thestan"}
+# ok the real data now
+pp_fit <- sampling(pp_model,
+                   data=list(N=nrow(MF),
+                             M=MF$mice,
+                             F=MF$foxes),
+                   iter=1000, chains=3,
+                   control=list(max_treedepth=12))
+```
+
+
+
+```{r sim_from_posterior}
+post <- rstan::extract(pp_fit, permuted=TRUE)
+get_post_params  <- function (k) {
+    p <- list(
+              lambda = post$lambda[k],
+              lsurv = post$lsurv[k],
+              erate = post$erate[k],
+              conv = post$conv[k],
+              T = 100
+           )
+    return(p)
+}
+layout(matrix(1:12, nrow=3, byrow=TRUE))
+plot_MF(MF, main="real data", layout=FALSE)
+for (k in 1:5) {
+    p <- get_post_params(k)
+    plot_MF(run_sim(c(MF[1,2], MF[1,3]), p), main=sprintf("posterior draw %d", k), layout=FALSE)
+}
+```
+
+```{r posterior}
+stan_hist(pp_fit) # TODO: add titles, labels
+```
