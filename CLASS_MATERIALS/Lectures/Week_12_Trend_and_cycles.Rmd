@@ -47,6 +47,8 @@ options(mc.cores = parallel::detectCores())
 
 ## The data
 
+[Datasets/Mauna_Loa_C02](../Datasets/Mauna_Loa_C02/co2_mm_mlo.txt)
+
 ```{r read_co2}
 co2 <- read.table("../Datasets/Mauna_Loa_C02/co2_mm_mlo.txt", comment="#")
 names(co2) <- c("year", "month", "decimal_date", "average", "interpolated", "trend", "num_days")
@@ -76,7 +78,7 @@ abline(h=0, col='red')
 
 ## Seasonal
 
-```{r plot_seasonal}
+```{r plot_seasonal, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 plot(average - trend ~ month, data=co2, pch=20, cex=0.5, col=adjustcolor("black", 0.5), xlab='Month')
 ```
 
@@ -150,7 +152,7 @@ Usage:
            control = loess.control(...), ...)
 ```
 
-## Example
+## The problem: put a "smooth" line through some points
 
 ```{r loess}
 xt <- data.frame(t=seq(0, 10*pi, length.out=150))
@@ -236,13 +238,13 @@ acf(water_ts, lag.max=10 * 12, xlab='lag (hours)', na.action=na.pass)
 
 ## Removing the trend
 
-```{r smooth1, fig.width=3*fig.dim}
+```{r smooth1, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 ocean$numdate <- as.numeric(ocean$date)
 month_smooth <- loess(WATER_TEMP_F ~ numdate, data=ocean,
                       span=sum(ocean$Month < 4 & ocean$Year == 2012)/nrow(ocean))
 ocean$month_sm <- predict(month_smooth, newdata=ocean)
 
-plot(WATER_TEMP_F ~ date, data=ocean, pch=20, cex=0.5)
+plot(WATER_TEMP_F ~ date, data=ocean, pch=20, cex=0.5, ylim=c(35, 65))
 lines(month_sm ~ date, data=ocean, col='red', lwd=2)
 ```
 
