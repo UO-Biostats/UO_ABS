@@ -28,6 +28,7 @@ Week 12 (*1/11*)
 
     - slides: [Time series](../CLASS_MATERIALS/Lectures/Week_12_Time_series.slides.html)
     - slides: [Missing data and imputation](../CLASS_MATERIALS/Lectures/Week_12_Missing_data.slides.html)
+    - slides: [Trends, smoothing, autocorrelation, and cycles](../CLASS_MATERIALS/Lectures/Week_12_Trend_and_cycles.slides.html)
     - [Homework 12](../CLASS_MATERIALS/Homeworks/HW12_W21.html) *(due 1/21)*
 
 

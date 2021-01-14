@@ -1,0 +1,294 @@
+---
+title: "Trends, smoothing, autocorrelation, and cycles"
+author: "Peter Ralph"
+date: "14 January 2021 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(brms)
+library(tseries) # for spectrum
+library(rstan)
+library(matrixStats)
+library(tidyverse)
+library(lubridate)
+options(mc.cores = parallel::detectCores())
+```
+
+# CO2 concentrations
+
+## Atmospheric CO2 concentrations at Mauna Loa
+
+![plot of CO2 concentrations on NOAA's site](images/noaa_co2.png)
+
+## Monthly averages
+
+```
+# The "average" column contains the monthly mean CO2 mole fraction determined
+# from daily averages.  The mole fraction of CO2, expressed as parts per million
+# (ppm) is the number of molecules of CO2 in every one million molecules of dried
+# air (water vapor removed).  If there are missing days concentrated either early
+# or late in the month, the monthly mean is corrected to the middle of the month
+# using the average seasonal cycle.  Missing months are denoted by -99.99.
+# The "interpolated" column includes average values from the preceding column
+# and interpolated values where data are missing.  Interpolated values are
+# computed in two steps.  First, we compute for each month the average seasonal
+# cycle in a 7-year window around each monthly value.  In this way the seasonal
+# cycle is allowed to change slowly over time.  We then determine the "trend"
+# value for each month by removing the seasonal cycle; this result is shown in
+# the "trend" column.  Trend values are linearly interpolated for missing months.
+# The interpolated monthly mean is then the sum of the average seasonal cycle
+# value and the trend value for the missing month.
+```
+
+## The data
+
+```{r read_co2}
+co2 <- read.table("../Datasets/Mauna_Loa_C02/co2_mm_mlo.txt", comment="#")
+names(co2) <- c("year", "month", "decimal_date", "average", "interpolated", "trend", "num_days")
+co2[co2 == -99.99] <- NA
+head(co2)
+```
+
+## 
+
+```{r plot_co2, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+matplot(co2$decimal_date, co2[,c(4,5,6)], type='l', lwd=2, lty=1, xlab='year', ylab='CO2 (ppm)')
+abline(h=350, lty=2, col=2, lwd=2)
+legend("topleft", lty=c(1,1,1,2), col=c(1:3,2), legend=c(names(co2)[c(4,5,6)], '350ppm'), lwd=2)
+```
+
+## Trend plus seasonal
+
+```{r trend_co2, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+layout((1:2), heights=c(1,1.2))
+par(mar=c(1,5,1,1)+.1)
+plot(trend ~ decimal_date, data=co2, xlab='', lwd=2, xaxt='n', type='l')
+par(mar=c(4,5,1,1)+.1)
+plot(average - trend ~ decimal_date, data=co2, xlab='year', lwd=2, type='l')
+lines(interpolated - trend ~ decimal_date, data=co2, xlab='year', lty=2)
+abline(h=0, col='red')
+```
+
+## Seasonal
+
+```{r plot_seasonal}
+plot(average - trend ~ month, data=co2, pch=20, cex=0.5, col=adjustcolor("black", 0.5), xlab='Month')
+```
+
+
+# Autocorrelation
+
+## 
+
+The *autocorrelation function* of a time series $(x(t) : 0 \le t \le L)$
+is the correlation between points as a function of lag:
+
+$$\begin{aligned}
+    \rho(\ell) &= \cor[x(T), x(T+\ell)],
+\end{aligned}$$
+
+where $T$ is uniform between 0 and $L-\ell$.
+
+. . .
+
+
+$$\begin{aligned}
+    \rho(\ell) &= \frac{1}{T-\ell-1} \sum_{t=1}^{T-\ell}
+            \left(\frac{ x(t) - \bar x }{ \sd[x] } \right)
+            \left(\frac{ x(t + \ell) - \bar x }{ \sd[x] } \right) .
+\end{aligned}$$
+
+
+
+## Computing autocorrelation:
+
+The `acf( )` function requires a *time series* object:
+```{r co2_ts}
+co2_ts <- ts(co2$interpolated, deltat=1/(12))
+
+acf(co2_ts, lag.max=10 * 12, xlab='lag (years)')
+```
+
+## Seasonal autocorrelation
+
+```{r seasonal_acf}
+co2_seasonal <- ts(co2$interpolated - co2$trend, deltat=1/(12))
+acf(co2_seasonal, lag.max=3 * 12, xlab='lag (years)')
+```
+
+
+# Smoothing
+
+## loess
+
+![loess soil](images/loess_soil.jpg){width="40%"}
+
+## `loess`
+
+```
+> help(loess)
+
+Local Polynomial Regression Fitting
+
+Description:
+
+     Fit a polynomial surface determined by one or more numerical
+     predictors, using local fitting.
+
+Usage:
+
+     loess(formula, data, weights, subset, na.action, model = FALSE,
+           span = 0.75, enp.target, degree = 2,
+           parametric = FALSE, drop.square = FALSE, normalize = TRUE,
+           family = c("gaussian", "symmetric"),
+           method = c("loess", "model.frame"),
+           control = loess.control(...), ...)
+```
+
+## Example
+
+```{r loess}
+xt <- data.frame(t=seq(0, 10*pi, length.out=150))
+xt$x <- cos(xt$t) + rnorm(nrow(xt), sd=0.4)
+plot(x ~ t, data=xt)
+```
+
+## 
+
+```{r loess2}
+xtsm <- loess(x ~ t, data=xt, span=0.1)
+xt$smoothed <- predict(xtsm, newdata=xt)
+
+plot(x ~ t, data=xt)
+lines(smoothed ~ t, data=xt, col='red')
+```
+
+## A key parameter: `span`
+
+```{r loess3, warning=FALSE, fig.width=3*fig.dim, echo=FALSE}
+fvals <- c(0.05, 0.1, 0.2, 0.5, 0.75)
+smooths <- sapply(fvals, function (f)
+                predict(loess(x ~ t, data=xt, span=f), newdata=xt) )
+
+plot(x ~ t, data=xt, xlim=c(-5, 10*pi))
+matlines(xt$t, smooths, lty=1, col=rainbow(10), lwd=2)
+legend("topleft", lty=1, lwd=2, col=rainbow(10)[1:length(fvals)],
+       legend=sprintf("span=%0.2f", fvals))
+```
+
+
+
+
+# Ocean temperatures
+
+## 
+
+Ocean temperature is available from NOAA buoys
+at [tidesandcurrents.noaa.gov](https://tidesandcurrents.noaa.gov/physocean.html):
+
+![tidesandcurrents.noaa.gov](images/noaa.png)
+
+
+## 
+
+Ten years of data for Newport, OR
+are [in the Datasets/ directory](../Datasets/Ocean_Temp_Data/Newport_Sea_Temp_Data_2010-2019.csv)
+
+![buoy location](images/noaa_buoy.png)
+
+## Reading in *dates*:
+
+```{r load_ocean, fig.width=3*fig.dim, cache=TRUE, warning=FALSE, fig.height=1.5*fig.dim}
+library(lubridate) 
+ocean <- read.csv("../Datasets/Ocean_Temp_Data/Newport_Sea_Temp_Data_2010-2019.csv")
+ocean$date <- with(ocean,
+                   ymd_hm(paste(paste(Year, Month, Day, sep='-'), Time)))
+ocean$time <- hm(ocean$Time)
+
+plot(WATER_TEMP_F ~ date, data=ocean, type='l')
+```
+
+## 
+
+```{r twentytwelve, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+plot(WATER_TEMP_F ~ date, data=ocean, type='l', subset=Year==2012, main='2012')
+```
+
+##
+
+```{r july_twentytwelve, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+plot(WATER_TEMP_F ~ date, data=ocean, type='l', subset=Year==2012 & Month==7, main='July 2012')
+```
+
+
+## Autocorrelation
+
+```{r ocean_acf0, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+water_ts <- ts(ocean$WATER_TEMP_F, deltat=1)
+acf(water_ts, lag.max=10 * 12, xlab='lag (hours)', na.action=na.pass)
+```
+
+
+## Removing the trend
+
+```{r smooth1, fig.width=3*fig.dim}
+ocean$numdate <- as.numeric(ocean$date)
+month_smooth <- loess(WATER_TEMP_F ~ numdate, data=ocean,
+                      span=sum(ocean$Month < 4 & ocean$Year == 2012)/nrow(ocean))
+ocean$month_sm <- predict(month_smooth, newdata=ocean)
+
+plot(WATER_TEMP_F ~ date, data=ocean, pch=20, cex=0.5)
+lines(month_sm ~ date, data=ocean, col='red', lwd=2)
+```
+
+##
+
+```{r smooth2, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+layout(1:2)
+plot(WATER_TEMP_F ~ date, data=ocean, pch=20, cex=0.5, subset=Year==2012, main='2012')
+lines(month_sm ~ date, data=ocean, col='red', lwd=2)
+plot(WATER_TEMP_F ~ date, data=ocean, pch=20, cex=0.5, subset=Year==2012 & (Month == 7 | Month ==8), main="Jul-Aug 2012")
+lines(month_sm ~ date, data=ocean, col='red', lwd=2)
+```
+
+## Remaining autocorrelation
+
+```{r ocean_acf, fig.width=3*fig.dim}
+water <- ts(ocean$WATER_TEMP_F - ocean$month_sm, deltat=1)
+acf(water, lag.max=10 * 12, xlab='lag (hours)', na.action=na.pass)
+```
+
+## A 12 hour cycle?
+
+```{r ocean_acf2, fig.width=3*fig.dim}
+acf(water, lag.max=10 * 12, xlab='lag (hours)', na.action=na.pass)
+abline(v=12*1:10, col=c('red', 'blue'), lwd=2)
+```
+
+## A `12 * (1 + 1/27.2)` hour cycle!
+
+```{r ocean_acf3, fig.width=3*fig.dim}
+acf(water, lag.max=10 * 12, xlab='lag (hours)', na.action=na.pass)
+abline(v=12*(1 + 1/27.2) * 1:10, col=c('red', 'blue'), lwd=2)
+```
+
+. . .
+
+... why?
+
+
+
+# Addendum
+
+## Spectra
+
+```{r thespec}
+# spectrum
+wspec <- spectrum(water, na.action=na.remove)
+plot(wspec)
+```
