@@ -14,6 +14,10 @@ description: useful links for Advanced Biological Statistics
 * A description of how to [use git](using-git.html) to get the course material.
 * A [primer on linear algebra](../CLASS_MATERIALS/Tutorials/LA_primer_slides.html)
 * Some notes on [how the slides are made from Rmd](development.html).
+
+**Tutorials:**
+
+* An example of [debugging Stan convergence](../CLASS_MATERIALS/Tutorials/Improving_convergence_1.html)
 * A [technical look at brms](../CLASS_MATERIALS/Tutorials/using_brms.html)
 
 ### Stan
