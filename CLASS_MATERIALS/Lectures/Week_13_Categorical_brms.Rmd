@@ -1,0 +1,455 @@
+---
+title: "Categorical data with brms"
+author: "Peter Ralph"
+date: "19 January 2021 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(brms)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+options(digits=2)
+```
+
+```{r get_post_fn, echo=FALSE}
+get_post_props <- function (fit, numer_names, denom_names) {
+    # helper function to get posterior distribution of conditional proportions
+    # from poisson(link='log') fits
+    ppe <- posterior_epred(fit)
+    prop_names <- do.call(expand.grid,
+                          lapply(c(numer_names, denom_names), function (vn) levels(factor(fit$data[[vn]]))))
+    names(prop_names) <- c(numer_names, denom_names)
+    numer <- denom <- matrix(0, nrow=nrow(ppe), ncol=nrow(prop_names))
+    for (k in 1:nrow(fit$data)) {
+        dyes <- rep(TRUE, nrow(prop_names))
+        for (vn in denom_names) {
+            dyes <- dyes & (prop_names[[vn]] == fit$data[[vn]][k])
+        }
+        nyes <- dyes
+        for (vn in numer_names) {
+            nyes <- nyes & (prop_names[[vn]] == fit$data[[vn]][k])
+        }
+        if (sum(nyes) > 0) {
+            numer[,nyes] <- numer[,nyes] + ppe[,k]
+        }
+        if (sum(dyes) > 0) {
+            denom[,dyes] <- denom[,dyes] + ppe[,k]
+        }
+    }
+    post_props <- reshape2::melt(numer / denom)
+    for (vn in c(numer_names, denom_names)) {
+        post_props[[vn]] <- prop_names[[vn]][post_props$Var2]
+    }
+    return(post_props)
+}
+```
+
+
+
+# Categorical data
+
+## Hair and Eye color
+
+```{r hair_eye_data}
+data(HairEyeColor)
+```
+```
+HairEyeColor             package:datasets              R Documentation
+
+Hair and Eye Color of Statistics Students
+
+Description:
+
+     Distribution of hair and eye color and sex in 592 statistics
+     students.
+
+Usage:
+
+     HairEyeColor
+     
+Format:
+
+     A 3-dimensional array resulting from cross-tabulating 592
+     observations on 3 variables.  The variables and their levels are
+     as follows:
+
+       No  Name  Levels                    
+        1  Hair  Black, Brown, Red, Blond  
+        2  Eye   Brown, Blue, Hazel, Green 
+        3  Sex   Male, Female              
+      
+Details:
+
+     The Hair x Eye table comes from a survey of students at the
+     University of Delaware reported by Snee (1974).  The split by
+     ‘Sex’ was added by Friendly (1992a) for didactic purposes.
+
+     This data set is useful for illustrating various techniques for
+     the analysis of contingency tables, such as the standard
+     chi-squared test or, more generally, log-linear modelling, and
+     graphical methods such as mosaic plots, sieve diagrams or
+     association plots.
+
+Source:
+
+     <URL:
+     http://euclid.psych.yorku.ca/ftp/sas/vcd/catdata/haireye.sas>
+
+     Snee (1974) gives the two-way table aggregated over ‘Sex’.  The
+     ‘Sex’ split of the ‘Brown hair, Brown eye’ cell was changed to
+     agree with that used by Friendly (2000).
+
+References:
+
+     Snee, R. D. (1974).  Graphical display of two-way contingency
+     tables.  _The American Statistician_, *28*, 9-12.  doi:
+     10.2307/2683520 (URL: http://doi.org/10.2307/2683520).
+
+```
+
+----------------
+
+```{r show_he, echo=FALSE}
+HairEyeColor
+```
+
+---------------
+
+```{r melt_he}
+haireye <- as.data.frame(HairEyeColor)
+names(haireye) <- tolower(names(haireye))
+names(haireye)[names(haireye) == "freq"] <- "number"
+haireye
+```
+
+## 
+
+*Questions:* 
+
+1. Are hair and eye color independent in this sample?
+2. Do hair and eye color proportions differ by sex?
+
+
+# Poisson models for count data
+
+##
+
+We have for data
+$$\begin{aligned}
+    n_{ij} = \text{( number of observations in categories $i$ and $j$ )} .
+\end{aligned}$$
+and
+$$\begin{aligned}
+    n_{i \cdot} &= \text{( total number of observations in category $i$ )} , \\
+    n_{\cdot j} &= \text{( total number of observations in category $j$ )} , \\
+    n_{\cdot \cdot} &= \text{( total number of observations )} .
+\end{aligned}$$
+
+. . .
+
+*Question:* Is $n_{i \cdot}$ fixed? What about $n_{\cdot j}$? Or $n_{\cdot \cdot}$?
+
+. . .
+
+*Answer:* Happily, it will turn out not to matter (for the model).
+
+## Poisson additivity
+
+If we have Poisson-many things of two categories:
+$$\begin{aligned}
+    A &\sim \Poisson(a) \\
+    B &\sim \Poisson(b)
+\end{aligned}$$
+then the total number of things is also Poisson:
+$$
+    A + B \sim \Poisson(a + b)
+$$
+and each thing chooses its type independently:
+$$
+    A \given A + B \sim \Binom\left(A+B, \frac{a}{a+b}\right) .
+$$
+
+## Poisson models for contingency tables
+
+So, if we fit a model where 
+
+$$\begin{aligned}
+    n_{ij}
+    &\sim \Poisson(\lambda_{ij})
+\end{aligned}$$
+
+then 
+$$\begin{aligned}
+    \frac{\lambda_{ij}}{\sum_{k\ell} \lambda_{k\ell}}
+    &=
+    (\text{proportion in category $ij$}) \\
+    \frac{\lambda_{ij}}{\sum_{k} \lambda_{kj}}
+    &=
+    (\text{proportion of row $j$ in column $i$}) \\
+    \frac{\lambda_{ij}}{\lambda_{ij} + \lambda_{k\ell}}
+    &=
+    (\text{proportion of those in $k\ell$ or $ij$ that are $ij$})
+\end{aligned}$$
+
+-------------------
+
+For example, the *proportion of brown-haired people who have blue eyes* is
+$$\begin{aligned}
+   & \P\left(\text{ eye blue } \given \text{ hair black } \right) \\
+   &\qquad =
+   \frac{
+    \lambda_{\text{blue},\text{black}}
+   }{
+    \lambda_{\cdot,\text{black}}
+   } \\
+   &\qquad =
+   \frac{
+    \lambda_{\text{blue},\text{black}}
+   }{
+    \lambda_{\text{brown},\text{black}}
+    + \lambda_{\text{blue},\text{black}}
+    + \lambda_{\text{hazel},\text{black}}
+    + \lambda_{\text{green},\text{black}}
+   }
+\end{aligned}$$
+
+
+
+## Independence and multiplicativity
+
+If hair and eye color are *independent*,
+then probabilities of combinations are *multiplicative*:
+
+$$\begin{aligned}
+    &\P\{\text{black hair and blue eyes}\} \\
+    &\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\given\text{black hair}\} \\
+\end{aligned}$$
+
+. . .
+
+which if independent is
+$$\begin{aligned}
+    &\hphantom{\P\{\text{black hair and blue eyes}\}} \\
+    &\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\}
+\end{aligned}$$
+
+
+## Additivity and independence
+
+We're using a *log link function*, so additivity corresponds to independence:
+$$\begin{aligned}
+    p_{ij}
+    &=
+        \frac{
+        e^{\beta_i + \gamma_j}
+        }{
+        \sum_{ab} e^{\beta_a + \gamma_b}
+        } \\
+    &=
+    \left(
+        \frac{
+        e^{\beta_i}
+        }{
+        \sum_{a} e^{\beta_a}
+        }
+    \right)
+    \times
+    \left(
+        \frac{
+        e^{\gamma_j}
+        }{
+        \sum_{b} e^{\gamma_b}
+        }
+    \right) \\
+    &= p_i \times p_j 
+\end{aligned}$$
+
+
+# hair and eye colors, with brms
+
+
+## brms
+
+```{r brm_fmla, cache=TRUE}
+he_formula <- brmsformula(number ~ sex + hair * eye + (hair + eye) * sex)
+```
+
+## Flat priors
+
+```{r brm_prior, cache=TRUE, dependson='brm_fmla'}
+get_prior(he_formula, data=haireye, family='poisson')
+he_priors <- c(prior('normal(0,3)', class='b'))
+```
+
+##
+
+```{r brm_fit, cache=TRUE, dependson='brm_prior'}
+he_fit <- brm(he_formula,
+              data=haireye,
+              family=poisson(link='log'),
+              prior=he_priors)
+```
+
+##
+
+```{r brm_summ}
+summary(he_fit)
+```
+
+##
+
+```{r brm_results, fig.width=2.5*fig.dim, fig.height=2*fig.dim}
+conditional_effects(he_fit, effects="hair:eye")
+```
+
+##
+
+But, that was *numbers*:
+here's the credible intervals for the proportions of each eye color for each hair color:
+```{r brm_pred, echo=FALSE, fig.width=2.5*fig.dim, fig.height=2*fig.dim}
+get_post_props(he_fit, "eye", "hair") %>% group_by(hair, eye) %>% 
+    summarise(proportion=mean(value), q025=quantile(value, probs=0.025), q975=quantile(value, probs=0.975)) %>%
+    ggplot(aes(x=hair, y=proportion, ymin=q025, ymax=q975, col=eye)) + geom_point(position=position_dodge(width=0.4), size=4) + geom_errorbar(aes(ymin=q025, ymax=q975), position=position_dodge(width=0.4), width=0.3)
+```
+
+##
+
+Recall the "reference" levels are
+hair = `r levels(haireye$hair)[1]`
+and 
+eye = `r levels(haireye$eye)[1]`
+```{r coef_plot, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+mcmc_plot(he_fit, pars="b_hair.*:eye.*")
+```
+
+
+# Back to the questions
+
+## 
+
+*Questions:* 
+
+1. Are hair and eye color independent in this sample?
+2. Do hair and eye color proportions differ by sex?
+
+## *Are hair and eye color independent in this sample?*
+
+(What do we mean: given sex? averaged across sex?)
+
+Recall the "reference" levels are
+hair = `r levels(haireye$hair)[1]`
+and 
+eye = `r levels(haireye$eye)[1]`
+```{r bysexq, echo=FALSE}
+mcmc_plot(he_fit, pars="b_hair.*:eye.*")
+```
+
+------------
+
+Eye color proportions by hair type:
+```{r brm_pred2, echo=FALSE, fig.width=2.5*fig.dim, fig.height=2*fig.dim}
+get_post_props(he_fit, "eye", "hair") %>% group_by(hair, eye) %>% 
+    summarise(proportion=mean(value), q025=quantile(value, probs=0.025), q975=quantile(value, probs=0.975)) %>%
+    ggplot(aes(x=hair, y=proportion, ymin=q025, ymax=q975, col=eye)) + geom_point(position=position_dodge(width=0.4), size=4) + geom_errorbar(aes(ymin=q025, ymax=q975), position=position_dodge(width=0.4), width=0.3)
+```
+
+-------------
+
+Hair color proportions by eye type:
+```{r brm_pred3, echo=FALSE, fig.width=2.5*fig.dim, fig.height=2*fig.dim}
+get_post_props(he_fit, "hair", "eye") %>% group_by(hair, eye) %>% 
+    summarise(proportion=mean(value), q025=quantile(value, probs=0.025), q975=quantile(value, probs=0.975)) %>%
+    ggplot(aes(x=eye, y=proportion, ymin=q025, ymax=q975, col=hair)) + geom_point(position=position_dodge(width=0.4), size=4) + geom_errorbar(aes(ymin=q025, ymax=q975), position=position_dodge(width=0.4), width=0.3)
+```
+
+
+
+## *Do hair and eye color proportions differ by sex?*
+
+```{r bysex1, echo=FALSE}
+# conditional_effects(he_fit, effects="eye:sex")
+get_post_props(he_fit, "eye", "sex") %>% group_by(eye, sex) %>% 
+    summarise(proportion=mean(value), q025=quantile(value, probs=0.025), q975=quantile(value, probs=0.975)) %>%
+    ggplot(aes(x=sex, y=proportion, ymin=q025, ymax=q975, col=eye)) + geom_point(position=position_dodge(width=0.4), size=4) + geom_errorbar(aes(ymin=q025, ymax=q975), position=position_dodge(width=0.4), width=0.3)
+```
+
+------------
+
+```{r bysex2, echo=FALSE}
+# conditional_effects(he_fit, effects="hair:sex")
+get_post_props(he_fit, "hair", "sex") %>% group_by(hair, sex) %>% 
+    summarise(proportion=mean(value), q025=quantile(value, probs=0.025), q975=quantile(value, probs=0.975)) %>%
+    ggplot(aes(x=sex, y=proportion, ymin=q025, ymax=q975, col=hair)) + geom_point(position=position_dodge(width=0.4), size=4) + geom_errorbar(aes(ymin=q025, ymax=q975), position=position_dodge(width=0.4), width=0.3)
+```
+
+
+# Testing our method
+
+##
+
+What we've done so far:
+
+1. Fit the model,
+2. observed CIs for interactions do not overlap zero
+3. concluded good statistical support for nonindependence.
+
+. . .
+
+*Question:*
+What would we have seen if hair and eye color *were* independent?
+
+
+## Testing
+
+Let's simulate some test data, under independence.
+```{r sim_data, cache=TRUE}
+sim_data <- function () {
+    n <- sum(haireye$number)
+    p_hair <- tapply(haireye$number, haireye$hair, sum) / n
+    p_eye <- tapply(haireye$number, haireye$eye, sum) / n
+    p_sex <- tapply(haireye$number, haireye$sex, sum) / n
+    p <- (p_hair[haireye$hair] * 
+          p_eye[haireye$eye] * 
+          p_sex[haireye$sex])
+    stopifnot(sum(p) == 1)
+    number <- rmultinom(1, size=n, prob=p)
+    return(number)
+}
+```
+
+-------------
+
+```{r sim_fit, cache=TRUE, dependson='sim_data', warning=FALSE}
+sim_fits <- lapply(1:5, function (k) {
+                       # replaces the data only locally
+                       haireye$number <- sim_data()
+                       update(he_fit, newdata=haireye) })
+```
+
+-------------
+
+
+```{r plot_sims, fig.width=4*fig.dim, fig.height=3*fig.dim, echo=FALSE}
+cowplot::plot_grid(plotlist=lapply(lapply(
+                                 lapply(c(list(he_fit), sim_fits), conditional_effects, effects="hair:eye:"),
+                             plot, plot=FALSE), "[[", 1),
+                   nrow=2, ncol=3
+)
+```
+
+-------------
+
+```{r plot_sims2, fig.width=4*fig.dim, fig.height=3*fig.dim, echo=FALSE}
+cowplot::plot_grid(
+           plotlist=lapply(c(list(he_fit), sim_fits), mcmc_plot, pars="b_hair.*:eye.*"),
+           nrow=2, ncol=3)
+```

@@ -1,0 +1,179 @@
+---
+title: "Categorical data and permutation tests"
+author: "Peter Ralph"
+date: "21 January 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+library(tidyverse)
+options(digits=2)
+```
+
+# Hair and eye color
+
+## Hair and Eye color
+
+```{r hair_eye_data}
+data(HairEyeColor)
+```
+```
+HairEyeColor             package:datasets              R Documentation
+
+Hair and Eye Color of Statistics Students
+
+Description:
+
+     Distribution of hair and eye color and sex in 592 statistics
+     students.
+
+Usage:
+
+     HairEyeColor
+     
+Format:
+
+     A 3-dimensional array resulting from cross-tabulating 592
+     observations on 3 variables.  The variables and their levels are
+     as follows:
+
+       No  Name  Levels                    
+        1  Hair  Black, Brown, Red, Blond  
+        2  Eye   Brown, Blue, Hazel, Green 
+        3  Sex   Male, Female              
+      
+Details:
+
+     The Hair x Eye table comes from a survey of students at the
+     University of Delaware reported by Snee (1974).  The split by
+     ‘Sex’ was added by Friendly (1992a) for didactic purposes.
+
+     This data set is useful for illustrating various techniques for
+     the analysis of contingency tables, such as the standard
+     chi-squared test or, more generally, log-linear modelling, and
+     graphical methods such as mosaic plots, sieve diagrams or
+     association plots.
+
+Source:
+
+     <URL:
+     http://euclid.psych.yorku.ca/ftp/sas/vcd/catdata/haireye.sas>
+
+     Snee (1974) gives the two-way table aggregated over ‘Sex’.  The
+     ‘Sex’ split of the ‘Brown hair, Brown eye’ cell was changed to
+     agree with that used by Friendly (2000).
+
+References:
+
+     Snee, R. D. (1974).  Graphical display of two-way contingency
+     tables.  _The American Statistician_, *28*, 9-12.  doi:
+     10.2307/2683520 (URL: http://doi.org/10.2307/2683520).
+
+```
+
+----------------
+
+```{r show_he, echo=FALSE}
+HairEyeColor
+```
+
+---------------
+
+```{r melt_he}
+haireye <- as.data.frame(HairEyeColor)
+names(haireye) <- tolower(names(haireye))
+names(haireye)[names(haireye) == "freq"] <- "number"
+haireye
+```
+
+## 
+
+*Questions:* 
+
+1. Are hair and eye color independent in this sample?
+2. Do hair and eye color proportions differ by sex?
+
+
+
+# Method 2: Permutation
+
+## recall the $p$-value
+
+(definition here)
+
+. . .
+
+A permutation test *estimates* the "probability ... under the model" part.
+
+. . .
+
+We still need the other stuff.
+
+##
+
+First, "individualize" the data:
+```{r long_data}
+long_haireye <- haireye[rep(1:nrow(haireye), haireye$number), 
+                        c("hair", "eye", "sex")]
+stopifnot(nrow(long_haireye) == sum(haireye$number))
+long_haireye
+```
+
+##
+
+Compute the chi-squared statistic with `chisq.test( )`:
+```{r do_chisq2, warning=FALSE}
+he_tab <- table(long_haireye[long_haireye$sex == 'Female', 1:2])
+csq <- chisq.test(he_tab)
+str(csq)
+```
+
+##  Are hair and eye independent, given sex?
+
+```{r test_stat, warning=FALSE}
+true_val <- 0
+for (s in levels(long_haireye$sex)) {
+    true_val <- (true_val + 
+        with(subset(long_haireye, sex==s), 
+                chisq.test(table(hair, eye))$statistic))
+}
+```
+
+## Permutations:
+
+```{r perm_test, warning=FALSE}
+nperm <- 1000
+chisq_perm <- rep(0, nperm)
+for (k in 1:nperm) {
+    for (s in levels(long_haireye$sex)) {
+        fake <- subset(long_haireye, sex == s)
+        fake$eye <- sample(fake$eye)
+        chisq_perm[k] <- chisq_perm[k] + chisq.test(table(fake$eye, fake$hair))$statistic
+    }
+}
+```
+
+## Result:
+
+```{r plot_perms, echo=FALSE}
+hist(chisq_perm, breaks=40, xlab=expression(chi^2), xlim=c(0, 1.2 * true_val), main='bootstrap distribution of chi-squared value')
+abline(v=true_val, col='red', lwd=2)
+legend("topright", lty=1, col=2, lwd=2, legend="true value")
+```
+
+## Conclusion?
+
+(What did we actually test?)
+
+
+## Your turn:
+
+Use a permutation test to assess
+whether the relation between hair and eye color differs by sex.
+
+

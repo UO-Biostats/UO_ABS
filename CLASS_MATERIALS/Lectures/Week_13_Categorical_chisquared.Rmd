@@ -1,0 +1,280 @@
+---
+title: "Categorical data and the chi-squared test"
+author: "Peter Ralph"
+date: "21 January 2020 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(matrixStats)
+options(digits=2)
+```
+
+
+# Categorical data
+
+## Hair and Eye color
+
+```{r hair_eye_data}
+data(HairEyeColor)
+```
+```
+HairEyeColor             package:datasets              R Documentation
+
+Hair and Eye Color of Statistics Students
+
+Description:
+
+     Distribution of hair and eye color and sex in 592 statistics
+     students.
+
+Usage:
+
+     HairEyeColor
+     
+Format:
+
+     A 3-dimensional array resulting from cross-tabulating 592
+     observations on 3 variables.  The variables and their levels are
+     as follows:
+
+       No  Name  Levels                    
+        1  Hair  Black, Brown, Red, Blond  
+        2  Eye   Brown, Blue, Hazel, Green 
+        3  Sex   Male, Female              
+      
+Details:
+
+     The Hair x Eye table comes from a survey of students at the
+     University of Delaware reported by Snee (1974).  The split by
+     ‘Sex’ was added by Friendly (1992a) for didactic purposes.
+
+     This data set is useful for illustrating various techniques for
+     the analysis of contingency tables, such as the standard
+     chi-squared test or, more generally, log-linear modelling, and
+     graphical methods such as mosaic plots, sieve diagrams or
+     association plots.
+
+Source:
+
+     <URL:
+     http://euclid.psych.yorku.ca/ftp/sas/vcd/catdata/haireye.sas>
+
+     Snee (1974) gives the two-way table aggregated over ‘Sex’.  The
+     ‘Sex’ split of the ‘Brown hair, Brown eye’ cell was changed to
+     agree with that used by Friendly (2000).
+
+References:
+
+     Snee, R. D. (1974).  Graphical display of two-way contingency
+     tables.  _The American Statistician_, *28*, 9-12.  doi:
+     10.2307/2683520 (URL: http://doi.org/10.2307/2683520).
+
+```
+
+----------------
+
+```{r show_he, echo=FALSE}
+HairEyeColor
+```
+
+---------------
+
+```{r melt_he}
+haireye <- as.data.frame(HairEyeColor)
+names(haireye) <- tolower(names(haireye))
+names(haireye)[names(haireye) == "freq"] <- "number"
+haireye
+```
+
+## 
+
+*Questions:* 
+
+1. Are hair and eye color independent in this sample?
+2. Do hair and eye color proportions differ by sex?
+
+
+## Independence and multiplicativity
+
+If hair and eye color are *independent*,
+then probabilities of combinations are *multiplicative*:
+
+$$\begin{aligned}
+    &\P\{\text{black hair and blue eyes}\} \\
+    &\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\given\text{black hair}\} \\
+\end{aligned}$$
+
+. . .
+
+which if independent is
+$$\begin{aligned}
+    &\hphantom{\P\{\text{black hair and blue eyes}\}} \\
+    &\qquad =
+        \P\{\text{black hair}\} \times \P\{\text{blue eyes}\}
+\end{aligned}$$
+
+
+## Multiplicativity
+
+A model of *independence* will have a *multiplicative* form:
+$$
+    p_{ab} = p_a \times p_b .
+$$
+
+
+
+# The chi-squared statistic
+
+##
+
+Let's start by looking at *just* hair and eye color,
+summing over sex:
+```{r nosex}
+(haireye_2d <- HairEyeColor[,,"Male"] + HairEyeColor[,,"Female"])
+```
+
+## Some questions
+
+In this dataset...
+
+1. What proportion have blonde hair?
+2. What proportion have blue eyes?
+3. If hair and eye color assort independently,
+   what proportion do you expect to have both blonde hair and blue eyes?
+   How many people would this be?
+4. How many *actually* have both?
+   Is this difference surprising?
+5. Do the same for black hair and green eyes.
+
+## "Expected" counts
+
+Let
+$$\begin{aligned}
+    n_{ij} &= (\text{observed}_{ij}) \\
+        &=(\text{observed number with hair $i$ and eye $j$}) \\
+    E_{ij} &= (\text{expected}_{ij}) \\
+          &=(\text{total number})
+                \times(\text{proportion with hair $i$}) \\
+          &\qquad  \times (\text{proportion with eye $j$}) \\
+          &= n
+            \times \left(\frac{n_{i\cdot}}{n}\right)
+            \times \left(\frac{n_{\cdot j}}{n}\right) .
+\end{aligned}$$
+
+Here $n_{i \cdot}$ 
+and $n_{\cdot j}$ are the *row* and *column sums*.
+
+## 
+
+We want to quantify how different the *observed* and *expected* are,
+inversely weighted by their *noisiness*:
+$$\begin{aligned}
+    \sum_{ij} \left( \frac{ (\text{observed})_{ij} - (\text{expected})_{ij} }{ \SE[\text{observed}_{ij}] } \right)^2 
+\end{aligned}$$
+
+. . .
+
+So, what is $\SE[\text{observed}_{ij}]$?
+
+## What is $\SE[\text{observed}_{ij}]$?
+
+Under the model of independence,
+$$\begin{aligned}
+    n_{ij} &\sim \Binom(n, p_i q_j) , \\
+    \text{where}\quad
+    p_i &= (\text{prob of hair color $i$}) \\
+    q_j &= (\text{prob of eye color $j$}) .
+\end{aligned}$$
+
+. . .
+
+So,
+$$\begin{aligned}
+    \sd[n_{ij}] = \sqrt{ n p_i q_j (1 - p_i q_j) } ,
+\end{aligned}$$
+
+. . .
+
+... and so how about this
+$$\begin{aligned}
+    \SE[n_{ij}] 
+        &\approx \sqrt{ n p_i q_j } \\
+        &= \sqrt{(\text{expected}_{ij})} \qquad \ldots?
+\end{aligned}$$
+
+## The chi-squared statistic
+
+$$\begin{aligned}
+\chi^2 &=
+    \sum_{ij} \frac{ \left((\text{observed})_{ij} - (\text{expected})_{ij} \right)^2 }{ (\text{expected})_{ij} } .
+\end{aligned}$$
+
+i.e., "observed minus expected squared, divided by expected".
+
+. . . 
+
+This gives us a number. What does it mean?
+
+
+# Chi-squared test for independence
+
+## A chi-squared test
+
+```{r chisq_test}
+chisq.test(haireye_2d)
+```
+
+. . .
+
+Um, ok? Hair and eye color are not independent?
+
+## More context
+
+Let's actually look at "observed minus expected":
+
+```{r obsmexp, echo=1:2}
+haireye_exp <- 0 * haireye_2d
+haireye_exp[] <- ( rowSums(haireye_2d)[row(haireye_exp)]
+                  * colSums(haireye_2d)[col(haireye_exp)]
+                  / sum(haireye_2d) )
+haireye_exp
+```
+
+##
+
+:::: {.columns}
+::::::::: {.column width="50%"}
+
+Observed minus expected:
+```{r ome, echo=FALSE}
+(haireye_2d - haireye_exp)
+```
+
+::::
+::::::::: {.column width="50%"}
+
+Normalized by $\sqrt{\text{expected}}$:
+```{r omes, echo=FALSE}
+((haireye_2d - haireye_exp) / sqrt(haireye_exp))
+```
+
+::::
+:::::::::
+
+## Conclusions?
+
+
+## What about by sex?
+
+Compute the chi-squared statistic with `chisq.test( )`:
+```{r do_chisq}
+chisq.test(HairEyeColor[,,"Female"])
+```
+
