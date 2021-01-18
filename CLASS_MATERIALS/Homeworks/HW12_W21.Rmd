@@ -193,7 +193,7 @@ segments(x0=lambda_results$lambda,
 points(lambda_results$lambda, lambda_results[["50%"]], pch=20, cex=2)
 abline(0,1)
 legend("topleft", pch=c(20, NA, NA), lty=c(NA, 1, 1), lwd=c(NA, 1, 2), col=c("black", "black", "red"),
-       legend=c("posterior median", "posterior 50%", "posterior 95%"))
+       legend=c("posterior median", "95% CI", "50% CI"))
 ```
 
 ```{r check_gamma_inference, cache=TRUE, dependson="thestan"}
@@ -229,7 +229,7 @@ segments(x0=gamma_results$gamma,
 points(gamma_results$gamma, gamma_results[["50%"]], pch=20, cex=2)
 abline(0,1)
 legend("topleft", pch=c(20, NA, NA), lty=c(NA, 1, 1), lwd=c(NA, 1, 2), col=c("black", "black", "red"),
-       legend=c("posterior median", "posterior 50%", "posterior 95%"))
+       legend=c("posterior median", "95% CI", "50% CI"))
 ```
 
 

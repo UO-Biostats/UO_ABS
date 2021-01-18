@@ -277,7 +277,7 @@ segments(x0=lambda_results$lambda,
 points(lambda_results$lambda, lambda_results[[&quot;50%&quot;]], pch=20, cex=2)
 abline(0,1)
 legend(&quot;topleft&quot;, pch=c(20, NA, NA), lty=c(NA, 1, 1), lwd=c(NA, 1, 2), col=c(&quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
-       legend=c(&quot;posterior median&quot;, &quot;posterior 50%&quot;, &quot;posterior 95%&quot;))</code></pre>
+       legend=c(&quot;posterior median&quot;, &quot;95% CI&quot;, &quot;50% CI&quot;))</code></pre>
 <pre class="r"><code>gamma_vals &lt;- seq(0.3, 0.5, length.out=19)
 gamma_results &lt;- data.frame(gamma=gamma_vals)
 for (x in summary_names) { gamma_results[[x]] &lt;- NA }
@@ -310,7 +310,7 @@ segments(x0=gamma_results$gamma,
 points(gamma_results$gamma, gamma_results[[&quot;50%&quot;]], pch=20, cex=2)
 abline(0,1)
 legend(&quot;topleft&quot;, pch=c(20, NA, NA), lty=c(NA, 1, 1), lwd=c(NA, 1, 2), col=c(&quot;black&quot;, &quot;black&quot;, &quot;red&quot;),
-       legend=c(&quot;posterior median&quot;, &quot;posterior 50%&quot;, &quot;posterior 95%&quot;))</code></pre>
+       legend=c(&quot;posterior median&quot;, &quot;95% CI&quot;, &quot;50% CI&quot;))</code></pre>
 <pre class="r"><code># ok the real data now
 pp_fit &lt;- sampling(pp_model,
                    data=list(N=nrow(MF),
