@@ -36,11 +36,11 @@ Week 13 (*1/18*)
 
 : Categorical data: chi-square for contingency tables, permutation tests.
 
-    - slides: [The chi-squared test for categorical data](Week_13_Categorical_chisquared.slides.html)
-    - slides: [Permutation testing for categorical data](Week_13_Categorical_permutation.slides.html)
-    - slides: [Poisson models for categorical data (using brms)](Week_13_Categorical_brms.slides.html)
-    - slides: [The chi-squared distribution](Week_13_Chi_squared.slides.html)
-    - [Homework 13](HW13_W21.html) *(group homework, due 1/27)*
+    - slides: [The chi-squared test for categorical data](../CLASS_MATERIALS/Lectures/Week_13_Categorical_chisquared.slides.html)
+    - slides: [Permutation testing for categorical data](../CLASS_MATERIALS/Lectures/Week_13_Categorical_permutation.slides.html)
+    - slides: [Poisson models for categorical data (using brms)](../CLASS_MATERIALS/Lectures/Week_13_Categorical_brms.slides.html)
+    - slides: [The chi-squared distribution](../CLASS_MATERIALS/Lectures/Week_13_Chi_squared.slides.html)
+    - [Homework 13](../CLASS_MATERIALS/Homeworks/HW13_W21.html) *(group homework, due 1/27)*
     - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
         chapter 24 (Poisson, contingency tables)
 
