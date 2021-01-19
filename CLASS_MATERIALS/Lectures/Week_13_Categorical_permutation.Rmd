@@ -104,15 +104,19 @@ haireye
 
 ## recall the $p$-value
 
-(definition here)
+. . .
+
+... is the probability of seeing something at least as extreme as what we saw in the data,
+if the null hypothesis (model) is true.
 
 . . .
 
-A permutation test *estimates* the "probability ... under the model" part.
+A permutation test *estimates* the "probability ... under the null hypothesis" part.
 
 . . .
 
-We still need the other stuff.
+- "the null hypothesis" is that *hair and eye color are independent*.
+- we can use... the chi-squared statistic for "at least as extreme"?
 
 ##
 
