@@ -190,43 +190,4 @@ To do this, we'll:
 
 3. Compare the observed value to the distribution under permutations from (2).
 
-## Compute the test statistic
 
-```{r compute_stat}
-female_freqs <- with(subset(long_haireye, sex=="Female"), table(eye, hair)) / sum(long_haireye$sex == "Female")
-male_freqs <- with(subset(long_haireye, sex=="Male"), table(eye, hair)) / sum(long_haireye$sex == "Male")
-ssd <- sum( (female_freqs - male_freqs)^2 )
-```
-
-## Do the same thing after permuting `sex`
-
-```{r do_perms}
-nperms <- 1000
-perm_ssd <- rep(NA, nperms)
-for (j in 1:nperms) {
-    sex_shuffled <- sample(long_haireye$sex)
-    female_freqs <- with(subset(long_haireye, sex_shuffled=="Female"), table(eye, hair)) / sum(long_haireye$sex == "Female")
-    male_freqs <- with(subset(long_haireye, sex_shuffled=="Male"), table(eye, hair)) / sum(long_haireye$sex == "Male")
-    perm_ssd[j] <- sum( (female_freqs - male_freqs)^2 )
-}
-```
-
-## Compare
-
-```{r compareit}
-hist(perm_ssd, xlim=range(perm_ssd, ssd), xlab='test statistic', main='distribution under permutations')
-abline(v=ssd, col='red')
-```
-
-## Conclusions
-
-We found that the observed value of the test statistic
-(the sum of squared differences in hair/eye color combinations)
-fell well within the range of the bootstrap distribution
-(the distribution of values obtained after permuting sex).
-
-We don't have good evidence that the distribution of hair & eye color combinations
-differs between males and females (permutation p-value `r mean(perm_ssd > ssd)`).
-
-**TODO:** report how *big* the observed differences acutally are, since that gives
-a good idea of how big any real differences might be, if there are any.

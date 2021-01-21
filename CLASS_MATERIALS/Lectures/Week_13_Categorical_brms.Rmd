@@ -134,7 +134,7 @@ haireye
 *Questions:* 
 
 1. Are hair and eye color independent in this sample?
-2. Do hair and eye color proportions differ by sex?
+2. Do hair and eye color proportions differ by gender?
 
 
 # Poisson models for count data
@@ -200,7 +200,7 @@ $$\begin{aligned}
 
 -------------------
 
-For example, the *proportion of brown-haired people who have blue eyes* is
+For example, the *proportion of black-haired people who have blue eyes* is
 $$\begin{aligned}
    & \P\left(\text{ eye blue } \given \text{ hair black } \right) \\
    &\qquad =
@@ -218,6 +218,13 @@ $$\begin{aligned}
     + \lambda_{\text{hazel},\text{black}}
     + \lambda_{\text{green},\text{black}}
    }
+\end{aligned}$$
+
+. . . 
+
+*Question:* What's
+$$\begin{aligned}
+   \P\left(\text{ male } \given \text{ hair black } \right) = ?
 \end{aligned}$$
 
 
@@ -242,12 +249,24 @@ $$\begin{aligned}
         \P\{\text{black hair}\} \times \P\{\text{blue eyes}\}
 \end{aligned}$$
 
+. . .
+
+In shorthand,
+$$\begin{aligned}
+   p_{ij} = p_i \times p_j . 
+\end{aligned}$$
 
 ## Additivity and independence
 
-We're using a *log link function*, so additivity corresponds to independence:
+If we use a *log link function*, additivity corresponds to independence:
 $$\begin{aligned}
     p_{ij}
+    &=
+        \frac{
+        \lambda_{ij}
+        }{
+        \sum_{ab} \lambda_{ab}
+        } \\
     &=
         \frac{
         e^{\beta_i + \gamma_j}
@@ -339,11 +358,11 @@ mcmc_plot(he_fit, pars="b_hair.*:eye.*")
 *Questions:* 
 
 1. Are hair and eye color independent in this sample?
-2. Do hair and eye color proportions differ by sex?
+2. Do hair and eye color proportions differ by gender?
 
 ## *Are hair and eye color independent in this sample?*
 
-(What do we mean: given sex? averaged across sex?)
+(What do we mean: given gender? averaged across gender?)
 
 Recall the "reference" levels are
 hair = `r levels(haireye$hair)[1]`
@@ -373,7 +392,7 @@ get_post_props(he_fit, "hair", "eye") %>% group_by(hair, eye) %>%
 
 
 
-## *Do hair and eye color proportions differ by sex?*
+## *Do hair and eye color proportions differ by gender?*
 
 ```{r bysex1, echo=FALSE}
 # conditional_effects(he_fit, effects="eye:sex")
