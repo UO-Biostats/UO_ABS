@@ -190,4 +190,64 @@ To do this, we'll:
 
 3. Compare the observed value to the distribution under permutations from (2).
 
+## Compute the test statistic
+
+```{r test_stat3}
+male_freqs <- with(subset(long_haireye, sex=="Male"), table(hair, eye)) / sum(long_haireye$sex == "Male")
+female_freqs <- with(subset(long_haireye, sex=="Female"), table(hair, eye)) / sum(long_haireye$sex == "Female")
+stopifnot(sum(male_freqs) == 1)
+stopifnot(sum(female_freqs) == 1)
+ssd <- sum( (male_freqs - female_freqs)^2 )
+```
+
+## Shuffle up sex
+
+```{r shuffle}
+nperms <- 1000
+shuffled_ssd <- rep(NA, nperms)
+for (k in 1:1000) {
+    shuffled_sex <- sample(long_haireye$sex)
+    stopifnot(sum(shuffled_sex == "Male") == sum(long_haireye$sex == "Male"))
+    male_freqs <- with(subset(long_haireye, shuffled_sex=="Male"), table(hair, eye)) / sum(long_haireye$sex == "Male")
+    female_freqs <- with(subset(long_haireye, shuffled_sex=="Female"), table(hair, eye)) / sum(long_haireye$sex == "Female")
+    stopifnot(sum(male_freqs) == 1)
+    stopifnot(sum(female_freqs) == 1)
+    shuffled_ssd[k] <- sum( (male_freqs - female_freqs)^2 )
+}
+```
+
+## Compare
+
+```{r compare_perms}
+hist(shuffled_ssd, xlim=range(shuffled_ssd, ssd), xlab="sum of squared differences in proportion", main='')
+abline(v=ssd, col='red', lwd=2)
+```
+
+## Conclude
+
+```{r test_stat2, echo=FALSE}
+male_freqs <- with(subset(long_haireye, sex=="Male"), table(hair, eye)) / sum(long_haireye$sex == "Male")
+female_freqs <- with(subset(long_haireye, sex=="Female"), table(hair, eye)) / sum(long_haireye$sex == "Female")
+stopifnot(sum(male_freqs) == 1)
+stopifnot(sum(female_freqs) == 1)
+mad_prop <- mean(abs(male_freqs - female_freqs))
+```
+
+It appears that the hair and eye color frequencies differ between the sexes:
+the mean absolute difference in proportions is `r mad_prop * 100`%
+($p$-value of `r mean(shuffled_ssd > ssd)`, permutation test).
+This is mostly due to the proportion of blond hair/blue eyes being
+`r (female_freqs - male_freqs)["Blond", "Blue"] * 100`% larger in females
+than males, and correspondingly, brown hair and blue eyes being
+`r (female_freqs - male_freqs)["Brown", "Blue"] * 100`% smaller in females than males - maybe because of dyed hair?
+
+
+*Methods:* To test for a difference in hair and eye color proportions between
+genders, we did a permutation test, using the sum of squared differences
+of hair and eye color combination proprotions as a test statistic,
+and doing 1,000 random reassignments of gender to the `r nrow(long_haireye)`
+respondants.
+
+
+
 
