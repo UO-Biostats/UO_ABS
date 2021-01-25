@@ -46,22 +46,20 @@ Week 13 (*1/18*)
 
 Week 14 (*1/25*)
 
-: Categorical prediction; crossvalidation for model comparison.
+: Crossvalidation for model comparison; sparsifying priors and variable selection
 
-    - Reading: Kruschke, chapter 22 (softmax regression)
+    - Reading: Kruschke, chapters 17 (one-variable linear models), 18 (multivariate linear models)
 
 Week 15 (*2/1*)
 
-: Many dimensions: Sparsifying priors and variable selection.
-
-    - Reading: Kruschke, chapters 17 (one-variable linear regression), 18 (multivariate linear regression)
-
-Week 16 (*2/8*)
-
-: Many response variables; data analysis example (cream cheese)
+: Many response variables
 
     - [Primer on linear algebra](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.html)
     - [Rmd file for the primer](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.Rmd)
+
+Week 16 (*2/8*)
+
+: Data analysis example
 
 Week 17 (*2/15*)
 
