@@ -1,5 +1,5 @@
 ---
-title: "Crossvalidation and overfitting"
+title: "Overfitting, crossvalidation, and sparsification"
 author: "Peter Ralph"
 date: "26 January 2021 -- Advanced Biological Statistics"
 ---
@@ -37,15 +37,6 @@ library(lars)
 
 # Prediction
 
-##
-
-![is it Christmas? No. (99.73% accurate)](images/xkcd_prediction.png)
-
-::: {.caption}
-https://xkcd.com/2236/
-:::
-
-
 ## Out-of-sample prediction
 
 To test predictive ability (and diagnose overfitting!):
@@ -57,6 +48,15 @@ To test predictive ability (and diagnose overfitting!):
 . . .
 
 If you do this a lot of times, it's called *crossvalidation*.
+
+
+##
+
+![is it Christmas? No. (99.73% accurate)](images/xkcd_prediction.png)
+
+::: {.caption}
+https://xkcd.com/2236/
+:::
 
 
 # Overfitting: when you have too much information
@@ -140,11 +140,11 @@ cor(cbind(diabetes$x, y=diabetes$y))
 
 First let's split the data into testing and training just once:
 ```{r split_data}
-test_indices <- (rbinom(length(diabetes$y), size=1, prob=0.2) == 1)
-test_d <- cbind(data.frame(y=diabetes$y[test_indices]),
-                diabetes$x2[test_indices,])
-training_d <- cbind(data.frame(y=diabetes$y[!test_indices]),
-                diabetes$x2[!test_indices,])
+test_observations <- (rbinom(nrow(diabetes), size=1, prob=0.2) == 1)
+test_d <- cbind(data.frame(y=diabetes$y[test_observations]),
+                diabetes$x2[test_observations,])
+training_d <- cbind(data.frame(y=diabetes$y[!test_observations]),
+                diabetes$x2[!test_observations,])
 ```
 
 ## Ordinary least squares
@@ -159,6 +159,8 @@ summary(ols)
 ```{r crossval_ols}
 ols_pred <- predict(ols, newdata=test_d)
 ols_mse <- sqrt(mean((ols_pred - test_d$y)^2))
+c(train=sqrt(mean(resid(ols)^2)),
+  test=ols_mse)
 ```
 With ordinary linear regression, we got a root-mean-square-prediction-error of `r ols_mse` (on the *test* data),
 compared to a root-mean-square-error of `r sqrt(mean(resid(ols)^2))` for the *training* data.
@@ -169,11 +171,11 @@ This suggests there's some overfitting going on.
 
 ------------
 
-```{r plot_ols, echo=-1}
+```{r plot_ols, echo=-1, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
 layout(t(1:2))
-plot(training_d$y, predict(ols), xlab="true values", ylab="OLS predicted", main="training data", pch=20)
+plot(training_d$y, predict(ols), xlab="true values", ylab="OLS predicted", main="training data", pch=20, asp=1)
 abline(0,1)
-plot(test_d$y, ols_pred, xlab="true values", ylab="OLS predicted", main="test data", pch=20)
+plot(test_d$y, ols_pred, xlab="true values", ylab="OLS predicted", main="test data", pch=20, asp=1)
 abline(0,1)
 ```
 
@@ -188,7 +190,7 @@ $$\begin{aligned}
 \end{aligned}$$
 
 
-# Crossvalidation: the effect of spurious variables
+# Overfitting: the effect of spurious variables
 
 ## Who says we don't do experiments?
 
@@ -199,7 +201,7 @@ $$\begin{aligned}
 
 ## Basic data: $y = a + b_1 x_1 + b_2 x_2 + \epsilon$.
 
-```{r in_class1, echo=-1}
+```{r in_class1, echo=-1, cache=TRUE}
 set.seed(23)
 N <- 500
 df <- data.frame(x1 = rnorm(N),
@@ -207,7 +209,7 @@ df <- data.frame(x1 = rnorm(N),
 params <- list(intercept = 2.0,
                x1 = 7.0,
                x2 = -8.0,
-               sigma = 0.1 * 10)
+               sigma = 1)
 pred_y <- params$intercept + params$x1 * df$x1 + params$x2 * df$x2 
 df$y <- rnorm(N, mean=pred_y, sd=params$sigma)
 pairs(df)
@@ -215,7 +217,7 @@ pairs(df)
 
 ## Crossvalidation error function
 
-```{r in_class2}
+```{r in_class2, cache=TRUE}
 kfold <- function (K, df) {
     Kfold <- sample(rep(1:K, nrow(df)/K))
     results <- data.frame(test_error=rep(NA, K), train_error=rep(NA, K))
@@ -232,7 +234,7 @@ kfold <- function (K, df) {
 
 ## Add spurious variables
 
-```{r in_class3, cache=TRUE}
+```{r in_class3, cache=TRUE, dependson=c("in_class1", "in_class2")}
 max_M <- 300  # max number of spurious variables
 noise_df <- matrix(rnorm(nrow(df) * (max_M-2)), nrow=nrow(df))
 colnames(noise_df) <- paste0('z', 1:ncol(noise_df))
