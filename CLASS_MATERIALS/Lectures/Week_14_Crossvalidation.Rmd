@@ -356,6 +356,18 @@ for (u in sdvals) {
 3. Gets you a prior that is more peaked at zero and flatter otherwise.
 
 
+## A strongly sparsifying prior
+
+
+The "horseshoe":
+
+$$\begin{aligned}
+    \beta_j &\sim \Normal(0, \lambda_j) \\
+    \lambda_j &\sim \Cauchy(0, \tau) \\
+    \tau &\sim \Unif(0, 1) 
+\end{aligned}$$
+
+
 # Application
 
 ## The plan
@@ -381,10 +393,6 @@ brms_ols <- brm(y ~ ., data=xy, family=gaussian(link='identity'))
 ```{r do_brms_hs, cache=TRUE}
 brms_hs <- brm(y ~ ., data=xy, family=gaussian(link='identity'), 
                prior=c(set_prior(horseshoe(), class="b")))
-```
-
-```{r brmcrossval2, cache=TRUE, dependson="do_brms_hs"}
-# (khs <- brms::kfold(brms_hs, K=5))
 ```
 
 ## Crossvalidation error function
