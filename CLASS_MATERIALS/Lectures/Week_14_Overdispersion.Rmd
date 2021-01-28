@@ -69,7 +69,7 @@ cowplot::plot_grid(
 
 ## Posterior predictive ECDF: uh-oh
 
-```{r pp_check, fig.width=3*fig.dim, fig.height=2*fig.dim}
+```{r pp_check, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 pp_check(fit1, type='ecdf_overlay', nsamples=40) + labs(x="order", y="quantile")
 ```
 
@@ -108,16 +108,41 @@ plot(mean_mu, f(count_data$counts, mean_mu), pch=20,
      main="our data", xlab=expression(mu), ylab=expression((X-mu)/sqrt(mu)))
 ```
 
+-----------
+
+```{r thesumm1}
+summary(fit1)
+```
+
+
 # Adding overdispersion
+
+## Add overdispersion
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\exp(\mu_i)) \\
+    \mu_i &\sim \Normal(y_i, \sigma) \\
+    y_i &= a_{g_i} + b \times \text{age}_i + c_{g_i} \times \text{exposure}_i 
+\end{aligned}$$
+
+. . .
+
+is equivalent to
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\exp(y_i)) \\
+    y_i &= a_{g_i} + b \times \text{age}_i + c_{g_i} \times \text{exposure}_i  + \epsilon_i \\
+    \epsilon_i &\sim \Normal(0, \sigma)
+\end{aligned}$$
+
 
 ## Add overdispersion
 
 
 $$\begin{aligned}
-    Z_i &\sim \Poisson(\exp(\mu_i)) \\
-    \mu_i &\sim \Normal(y_i, \sigma) \\
-    y_i &= a_{g_i} + b \times \text{age}_i \\
-    &\qquad {} + c_{g_i} \times \text{exposure}_i 
+    Z_i &\sim \Poisson(\exp(y_i)) \\
+    y_i &= a_{g_i} + b \times \text{age}_i + c_{g_i} \times \text{exposure}_i  + \epsilon_i \\
+    \epsilon_i &\sim \Normal(0, \sigma)
 \end{aligned}$$
 
 ```{r run_odpois, cache=TRUE, dependson=c("load_data")}
@@ -139,7 +164,7 @@ cowplot::plot_grid(
 
 ## Posterior predictive ECDF: much better!
 
-```{r pp_check2, fig.width=3*fig.dim, fig.height=2*fig.dim}
+```{r pp_check2, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
 pp_check(fit2, type='ecdf_overlay', nsamples=40) + labs(x="order", y="quantile")
 ```
 
@@ -173,10 +198,10 @@ The overdispersed model fits better, but *is* it better?
 
 ## The predictions are different:
 
-```{r xval}
+```{r xval, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim}
 pred1 <- predict(fit1)
 pred2 <- predict(fit2)
-plot(pred1[,"Estimate"], pred2[,"Estimate"], xlab='poisson model', ylab='overdispersed poisson')
+plot(pred1[,"Estimate"], pred2[,"Estimate"], xlab='predictions, first model', ylab='predictions, second model', asp=1)
 ```
 
 ## Crossvalidation
@@ -204,11 +229,11 @@ brms_kfold <- function (K, models, xy) {
 
 ---------
 
-```{r do_xval}
+```{r do_xval, cache=TRUE, dependson=c("brms_kfoldfn", "run_simple_pois", "run_odpois")}
 xval_results <- brms_kfold(10, list(poisson=fit1, overdispersed=fit2), count_data)
 ```
 
-----------
+## Which model would you rather use?
 
 ```{r show_brms_xvals, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
 matplot(xval_results[,2:5], type='l', col=rep(1:2, each=2), lty=rep(1:2, 2),
