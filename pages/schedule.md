@@ -48,7 +48,7 @@ Week 14 (*1/25*)
 
 : Crossvalidation for model comparison; sparsifying priors and variable selection
 
-    - slides: [Crossvalidation and overfitting](Week_14_Crossvalidation.slides.html)
+    - slides: [Crossvalidation and overfitting](../CLASS_MATERIALS/Lectures/Week_14_Crossvalidation.slides.html)
     - Reading: Kruschke, chapters 17 (one-variable linear models), 18 (multivariate linear models)
 
 Week 15 (*2/1*)
