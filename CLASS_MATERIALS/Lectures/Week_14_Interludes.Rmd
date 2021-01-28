@@ -1,0 +1,68 @@
+---
+title: "R interlude: indexing"
+author: "Peter Ralph"
+date: "28 January 2021 -- Advanced Biological Statistics"
+---
+
+
+# R interlude
+
+## Indexing with names is good!!
+
+Number of 'high' values:
+```{r naming_things}
+y <- rnorm(1e4)
+# cutoffs:
+x <- c(1, 2, 3)
+sum(y > x[3])
+```
+
+. . .
+
+Wait, let's make more cutoffs:
+```{r naming_things3}
+x <- c(1, 1.5, 2.5, 3)
+sum(y > x[3])
+```
+
+. . . whoops!
+
+##
+
+
+Wait, let's add another level:
+```{r naming_things2}
+x <- c(low=1, "lowish"=1.5, 'highish'=2.5, high=3)
+sum(y > x['high'])
+```
+
+
+## BUT: A warning about factors
+
+```{r warning}
+f <- factor(c('low', 'med', 'high'))
+x <- c(low=1, med=2, high=3)
+```
+
+What is `x[f[3]]`?
+
+. . .
+
+```{r warning2}
+x[f[3]]
+```
+
+## Defensive programming
+
+```{r checkit}
+xf <- x[f]
+stopifnot(all(names(xf) == f))
+```
+
+. . .
+
+```{r checkit2}
+xf <- x[as.character(f)]
+stopifnot(all(names(xf) == f))
+```
+

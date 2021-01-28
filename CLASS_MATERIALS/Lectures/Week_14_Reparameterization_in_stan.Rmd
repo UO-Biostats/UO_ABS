@@ -1,0 +1,278 @@
+---
+title: "Reparameterization in Stan"
+author: "Peter Ralph"
+date: "26 January 2021 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+options(digits=2)
+```
+
+
+```{r helpers, include=FALSE}
+shadecurve <- function (pf, xlim, plot=TRUE, xlab='', ylab='', main='',
+                        border="black", col=adjustcolor(border, 0.25), ...) {
+    x <- seq(xlim[1], xlim[2], length.out=400)
+    mids <- x[-1] - diff(x)/2
+    df <- diff(pf(x, ...))
+    if (plot) { plot(0, type='n', xlim=range(x), ylim=range(df),
+                     main=main, xlab=xlab, ylab=ylab) }
+    polygon(c(mids, x[length(x)], x[1]), c(df, 0, 0), col=col, border=border) 
+}
+```
+
+
+# Sparseness and scale mixtures
+
+
+
+-------------------
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+
+Compare the Normal
+
+$$\begin{aligned}
+    X \sim \Normal(0,1)
+\end{aligned}$$
+
+to the "exponential scale mixture of Normals",
+
+$$\begin{aligned}
+    X &\sim \Normal(0,\sigma) \\
+    \sigma &\sim \Exp(1) .
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+```{r scale_mixtures, fig.width=1.5*fig.dim, echo=FALSE}
+shadecurve(pnorm, xlim=c(-5,5), main='Normal(0,1)')
+sdvals <- qexp(seq(0,1,length.out=10)[-c(1,10)])
+for (u in sdvals) {
+    shadecurve(pnorm, xlim=c(-5,5), sd=u, plot=(u==sdvals[1]), main='Normal(0, Exp(1))')
+}
+```
+
+:::
+::::::::::::::
+
+
+## Implementation
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+
+Note that
+
+$$\begin{aligned}
+    \beta &\sim \Normal(0,\sigma) \\
+    \sigma &\sim \Exp(1) .
+\end{aligned}$$
+
+is equivalent to
+
+$$\begin{aligned}
+    \beta &= \sigma \gamma \\
+    \gamma &\sim \Normal(0,1) \\
+    \sigma &\sim \Exp(1) .
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+```
+parameters {
+    real beta;
+    real<lower=0> sigma;
+}
+model {
+    beta ~ normal(0, sigma);
+    sigma ~ exponential(1);
+}
+```
+
+is equivalent to
+
+```
+parameters {
+    real gamma;
+    real<lower=0> sigma;
+}
+transformed parameters {
+    real beta;
+    beta = gamma * sigma;
+}
+model {
+    gamma ~ normal(0, 1);
+    sigma ~ exponential(1);
+}
+```
+
+The second version **is better** for Stan.
+
+
+:::
+:::::::::::::::
+
+-------------
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+Why is it better?
+
+
+```
+parameters {
+    real beta;
+    real<lower=0> sigma;
+}
+model {
+    beta ~ normal(0, sigma);
+    sigma ~ exponential(1);
+}
+```
+
+In the first, the optimal step size
+*depends on `sigma`*.
+
+```
+parameters {
+    real gamma;
+    real<lower=0> sigma;
+}
+transformed parameters {
+    real beta;
+    beta = gamma * sigma;
+}
+model {
+    gamma ~ normal(0, 1);
+    sigma ~ exponential(1);
+}
+```
+
+
+:::
+::: {.column width="50%"}
+
+```{r sigma_phase, echo=FALSE, fig.width=1.5*fig.dim}
+xx <- seq(0, 0.5, length.out=401)[-1]
+yy <- seq(-4,4,length.out=401)
+xy <- outer(xx, yy, function (x,y) { dnorm(y, sd=x) * dexp(x) })
+image(xx, yy, -log10(xy), xlab="sigma", ylab="beta")
+contour(xx, yy, -log10(xy), add=TRUE)
+xy <- outer(xx, yy, function (x,y) { dnorm(y, sd=1) * dexp(x) })
+image(xx, yy, -log10(xy), xlab="sigma", ylab="gamma")
+contour(xx, yy, -log10(xy), add=TRUE)
+```
+
+:::
+:::::::::::
+
+## A strongly sparsifying prior
+
+
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+The "horseshoe":
+
+$$\begin{aligned}
+    \beta_j &\sim \Normal(0, \lambda_j) \\
+    \lambda_j &\sim \Cauchy(0, \tau) \\
+    \tau &\sim \Unif(0, 1) 
+\end{aligned}$$
+
+:::
+::: {.column width="50%"}
+
+```
+parameters {
+    vector[p] d_beta;
+    vector[p] d_lambda;
+    real<lower=0, upper=1> tau;
+}
+transformed parameters {
+    vector[p] beta;
+    beta = d_beta .* d_lambda * tau;
+}
+model {
+    d_beta ~ normal(0, 1);
+    d_lambda ~ cauchy(0, 1);
+    // tau ~ uniform(0, 1); // uniform
+}
+```
+
+:::
+:::::::::::
+
+## The Cauchy as a scale mixture
+
+Recall that if
+
+$$\begin{aligned}
+    \beta &\sim \Normal(0, 1/\sqrt{\lambda}) \\
+    \lambda &\sim \Gam(1/2, 1/2)
+\end{aligned}$$
+
+then
+
+$$\begin{aligned}
+    \beta &\sim \Cauchy(0, 1).
+\end{aligned}$$
+
+
+# Using the horseshoe
+
+## Regression with a horseshoe prior
+
+Uses a [reparameterization](https://betanalpha.github.io/assets/case_studies/fitting_the_cauchy.html) of the Cauchy as a scale mixture of normals.
+
+
+```{r horseshoe_model, cache=TRUE}
+horseshoe_block <- "
+data {
+    int N;
+    int p;
+    vector[N] y;
+    matrix[N,p] x;
+}
+parameters {
+    real b0;
+    vector[p] d_beta;
+    vector[p] d_a;
+    vector<lower=0>[p] d_b;
+    real<lower=0, upper=1> tau;
+    real<lower=0> sigma;
+}
+transformed parameters {
+    vector[p] beta;
+    vector[N] f;
+    beta = d_beta .* d_a .* sqrt(d_b) * tau;
+    f = b0 + x * beta;
+}
+model {
+    y ~ normal(f, sigma);
+    // HORSESHOE PRIOR:
+    d_beta ~ normal(0, 1);
+    d_a ~ normal(0, 1);
+    d_b ~ inv_gamma(0.5, 0.5);
+    // tau ~ uniform(0, 1); // uniform
+    // priors on noise distribution:
+    sigma ~ normal(0, 10);
+}"
+```
