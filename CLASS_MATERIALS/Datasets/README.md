@@ -62,9 +62,13 @@ A dataset containing information about 5,416 extant mammal species.
 
 - [README](Cream_Cheese/README_and_Data_Analysis_Questions.md)
 
-## Perchlorate
+## Lizard morphology before and after hurricanes
 
-- TODO: what is this?
+- [README](Hurricane_lizards/README.md)
+
+## Nestling morphology and incubation temperature
+
+- [README](Incubation_temperature/README.md)
 
 ## `stickleback_GFvsCV_RNAseq/`
 
@@ -81,6 +85,10 @@ A dataset containing information about 5,416 extant mammal species.
 ## `pipefish_PregVsNonPreg_RNAseq/`
 
 - [README](pipefish_PregVsNonPreg_RNAseq/readme)
+
+## Perchlorate
+
+- TODO: what is this?
 
 ## Galton's parent-child height data:
 
