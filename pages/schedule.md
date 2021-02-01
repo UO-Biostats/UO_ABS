@@ -58,6 +58,8 @@ Week 15 (*2/1*)
 
 : Many response variables
 
+    - slides: [The multivariate normal distribution](../CLASS_MATERIALS/Lectures/Week_15_Multivariate_normal.slides.html)
+    - slides: [Multivariate responses](../CLASS_MATERIALS/Lectures/Week_15_Multivariate_responses.slides.html)
     - [Primer on linear algebra](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.html)
     - [Rmd file for the primer](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.Rmd)
 
