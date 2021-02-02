@@ -58,7 +58,7 @@ $$\begin{aligned}
 
 *Properties:*
 
-1. $X_i \sim \Normal(\mu_i, \sqrt{\Sigma_{i,i]}})$ 
+1. $X_i \sim \Normal(\mu_i, \sqrt{\Sigma_{i,i}})$ 
 
 2. If $\Sigma_{i,j} = 0$ then $X_i$ and $X_j$ are independent.
 
@@ -75,7 +75,7 @@ $$\begin{aligned}
 
 . . .
 
-Then $\E[X] = \E[Y] = 0$ and
+Then $Y$ also has a Normal distribution, and
 $$\begin{aligned}
    \var[X] &= 1, \\
    \var[Y] &= \beta^2 + \sigma^2 \qquad \text{and} \\
@@ -86,7 +86,10 @@ $$\begin{aligned}
 
 so
 $$\begin{aligned}
-    (X, Y) \sim \MVN\left(0,
+    (X, Y) \sim \MVN\left(
+        \begin{bmatrix}
+            0 \\ 0
+        \end{bmatrix}
         \begin{bmatrix}
            1 & \beta \\ 
            \beta & \beta^2 + \sigma^2
@@ -111,7 +114,7 @@ covmat <- cbind(c(1, beta), c(beta, beta^2 + sigma^2))
 ------------------
 
 Let's have a look:
-```{r sim_mvn2, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim}
+```{r sim_mvn2, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=8}
 nobs <- 100000
 beta <- 0.7
 sigma <- 1
