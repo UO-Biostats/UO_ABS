@@ -62,6 +62,7 @@ Week 15 (*2/1*)
     - slides: [Multivariate responses](../CLASS_MATERIALS/Lectures/Week_15_Multivariate_responses.slides.html)
     - [Primer on linear algebra](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.html)
     - [Rmd file for the primer](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.Rmd)
+    - [Homework 14](../CLASS_MATERIALS/Homeworks/HW14_W21.html) *(group homework, due 2/9)*
 
 Week 16 (*2/8*)
 
