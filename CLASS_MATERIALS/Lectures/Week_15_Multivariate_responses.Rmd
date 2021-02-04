@@ -326,9 +326,9 @@ mcmc_intervals(ps,
 mcmc_intervals(ps,
        pars=c(
   paste0("cor_nest__",
-     outer(c("mass6", "tars6", "mass14", "tars14"),
-           c("mass6", "tars6", "mass14", "tars14"),
-           paste, sep="_Intercept__"), "_Intercept")))
+         apply(combn(c("mass6", "tars6", "mass14", "tars14"), 2),
+               2, paste, collapse="_Intercept__"),
+         "_Intercept")))
 ```
 
 ## 4. How correlated are the four measurements, after accounting for other variables?
@@ -338,9 +338,8 @@ mcmc_intervals(ps,
 mcmc_intervals(ps,
        pars=c(
   paste0("rescor__",
-     outer(c("mass6", "tars6", "mass14", "tars14"),
-           c("mass6", "tars6", "mass14", "tars14"),
-           paste, sep="_"))))
+         apply(combn(c("mass6", "tars6", "mass14", "tars14"), 2),
+               2, paste, collapse="__"))))
 ```
 
 # Model comparison
@@ -370,22 +369,41 @@ bm2_kfold <- kfold(bm2, K=5, folds='stratified', group='nest', save_fits=TRUE)
 
 ## Extract out-of-sample predictions
 
+```r
+## DOESN'T WORK?!?!
+kpred1 <- kfold_predict(bm1_kfold)
+kpred2 <- kfold_predict(bm2_kfold)
+```
+
+--------------------
 
 ```{r compare_kfold, cache=TRUE, dependson=c("do_kfold")}
-kresid1 <- lapply(lapply(bm1_kfold$fits[1:5], resid), function (x) x[,"Estimate",])
-kresid2 <- lapply(lapply(bm2_kfold$fits[1:5], resid), function (x) x[,"Estimate",])
+get_rmse <- function (kf) {
+    varnames <- c("mass6", "tars6", "mass14", "tars14")
+    rmse <- expand.grid(variable=varnames,
+                        fold=1:5)
+    rmse$rmse <- NA
+    for (k in 1:5) {
+        oos_indices <- kf$fits[[5+k]]
+        stopifnot(all(oos_indices <= nrow(kf$data)))
+        obs <- kf$data[oos_indices,]
+        oos_data <- data.frame(lapply(kf$data, "[", oos_indices))
+        exp <- predict(kf$fits[[k]], newdata=oos_data)[,"Estimate",]
+        for (vn in varnames) {
+            which_row <- which(rmse$variable == vn & rmse$fold == k)
+            stopifnot(length(which_row) == 1)
+            rmse$rmse[which_row] <- sqrt(mean((obs[,vn] - exp[,vn])^2))
+        }
+    }
+    return(rmse)
+}
+rmse <- rbind(cbind(get_rmse(bm1_kfold), model=1),
+              cbind(get_rmse(bm2_kfold), model=2))
 ```
 
 ## Compute root-mean-squared-error
 
 ```{r get_rmse, echo=FALSE, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
-rmse1 <- as.data.frame.table(sapply(kresid1, function (x) sqrt(colMeans(x^2))))
-names(rmse1) <- c("variable", "fold", "rmse")
-rmse1$model <- 1
-rmse2 <- as.data.frame.table(sapply(kresid2, function (x) sqrt(colMeans(x^2))))
-names(rmse2) <- c("variable", "fold", "rmse")
-rmse2$model <- 2
-rmse <- rbind(rmse1, rmse2)
 plot(as.numeric(rmse$variable) + as.numeric(rmse$model)/3 + as.numeric(rmse$fold)/20 - 0.5 - 2.5/20, rmse$rmse, col=as.numeric(rmse$variable), xaxt='n', xlab='', ylab='RMSE', pch=rmse$model, cex=2)
 abline(v=1:3 + 0.5)
 axis(1, at=1:4, label=levels(rmse$variable))
@@ -393,9 +411,7 @@ legend("topright", pch=c(1,2), legend=c("model 1", "model 2"))
 ```
 
 
-## Conclusion?
+## Conclusions?
 
-Strong support for nest effects:
-(quantify??)
 
 
