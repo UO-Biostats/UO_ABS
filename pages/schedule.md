@@ -68,6 +68,8 @@ Week 16 (*2/8*)
 
 : Data analysis example
 
+    - slides: [Hurricane lizards](../CLASS_MATERIALS/Lectures/Week_16_Hurricane_lizards.slides.html)
+
 Week 17 (*2/15*)
 
 : Factor analysis, dimensionality reduction, and visualization; clustering; PCA, PCoA, MDS, t-SNE, UMAP

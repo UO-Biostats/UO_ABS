@@ -1,5 +1,5 @@
 ---
-title: "Multivariate reponses"
+title: "Multivariate responses"
 author: "Peter Ralph"
 date: "1 February 2021 -- Advanced Biological Statistics"
 ---
