@@ -1,0 +1,85 @@
+---
+title: "Data analysis example: Hurricane lizards"
+author: "Peter Ralph"
+date: "8 February 2021 -- Advanced Biological Statistics"
+---
+
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(brms)
+library(bayesplot)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+options(digits=4)
+options(warnPartialMatchDollar=FALSE) # hush, brms
+```
+
+# Hurricane lizards
+
+##
+
+**Data from:**
+Donihue, C.M., Herrel, A., Fabre, AC. et al. [*Hurricane-induced selection on the morphology of an island lizard.*](https://doi.org/10.1038/s41586-018-0352-3
+) Nature 560, 88–91 (2018).
+
+```
+Anolis scriptus morphology and performance from before and after hurricanes
+
+Lizard morphology data collected from two visits to Pine Cay and Water Cay in
+the Turks and Caicos Islands. Anolis scriptus lizards were surveyed on both
+islands four days before hurricane Irma and again, six weeks later, after the
+islands had been hit by Hurricanes Irma and Maria. We measured morphology and
+performance and found significant differences in the "before" and "after"
+hurricane lizard population morphology. All linear measurements are in MM,
+surface area measurements are in MM2 and force in N. Counts correspond to the
+number of lamellar scales on the forelimb and hind limb toepads.
+```
+
+##
+
+![](images/lizards-desc1.png)
+
+## {data-background-image="images/lizards-islands.png" data-background-size=80% data-background-position=center}
+
+##
+
+![](images/lizards-desc2.png)
+
+##
+
+![](images/lizards-desc3.png)
+
+##
+
+![](images/lizards-methods.png)
+
+##
+
+[../Datasets/Hurricane_lizards/](../Datasets/Hurricane_lizards/README.md)
+
+```{r read_data}
+lizards <- read.csv("../Datasets/Hurricane_lizards/lizards.csv", header=TRUE)
+head(lizards)
+```
+
+# Look at the data
+
+
+# Think about the questions
+
+
+# Fit some models
+
+
+# Look at the results
+
+
+# Describe the results
+
