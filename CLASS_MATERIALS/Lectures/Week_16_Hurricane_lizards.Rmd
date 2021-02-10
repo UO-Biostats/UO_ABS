@@ -62,14 +62,124 @@ number of lamellar scales on the forelimb and hind limb toepads.
 
 ##
 
-[../Datasets/Hurricane_lizards/](../Datasets/Hurricane_lizards/README.md)
+Here's the data: [../Datasets/Hurricane_lizards/](../Datasets/Hurricane_lizards/README.md).
+First we'll read it in, reorder the levels of the Hurricane factor (so that "before" comes before "after"),
+change units on SVL to centimeters so it's on the same scale as the other variables
+(useful below),
+and drop unused variables.
 
 ```{r read_data}
-lizards <- read.csv("../Datasets/Hurricane_lizards/lizards.csv", header=TRUE)
+lizards <- read.csv("../Datasets/Hurricane_lizards/lizards.csv", header=TRUE, stringsAsFactors=TRUE)
+lizards$Hurricane <- factor(lizards$Hurricane, levels=c("Before", "After"))
+lizards$SVL_cm <- lizards$SVL / 10
+lizards <- lizards[,setdiff(names(lizards), c(paste0("FingerArea", 1:3), paste0("ToeArea", 1:3), "SumFingers", "SumToes", "MaxFingerForce", "SVL"))]
 head(lizards)
 ```
 
 # Look at the data
+
+-----------
+
+First, let's have a look at the sample sizes:
+```{r look}
+with(lizards, table(Sex, Origin, Hurricane))
+```
+
+-----------
+
+Our preliminary brainstorming suggested that we simply look at how the means
+(and distributions) of the variables changed.
+(For instance, did all the lizards longer than 50cm get blown away?)
+A good way to visualize this is with some boxplots, separated by
+before/after hurricane and island.
+To do this, we'll first reshape the data frame, making a "long" version.
+```{r plotboxes_setup}
+varnames <- c("SVL_cm", "Femur", "Tibia", "Metatarsal", "LongestToe", "Humerus", 
+    "Radius", "Metacarpal", "LongestFinger", "FingerCount", "ToeCount", 
+    "MeanFingerArea", "MeanToeArea")
+lizards_long <- pivot_longer(lizards, cols=all_of(varnames))
+````
+
+-----------------
+
+```{r plotboxes, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
+(ggplot(lizards_long) + geom_boxplot(aes(x=name, y=value, col=Hurricane))
+    + theme(axis.text.x=element_text(angle=90))
+    + facet_wrap(~ Origin)
+        )
+```
+
+## t-tests
+
+There's nothing super obvious going on there,
+but just to have a look at the differences,
+we could run some $t$ tests (basically, one variable,
+comparing "before" to "after").
+This ignores lots of information we have (e.g., island, sex, other variables...),
+but is a good first step.
+```{r t_tests}
+tt_list <- lapply(varnames, function (varn) {
+        t.test(lizards[[varn]][lizards$Hurricane == "Before"],
+               lizards[[varn]][lizards$Hurricane == "After"])
+    } )
+names(tt_list) <- varnames
+t_results <- data.frame(variable = names(tt_list))
+t_results$statistic <- t_results$p.value <- NA
+for (j in 1:nrow(t_results)) {
+    stopifnot(names(tt_list)[j] == t_results$variable[j])
+    t_results$statistic[j] <- tt_list[[j]][["statistic"]]
+    t_results$p.value[j] <- tt_list[[j]][["p.value"]]
+}
+# adjust p-values for multiple testing
+t_results$adj_p <- p.adjust(t_results$p.value)
+```
+
+-----------------
+
+Here's the results:
+```{r t_results}
+t_results
+```
+
+
+## Results of preliminary one-variable analysis
+
+The overall means of these traits has not shifted a large amount
+as a result of the hurricane: examination of the boxplots (above)
+shows that the distributions, before and after, by island, largely or entirely overlap,
+and the mean values are at most shifted by a small amount (at most 6%, for femur length).
+None of these differences are statistically significant after adjusting
+for multiple corrections; however, this may be due to a lack of power
+(i.e., there may be a difference in trait values of around 5%, but the sample size
+is not sufficient to tell for sure).
+
+
+## Pairwise plots
+
+This maybe should have been our *first* plot - pair plots often let us see a lot more structure,
+and this is no exception. Everything is correlated... with size!
+In class we put these plots in a pdf, to better zoom in.
+Below "black" is the first level in the title, and "red" is the second.
+
+--------------
+
+
+```{r pairs1, echo=FALSE, fig.width=2.5*fig.dim, fig.height=2.5*fig.dim}
+    pairs(lizards[,varnames], col=lizards$Hurricane, pch=20, main='Before/After')
+```
+
+---------------
+
+```{r pairs2, echo=FALSE, fig.width=2.5*fig.dim, fig.height=2.5*fig.dim}
+    pairs(lizards[,varnames], col=lizards$Sex, pch=20, main='Female/Male')
+```
+
+---------------
+
+```{r pairs3, echo=FALSE, fig.width=2.5*fig.dim, fig.height=2.5*fig.dim}
+    pairs(lizards[,varnames], col=lizards$Origin, pch=20, main='Pine/Water Cay')
+```
+
 
 
 # Think about the questions
@@ -77,6 +187,18 @@ head(lizards)
 
 # Fit some models
 
+```{r ttest}
+the_lm <- lm(MeanToeArea ~ Hurricane + SVL, data=lizards)
+summary(the_lm)
+
+plot(MeanToeArea ~ SVL, data=lizards, pch=20, col=Hurricane)
+abline(-4.14327, 0.13654, col='red')
+abline(-4.14327-0.23863, 0.13654)
+```
+
+On average, lizards of the same length after the hurricane
+had toe pad areas 0.24 mm2 larger than before the hurricane
+(SE .04 mm2).
 
 # Look at the results
 
