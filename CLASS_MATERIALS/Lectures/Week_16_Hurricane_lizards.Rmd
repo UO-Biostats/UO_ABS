@@ -488,14 +488,14 @@ post_mean <- rbind(cbind(data.frame(post_mean_array[,"Before",]), Hurricane="Bef
 
 Posterior predictive distribution of responses:
 ```{r plot_brm_mvlm_joint1, fig.width=2.5*fig.dim, fig.height=2.5*fig.dim, cache=TRUE, dependson="brm_mvlm_joint", echo=FALSE}
-pairs(post_pred[,responses], pch=20, cex=0.5, col=ifelse(post_mean$Hurricane == "Before", "black", "red"))
+pairs(post_pred[,responses], pch=20, cex=0.5, col=adjustcolor(ifelse(post_mean$Hurricane == "Before", "black", "red"), 0.2))
 ```
 
 -------------------
 
 Posterior distribution of means:
 ```{r plot_brm_mvlm_joint2, fig.width=2.5*fig.dim, fig.height=2.5*fig.dim, cache=TRUE, dependson="brm_mvlm_joint", echo=FALSE}
-pairs(post_mean[,responses], pch=20, cex=0.5, col=ifelse(post_mean$Hurricane == "Before", "black", "red"))
+pairs(post_mean[,responses], pch=20, cex=0.5, col=adjustcolor(ifelse(post_mean$Hurricane == "Before", "black", "red"), 0.2))
 ```
 
 -------------------
