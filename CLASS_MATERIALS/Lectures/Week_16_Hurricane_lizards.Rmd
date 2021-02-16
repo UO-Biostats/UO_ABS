@@ -203,10 +203,16 @@ For instance, we'd like to say something like:
 
 ## lm
 
+We'll start off with `lm( )` because (a) why not, and (b) to give us a consistency check for later.
+
 ```{r ttest}
 the_lm <- lm(MeanToeArea ~ Hurricane + SVL_cm, data=lizards)
 summary(the_lm)
+```
 
+-------------
+
+```{r plot_tt}
 plot(MeanToeArea ~ SVL_cm, data=lizards, pch=20, col=Hurricane)
 abline(-4.14327, 1.3654, col='red')
 abline(-4.14327-0.23863, 1.3654)
@@ -216,7 +222,12 @@ On average, lizards of the same length after the hurricane
 had toe pad areas 0.24 mm2 larger than before the hurricane
 (SE .04 mm2).
 
-## in brms
+## 
+
+To build out the model better, and to more flexibly query it,
+we'll switch to `brms`.
+We start simple for (a) a consistency check,
+and (b) if bad things happen with more complex models, we can step back and figure out what happened.
 
 ```{r brm_lm, cache=TRUE}
 brm_lm <- brm(MeanToeArea ~ Hurricane + SVL_cm, data=lizards,
@@ -243,7 +254,10 @@ plot_grid(plotlist=plot(
 conditional_effects(brm_lm, effects="SVL_cm:Hurricane")
 ```
 
-------------------
+## Additive effects of other variables
+
+We should consider possible effects of the other factors:
+what if larger toes were just due to higher mortality on the big-toed island?
 
 ```{r brm_lm2, cache=TRUE}
 brm_lm2 <- brm(MeanToeArea ~ Hurricane + SVL_cm + Sex + Origin,
@@ -272,7 +286,13 @@ plot_grid(plotlist=plot(
 conditional_effects(brm_lm2, effects="SVL_cm:Hurricane", conditions=data.frame(Origin=levels(lizards$Origin), cond__=levels(lizards$Origin)))
 ```
 
-------------------
+## Varying slopes
+
+If big toepads were important for big lizards but not so much for small ones,
+that'd change the *slope*, too.
+We might as well allow the slope to vary with the other variables, also?
+(Perhaps we'll regret that...)
+
 
 ```{r brm_lm3, cache=TRUE}
 brm_lm3 <- brm(MeanToeArea ~ SVL_cm * (Hurricane + Sex + Origin),
@@ -288,14 +308,15 @@ summary(brm_lm3)
 
 ------------------
 
-```{r plot_brm_lm3}
+```{r plot_brm_lm3, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
 plot_grid(plotlist=plot(
-        conditional_effects(brm_lm3, plot=FALSE),
+        conditional_effects(brm_lm3, plot=FALSE, effects=c("Hurricane", "Sex", "Origin", paste0("SVL_cm:", c("Hurricane", "Sex", "Origin")))),
     plot=FALSE), nrow=2, ncol=3)
 ```
 
 -------------------
 
+Huh, where's our hurricane effect gone?
 ```{r plot_lines3}
 conditional_effects(brm_lm3, effects="SVL_cm:Hurricane", conditions=data.frame(Origin=levels(lizards$Origin), cond__=levels(lizards$Origin)))
 ```
@@ -303,19 +324,24 @@ conditional_effects(brm_lm3, effects="SVL_cm:Hurricane", conditions=data.frame(O
 ------------------
 
 Don't forget to think about what the reference categories are!!
-```{r plot_lines3x}
+```{r plot_lines3x, fig.width=3*fig.dim, fig.height=2*fig.dim}
 condf <- expand.grid(Origin=levels(lizards$Origin), Sex=levels(lizards$Sex))
 condf$cond__ <- paste(condf$Origin, condf$Sex)
 plot(conditional_effects(brm_lm3, effects="SVL_cm:Hurricane", conditions=condf, plot=FALSE), facet_args=list(ncol=2), points=TRUE)
 ```
 
-## Notes:
+## Going back to the data:
 
-- We have no power to distinguish an effect of sex
-  from a nonlinear effect of SVL
-
+We have no power to distinguish an effect of sex from a nonlinear effect of SVL.
+```{r plot_by_sex, warning=FALSE, echo=FALSE}
+ggplot(lizards, aes(x=SVL_cm, y=MeanToeArea, col=Sex)) + geom_point() + facet_wrap(~Origin)
+```
 
 ------------------
+
+Allowing a nonlinear term on SVL should be equivalent to including sex,
+and be less problematic.
+*(Recall that `I( )` in a formula means "no, really, this thing exactly".)*
 
 ```{r brm_lm4, cache=TRUE}
 brm_lm4 <- brm(MeanToeArea ~ SVL_cm * (Hurricane + Origin) + I(SVL_cm^2),
@@ -331,7 +357,7 @@ summary(brm_lm4)
 
 ------------------
 
-```{r plot_brm_lm4}
+```{r plot_brm_lm4, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
 plot_grid(plotlist=plot(
         conditional_effects(brm_lm4, plot=FALSE, effects=c("Hurricane", "Origin", paste0("SVL_cm:", c("Hurricane", "Origin")))),
     plot=FALSE), nrow=2)
@@ -339,14 +365,44 @@ plot_grid(plotlist=plot(
 
 ------------------
 
-```{r plot_lines4x}
+```{r plot_lines4x, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
 plot(conditional_effects(brm_lm4, effects="SVL_cm:Hurricane", conditions=data.frame(Origin=levels(lizards$Origin), cond__=levels(lizards$Origin)), plot=FALSE), facet_args=list(ncol=2), points=TRUE)
 ```
+
+# Back to the questions
+
+## Goals
+
+- describe how traits differ before/after hurricanes
+- account for confounding factor: overall size
+- also possibly account for differences between islands and sexes
+
+. . .
+
+For instance, we'd like to say something like:
+
+> Remaining male lizards of average size on Pine Cay had toepads that were X% larger by area (95% CI of L-U%).
+> This represents roughly Y standard deviations of toepad area.
+> Toepad area did not differ substantially by island, or by sex after accounting for length.
+
+## 
+
+But, we have twelve variables! What about the rest?
+
+. . .
+
+We *could* do twelve univariate analyses.
+
+. . .
+
+But, what if (say) toe length increases only because it's correlated with toepad area?
 
 
 # Multivariate
 
 ##
+
+Here's the same model, but with all twelve responses.
 
 ```{r brm_mvlm, cache=TRUE}
 brm_mvlm <- brm(
@@ -398,7 +454,22 @@ plot_grid(plotlist=plot(
     plot=FALSE, points=TRUE), nrow=2, ncol=2)
 ```
 
+-------------------
+
+Wait, is "longest toe" different or not?
+
+```{r longtoe, fig.width=3*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+plot_grid(plotlist=c(
+    plot( conditional_effects(brm_mvlm, effects="Hurricane", resp="LongestToe", plot=FALSE), plot=FALSE),
+    plot( conditional_effects(brm_mvlm, effects="SVL_cm:Hurricane", resp="LongestToe", plot=FALSE), points=TRUE, plot=FALSE)
+), nrow=1, ncol=2)
+```
+
 --------------------
+
+For concreteness, let's look at the posterior distribution of SVL=5cm lizards on Pine Cay,
+both (a) the posterior predictive distribution (reflecting variation in the population), and
+(b) the posterior distribution of *mean* measurements (reflecting uncertainty).
 
 ```{r brm_mvlm_joint, cache=TRUE, dependson="brm_mvlm"}
 pred_df <- expand.grid(Origin="Pine Cay", SVL_cm=5, Hurricane=levels(lizards$Hurricane))
@@ -415,18 +486,22 @@ post_mean <- rbind(cbind(data.frame(post_mean_array[,"Before",]), Hurricane="Bef
 
 -------------------
 
-```{r plot_brm_mvlm_joint1, fig.width=3*fig.dim, fig.height=2.5*fig.dim, cache=TRUE, dependson="brm_mvlm_joint", echo=FALSE}
+Posterior predictive distribution of responses:
+```{r plot_brm_mvlm_joint1, fig.width=2.5*fig.dim, fig.height=2.5*fig.dim, cache=TRUE, dependson="brm_mvlm_joint", echo=FALSE}
 pairs(post_pred[,responses], pch=20, cex=0.5, col=ifelse(post_mean$Hurricane == "Before", "black", "red"))
 ```
 
 -------------------
 
-```{r plot_brm_mvlm_joint2, fig.width=3*fig.dim, fig.height=2.5*fig.dim, cache=TRUE, dependson="brm_mvlm_joint", echo=FALSE}
+Posterior distribution of means:
+```{r plot_brm_mvlm_joint2, fig.width=2.5*fig.dim, fig.height=2.5*fig.dim, cache=TRUE, dependson="brm_mvlm_joint", echo=FALSE}
 pairs(post_mean[,responses], pch=20, cex=0.5, col=ifelse(post_mean$Hurricane == "Before", "black", "red"))
 ```
 
 -------------------
 
+Now, we'll summarize that by getting posterior means and 95% credible intervals
+for each of the differences, as a percent of the "before" value.
 ```{r post_table, cache=TRUE, dependson="brm_mvlm"}
 ldf <- na.omit(lizards[,setdiff(colnames(lizards), responses)])
 ldf <- rbind(ldf, ldf)
@@ -456,4 +531,13 @@ segments(x0=post_table[,2], x1=post_table[,3], y0=1:nrow(post_table), col='red')
 points(post_table[,1], 1:nrow(post_table), xlim=range(post_table), pch=20, cex=2)
 axis(2, at=1:nrow(post_table), labels=rownames(post_table), las=2)
 ```
+
+
+# Back to the questions
+
+## Goals
+
+- describe how traits differ before/after hurricanes
+- account for confounding factor: overall size
+- also possibly account for differences between islands and sexes
 
