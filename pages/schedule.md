@@ -78,6 +78,7 @@ Week 17 (*2/15*)
     - slides: [Hurricane lizards, continued](../CLASS_MATERIALS/Lectures/Week_16_Hurricane_lizards.slides.html)
     - slides: [Dimension reduction and PCA](../CLASS_MATERIALS/Lectures/Week_17_Dimension_reduction_and_PCA.slides.html)
     - [Homework 17](../CLASS_MATERIALS/Homeworks/HW17_W21.html) *(due 2/19)*
+    - [Homework 18](../CLASS_MATERIALS/Homeworks/HW18_W21.html) *(due 2/25)*
 
 Week 18 (*2/22*)
 
