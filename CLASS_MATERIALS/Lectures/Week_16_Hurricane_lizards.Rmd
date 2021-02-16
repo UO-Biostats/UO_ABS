@@ -14,6 +14,7 @@ set.seed(23)
 library(tidyverse)
 library(rstan)
 library(brms)
+library(cowplot)
 library(bayesplot)
 library(matrixStats)
 options(mc.cores = parallel::detectCores())
@@ -184,24 +185,275 @@ Below "black" is the first level in the title, and "red" is the second.
 
 # Think about the questions
 
+## Goals
+
+- describe how traits differ before/after hurricanes
+- account for confounding factor: overall size
+- also possibly account for differences between islands and sexes
+
+. . .
+
+For instance, we'd like to say something like:
+
+> Remaining male lizards of average size on Pine Cay had toepads that were X% larger by area (95% CI of L-U%).
+> This represents roughly Y standard deviations of toepad area.
+> Toepad area did not differ substantially by island, or by sex after accounting for length.
 
 # Fit some models
 
+## lm
+
 ```{r ttest}
-the_lm <- lm(MeanToeArea ~ Hurricane + SVL, data=lizards)
+the_lm <- lm(MeanToeArea ~ Hurricane + SVL_cm, data=lizards)
 summary(the_lm)
 
-plot(MeanToeArea ~ SVL, data=lizards, pch=20, col=Hurricane)
-abline(-4.14327, 0.13654, col='red')
-abline(-4.14327-0.23863, 0.13654)
+plot(MeanToeArea ~ SVL_cm, data=lizards, pch=20, col=Hurricane)
+abline(-4.14327, 1.3654, col='red')
+abline(-4.14327-0.23863, 1.3654)
 ```
 
 On average, lizards of the same length after the hurricane
 had toe pad areas 0.24 mm2 larger than before the hurricane
 (SE .04 mm2).
 
-# Look at the results
+## in brms
+
+```{r brm_lm, cache=TRUE}
+brm_lm <- brm(MeanToeArea ~ Hurricane + SVL_cm, data=lizards,
+              prior=set_prior("normal(0, 5)", class="b"))
+```
+
+-----------------
+
+```{r brm_lm1_summary}
+summary(brm_lm)
+```
+
+-------------
+
+```{r plot_brm_lm}
+plot_grid(plotlist=plot(
+                  conditional_effects(brm_lm, plot=FALSE),
+    plot=FALSE), nrow=1, ncol=2)
+```
+
+---------------
+
+```{r plot_lines}
+conditional_effects(brm_lm, effects="SVL_cm:Hurricane")
+```
+
+------------------
+
+```{r brm_lm2, cache=TRUE}
+brm_lm2 <- brm(MeanToeArea ~ Hurricane + SVL_cm + Sex + Origin,
+              data=lizards,               
+              prior=set_prior("normal(0, 5)", class="b"))
+```
+
+-----------------
+
+```{r brm_lm2_summary}
+summary(brm_lm2)
+```
+
+------------------
 
 
-# Describe the results
+```{r plot_brm_lm2}
+plot_grid(plotlist=plot(
+        conditional_effects(brm_lm2, plot=FALSE),
+    plot=FALSE), nrow=2, ncol=2)
+```
+
+-------------------
+
+```{r plot_lines2}
+conditional_effects(brm_lm2, effects="SVL_cm:Hurricane", conditions=data.frame(Origin=levels(lizards$Origin), cond__=levels(lizards$Origin)))
+```
+
+------------------
+
+```{r brm_lm3, cache=TRUE}
+brm_lm3 <- brm(MeanToeArea ~ SVL_cm * (Hurricane + Sex + Origin),
+              data=lizards,               
+              prior=set_prior("normal(0, 5)", class="b"))
+```
+
+-----------------
+
+```{r brm_lm3_summary}
+summary(brm_lm3)
+```
+
+------------------
+
+```{r plot_brm_lm3}
+plot_grid(plotlist=plot(
+        conditional_effects(brm_lm3, plot=FALSE),
+    plot=FALSE), nrow=2, ncol=3)
+```
+
+-------------------
+
+```{r plot_lines3}
+conditional_effects(brm_lm3, effects="SVL_cm:Hurricane", conditions=data.frame(Origin=levels(lizards$Origin), cond__=levels(lizards$Origin)))
+```
+
+------------------
+
+Don't forget to think about what the reference categories are!!
+```{r plot_lines3x}
+condf <- expand.grid(Origin=levels(lizards$Origin), Sex=levels(lizards$Sex))
+condf$cond__ <- paste(condf$Origin, condf$Sex)
+plot(conditional_effects(brm_lm3, effects="SVL_cm:Hurricane", conditions=condf, plot=FALSE), facet_args=list(ncol=2), points=TRUE)
+```
+
+## Notes:
+
+- We have no power to distinguish an effect of sex
+  from a nonlinear effect of SVL
+
+
+------------------
+
+```{r brm_lm4, cache=TRUE}
+brm_lm4 <- brm(MeanToeArea ~ SVL_cm * (Hurricane + Origin) + I(SVL_cm^2),
+              data=lizards,               
+              prior=set_prior("normal(0, 5)", class="b"))
+```
+
+-----------------
+
+```{r brm_lm4_summary}
+summary(brm_lm4)
+```
+
+------------------
+
+```{r plot_brm_lm4}
+plot_grid(plotlist=plot(
+        conditional_effects(brm_lm4, plot=FALSE, effects=c("Hurricane", "Origin", paste0("SVL_cm:", c("Hurricane", "Origin")))),
+    plot=FALSE), nrow=2)
+```
+
+------------------
+
+```{r plot_lines4x}
+plot(conditional_effects(brm_lm4, effects="SVL_cm:Hurricane", conditions=data.frame(Origin=levels(lizards$Origin), cond__=levels(lizards$Origin)), plot=FALSE), facet_args=list(ncol=2), points=TRUE)
+```
+
+
+# Multivariate
+
+##
+
+```{r brm_mvlm, cache=TRUE}
+brm_mvlm <- brm(
+   brmsformula(mvbind(Femur, Tibia, Metatarsal, LongestToe, Humerus,
+                       Radius, Metacarpal, LongestFinger, FingerCount,
+                       ToeCount, MeanFingerArea, MeanToeArea)
+                ~ SVL_cm * (Hurricane + Origin) + I(SVL_cm^2)) + set_rescor(TRUE),
+                data=lizards, prior=set_prior("normal(0, 5)", class="b"))
+```
+
+--------------------
+
+```{r brm_mvlm_summary}
+summary(brm_mvlm)
+```
+
+--------------------
+
+```{r brm_mvlm_ce, fig.width=3*fig.dim, fig.height=2*fig.dim, cache=TRUE, echo=FALSE, dependson="brm_mvlm"}
+responses <- c("Femur", "Tibia", "Metatarsal", "LongestToe", "Humerus", "Radius", 
+               "Metacarpal", "LongestFinger", "FingerCount", "ToeCount",
+               "MeanFingerArea", "MeanToeArea")
+plot_grid(plotlist=plot(
+    conditional_effects(brm_mvlm, effects="Hurricane", resp=responses, plot=FALSE),
+    plot=FALSE), nrow=3, ncol=4)
+```
+
+--------------------
+
+```{r brm_mvlm_ce2, fig.width=3*fig.dim, fig.height=2*fig.dim, cache=TRUE, echo=FALSE, dependson="brm_mvlm"}
+plot_grid(plotlist=plot(
+        conditional_effects(brm_mvlm, effects="SVL_cm:Hurricane", resp=responses[1:4], plot=FALSE),
+    plot=FALSE, points=TRUE), nrow=2, ncol=2)
+```
+
+--------------------
+
+```{r brm_mvlm_ce3, fig.width=3*fig.dim, fig.height=2*fig.dim, cache=TRUE, echo=FALSE, dependson="brm_mvlm"}
+plot_grid(plotlist=plot(
+        conditional_effects(brm_mvlm, effects="SVL_cm:Hurricane", resp=responses[5:8], plot=FALSE),
+    plot=FALSE, points=TRUE), nrow=2, ncol=2)
+```
+
+--------------------
+
+```{r brm_mvlm_ce4, fig.width=3*fig.dim, fig.height=2*fig.dim, cache=TRUE, echo=FALSE, dependson="brm_mvlm"}
+plot_grid(plotlist=plot(
+        conditional_effects(brm_mvlm, effects="SVL_cm:Hurricane", resp=responses[9:12], plot=FALSE),
+    plot=FALSE, points=TRUE), nrow=2, ncol=2)
+```
+
+--------------------
+
+```{r brm_mvlm_joint, cache=TRUE, dependson="brm_mvlm"}
+pred_df <- expand.grid(Origin="Pine Cay", SVL_cm=5, Hurricane=levels(lizards$Hurricane))
+post_pred_array <- posterior_predict(brm_mvlm, newdata=pred_df, resp=responses)
+post_mean_array <- posterior_epred(brm_mvlm, newdata=pred_df, resp=responses)
+dimnames(post_pred_array)[[2]] <- dimnames(post_mean_array)[[2]] <- levels(lizards$Hurricane)
+# distribution of lizard measurements
+post_pred <- rbind(cbind(data.frame(post_pred_array[,"Before",]), Hurricane="Before"),
+                   cbind(data.frame(post_pred_array[,"After",]), Hurricane="After"))
+# posterior distribution of mean lizard measurements
+post_mean <- rbind(cbind(data.frame(post_mean_array[,"Before",]), Hurricane="Before"),
+                   cbind(data.frame(post_mean_array[,"After",]), Hurricane="After"))
+```
+
+-------------------
+
+```{r plot_brm_mvlm_joint1, fig.width=3*fig.dim, fig.height=2.5*fig.dim, cache=TRUE, dependson="brm_mvlm_joint", echo=FALSE}
+pairs(post_pred[,responses], pch=20, cex=0.5, col=ifelse(post_mean$Hurricane == "Before", "black", "red"))
+```
+
+-------------------
+
+```{r plot_brm_mvlm_joint2, fig.width=3*fig.dim, fig.height=2.5*fig.dim, cache=TRUE, dependson="brm_mvlm_joint", echo=FALSE}
+pairs(post_mean[,responses], pch=20, cex=0.5, col=ifelse(post_mean$Hurricane == "Before", "black", "red"))
+```
+
+-------------------
+
+```{r post_table, cache=TRUE, dependson="brm_mvlm"}
+ldf <- na.omit(lizards[,setdiff(colnames(lizards), responses)])
+ldf <- rbind(ldf, ldf)
+ldf$Hurricane <- rep(levels(lizards$Hurricane), each=nrow(ldf)/2)
+pldf <- posterior_epred(brm_mvlm, newdata=ldf, summarise=FALSE)
+diff_ldf <- apply((pldf[,ldf$Hurricane == "After",] - pldf[,ldf$Hurricane == "Before",])/pldf[,ldf$Hurricane == "Before",], c(1,3), mean)
+stopifnot(all(colnames(diff_ldf) == responses))
+post_table <- data.frame("mean difference"=100 * colMeans(diff_ldf),
+                         "lower 95% CI"=100 * colQuantiles(diff_ldf, probs=0.025),
+                         "upper 95% CI"=100 * colQuantiles(diff_ldf, probs=1-0.025),
+                         check.names=FALSE)
+```
+
+-----------------------
+
+```{r show_post_table, echo=FALSE}
+post_table
+```
+
+-----------------------
+
+```{r plot_post_table, echo=FALSE, fig.width=2.5*fig.dim}
+par(mar=c(5,9,1,1)+.1)
+plot(post_table[,1], 1:nrow(post_table), xlim=range(post_table), type='n', yaxt='n', ylab='', xlab='percent difference at SVL=5cm')
+abline(v=0, lty=3)
+segments(x0=post_table[,2], x1=post_table[,3], y0=1:nrow(post_table), col='red')
+points(post_table[,1], 1:nrow(post_table), xlim=range(post_table), pch=20, cex=2)
+axis(2, at=1:nrow(post_table), labels=rownames(post_table), las=2)
+```
 
