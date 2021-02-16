@@ -2,11 +2,16 @@
 title: "Linear Algebra Tutorial"
 author: "Gilia Patterson, adapted from Matt Lukac's slides"
 date: "2/3/2021"
-output: ioslides_presentation
+output: 
+  ioslides_presentation:
+    widescreen: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(plotly)
+library(MASS)
 ```
 
 ## Why learn linear algebra?
@@ -185,3 +190,296 @@ lm_res <- lm(y ~ x - 1)
 lm_res$coefficients
 ```
 
+## The Eigenvalue Equation {.build}
+- If there is a vector $v$ with an associated scalar $\lambda$ such that $$Av = \lambda v$$
+we say $v$ and $\lambda$ are an eigenvector and eigenvalue of $A$
+- Together, $(\lambda, v)$ are called an eigenpair
+- "Eigen" is German for "own" or "inherent" so think of eigenvectors as special vectors associated with $A$
+
+## Eigenvectors of a 2x2
+<center>
+```{r 2dPower, fig.height=6, echo = FALSE}
+# From Matt's slides
+# plot lattice converging to principal eigenvector
+matrix2dVisual <- function(A, latticeWidth, numIter){
+  # initialize data frame with lattice
+  xyRange <- 10
+  a <- seq(-xyRange, xyRange, length.out = latticeWidth+1)
+  df <- expand.grid(a,a)
+  names(df) <- c("x1", "x2")
+  numPoints <- nrow(df)
+
+  # construct data frame with lattice at each iteration
+  for(k in 0:(numIter-1)){
+    Ax <- A %*% t( as.matrix( df[(k*numPoints + 1):((k + 1)*numPoints),] ) )
+    Ax <- xyRange * Ax / max(abs(Ax))
+    Ax <- data.frame(t(Ax))
+    names(Ax) <- c("x1", "x2")
+    df <- rbind(df, Ax)
+  }
+  
+  # index number of matrix multiplications
+  matMul <- rep(0:numIter, each=numPoints)
+  df$matMul <- matMul
+  
+  # get eigenvectors for plotting
+  v <- eigen(A)$vectors
+  
+  # plot lattices with eigenvectors
+  plot_ly() %>%
+    add_trace(
+      data = df,
+      x = ~ x1,
+      y = ~ x2,
+      frame = ~ matMul,
+      type = 'scatter',
+      mode = 'markers',
+      showlegend = FALSE
+    ) %>%
+    add_annotations(
+      x = 4*v[1,],
+      y = 4*v[2,],
+      xref = 'x',
+      yref = 'y',
+      axref = 'x',
+      ayref = 'y',
+      text = '',
+      showarrow = TRUE,
+      ax = 0,
+      ay = 0
+    ) 
+}
+
+D <- diag(c(1.3,1), nrow=2) # eigenvalues
+X <- cbind(c(1,1), c(-1,1)) # eigenvectors
+A <- X %*% D %*% t(X)
+matrix2dVisual(A, latticeWidth = 20, numIter = 6)
+```
+</center>
+
+## Application: Game Theory {.build}
+- Suppose Alice, Bob, and Charlie have some initial amount of money in their account: $a_0$, $b_0$ and $c_0$
+- The next day: 
+  - Alice's account decreases by 2.5% but increases by 5% of Bob's account balance and decreases by 5% of Charlies account balance.
+  - Bob's account decreases by 7.5% but increases by 3.75% of Alice's account balance and decreases by 32.5% of Charlies account balance.
+  - Charlie's account decreases by 40%.
+- Who will end up with the most money?
+$$
+  \begin{pmatrix} a_{t+1} \\ b_{t+1} \\ c_{t+1} \end{pmatrix} 
+  = a_t\begin{pmatrix} 0.975 \\ 0.0375 \\ 0 \end{pmatrix} +
+  b_t\begin{pmatrix} 0.05 \\ 0.925 \\ 0 \end{pmatrix} +
+  c_t\begin{pmatrix} -0.05 \\ -0.325 \\ 0.6 \end{pmatrix} 
+$$
+
+## Application: Game Theory
+```{r 3dpower_method}
+# plot lattice converging to principal eigenvector
+matrix3dVisual <- function(A, latticeWidth, numIter){
+  # initialize data frame with lattice
+  xyRange <- 10
+  a <- seq(0, xyRange, length.out = latticeWidth+1)
+  df <- expand.grid(a,a,a)
+  names(df) <- c("x1", "x2", "x3")
+  numPoints <- nrow(df)
+  
+  # construct data frame with lattice at each iteration
+  for(k in 0:(numIter-1)){
+    Ax <- A %*% t( as.matrix( df[(k*numPoints + 1):((k + 1)*numPoints),] ) )
+    Ax < Ax / max(abs(Ax))
+    Ax <- data.frame(t(Ax))
+    names(Ax) <- c("x1", "x2", "x3")
+    df <- rbind(df, Ax)
+  }
+  
+  # index number of matrix multiplications
+  matMul <- rep(0:numIter, each=numPoints)
+  df$matMul <- matMul
+  
+  # get eigenvectors for plotting
+  scaleVectors <- 8
+  v <- scaleVectors*eigen(A)$vectors
+  
+  # plot lattices with eigenvectors
+  ax <- list(showticklabels = FALSE,
+             showgrid = FALSE,
+             zeroline = TRUE)
+  p <- plot_ly() %>%
+    add_trace(
+      data = df,
+      x = ~ x1,
+      y = ~ x2,
+      z = ~ x3,
+      frame = ~ matMul,
+      type = 'scatter3d',
+      mode = 'markers',
+      size = 5,
+      showlegend = FALSE
+    ) %>%
+    layout(
+      scene = list(
+        xaxis = ax,
+        yaxis = ax,
+        zaxis = ax
+      )
+    )
+    
+  
+  # plot the eigenvectors
+  for(k in 1:3){
+    p <- p %>%
+    add_trace(
+      x = c(0,v[1,k]),
+      y = c(0,v[2,k]),
+      z = c(0,v[3,k]),
+      type = 'scatter3d',
+      mode = 'lines',
+      line = list(width = 8),
+      name = paste('eigenvector', k)
+    )
+  }
+  
+  p
+}
+```
+<center>
+```{r show3d_plot, fig.height=6}
+# example matrix
+D <- diag(c(1,0.9,0.6), nrow=3) # eigenvalue
+X <- cbind(c(1,0.5,0), c(-1,1.5,0), c(0,1,1)) %>% as.matrix() # eigenvectors
+A <- X %*% D %*% solve(X)
+
+matrix3dVisual(A, latticeWidth = 8, numIter = 20)
+```
+</center>
+
+## Application: Game Theory {.build}
+- The eigenpairs for the coefficient matrix were 
+$$
+  \lambda_1 = 1, v_1 = \begin{pmatrix} 1 \\ 0.5 \\ 0 \end{pmatrix},
+  \quad 
+  \lambda_2 = 0.9, v_2 = \begin{pmatrix} -1 \\ 1.5 \\ 0 \end{pmatrix},
+  \quad 
+  \lambda_3 = 0.6, v_3 = \begin{pmatrix} 0 \\ 1 \\ 1 \end{pmatrix},
+$$
+- Since $\lambda_1$ dominates the eigenvalues the system will, in the long run, converge to the line spanned by $v_1$.
+- So for many initial conditions we should expect Alice to have twice as much money as Bob and for Charlie to be broke.
+
+## Example: Multivariate Normal
+From class
+```{r setup_from_lecture_slides, echo = FALSE}
+# From Peter's slides
+fig.dim <- 4
+# knitr::opts_chunk$set(fig.width=2*fig.dim,
+#                      fig.height=fig.dim,
+#                      fig.align='center')
+set.seed(23)
+options(digits=2)
+draw_ellipse <- function (Sigma, r=1, ...) {
+    ev <- eigen(Sigma)
+    a <- ev$values[1]^2
+    b <- ev$values[2]^2
+    theta <- seq(0, 2*pi, length.out=100)
+    xy <- cbind(cos(theta), sin(theta)) %*% (sqrt(ev$values[1:2]) * t(ev$vectors[,1:2]))
+    for (rr in r) {
+        lines(rr * xy[,1], rr * xy[,2], ...)
+    }
+}
+```
+
+If $X$ is random *vector*
+that has a [*multivariate Normal distribution*](https://en.wikipedia.org/wiki/Multivariate_normal_distribution), we say
+$$\begin{aligned}
+   X = (X_1, \ldots, X_k) \sim \mathrm{MVN}(\mu, \Sigma) .
+\end{aligned}$$
+
+The parameters are the *mean vector* $\mu$ and *covariance matrix* $\Sigma$:
+$$\begin{aligned}
+   \mathrm{E}[X_i] = \mu_i
+\end{aligned}$$
+and
+$$\begin{aligned}
+    \mathrm{cov}[X_i, X_j] = \Sigma_{i,j}  .
+\end{aligned}$$
+
+## Example: a univariate linear model
+
+Let's say that $X \sim \mathrm{Normal}(0, 1)$ and
+$$\begin{aligned}
+   Y &= \beta X + \epsilon  \\
+   \epsilon &\sim \mathrm{Normal}(0, \sigma) .
+\end{aligned}$$
+
+. . .
+
+Then $Y$ also has a Normal distribution, and
+$$\begin{aligned}
+   \mathrm{var}[X] &= 1, \\
+   \mathrm{var}[Y] &= \beta^2 + \sigma^2 \qquad \text{and} \\
+   \mathrm{cov}[X, Y] &= \beta, 
+\end{aligned}$$
+
+------------------
+
+so
+$$\begin{aligned}
+    (X, Y) \sim \mathrm{MVN}\left(
+        \begin{bmatrix}
+            0 \\ 0
+        \end{bmatrix}
+        \begin{bmatrix}
+           1 & \beta \\ 
+           \beta & \beta^2 + \sigma^2
+        \end{bmatrix}
+    \right) .
+\end{aligned}$$
+
+$\beta = 0.7$
+
+$\sigma = 1$
+
+------------------
+
+```{r sim_mvn, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, cache = TRUE}
+nobs <- 100000
+beta <- 0.7
+sigma <- 1
+xy <- data.frame(x = rnorm(nobs, mean=0, sd=1))
+xy$y <- beta * xy$x + rnorm(nobs, mean=0, sd=sigma)
+plot(y ~ x, data=xy, asp=1, pch=20, cex=0.25, col=adjustcolor('black', 0.15))
+covmat <- cbind(c(1, beta), c(beta, beta^2 + sigma^2))
+draw_ellipse(covmat, r=seq(0,1.5,length.out=5), col='red')
+```
+
+
+## Eigenvalues and Eigenvectors
+
+```{r, echo = TRUE}
+covmat
+eigen(covmat)
+```
+
+## Eigenvalues and Eigenvectors
+
+```{r sim_mvn3, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=8, cache = TRUE}
+v1 <- eigen(covmat)$vectors[,1]
+v2 <- eigen(covmat)$vectors[,2]
+plot(y ~ x, data=xy, asp=1, pch=20, cex=0.25, col=adjustcolor('black', 0.15))
+draw_ellipse(covmat, r=seq(0,1.5,length.out=5), col='red')
+# Plot eigenvectors
+abline(a = 0, b = v1[2]/v1[1], col = "Blue")
+abline(a = 0, b = v2[2]/v2[1], col = "Orange")
+```
+
+## The Eigenbasis
+- Most matrices have linearly independent eigenvectors
+- Expanding coordinate in terms of the eigenvectors will turn $A$ into a diagonal matrix, making arithmetic ezpz
+- So the eigenvector coordinates are in some sense the "best" coordinates for $A$
+- A rotation matrix won't have a real eigenpair, so if your eigenvalues are complex it suggests some sort of rotation is happening
+- When $A$ is symmetric, i.e. $A_{ij} = A_{ji}$, it will have real eigenvalues and orthogonal eigenvectors
+
+
+## Additional Sources
+
+- [The Essence of Linear Algebra](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab) on YouTube is a great visual tutorial on linear algebra.
+
+- [Setosa](http://setosa.io/#/) has more interactive webpages, including one for [eigenvectors and eigenvalues](http://setosa.io/ev/eigenvectors-and-eigenvalues/)
