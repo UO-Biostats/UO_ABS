@@ -504,6 +504,29 @@ Using this [dataset of chemical concentrations in wine](data/wine.tsv):
 4. Which variables most strongly differentiate the three vineyards?
 
 
+## IN CLASS
+
+```{r in_class}
+wine$Vineyard <- factor(paste0("vineyard_", wine$Vineyard))
+
+wpca <- princomp(wine[,2:ncol(wine)], scores=TRUE, cor=TRUE)
+
+# the data
+pairs(wine[,2:ncol(wine)], col=wine$Vineyard)
+
+# the pcs
+pairs(wpca$scores[,1:3], col=wine$Vineyard)
+
+# look at loadings
+# PC1 distinguishes 1 from 3, with 2 as intermediate
+# and PC1 depends on most of the variables,
+#   but most on C7 and not much on C10 and C3
+sort(wpca$loadings[,1])
+# PC2 distinguishes 2 from (1 and 3)
+# and PC2 depends most on c10, and not much on c4, c7, c8, and c9
+sort(wpca$loadings[,1])
+
+```
 
 # PCA: Squaring the math and the code:
 
