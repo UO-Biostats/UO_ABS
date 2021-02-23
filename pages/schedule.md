@@ -87,6 +87,7 @@ Week 18 (*2/22*)
     - slides: [t-SNE](../CLASS_MATERIALS/Lectures/Week_17_tSNE.slides.html)
     - slides: [On ordination and dimension reduction methods](../CLASS_MATERIALS/Lectures/Week_18_On_ordination.slides.html)
     - slides: [Nonnegative matrix factorization](../CLASS_MATERIALS/Lectures/Week_18_Nonnegative_matrix_factorization.slides.html)
+    - [Homework 19](../CLASS_MATERIALS/Homeworks/HW19_W21.html) *(due 3/4)*
 
 Week 19 (*3/1*)
 

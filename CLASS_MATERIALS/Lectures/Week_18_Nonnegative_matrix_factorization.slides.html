@@ -447,6 +447,51 @@ background-color: #fff; } }
 </section>
 
 <section>
+<section id="visualizing-expression-space" class="title-slide slide level1">
+<h1>Visualizing expression space</h1>
+
+</section>
+<section id="a-conceptual-model" class="slide level2">
+<h2>A conceptual model</h2>
+<p>Let’s build a <em>conceptual</em> model for descriptive analysis of “mixture” expression data.</p>
+<div class="fragment">
+<p><strong>Data:</strong> expression data from tissue samples that consist of various <em>mixtures</em> of different cell types.</p>
+</div>
+<div class="fragment">
+<p><strong>Goal:</strong> identify shared coexpression patterns corresponding to <em>cell type</em>.</p>
+</div>
+<div class="fragment">
+<p><em>Similar situations:</em> identify different developmental stages from whole-organism expression; common community structures from metagenomic data.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<ol type="1">
+<li><p>Each cell type has a typical set of <em>mean</em> expression levels.</p></li>
+<li><p>Each sample is composed of a mixture of cell types, defined by the proportions that come from each type.</p></li>
+</ol>
+</section>
+<section class="slide level2">
+
+<div class="columns">
+<div class="column" style="width:50%;">
+<ol type="1">
+<li><p>Mean expression by cell type.</p></li>
+<li><p>Cell type proportions by sample.</p></li>
+</ol>
+</div><div class="column" style="width:50%;">
+<ol type="1">
+<li><p><span class="math inline">\(x_{kj}\)</span> : Mean expression of gene <span class="math inline">\(j\)</span> in cell type <span class="math inline">\(k\)</span>.</p></li>
+<li><p><span class="math inline">\(w_{ik}\)</span> : Proportion of sample <span class="math inline">\(i\)</span> of cell type <span class="math inline">\(k\)</span>.</p></li>
+</ol>
+<p><span class="math inline">\(Z_{ij}\)</span> : expression level in sample <span class="math inline">\(i\)</span> of gene <span class="math inline">\(j\)</span>.</p>
+<p><span class="math display">\[\begin{aligned}
+        Z_{ij} \approx \sum_{k=1}^K w_{ik} x_{kj} .
+   \end{aligned}\]</span></p>
+</div>
+</div>
+</section></section>
+<section>
 <section id="nonnegative-matrix-factorization" class="title-slide slide level1">
 <h1>Nonnegative matrix factorization</h1>
 
@@ -699,8 +744,8 @@ model {
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;027c9a0b92082dc735bfb6350861f7ee&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 4.1e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.41 seconds.
+## Chain 1: Gradient evaluation took 5.9e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.59 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -725,9 +770,9 @@ model {
 ## Chain 1: Iteration: 90 / 100 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 100 / 100 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.799941 seconds (Warm-up)
-## Chain 1:                1.14772 seconds (Sampling)
-## Chain 1:                1.94766 seconds (Total)
+## Chain 1:  Elapsed Time: 0.782241 seconds (Warm-up)
+## Chain 1:                1.04126 seconds (Sampling)
+## Chain 1:                1.8235 seconds (Total)
 ## Chain 1:</code></pre>
 <pre><code>## Warning: There were 36 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
 ## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded</code></pre>
@@ -791,7 +836,7 @@ model {
 ## d_alpha      9.31    1.01   6.71     0.85     4.76     8.76    11.64    26.38    44 0.99
 ## lp__     17331.99    1.98   6.44 17321.28 17327.73 17332.42 17336.80 17342.91    11 1.00
 ## 
-## Samples were drawn using NUTS(diag_e) at Wed Feb 17 14:48:07 2021.
+## Samples were drawn using NUTS(diag_e) at Tue Feb 23 07:35:55 2021.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
 ## convergence, Rhat=1).</code></pre>

@@ -19,6 +19,71 @@ options(mc.cores = parallel::detectCores())
 ```
 
 
+
+
+# Visualizing expression space
+
+## A conceptual model
+
+Let's build a *conceptual* model for
+descriptive analysis of "mixture" expression data.
+
+. . .
+
+**Data:** expression data from tissue samples
+that consist of various *mixtures* of different cell types.
+
+. . .
+
+**Goal:** identify shared coexpression patterns
+corresponding to *cell type*.
+
+. . .
+
+*Similar situations:* 
+identify different developmental stages from whole-organism expression;
+common community structures from metagenomic data.
+
+----------------
+
+
+1. Each cell type has a typical set of *mean* expression levels.
+
+2. Each sample is composed of a mixture of cell types,
+   defined by the proportions that come from each type.
+
+
+------------------
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+
+1. Mean expression by cell type.
+
+2. Cell type proportions by sample.
+
+
+:::
+:::::::::::::: {.column width=50%}
+
+
+1. $x_{kj}$ : Mean expression of gene $j$ in cell type $k$.
+
+2. $w_{ik}$ : Proportion of sample $i$ of cell type $k$.
+
+$Z_{ij}$ : expression level in sample $i$ of gene $j$.
+
+   $$\begin{aligned}
+        Z_{ij} \approx \sum_{k=1}^K w_{ik} x_{kj} .
+   \end{aligned}$$
+
+
+:::
+:::::::::::::: 
+
+
+
 # Nonnegative matrix factorization
 
 ## ... aka "NMF"
