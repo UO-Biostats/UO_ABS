@@ -84,6 +84,7 @@ Week 18 (*2/22*)
 
 : Latent factors, deconvolution for mixtures of expression data; nonnegative matrix factorization
 
+    - slides: [t-SNE](../CLASS_MATERIALS/Lectures/Week_17_tSNE.slides.html)
     - slides: [On ordination and dimension reduction methods](../CLASS_MATERIALS/Lectures/Week_18_On_ordination.slides.html)
     - slides: [Nonnegative matrix factorization](../CLASS_MATERIALS/Lectures/Week_18_Nonnegative_matrix_factorization.slides.html)
 
