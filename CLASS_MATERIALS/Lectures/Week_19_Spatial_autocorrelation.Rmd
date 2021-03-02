@@ -70,6 +70,13 @@ xy
 
 2. (predictive) What are the likely (range of) abundances at new locations?
 
+## Exercise:
+
+Let's brainstorm a few examples, listing
+
+1. a spatially autocorrelted variable
+2. the spatial scale of autocorrelation
+
 
 # Spatial covariance
 
