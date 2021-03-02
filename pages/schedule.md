@@ -91,13 +91,17 @@ Week 18 (*2/22*)
 
 Week 19 (*3/1*)
 
-: Deconvolution continued; introduction to spatial statistics and kernel density estimation.
+: Deconvolution continued; introduction to spatial statistics and spatial autocorrelation.
 
+
+    - slides: [Spatial autocorrelation](../CLASS_MATERIALS/Lectures/Week_19_Spatial_autocorrelation.slides.html)
+    - slides: [Spatial mapping](../CLASS_MATERIALS/Lectures/Week_19_Biketown_maps.slides.html)
 
 Week 20 (*3/8*)
 
-: Spatial statistics: spatial autocorrelation and Kriging.
+: Spatial statistics: kernel density estimation and interpolation.
 
+    - slides: [Spatial density estimation](../CLASS_MATERIALS/Lectures/Week_19_Spatial_density_estimation.slides.html)
 
 # Fall 2020
 
