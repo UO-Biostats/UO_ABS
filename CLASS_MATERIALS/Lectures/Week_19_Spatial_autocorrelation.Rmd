@@ -74,7 +74,7 @@ xy
 
 Let's brainstorm a few examples, listing
 
-1. a spatially autocorrelted variable
+1. a spatially autocorrelated variable
 2. the spatial scale of autocorrelation
 
 
