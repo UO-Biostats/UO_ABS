@@ -98,14 +98,14 @@ $$
 f(x,y) \approx \frac{\#(\text{of points within $r$ of $(x,y)$})}{\pi r^2}
 $$
 
-Now using
+---------------------------
+
+Using
 
 $$
 \rho_\sigma(x,y) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2+y^2}{2\sigma^2}} 
 $$
 
-:::
-::::::: {.column width=40%}
 
 we can estimate $f(x,y)$ by
 
@@ -113,8 +113,6 @@ $$
 \hat f(x,y) = \sum_{i=1}^n \rho_\sigma(x_i-x, y_i-y) .
 $$
 
-:::
-:::::::
 
 ## The two choices of kernel density estimation
 
@@ -137,6 +135,7 @@ $$
 
 3. Compute the kernel density estimate for each location,
    with $\sigma$ chosen appropriately, and plot it.
+   (`dnorm( )`)
 
 
 # Bike trip density estimation
@@ -144,6 +143,7 @@ $$
 ## `bkde2D`
 
 ```{r do_ks}
+library(KernSmooth)
 grid_n <- 301
 start_smooth <- bkde2D(bt_start@coords, bandwidth=0.004, gridsize=c(grid_n, grid_n))
 str(start_smooth)
@@ -169,6 +169,7 @@ contour(x=start_smooth$x1, y=start_smooth$x2, z=matrix(start_smooth$fhat, nrow=g
 ## Plotting surfaces, method 2
 
 ```{r plot_surface2, fig.height=2*fig.dim, eval=FALSE}
+library(raster)
 smooth_df <- as.data.frame(expand.grid(x=start_smooth$x1, y=start_smooth$x2))
 smooth_df$z <- as.vector(start_smooth$fhat)
 raster_smooth <- rasterFromXYZ(smooth_df)
@@ -196,13 +197,13 @@ contour(raster_smooth, add=TRUE)
 ## The bandwidth is important
 
 ```{r kernsmooth, cache=TRUE, echo=FALSE, fig.height=2*fig.dim, fig.width=3*fig.dim}
-bw_list <- c(0.001, 0.003, 0.009, 0.015, 0.02, 0.1)
+bw_list <- c(0.0003, 0.001, 0.003, 0.009, 0.015, 0.02)
 layout(matrix(1:6, nrow=2, byrow=TRUE))
 for (bw in bw_list) {
     start_smooth <- bkde2D(bt_start@coords, bandwidth=bw, gridsize=c(grid_n, grid_n))
 
     image(x=start_smooth$x1, y=start_smooth$x2, z=matrix(start_smooth$fhat, nrow=grid_n, ncol=grid_n),
-    main=sprintf("bandwidth = %0.03f", bw))
+    main=sprintf("bandwidth = %0.04f", bw))
     contour(x=start_smooth$x1, y=start_smooth$x2, z=matrix(start_smooth$fhat, nrow=grid_n, ncol=grid_n), add=TRUE)
 }
 ```
@@ -232,9 +233,18 @@ For each bandwidth:
 For each bandwidth:
 
 1. Fit the smooth using most of the data,
-2. and predict the density at the locations of the remaining data,
-3. as well as the density at uniformly sampled "background" points.
-4. Return the mean density at "true" points minus the mean density at "background" points.
+2. predict the density at the locations of the remaining data,
+3. and return the mean log density at "true" points.
+
+. . .
+
+*Why log?:*
+
+If $f$ and $g$ are probability distributions, and $x_1, \ldots, x_n$ are drawn from $f$,
+then
+$$  L(g) = \sum_{i=1}^n \log g(x_i) \lessapprox L(f) , $$
+i.e., is maximized for $g=f$.
+(see: [cross entropy](https://en.wikipedia.org/wiki/Cross_entropy))
 
 
 ## On example data
@@ -256,15 +266,13 @@ points(xygrid[,1], xygrid[,2], cex=xy_fhat/6)
 ## Prediction, by linear interpolation
 
 ```{r xval_fnA, cache=TRUE}
+library(fields)
 the_xval <- function (bw, points, ntest, grid_n=301) {
-    background <- cbind(x=runif(ntest, min=-5.5, max=5.5),
-                        y=runif(ntest, min=-2.3, 2.3))
     use_these <- sample(rep(c(TRUE, FALSE), times=c(nrow(xy)-ntest, ntest)))
     smooth <- bkde2D(xy[use_these,], bandwidth=bw, gridsize=c(grid_n, grid_n))
     names(smooth) <- c("x", "y", "z")
-    pred_yes <- interp.surface(smooth, loc=xy[!use_these,])
-    pred_no <- interp.surface(smooth, loc=background)
-    return(c(mean(pred_yes, na.rm=TRUE), mean(pred_no, na.rm=TRUE)))
+    pred <- interp.surface(smooth, loc=xy[!use_these,])
+    return(mean(log(pred), na.rm=TRUE))
 }
 ```
 
@@ -272,25 +280,18 @@ the_xval <- function (bw, points, ntest, grid_n=301) {
 
 ```{r do_xvalA, cache=TRUE, dependson='xval_fnA'}
 the_scores <- data.frame(bw = rep(seq(0.1, 1.0, length.out=12), each=20),
-                          pred_yes = NA,
-                          pred_no = NA)
+                          xent = NA)
 for (k in 1:nrow(the_scores)) {
     pred <- the_xval(bw=the_scores$bw[k], points=bt_start, ntest=100)
-    the_scores$pred_yes[k] <- pred[1]
-    the_scores$pred_no[k] <- pred[2]
+    the_scores$xent[k] <- pred
 }
 ```
 
 ## The results
 
 ```{r plot_xvalA}
-layout(t(1:2))
-plot(pred_yes ~ bw, data=the_scores, col='red', ylim=c(0, max(pred_yes, na.rm=TRUE)))
-points(pred_no ~ bw, data=the_scores, col='blue')
-legend("topright", pch=1, col=c("red", "blue"), legend=c("points", "background"))
-plot(pred_yes - pred_no ~ bw, data=the_scores, pch=20,
-     xlab='bandwidth', ylab='mean density minus background')
-lines(lowess(the_scores$bw, the_scores$pred_yes - the_scores$pred_no), lwd=2, col='red')
+plot(xent ~ bw, data=the_scores)
+lines(lowess(the_scores$bw, the_scores$xent), lwd=2, col='red')
 ```
 
 
@@ -300,14 +301,11 @@ lines(lowess(the_scores$bw, the_scores$pred_yes - the_scores$pred_no), lwd=2, co
 bw <- 0.004
 xy <- bt_start@coords
 ntest <- 100
-background <- cbind(x=runif(ntest, min=extent(bt_start@coords)@xmin, max=extent(bt_start@coords)@xmax),
-                    y=runif(ntest, min=extent(bt_start@coords)@ymin, max=extent(bt_start@coords)@ymax))
 use_these <- sample(rep(c(TRUE, FALSE), times=c(nrow(xy)-ntest, ntest)))
 smooth <- bkde2D(xy[use_these,], bandwidth=bw, gridsize=c(grid_n, grid_n))
 names(smooth) <- c("x", "y", "z")
-pred_yes <- fields::interp.surface(smooth, loc=xy[!use_these,])
-pred_no <- fields::interp.surface(smooth, loc=background)
-boxplot(list(yes=pred_yes, no=pred_no))
+pred <- fields::interp.surface(smooth, loc=xy[!use_these,])
+hist(pred)
 ```
 
 ##
@@ -315,14 +313,11 @@ boxplot(list(yes=pred_yes, no=pred_no))
 ```{r xval_fn, cache=TRUE}
 density_xval <- function (bw, points, ntest, grid_n=301) {
     xy <- points@coords
-    background <- cbind(x=runif(ntest, min=extent(points@coords)@xmin, max=extent(points@coords)@xmax),
-                        y=runif(ntest, min=extent(points@coords)@ymin, max=extent(points@coords)@ymax))
     use_these <- sample(rep(c(TRUE, FALSE), times=c(nrow(xy)-ntest, ntest)))
     smooth <- bkde2D(xy[use_these,], bandwidth=bw, gridsize=c(grid_n, grid_n))
     names(smooth) <- c("x", "y", "z")
-    pred_yes <- interp.surface(smooth, loc=xy[!use_these,])
-    pred_no <- interp.surface(smooth, loc=background)
-    return(c(mean(pred_yes), mean(pred_no)))
+    pred <- interp.surface(smooth, loc=xy[!use_these,])
+    return(mean(log(pred), na.rm=TRUE))
 }
 ```
 
@@ -330,17 +325,13 @@ density_xval <- function (bw, points, ntest, grid_n=301) {
 
 ```{r do_xval, cache=TRUE, dependson='xval_fn'}
 xval_scores <- data.frame(bw = rep(bw_list[1:5], each=20),
-                          pred_yes = NA,
-                          pred_no = NA)
+                          xent = NA)
 for (k in 1:nrow(xval_scores)) {
     pred <- density_xval(bw=xval_scores$bw[k], points=bt_start, ntest=100)
-    xval_scores$pred_yes[k] <- pred[1]
-    xval_scores$pred_no[k] <- pred[2]
+    xval_scores$xent[k] <- pred
 }
 
-plot(pred_yes ~ bw, data=xval_scores, col='red', ylim=c(0, max(pred_yes)))
-points(pred_no ~ bw, data=xval_scores, col='blue')
-legend("topright", pch=1, col=c("red", "blue"), legend=c("points", "background"))
+plot(xent ~ bw, data=xval_scores)
 ```
 
 
@@ -371,6 +362,7 @@ contour(end_raster, add=TRUE)
 ## Start minus end
 
 ```{r plot_diff, fig.width=2*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
+library(sp)
 diff_palette <- c(NA, rev(hcl.colors(50, alpha=0.75)))
 sp::plot(start_raster - end_raster, col=diff_palette, main='start - end')
 setup_map(add=TRUE)

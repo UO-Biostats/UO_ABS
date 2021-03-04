@@ -94,7 +94,7 @@ Visualize:
 
 ##
 
-See [this tutorial](https://mgimond.github.io/Spatial/reading-and-writing-spatial-data-in-r.html) by Manual Gimond.
+See [this tutorial](https://mgimond.github.io/Spatial/app1-1.html) by Manual Gimond.
 
 ```{r spstuff}
 library(rgdal)
@@ -133,14 +133,14 @@ show(load(file.path(data_dir, "biketown/pdx_features.RData")))
 
 ```{r plot_river}
 layout(t(1:2))
-plot(river, col=adjustcolor('blue', 0.25), main='river')
-plot(bikepaths, col=adjustcolor('grey', 0.75), main='bikepaths')
+sp::plot(river, col=adjustcolor('blue', 0.25), main='river')
+sp::plot(bikepaths, col=adjustcolor('grey', 0.75), main='bikepaths')
 ```
 
 
 ##
 
-```{r get_points, cache=TRUE, dependson=c("load_maps", "biketown"), warnings=FALSE}
+```{r get_points, cache=TRUE, dependson=c("load_maps", "biketown"), warning=FALSE}
 bt_start <- SpatialPointsDataFrame(coords=cbind(bt$Start_Longitude, bt$Start_Latitude),
                                    data=bt, proj4string=CRS("+proj=longlat"))
 bt_end <- SpatialPointsDataFrame(coords=cbind(bt$End_Longitude, bt$End_Latitude),
@@ -158,6 +158,7 @@ bt_end <- crop(
 ##
 
 ```{r setup_map}
+library(sp)
 setup_map <- function (..., add=FALSE) {
     plot(bigstreets, col=grey(0.75), add=add, ...)
     lines(freeways, col=adjustcolor('brown', 0.25), lwd=2)
@@ -168,7 +169,8 @@ setup_map <- function (..., add=FALSE) {
 
 ##
 
-```{r plot_pdx, cache=TRUE, dependson="load_maps"}
+```{r plot_pdx, cache=TRUE, dependson="load_maps", echo=-1}
+library(sp)
 layout(t(1:2))
 setup_map(main='starts'); points(bt_start, pch=20, cex=0.5, col='red')
 setup_map(main='ends'); points(bt_end, pch=20, cex=0.5, col='blue')
