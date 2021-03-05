@@ -155,6 +155,20 @@ bt_end <- crop(
                crop_extent)
 ```
 
+## 
+
+**Important:** the "projection" tells R *what the coordinates mean*:
+
+```r
+bt_start <- SpatialPointsDataFrame( # make a legit 'spatial' object
+    coords=cbind(bt$Start_Longitude, bt$Start_Latitude), # at these coordinates
+    data=bt,
+    proj4string=CRS("+proj=longlat") # <---- the projection!
+)
+```
+
+... and the *proj4 string* is the magical incantation that says what the projection is.
+
 ##
 
 ```{r setup_map}

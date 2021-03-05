@@ -96,6 +96,7 @@ Week 19 (*3/1*)
 
     - slides: [Spatial autocorrelation](../CLASS_MATERIALS/Lectures/Week_19_Spatial_autocorrelation.slides.html)
     - slides: [Spatial mapping](../CLASS_MATERIALS/Lectures/Week_19_Biketown_maps.slides.html)
+    - [Homework 20](../CLASS_MATERIALS/Homeworks/HW20_W21.html) *(due 3/16)*
 
 Week 20 (*3/8*)
 

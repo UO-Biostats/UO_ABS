@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Peter Ralph" />
+  <title>Homework, week 19</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <div style="display: none">
+  \[
+  %%
+  % Add your macros here; they&#39;ll be included in pdf and html output.
+  %%
+
+  \newcommand{\R}{\mathbb{R}}    % reals
+  \newcommand{\E}{\mathbb{E}}    % expectation
+  \renewcommand{\P}{\mathbb{P}}  % probability
+  \DeclareMathOperator{\logit}{logit}
+  \DeclareMathOperator{\logistic}{logistic}
+  \DeclareMathOperator{\sd}{sd}
+  \DeclareMathOperator{\var}{var}
+  \DeclareMathOperator{\cov}{cov}
+  \DeclareMathOperator{\cor}{cor}
+  \DeclareMathOperator{\Normal}{Normal}
+  \DeclareMathOperator{\LogNormal}{logNormal}
+  \DeclareMathOperator{\Poisson}{Poisson}
+  \DeclareMathOperator{\Beta}{Beta}
+  \DeclareMathOperator{\Binom}{Binomial}
+  \DeclareMathOperator{\Gam}{Gamma}
+  \DeclareMathOperator{\Exp}{Exponential}
+  \DeclareMathOperator{\Cauchy}{Cauchy}
+  \DeclareMathOperator{\Unif}{Unif}
+  \DeclareMathOperator{\Dirichlet}{Dirichlet}
+  \DeclareMathOperator{\Wishart}{Wishart}
+  \DeclareMathOperator{\StudentsT}{StudentsT}
+  \DeclareMathOperator{\Weibull}{Weibull}
+
+  \newcommand{\given}{\;\vert\;}
+  \]
+  </div>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Homework, week 19</h1>
+<p class="author">Peter Ralph</p>
+<p class="date">4 March 2021 – Advanced Biological Statistics</p>
+</header>
+<p><strong>Assignment:</strong> Your task is to use Rmarkdown to write a short report, readable by a technically literate person. The code you used should not be visible in the final report (unless you have a good reason to show it).</p>
+<p><strong>Due:</strong> Submit your work via Canvas by the end of the day (midnight) on Tuesday, March 16th. Please submit <strong>both the Rmd file and the resulting html or pdf file.</strong> You can work with other members of class, but I expect each of you to construct and run all of the scripts yourself.</p>
+<p>As part of the Mars rover landing effort, you are given elevation data (derived from orbital laser telemetry) at a collection haphazardly located spots on the surface of Mars. Your task is to use these data to produce an estimated map of surface elevation.</p>
+<p>The data are available in this file: <a href="jezero_elevation.csv">jezero_elevation.csv</a>. The <code>x</code> and <code>y</code> columns give the spatial coordinates of the points (in the centered equidistant cylindrical projection with sphere radius 3396190 meters, but you can ignore this), and the <code>h</code> column gives the estimated elevation.</p>
+<p>As a final product, you should produce:</p>
+<ol type="1">
+<li><p>A map of the predicted elevation, on at least a 51 x 51 regular grid, and</p></li>
+<li><p>a map showing associated uncertainty in the predictions (e.g., as a image where colors map to posterior standard deviations).</p></li>
+</ol>
+<p>Here are some options for how to do this:</p>
+<ul>
+<li><p>Use brms to fit a surface using <a href="https://paul-buerkner.github.io/brms/reference/s.html"><em>bivariate splines</em></a>, which can be done with this formula:</p>
+<pre><code>h ~ t2(x, y)</code></pre>
+<p>and use <code>predict( )</code> to estimate values on the 51x51 grid.</p></li>
+<li><p><strong>Or,</strong> use brms to fit a multivariate Gaussian model (the same model that we fit in class using Stan). This can be done with the formula</p>
+<pre><code>h ~ gp(x, y)</code></pre>
+<p><strong>But,</strong> there are two issues. (1) You should center and scale the data (<code>x</code>, <code>y</code>, and <code>h</code>) before passing it to brms. And, (2) if you try to do this on the full dataset, this will take <em>forever</em> (the computational cost scales with the number of points <em>squared</em>). So, if you go with this method, then you’ll need to fit and predict on smaller chunks of the region separately (e.g, the 9 sub-regions in a 3x3 arrangement with about 30 points in each).</p></li>
+<li><p><strong>Or,</strong> use the Stan code we wrote in class, with the same caveat as above, that you’ll have to fit and predict separately on different subsets of the map (and, it’ll be slower than the brms method).</p></li>
+</ul>
+<p><em>Note:</em> This is real data, extracted from an elevation map of Jezero crater. You can compare your estimated surfact to the real map <a href="https://github.com/UO-Biostats/datasets/blob/master/jezero_crater/README.md">available here</a>.</p>
+</body>
+</html>
