@@ -102,7 +102,9 @@ Week 20 (*3/8*)
 
 : Spatial statistics: kernel density estimation and interpolation.
 
-    - slides: [Spatial density estimation](../CLASS_MATERIALS/Lectures/Week_19_Spatial_density_estimation.slides.html)
+    - slides: [Spatial density estimation](../CLASS_MATERIALS/Lectures/Week_20_Spatial_density_estimation.slides.html)
+    - slides: [Spatial smoothing, and splines](../CLASS_MATERIALS/Lectures/Week_20_Spatial_smoothing.slides.html)
+    - slides: [Looking back: review](../CLASS_MATERIALS/Lectures/Week_20_Review.slides.html)
 
 # Fall 2020
 

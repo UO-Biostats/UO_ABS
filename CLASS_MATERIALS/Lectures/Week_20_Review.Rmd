@@ -1,0 +1,561 @@
+---
+title: "Looking back"
+author: "Peter Ralph"
+date: "11 March 2021 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 5
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+```
+
+# Looking back
+
+
+##
+
+![a box of tools](images/toolbox.jpeg){width=80%}
+
+
+## Steps in data analysis
+
+1. Care, or at least think, about the data.
+
+2. Look at the data.
+
+3. Query the data.
+
+4. Check the answers.
+
+5. Communicate.
+
+##
+
+![impostor syndrome](images/impostor_penguin.jpeg){width=80%}
+
+
+## Statistics or parameters?
+
+A **statistic** is
+
+: a numerical description of a dataset.
+
+. . .
+
+A **parameter** is 
+
+: a numerical attribute of a model of reality.
+
+. . .
+
+Often, *statistics* are used to estimate *parameters*.
+
+
+## Lurking, behind everything:
+
+is *uncertainty*
+
+. . .
+
+thanks to *randomness*.
+
+. . .
+
+How do we understand randomness, concretely and quantitatively?
+
+. . .
+
+With *models*.
+
+
+## Statistics
+
+::: {.columns}
+:::::: {.column width=50%}
+
+**statistics** are numerical summaries of data,
+
+**parameters** are numerical attributes of a model.
+
+- confidence intervals
+
+- $p$-values
+
+- report effect sizes!
+
+- statistical significance does not imply real-world significance
+:::
+:::::: {.column width=50%}
+
+- Central Limit Theorems:
+
+    * sums of many independent sources of noise gives a Gaussian
+    * count of many rare, independent events is Poisson
+
+
+:::
+::::::
+
+## Be confident!
+
+![cor](images/xkcd_correlation.png)
+
+
+## Experimental design
+
+::: {.columns}
+:::::: {.column width=50%}
+
+- experiment versus observational study
+
+- controls, randomization, replicates
+
+- samples: from what population?
+
+
+- statistical power : $\sigma/\sqrt{n}$
+
+- confounding factors
+
+- correlation versus causation
+
+:::
+:::::: {.column width=50%}
+
+![](images/stickleback_experiment.jpeg)
+
+:::
+::::::
+
+## Tidy data
+
+- readable
+
+- descriptive
+
+- documented
+
+- columns are variables, rows are observations
+
+- semantically coherent
+
+## Visualization
+
+- makes precise visual analogies
+
+- with real units
+
+- labeled
+
+- maximize information per unit ink
+
+## Concepts and skills
+
+::: {.columns}
+:::::: {.column width=50%}
+
+- $z$-scores and $t$-tests
+
+- ANOVA: ratios of mean-squares
+
+- Kaplan-Meier survival curves
+
+- Cox proportional hazard models
+
+- smoothing: `loess`
+
+- multiple comparisons: Bonferroni; FDR
+
+- the bootstrap - resampling
+
+- conditional probability
+
+:::
+:::::: {.column width=50%}
+
+- simulation
+
+- simulation
+
+- oh, and simulation
+
+- power analysis
+
+- permutation tests
+
+- goodness of fit
+
+- crossvalidation
+
+- imputation and interpolation
+
+- nonidentifiability
+
+:::
+::::::
+
+
+# Randomness: deal with it
+
+## Distributions
+
+::: {.columns}
+:::::: {.column width=50%}
+
+
+- Normal (a.k.a, Gaussian)
+- logNormal
+- scale mixtures of Normals
+- multivariate Normal
+- Student's $t$
+- the $F$ distribution
+- Beta
+- Binomial
+- Beta-Binomial
+
+:::
+:::::: {.column width=50%}
+
+- Exponential
+- Gamma
+- Cauchy
+- Poisson
+- Weibull
+- chi-squared
+- Dirichlet
+
+:::
+::::::
+
+<!--
+## In-class: brainstormed examples
+
+```
+Negative-binomial: Differential gene expression
+
+Poisson: non-normalized transcript countsi
+
+Cauchy: # of cases of Coronavirus in cities around the world
+
+Normal (gaussian): height
+
+Beta-binomial: Coin flips with random coin
+
+Exponential: radioactive decay
+
+LogNormal: milk production by cows
+
+Beta: probability that a baseball player gets a hit
+
+Gamma: Amount of snowfall accumulated
+
+Dirichlet: probability distribution of n proportions sizes (which must all sum to 1). Such as if you have three subspecies making up a species population: this would be an appropriate prior for the proportion sizes
+
+Poisson: Total counts of coffee’s sold at starbucks at any particular time 
+
+Weibull: Survival analysis 
+
+Multivariate Normal: probability of something happening in 3D space
+
+Poisson--birth rates
+
+Poisson - Counts of rare plant species (from presence/absence surveys)
+
+Weibull: time until someone falls ill with coronavirus
+
+Cauchy: Distance commuted on a daily basis
+
+Multivariate normal: height, weight, and shoe size
+
+Weibull: hazard rate in survival analysis
+
+F distribution: the F statistic
+
+Multivariate Normal: spatial correlation of bike trip
+Poisson distribution: observing transcript counts, looking at the effects of age and exposure
+
+Negative binomial: how many eggs a chicken lays until the 5th egg with two yolks
+
+logNormal: rent prices across Manhattan
+
+Poisson: number of bursts of EEG activity
+
+Binomial: number of people on the bus who should be at home ‘cause they are sick
+
+Poisson: number of cosmic particles going through a detector
+
+Poisson: number of toilet paper sheets with errors in perforation
+
+Beta binomial - number of polls (across different political analysis sources?) that say that Bernie will win 
+```
+-->
+
+##
+
+![https://en.wikipedia.org/wiki/Relationships_among_probability_distributions](images/relationships_of_distrns.jpg)
+
+## Linear models and `lm()`
+
+$$ y_i = \mu + \alpha_{g_i} + \beta x_j + \epsilon_{ijk} $$
+
+- *linear*: describes the `+`s
+
+- R's *formulas* are powerful (`model.matrix( )`!!)
+
+. . .
+
+- least-squares regression: implies Gaussian noise
+
+- model comparison: with ANOVA and the $F$ test
+
+. . .
+
+Random effects / mixed models:
+```
+ALGAE ~ TREAT + (1|PATCH)
+```
+
+# Stepping back
+
+## Steps in data analysis
+
+1. Care, or at least think, about the data.
+
+2. Look at the data.
+
+3. Query the data.
+
+4. Check the answers.
+
+5. Communicate.
+
+. . .
+
+What questions are you asking?
+
+----------------
+
+
+well, numbers aren’t racist?
+
+. . .
+
+but how we use them might be
+
+--------------
+
+
+More important than statistical technique:
+
+- What questions are being asked?
+
+- What data is being collected? (and how)
+
+- What assumptions are being made?
+
+- What are the important conclusions?
+
+
+
+# Models
+
+##
+
+A $p$-value is:
+
+. . .
+
+
+> the probability of seeing a result at least as surprising as what was
+> observed in the data, if the null hypothesis is true. 
+
+---------
+
+A $p$-value is **not**:
+
+. . .
+
+> an effect size.
+
+
+## Bayesian what-not
+
+- bags of biased coins
+- probability, and Bayes' rule
+- posterior = prior $\times$ likelihood:
+  $$ p(\theta | D) = \frac{ p(D | \theta) p(\theta) }{ p(D) } $$
+- "updating prior ideas based on (more) data"
+- credible intervals
+- hierarchical models
+- *sharing power* and *shrinkage*
+- posterior predictive sampling
+- overdispersion: make it random
+
+## MC Stan
+
+::: {.columns}
+:::::: {.column width=50%}
+
+- kinda picky
+
+- can climb the posterior likelihood surface (`optimizing( )`)
+
+- or, can skateboard around on it (`sampling( )`)
+
+- needs checking up on
+
+:::
+:::::: {.column width=50%}
+
+![Stan](images/stan.jpeg)
+
+:::
+::::::
+
+## Examples:
+
+::: {.columns}
+:::::: {.column width=50%}
+
+- AirBnB
+- pumpkins (ANOVA)
+- limpits (mixed models)
+- biased coins
+- baseball players
+- lung cancer survival
+- diabetes
+- Mauna Loa C02
+- ocean temperatures
+- hair and eye color
+- beer
+- wine
+- Austen versus Melville
+- gene expression
+- biketown
+- blue tit nestlings
+- hurricane lizards
+
+:::
+:::::: {.column width=50%}
+
+![cat](images/cat-in-a-biketown.jpg)
+
+:::
+::::::
+
+## GLMs
+
+*Ingredients:*
+
+- response distribution ("family")
+- inverse link function
+- linear predictor
+
+. . .
+
+*Examples:*
+
+- Gaussian + identity
+- Binomial + logistic
+- Poisson + gamma
+
+. . .
+
+- parametric survival analysis
+
+## Stan versus `glm()`/`glmer`
+
+::: {.columns}
+:::::: {.column width=50%}
+
+`glm(er)`:
+
+- fast
+- easy
+- quick
+- not so picky about syntax
+- uses formulas
+
+
+:::
+:::::: {.column width=50%}
+
+`stan`:
+
+- does not sweep convergence issues under the rug
+- doesn't use formulas
+- more control, for:
+- overdispersion
+- hierarchical modeling
+
+
+`brms`:
+
+- best of both worlds?
+
+:::
+::::::
+
+----------
+
+::: {.columns}
+:::::: {.column width=50%}
+
+My recommendation:
+get familiar with
+
+[https://paul-buerkner.github.io/brms/reference/index.html](https://paul-buerkner.github.io/brms/reference/index.html)
+
+:::
+:::::: {.column width=50%}
+
+![brms function reference](images/brms-ref.png)
+
+:::
+::::::
+
+## Things that aren't obviously models that we did in Stan anyhow
+
+- robust regression: response is Cauchy
+- sparse regression: coefficients are Cauchy
+- dimension reduction: PCA, t-SNE
+- deconvolution: NMF
+- spatial smoothing: multivariate Gaussian
+
+
+## Space and time
+
+::: {.columns}
+:::::: {.column width=50%}
+
+*Time series*
+
+and
+
+*spatial statistics*
+
+. . .
+
+both have to deal with
+
+**autocorrelation.**
+
+:::
+:::::: {.column width=50%}
+
+*Methods:*
+
+- mechanistic models
+
+- multivariate Normal / Gaussian process / Kriging
+
+- spline / smoothing / loess
+
+:::
+::::::
+
+# Thank you!!!
