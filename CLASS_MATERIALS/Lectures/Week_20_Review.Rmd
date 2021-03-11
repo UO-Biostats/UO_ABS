@@ -100,10 +100,6 @@ With *models*.
 :::
 ::::::
 
-## Be confident!
-
-![cor](images/xkcd_correlation.png)
-
 
 ## Experimental design
 
@@ -433,16 +429,17 @@ A $p$-value is **not**:
 - hair and eye color
 - beer
 - wine
-- Austen versus Melville
 - gene expression
 - biketown
-- blue tit nestlings
-- hurricane lizards
 
 :::
 :::::: {.column width=50%}
 
 ![cat](images/cat-in-a-biketown.jpg)
+
+- Austen versus Melville
+- blue tit nestlings
+- hurricane lizards
 
 :::
 ::::::
@@ -533,12 +530,9 @@ get familiar with
 :::::: {.column width=50%}
 
 *Time series*
-
 and
+*spatial statistics*:
 
-*spatial statistics*
-
-. . .
 
 both have to deal with
 
@@ -557,5 +551,11 @@ both have to deal with
 
 :::
 ::::::
+
+# Conclusion
+
+## Be confident!
+
+![cor](images/xkcd_correlation.png)
 
 # Thank you!!!
