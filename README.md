@@ -15,7 +15,7 @@ by way of [Cécile Ané](http://cecileane.github.io/computingtools/).
 
 *Notes on installation/building:*
 
-- To view a local version run `jekyll serve`.
+- To view a local version run `bundle exec jekyll serve`.
 
 - The skeleton can by modified by editing `config.yml` and `_includes/themes/twitter/default.html`.
 
