@@ -5,16 +5,19 @@ description: schedule, with links to slides and homeworks
 ---
 
 The (Rmarkdown) source code for these lectures is available at [the github repository](https://github.com/UO-Biostats/UO_ABS),
-or by replacing the `.slides.html` suffix to `.Rmd` in the link below;
+or by replacing the `.slides.html` suffix with `.Rmd` in the link below;
 the slides are made using [reveal.js](https://github.com/hakimel/reveal.js/).
-Here are the slides from [Fall 2018/Winter 2019](2018_schedule.html) and from [Fall 2019/Winter 2020](2019_schedule.html).
+Here are the slides from
+[Fall 2020/Winter 2021](2020_schedule.html),
+[Fall 2019/Winter 2020](2019_schedule.html),
+and [Fall 2018/Winter 2019](2018_schedule.html).
 
 Below:
-- [Fall 2020](#fall-2020)
-- [Winter 2021](#winter-2021)
+- [Fall 2021](#fall-2021)
+- [Winter 2022](#winter-2022)
 
 
-# Fall 2020
+# Fall 2021
 
 Week 1 (*9/29*)
 
@@ -128,7 +131,7 @@ Week 10 (*12/1*)
     - [Homework 9](../CLASS_MATERIALS/Homeworks/HW09_F20.html) *(due 12/10)*
     - Reading: Kruschke, chapters 15, 16, 17
 
-# Winter 2021
+# Winter 2022
 
 Week 11 (*1/4*)
 

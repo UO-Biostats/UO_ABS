@@ -23,10 +23,10 @@ flexible modeling package [Stan](https://mc-stan.org).
 ## Instructors:
 
 - [Peter Ralph](https://pages.uoregon.edu/plr/), main instructor: plr@uoregon.edu
-    * office hours: Tuesdays 2:00-4:00pm or by appointment
+    * office hours: TBD
 
-- [Gilia Patterson](https://ie2.uoregon.edu/people/patterson/), graduate teaching assistant: gpatters@uoregon.edu
-    * office hours: Wednesdays 11:00am-1:00pm or by appointment
+- [Aidan Short](https://ie2.uoregon.edu/people/short/), graduate teaching assistant: ashort2@uoregon.edu
+    * office hours: TBD
 
 - [Bill Cresko](https://creskolab.uoregon.edu/), supporting instructor: wcresko@uoregon.edu
 
@@ -64,42 +64,46 @@ and have some experience with programming.
 
 ## Class structure, remote learning, and support
 
-To reduce the risk of transmitting COVID, the course will be *remote*,
-meaning that no physical in-person activities will be required (and indeed, none are planned).
-This is too bad: it's easier to get to interact, and to know everyone if we're all in the same room.
-However, this course is pretty well-suited to remote instruction,
-and we don't feel like we need to compromise on the quality or content of the course.
-That said, if something is not working for you, please tell us:
+It's our goal to run this class in a way that provides everyone access
+in a way that feels safe, flexible, and supportive.
+As of the start of the quarter,
+UO requires [students and employees to be fully vaccinated](https://coronavirus.uoregon.edu/vaccine),
+and [masks to be properly worn inside](https://coronavirus.uoregon.edu/prevention).
+We expect everyone to follow these requirements.
+We plan to teach class wearing masks,
+but if you rely on lip reading to understand lectures, please let me know,
+and I'll figure something out.
+For more information about UO's current policy, see [this Q&A](https://provost.uoregon.edu/resource-rubric).
+And, here is the UO's [COVID containment plan](https://provost.uoregon.edu/covid-containment-plan-classes) for classes.
+In short, you should not come in if you have symptoms,
+and if you test positive or have come in close contact with a case you should
+fill out the [contact reporting form](https://oregon.qualtrics.com/jfe/form/SV_6lfKVJkE0jAGPvn).
+
+However, there will be times when you can't or don't want to attend class in person:
+for instance,
+if [you have COVID syptoms](https://coronavirus.uoregon.edu/prevention#health-checks),
+if you are a member of a high-risk group,
+or if life intervenes in some other way.
+So, we will make class available remotely as well,
+by broadcasting lectures on zoom (see Canvas for the link)
+and making the recordings available afterwards on Canvas.
+We'll do our best to make participation possible for remote students,
+and will discuss ways to facilitate this in class.
+If something is not working for you, please tell us:
 we are committed to making the course accessible to everyone,
 and if it's a problem for you, it's almost certainly a problem for others as well.
 
-How will this work?
-Classes will happen over zoom at the regularly scheduled time.
-However, we won't take attendance (just as during a regular year),
-and the classes will be *recorded*, so that they will be accessible
-later if you have problems with internet connectivity.
-We'll split up the 90 minute class periods
-into roughly equal parts lecture/discussion (with slides),
-live coding/data analysis demonstration, and small group activities
-(e.g., discussion or coding in pairs).
-In-class discussions and activities are designed to be an important part of the class,
-so we hope that you can attend:
-let us know if you anticipate this being a problem.
-
-We recognize that it is an extremely challenging time for many people.
+We recognize that it is still an extremely challenging time for many people.
 It certainly has been for us,
 given the ongoing pandemic, failure to address systemic racism,
 inaction on climate change, wildfires and other effects of climate change,
-an election increasingly driven by disinformation,
+elections increasingly affected by disinformation,
 and ongoing attacks on women's equality and autonomy.
 However: central to many (all?) of these issues are *information*,
 *science*, and *data*.
 One aim of this class is to empower you to engage meaningfully:
 to evaluate disparate sources of information,
 and to process and communicate lessons from data for a broader audience.
-We hope this recognition helps you to focus on the class;
-it certainly does for us.
-
 That said, it is still a challenging time.
 If you need flexibility on assignments or projects,
 or even just someone to talk to,
@@ -127,7 +131,7 @@ C: unsatisfactory.
 
 ## Inclusion and accessibility
 
-Please tell us your preferred pronouns and/or name,
+Please tell us your pronouns and/or name,
 especially if it differs from the class roster.
 We take seriously our responsibility to create inclusive learning environments.
 Please notify us if there are aspects of the instruction or design of this
@@ -136,7 +140,7 @@ to contact the Accessible Education Center in 164 Oregon Hall at 541-346-1155
 or uoaec@uoregon.edu.
 
 We are committed to making our classroom an inclusive and respectful learning space.
-Being respectful includes using preferred pronouns for your classmates.
+Being respectful includes using pronouns for your classmates.
 Your classmates come from a diverse set of backgrounds and experiences;
 please avoid assumptions or stereotypes, and aim for inclusivity.
 Let us know if there are classroom dynamics that impede your (or someone else’s) full engagement. 
