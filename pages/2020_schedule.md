@@ -23,7 +23,7 @@ Week 1 (*9/29*)
     - [Slides](../CLASS_MATERIALS/Lectures/2020/Week_01_Lecture.slides.html)
     - topic slides: [the t distribution](../CLASS_MATERIALS/Lectures/2020/t-distribution.slides.html)
     - topic slides: [the central limit theorem and the Normal distribution](../CLASS_MATERIALS/Lectures/2020/central-limit-theorem.slides.html)
-    - [Homework 1](../CLASS_MATERIALS/Homeworks/HW01_F20.html) *(due 10/8)*
+    - [Homework 1](../CLASS_MATERIALS/Homeworks/F20W21/HW01_F20.html) *(due 10/8)*
     - [how to git the slide source](using-git.html)
     - Reading: Quinn & Keough chapters 1-4
 
@@ -34,7 +34,7 @@ Week 2 (*10/6*)
     - slides: [confidence intervals](../CLASS_MATERIALS/Lectures/2020/Week_02_Confidence_Intervals.slides.html)
     - slides: [ANOVA](../CLASS_MATERIALS/Lectures/2020/Week_02_ANOVA.slides.html)
     - slides: [experimental design](../CLASS_MATERIALS/Lectures/2020/Week_02_Experimental_design.slides.html)
-    - [Homework 2](../CLASS_MATERIALS/Homeworks/HW02_F20.html) *(due 10/15)*
+    - [Homework 2](../CLASS_MATERIALS/Homeworks/F20W21/HW02_F20.html) *(due 10/15)*
     - Reading: Quinn & Keough chapters 5, 7, 8
 
 Week 3 (*10/13*)
@@ -49,7 +49,7 @@ Week 3 (*10/13*)
         and [pdf version](../CLASS_MATERIALS/Lectures/2020/Week_03_Visualization.handout.pdf)
     - slides: [the bootstrap](../CLASS_MATERIALS/Lectures/2020/Week_03_Bootstrap.slides.html)
         and [pdf version](../CLASS_MATERIALS/Lectures/2020/Week_03_Bootstrap.handout.pdf)
-    - [Homework 3](../CLASS_MATERIALS/Homeworks/HW03_F20.html) *(due 10/22)*
+    - [Homework 3](../CLASS_MATERIALS/Homeworks/F20W21/HW03_F20.html) *(due 10/22)*
     - Reading: Quinn & Keough chapter 9
 
 Week 4 (*10/20*)
@@ -60,7 +60,7 @@ Week 4 (*10/20*)
         and [pdf version](../CLASS_MATERIALS/Lectures/2020/Week_04_Multivariate_ANOVA.handout.pdf)
     - slides: [formulas](../CLASS_MATERIALS/Lectures/2020/Week_04_Formulas.slides.html)
         and [pdf version](../CLASS_MATERIALS/Lectures/2020/Week_04_Formulas.handout.pdf)
-    - [Homework 4](../CLASS_MATERIALS/Homeworks/HW04_F20.html) *(due 10/30)*
+    - [Homework 4](../CLASS_MATERIALS/Homeworks/F20W21/HW04_F20.html) *(due 10/30)*
     - Reading: Quinn & Keough chapter 6
 
 Week 5 (*10/27*)
@@ -80,7 +80,7 @@ Week 6 (*11/3*)
     - slides: [Multiple testing](../CLASS_MATERIALS/Lectures/2020/Week_06_Multiple_testing.slides.html)
     - slides: [Statistics and Eugenics](../CLASS_MATERIALS/Lectures/2020/Week_06_Statistics_and_eugenics.slides.html)
     - install [Stan](https://mc-stan.org)
-    - [Homework 6](../CLASS_MATERIALS/Homeworks/HW06_F20.html) *(due 11/12)*
+    - [Homework 6](../CLASS_MATERIALS/Homeworks/F20W21/HW06_F20.html) *(due 11/12)*
 
 Week 7 (*11/10*)
 
@@ -91,7 +91,7 @@ Week 7 (*11/10*)
     - slides: [the Beta distribution](../CLASS_MATERIALS/Lectures/2020/Week_07_Beta_distribution.slides.html)
     - slides: [Sampling from the posterior with Markov chain Monte Carlo](../CLASS_MATERIALS/Lectures/2020/Week_07_Posterior_sampling.slides.html)
     - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
-    - [Homework 7](../CLASS_MATERIALS/Homeworks/HW07_F20.html) *(due 11/19)*
+    - [Homework 7](../CLASS_MATERIALS/Homeworks/F20W21/HW07_F20.html) *(due 11/19)*
 
 Week 8 (*11/17*)
 
@@ -100,7 +100,7 @@ Week 8 (*11/17*)
     - slides: [Hierarchical models: adding levels of randomness](../CLASS_MATERIALS/Lectures/2020/Week_08_Levels_of_randomness.slides.html)
     - slides: [Hierarchical models: Baseball data](../CLASS_MATERIALS/Lectures/2020/Week_08_Baseball.slides.html)
     - Reading: Kruschke, chapters 9, 10
-    - [Homework 8](../CLASS_MATERIALS/Homeworks/HW08_F20.html) *(due 12/03)*
+    - [Homework 8](../CLASS_MATERIALS/Homeworks/F20W21/HW08_F20.html) *(due 12/03)*
 
 Week 9 (*11/24*)
 
@@ -123,7 +123,7 @@ Week 10 (*12/1*)
     - slides: [The Cauchy distribution](../CLASS_MATERIALS/Lectures/2020/Week_10_Cauchy_distribution.slides.html)
     - slides: [The Poisson distribution](../CLASS_MATERIALS/Lectures/2020/Week_10_Poisson_distribution.slides.html)
     - slides: [Matrix multiplication](../CLASS_MATERIALS/Lectures/2020/Week_10_Matrix_multiplication.slides.html)
-    - [Homework 9](../CLASS_MATERIALS/Homeworks/HW09_F20.html) *(due 12/10)*
+    - [Homework 9](../CLASS_MATERIALS/Homeworks/F20W21/HW09_F20.html) *(due 12/10)*
     - Reading: Kruschke, chapters 15, 16, 17
 
 # Winter 2021
@@ -137,7 +137,7 @@ Week 11 (*1/4*)
     - slides: [the Weibull distribution](../CLASS_MATERIALS/Lectures/2020/Week_11_Weibull_distribution.slides.html)
     - slides: [Parametric survival analysis](../CLASS_MATERIALS/Lectures/2020/Week_11_Parametric_survival_analysis.slides.html)
     - slides: [Introduction to brms](../CLASS_MATERIALS/Lectures/2020/Week_11_Intro_to_brms.slides.html)
-    - [Homework 11](../CLASS_MATERIALS/Homeworks/HW11_W21.html) *(due 1/14)*
+    - [Homework 11](../CLASS_MATERIALS/Homeworks/F20W21/HW11_W21.html) *(due 1/14)*
 
 Week 12 (*1/11*)
 
@@ -146,7 +146,7 @@ Week 12 (*1/11*)
     - slides: [Time series](../CLASS_MATERIALS/Lectures/2020/Week_12_Time_series.slides.html)
     - slides: [Missing data and imputation](../CLASS_MATERIALS/Lectures/2020/Week_12_Missing_data.slides.html)
     - slides: [Trends, smoothing, autocorrelation, and cycles](../CLASS_MATERIALS/Lectures/2020/Week_12_Trend_and_cycles.slides.html)
-    - [Homework 12](../CLASS_MATERIALS/Homeworks/HW12_W21.html) *(due 1/21)*
+    - [Homework 12](../CLASS_MATERIALS/Homeworks/F20W21/HW12_W21.html) *(due 1/21)*
 
 
 Week 13 (*1/18*)
@@ -157,7 +157,7 @@ Week 13 (*1/18*)
     - slides: [Permutation testing for categorical data](../CLASS_MATERIALS/Lectures/2020/Week_13_Categorical_permutation.slides.html)
     - slides: [Poisson models for categorical data (using brms)](../CLASS_MATERIALS/Lectures/2020/Week_13_Categorical_brms.slides.html)
     - slides: [The chi-squared distribution](../CLASS_MATERIALS/Lectures/2020/Week_13_Chi_squared.slides.html)
-    - [Homework 13](../CLASS_MATERIALS/Homeworks/HW13_W21.html) *(group homework, due 1/27)*
+    - [Homework 13](../CLASS_MATERIALS/Homeworks/F20W21/HW13_W21.html) *(group homework, due 1/27)*
     - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
         chapter 24 (Poisson, contingency tables)
 
@@ -179,7 +179,7 @@ Week 15 (*2/1*)
     - slides: [Multivariate responses](../CLASS_MATERIALS/Lectures/2020/Week_15_Multivariate_responses.slides.html)
     - [Primer on linear algebra](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.html)
     - [Rmd file for the primer](../CLASS_MATERIALS/Lectures/2019/LA_primer_slides.Rmd)
-    - [Homework 14](../CLASS_MATERIALS/Homeworks/HW14_W21.html) *(group homework, due 2/9)*
+    - [Homework 14](../CLASS_MATERIALS/Homeworks/F20W21/HW14_W21.html) *(group homework, due 2/9)*
 
 Week 16 (*2/8*)
 
@@ -194,8 +194,8 @@ Week 17 (*2/15*)
 
     - slides: [Hurricane lizards, continued](../CLASS_MATERIALS/Lectures/2020/Week_16_Hurricane_lizards.slides.html)
     - slides: [Dimension reduction and PCA](../CLASS_MATERIALS/Lectures/2020/Week_17_Dimension_reduction_and_PCA.slides.html)
-    - [Homework 17](../CLASS_MATERIALS/Homeworks/HW17_W21.html) *(due 2/19)*
-    - [Homework 18](../CLASS_MATERIALS/Homeworks/HW18_W21.html) *(due 2/25)*
+    - [Homework 17](../CLASS_MATERIALS/Homeworks/F20W21/HW17_W21.html) *(due 2/19)*
+    - [Homework 18](../CLASS_MATERIALS/Homeworks/F20W21/HW18_W21.html) *(due 2/25)*
 
 Week 18 (*2/22*)
 
@@ -204,7 +204,7 @@ Week 18 (*2/22*)
     - slides: [t-SNE](../CLASS_MATERIALS/Lectures/2020/Week_17_tSNE.slides.html)
     - slides: [On ordination and dimension reduction methods](../CLASS_MATERIALS/Lectures/2020/Week_18_On_ordination.slides.html)
     - slides: [Nonnegative matrix factorization](../CLASS_MATERIALS/Lectures/2020/Week_18_Nonnegative_matrix_factorization.slides.html)
-    - [Homework 19](../CLASS_MATERIALS/Homeworks/HW19_W21.html) *(due 3/4)*
+    - [Homework 19](../CLASS_MATERIALS/Homeworks/F20W21/HW19_W21.html) *(due 3/4)*
 
 Week 19 (*3/1*)
 
@@ -213,7 +213,7 @@ Week 19 (*3/1*)
 
     - slides: [Spatial autocorrelation](../CLASS_MATERIALS/Lectures/2020/Week_19_Spatial_autocorrelation.slides.html)
     - slides: [Spatial mapping](../CLASS_MATERIALS/Lectures/2020/Week_19_Biketown_maps.slides.html)
-    - [Homework 20](../CLASS_MATERIALS/Homeworks/HW20_W21.html) *(due 3/16)*
+    - [Homework 20](../CLASS_MATERIALS/Homeworks/F20W21/HW20_W21.html) *(due 3/16)*
 
 Week 20 (*3/8*)
 
