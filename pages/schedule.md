@@ -86,7 +86,7 @@ Week 10 (*12/1*)
 
 Week 11 (*1/4*)
 
-: Survival analysis and [introductiom to `brms`](https://github.com/paul-buerkner/brms)
+: Survival analysis and [introduction to `brms`](https://github.com/paul-buerkner/brms)
 
     - Reading: 
 

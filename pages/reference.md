@@ -23,11 +23,11 @@ description: useful links for Advanced Biological Statistics
 ### Stan
 
 * [Stan documentation](https://mc-stan.org/users/documentation/) 
-    - the [Reference Manual](https://mc-stan.org/docs/2_18/reference-manual/index.html)
+    - the [Reference Manual](https://mc-stan.org/docs/reference-manual/index.html)
         describes the syntax and workings of a Stan program
-    - the [Functions Reference](https://mc-stan.org/docs/2_18/functions-reference/index.html)
+    - the [Functions Reference](https://mc-stan.org/docs/functions-reference/index.html)
         is where you look up *"what's that function again?"*
-    - the [User's Guide](https://mc-stan.org/docs/2_18/stan-users-guide/index.html) has examples
+    - the [User's Guide](https://mc-stan.org/docs/stan-users-guide/index.html) has examples
         of complex models implemented in Stan, and discusses good programming practice
 
 * [RStan documentation](https://mc-stan.org/users/interfaces/rstan.html) 
