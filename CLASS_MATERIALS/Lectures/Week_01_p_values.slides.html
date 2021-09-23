@@ -503,13 +503,9 @@ background-color: var(--r-background-color);
 <section id="title-slide">
   <h1 class="title">Hypothesis testing and <span class="math inline">\(p\)</span>-values</h1>
   <p class="author">Peter Ralph</p>
-  <p class="date">28 September 2020 – Advanced Biological Statistics</p>
+  <p class="date">28 September 2021 – Advanced Biological Statistics</p>
 </section>
 
-<section class="slide level2">
-
-<pre><code>## Warning: NAs introduced by coercion</code></pre>
-</section>
 <section>
 <section id="hypothesis-testing-and-p-values" class="title-slide slide level1">
 <h1>Hypothesis testing and <span class="math inline">\(p\)</span>-values</h1>
@@ -544,11 +540,21 @@ background-color: var(--r-background-color);
 </section>
 <section id="for-instance" class="slide level2">
 <h2>For instance</h2>
-<pre><code>## Error in eval(expr, envir, enclos): object &#39;tt&#39; not found</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  airbnb$price[airbnb$instant_bookable] and airbnb$price[!airbnb$instant_bookable]
+## t = 3.6482, df = 5039.8, p-value = 0.0002667
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##   4.475555 14.872518
+## sample estimates:
+## mean of x mean of y 
+##  124.6409  114.9668</code></pre>
 </section>
 <section id="also-for-instance" class="slide level2">
 <h2>Also for instance</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">t.test</span>(airbnb<span class="op">$</span>price)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">t.test</span>(airbnb<span class="op">$</span>price)</span></code></pre></div>
 <pre><code>## 
 ##  One Sample t-test
 ## 
@@ -602,9 +608,9 @@ sum(ifelse(runif(1) &lt; 1/2, &quot;H&quot;, &quot;T&quot;) == &quot;H&quot;)</c
 </section>
 <section id="in-class" class="slide level2">
 <h2>(in class)</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">mean</span>(<span class="kw">replicate</span>(<span class="dv">10000</span>, <span class="kw">rbinom</span>(<span class="dv">1</span>, <span class="dv">36</span>, <span class="dv">1</span><span class="op">/</span><span class="dv">2</span>) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">20</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">mean</span>(<span class="kw">replicate</span>(<span class="dv">10000</span>, <span class="kw">rbinom</span>(<span class="dv">1</span>, <span class="dv">36</span>, <span class="dv">1</span><span class="op">/</span><span class="dv">2</span>) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">20</span>))</span></code></pre></div>
 <pre><code>## [1] 0.3057</code></pre>
-<p>Here, we’ve estimated that the difference in numbers of people with a longer finger on each hand is not statistically significant (<span class="math inline">\(p \appox 0.3\)</span>, by simulation).</p>
+<p>Here, we’ve estimated that the difference in numbers of people with a longer finger on each hand is not statistically significant (<span class="math inline">\(p \approx 0.3\)</span>, by simulation).</p>
 </section>
 <section id="so-where-do-p-values-come-from" class="slide level2">
 <h2>So, where do <span class="math inline">\(p\)</span>-values come from?</h2>
@@ -619,8 +625,21 @@ sum(ifelse(runif(1) &lt; 1/2, &quot;H&quot;, &quot;T&quot;) == &quot;H&quot;)</c
 <section id="section-2" class="slide level2">
 <h2></h2>
 <p>So, where did <em>this</em> <span class="math inline">\(p\)</span>-value come from?</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a>(tt &lt;-<span class="st"> </span><span class="kw">t.test</span>(instant, not_instant))</span></code></pre></div>
-<pre><code>## Error in t.test(instant, not_instant): object &#39;instant&#39; not found</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>(tt &lt;-<span class="st"> </span><span class="kw">t.test</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>        airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable],</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>        airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable]</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>))</span></code></pre></div>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  airbnb$price[airbnb$instant_bookable] and airbnb$price[!airbnb$instant_bookable]
+## t = 3.6482, df = 5039.8, p-value = 0.0002667
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##   4.475555 14.872518
+## sample estimates:
+## mean of x mean of y 
+##  124.6409  114.9668</code></pre>
 <div class="fragment">
 <p>The <span class="math inline">\(t\)</span> distribution! (see separate slides)</p>
 </div>

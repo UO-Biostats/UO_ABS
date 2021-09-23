@@ -27,7 +27,7 @@ Week 1 (*9/29*)
     - Slides: Reminders of [COVID policies](../CLASS_MATERIALS/Lectures/covid_uo_slides.pdf)
     - Slides: [Introduction](../CLASS_MATERIALS/Lectures/Week_01_Introduction.slides.html)
     - Slides: [Hypothesis testing and p-values](../CLASS_MATERIALS/Lectures/Week_01_p_values.slides.html)
-    - Slides: [The $t$-distribution](../CLASS_MATERIALS/Lectures/Week_01_t_distribution.slides.html)
+    - Slides: [The t distribution](../CLASS_MATERIALS/Lectures/Week_01_t_distribution.slides.html)
     - Slides: [The central limit theorem](../CLASS_MATERIALS/Lectures/Week_01_central_limit_theorem.slides.html)
     - [Homework 1](../CLASS_MATERIALS/Homeworks/HW01.html) *(due 10/7)*
     - [how to git the slide source](using-git.html)
