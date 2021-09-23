@@ -1,0 +1,285 @@
+---
+title: "Uncertainty: (how to) deal with it"
+author: "Peter Ralph"
+date: "28 September 2021 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+
+# format numbers for display
+nf <- function (x, prefix="", digits=2, ...) {
+    paste(prefix, format(x, digits=digits, ...))
+}
+```
+
+# Course overview
+
+##
+
+![a box of tools](images/toolbox.jpeg){width=80%}
+
+::: {.caption}
+image: Frank Klausz, woodandshop.com
+:::
+
+
+## Steps in data analysis
+
+1. Care, or at least think, about the data.
+
+2. Look at the data.
+
+3. Query the data.
+
+4. Check the results.
+
+5. Communicate.
+
+. . .
+
+Often "statistics" focuses on *querying*.
+Doing that effectively requires all the other steps, too.
+
+
+## Prerequisites
+
+We'll be assuming that you have some familiarity with
+
+- programming, and
+- statistics
+
+. . .
+
+For instance, you should be able to figure out what this means:
+```{r intro}
+x = c(2, 4, 3, 6)
+y = c(5, 12, 4, 10, 2)
+t.test(x, y)
+```
+
+
+## Overview and mechanics
+
+See [the course website](https://UO-Biostats.github.io/UO_ABS).
+
+# Break
+
+##
+
+Please take 10 minutes to
+
+1. answer the "Welcome Survey" on Canvas,
+2. [get the course repository from github](https://uo-biostats.github.io/UO_ABS/pages/using-git.html),
+3. [install Rstudio](https://rstudio.com/products/rstudio/download/) and/or
+4. move around.
+
+##
+
+Questions?
+
+# Some core statistical concepts
+
+## Statistics or parameters?
+
+A **statistic** is
+
+: a numerical description of a dataset.
+
+. . .
+
+A **parameter** is 
+
+: a numerical attribute of a model of reality.
+
+. . .
+
+Often, *statistics* are used to estimate *parameters*.
+
+
+## The two heads of classical statistics
+
+estimating parameters, with uncertainty *(confidence intervals)*
+
+evaluating (in-)consistency with a particular situation *($p$-values)*
+
+. . .
+
+1. What do these data tell us about the world?
+2. How strongly do we believe it?
+
+
+. . .
+
+*This week:* digging in, with simple examples.
+
+
+## Lurking, behind everything:
+
+is *uncertainty*
+
+. . .
+
+thanks to *randomness*.
+
+. . .
+
+How do we understand randomness, concretely and quantitatively?
+
+. . .
+
+With *models*.
+
+
+
+# A quick look at some data
+
+## Some data
+
+AirBnB hosts in Portland, OR:
+[website](http://insideairbnb.com/get-the-data.html) and 
+[download link](http://data.insideairbnb.com/united-states/or/portland/2019-07-10/data/listings.csv.gz).
+
+```{r airbnb}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
+nrow(airbnb)
+names(airbnb)
+```
+
+##
+
+
+Questions: how much does an AirBnB typically cost in Portland?
+Do "instant bookable" ones cost more?
+
+
+## Second, look at the data
+
+```{r airbnb_numbers}
+summary(airbnb$price)
+```
+
+## 
+
+```{r airbnb_ib}
+summary(airbnb$instant_bookable)
+```
+
+## Whoops
+
+```{r airbnb_data}
+airbnb$price <- as.numeric(gsub("$", "", airbnb$price, fixed=TRUE))
+airbnb$instant_bookable <- (airbnb$instant_bookable == "t")
+```
+
+------------
+
+```{r airbnb_numbers2}
+summary(airbnb$price)
+summary(airbnb$instant_bookable)
+```
+
+------------
+
+```{r bed}
+table(airbnb$bed_type) # hm
+```
+
+## How much is a typical night?
+
+```{r mean_price}
+mean(airbnb$price, na.rm=TRUE)
+```
+
+-------------------
+
+```{r airbnb_hist, fig.width=2.5*fig.dim}
+hist(airbnb$price, breaks=40, xlab='nightly price ($)', col=grey(.8), xlim=range(airbnb$price, finite=TRUE), main='AirBnB prices in Portland, OR')
+```
+
+. . .
+
+Conclusion?
+
+
+## Do "instant bookable" charge more?
+
+```{r airbnb_hist2, fig.height=1.5*fig.dim, fig.width=2.5*fig.dim}
+layout(1:2)
+instant <- airbnb$price[airbnb$instant_bookable]
+not_instant <- airbnb$price[!airbnb$instant_bookable]
+hist(not_instant, breaks=40, xlab='nightly price ($)', col=grey(.8), xlim=range(airbnb$price, finite=TRUE), main='not instant bookable') 
+hist(instant, breaks=40, xlab='nightly price ($)', col=grey(.8), main='instant bookable')
+```
+
+--------------
+
+```{r airbnb_t}
+(tt <- t.test(instant, not_instant))
+```
+
+## Conclusion
+
+> Instant bookable hosts cost more than others
+> (P=`r format(tt$p.value, digits=2)`, t-test with df=`r tt$parameter`).
+
+. . .
+
+*Critique this conclusion, and write your own.*
+
+*Scribe:* person with the smallest `sample.int(1000, 1)`.
+
+
+## Don't forget Steps 1 and 5!
+
+1. Care, or at least think, about the data.
+
+
+5. Communicate.
+
+. . .
+
+How *big* is the difference? How sure are we?
+
+. . .
+
+Statistical significance does not imply real-world significance.
+
+
+
+## Revised conclusion (in class)
+
+Instant bookable hosts cost on average $10 more than
+not instant bookable,
+with a 95\% confidence interval
+of $4.50 to $15.
+The distribution of prices in the two groups were very similar:
+for instance, the first and third quantiles of instant bookable hosts 
+are $`r round(quantile(instant, 0.25, na.rm=TRUE), 0)`
+and $`r round(quantile(instant, 0.75, na.rm=TRUE), 0)`,
+and those of not instant bookable hosts
+are $`r round(quantile(not_instant, 0.25, na.rm=TRUE), 0)`
+and $`r round(quantile(not_instant, 0.75, na.rm=TRUE), 0)`,
+respectively.
+The average instant bookable cost was about $125, with a 95% 
+confidence interval of +/- about $4;
+non-instant bookable hosts cost on average $115 per night,
+with a 95\% CI of about +/- $3.
+Note that the difference of $10 is smallish compared
+to the price of a room,
+but the difference is highly significant (p=.0003, t-test with 5039 degrees of freedom)
+because of the large sample sizes.
+
+
+##
+
+
+So: what did we just do?
+
+. . .
+
+"Hypothesis testing and $p$-values"
