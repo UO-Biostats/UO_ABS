@@ -23,7 +23,7 @@ flexible modeling package [Stan](https://mc-stan.org).
 ## Instructors:
 
 - [Peter Ralph](https://pages.uoregon.edu/plr/), main instructor: plr@uoregon.edu
-    * office hours: Monday noon-2pm (location TBD)
+    * office hours: Monday noon-1:30pm (location TBD)
 
 - [Aidan Short](https://ie2.uoregon.edu/people/short/), graduate teaching assistant: ashort2@uoregon.edu
     * office hours: Wednesday 9-11am (location TBD)
