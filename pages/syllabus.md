@@ -32,9 +32,10 @@ flexible modeling package [Stan](https://mc-stan.org).
 
 ## Course Information
 
-- *Schedule:* Tue/Thur 10:00-11:50 AM
+- *Schedule:* Tue/Thur 10:00-11:50 AM in B040 PSC and on zoom (see Canvas for link)
 - *Websites:* besides [the page you are looking at](https://UO-Biostats.github.io/UO_ABS/),
-    assignments and announcements will be distributed on the Bi 610 [canvas page](https://canvas.uoregon.edu/)
+    assignments and announcements will be distributed
+    on the Bi 610 [canvas page](https://canvas.uoregon.edu/)
 - *Assignments:* Assigned, and due, on Thursdays.
 
 ## Textbooks
