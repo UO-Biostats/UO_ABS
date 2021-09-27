@@ -13,6 +13,6 @@ Quick links:
 - [about](pages/syllabus.html) this course (the syllabus).
 - [schedule](pages/schedule.html), including links to slides and homeworks.
 - [useful links](pages/reference.html), to reference/background material.
-
+- the [github repository](https://github.com/uo-biostats/UO_ABS) for this website
 
 
