@@ -1,0 +1,41 @@
+---
+title: "in_class"
+author: "Peter Ralph"
+date: "September 28, 2021"
+output: html_document
+---
+
+Read in the data:
+```{r read_in_the_data}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
+airbnb$price <- as.numeric(gsub("$", "", airbnb$price, fixed=TRUE))
+airbnb$instant_bookable <- (airbnb$instant_bookable == "t")
+```
+
+First, how many prices didn't convert?
+Well, we have only `r sum(is.na(airbnb$price))` NAs in the dataset -
+so, not very many.
+
+The mean price is $`r mean(airbnb$price, na.rm=TRUE)`,
+most prices are below $300,
+although the highest price is $999/night.
+Here is the distribution of prices:
+```{r hist_prices}
+hist(airbnb$price, breaks=40,
+     main="price per night of AirBnB rooms in Portland",
+     xlab='price, dollars')
+abline(v=mean(airbnb$price, na.rm=TRUE), col='red', lty=2, lwd=2)
+```
+
+Now let's compare the instant bookable
+to the not-instant bookable ones:
+```{r compare}
+instant_bookable <- airbnb$price[airbnb$instant_bookable]
+not_instant_bookable <- airbnb$price[!airbnb$instant_bookable]
+
+layout(1:2)
+hist(instant_bookable,
+     breaks=40)
+hist(not_instant_bookable,
+     breaks=40)
+```
