@@ -98,7 +98,6 @@ Everyone flip a coin:
 ```
 ifelse(runif(1) < 0.5, "H", "T")
 ```
-and put the result in [this google doc](https://docs.google.com/document/d/1bHHyvVaxZXrnN55Hpwhv55u9nbYDEHdC3jHXB5uOB6I/edit).
 
 . . .
 
@@ -116,9 +115,8 @@ and now we have a *fake dataset with $\theta = 1/2$*.
 Let's get some more data:
 ```
 n <- 37 # class size
-sum(ifelse(runif(1) < 1/2, "H", "T") == "H")
+sum(ifelse(runif(n) < 1/2, "H", "T") == "H")
 ```
-and put the result in [the same google doc](https://docs.google.com/document/d/1bHHyvVaxZXrnN55Hpwhv55u9nbYDEHdC3jHXB5uOB6I/edit).
 
 . . .
 
@@ -141,13 +139,6 @@ rbinom(1000, n, 1/2)
 
 ## (in class)
 
-```{r in_class_1}
-mean(replicate(10000, rbinom(1, 36, 1/2) >= 20))
-```
-
-Here, we've estimated that the difference in numbers
-of people with a longer finger on each hand is not statistically
-significant ($p \approx 0.3$, by simulation).
 
 
 ## So, where do $p$-values come from?

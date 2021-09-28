@@ -577,7 +577,6 @@ background-color: var(--r-background-color);
 <div class="fragment">
 <p><em>(class survey)</em> Everyone flip a coin:</p>
 <pre><code>ifelse(runif(1) &lt; 0.5, &quot;H&quot;, &quot;T&quot;)</code></pre>
-<p>and put the result in <a href="https://docs.google.com/document/d/1bHHyvVaxZXrnN55Hpwhv55u9nbYDEHdC3jHXB5uOB6I/edit">this google doc</a>.</p>
 </div>
 <div class="fragment">
 <p>We want to estimate the parameter</p>
@@ -591,8 +590,7 @@ background-color: var(--r-background-color);
 <h2></h2>
 <p>Let’s get some more data:</p>
 <pre><code>n &lt;- 37 # class size
-sum(ifelse(runif(1) &lt; 1/2, &quot;H&quot;, &quot;T&quot;) == &quot;H&quot;)</code></pre>
-<p>and put the result in <a href="https://docs.google.com/document/d/1bHHyvVaxZXrnN55Hpwhv55u9nbYDEHdC3jHXB5uOB6I/edit">the same google doc</a>.</p>
+sum(ifelse(runif(n) &lt; 1/2, &quot;H&quot;, &quot;T&quot;) == &quot;H&quot;)</code></pre>
 <div class="fragment">
 <p>Now we can estimate the <span class="math inline">\(p\)</span>-value for the hypothesis that <span class="math inline">\(\theta = 1/2\)</span>.</p>
 </div>
@@ -608,9 +606,6 @@ sum(ifelse(runif(1) &lt; 1/2, &quot;H&quot;, &quot;T&quot;) == &quot;H&quot;)</c
 </section>
 <section id="in-class" class="slide level2">
 <h2>(in class)</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">mean</span>(<span class="kw">replicate</span>(<span class="dv">10000</span>, <span class="kw">rbinom</span>(<span class="dv">1</span>, <span class="dv">36</span>, <span class="dv">1</span><span class="op">/</span><span class="dv">2</span>) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">20</span>))</span></code></pre></div>
-<pre><code>## [1] 0.3057</code></pre>
-<p>Here, we’ve estimated that the difference in numbers of people with a longer finger on each hand is not statistically significant (<span class="math inline">\(p \approx 0.3\)</span>, by simulation).</p>
 </section>
 <section id="so-where-do-p-values-come-from" class="slide level2">
 <h2>So, where do <span class="math inline">\(p\)</span>-values come from?</h2>
@@ -625,10 +620,10 @@ sum(ifelse(runif(1) &lt; 1/2, &quot;H&quot;, &quot;T&quot;) == &quot;H&quot;)</c
 <section id="section-2" class="slide level2">
 <h2></h2>
 <p>So, where did <em>this</em> <span class="math inline">\(p\)</span>-value come from?</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>(tt &lt;-<span class="st"> </span><span class="kw">t.test</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>        airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable],</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>        airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable]</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>))</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>(tt &lt;-<span class="st"> </span><span class="kw">t.test</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>        airbnb<span class="op">$</span>price[airbnb<span class="op">$</span>instant_bookable],</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>        airbnb<span class="op">$</span>price[<span class="op">!</span>airbnb<span class="op">$</span>instant_bookable]</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>))</span></code></pre></div>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 

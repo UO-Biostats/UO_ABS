@@ -161,12 +161,14 @@ Do "instant bookable" ones cost more?
 
 ```{r airbnb_numbers}
 summary(airbnb$price)
+str(airbnb$price)
 ```
 
 ## 
 
 ```{r airbnb_ib}
 summary(airbnb$instant_bookable)
+str(airbnb$instant_bookable)
 ```
 
 ## Whoops
@@ -252,27 +254,6 @@ Statistical significance does not imply real-world significance.
 
 
 ## Revised conclusion (in class)
-
-Instant bookable hosts cost on average $10 more than
-not instant bookable,
-with a 95\% confidence interval
-of $4.50 to $15.
-The distribution of prices in the two groups were very similar:
-for instance, the first and third quantiles of instant bookable hosts 
-are $`r round(quantile(instant, 0.25, na.rm=TRUE), 0)`
-and $`r round(quantile(instant, 0.75, na.rm=TRUE), 0)`,
-and those of not instant bookable hosts
-are $`r round(quantile(not_instant, 0.25, na.rm=TRUE), 0)`
-and $`r round(quantile(not_instant, 0.75, na.rm=TRUE), 0)`,
-respectively.
-The average instant bookable cost was about $125, with a 95% 
-confidence interval of +/- about $4;
-non-instant bookable hosts cost on average $115 per night,
-with a 95\% CI of about +/- $3.
-Note that the difference of $10 is smallish compared
-to the price of a room,
-but the difference is highly significant (p=.0003, t-test with 5039 degrees of freedom)
-because of the large sample sizes.
 
 
 ##
