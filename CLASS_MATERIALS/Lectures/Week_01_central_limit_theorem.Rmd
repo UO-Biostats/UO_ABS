@@ -134,3 +134,21 @@ This is thanks to the Central Limit Theorem.
 ($^*$ usually, approximately)
 
 
+## Simulation
+
+Simulate at least 1,000 random draws from each of these distributions,
+and make histograms:
+
+- [`rnorm( )`](https://en.wikipedia.org/wiki/Normal_distribution)
+- [`rexp( )`](https://en.wikipedia.org/wiki/Exponential_distribution)
+- [`runif( )`](https://en.wikipedia.org/wiki/Uniform_distribution)
+- [`rgamma( )`](https://en.wikipedia.org/wiki/Gamma_distribution)
+- [`rpois( )`](https://en.wikipedia.org/wiki/Poisson_distribution)
+- [`rgeom( )`](https://en.wikipedia.org/wiki/Geometric_distribution)
+- [`rbinom( )`](https://en.wikipedia.org/wiki/Binomial_distribution)
+- [`rnbinom( )`](https://en.wikipedia.org/wiki/Negative_binomial_distribution)
+- [`rbeta( )`](https://en.wikipedia.org/wiki/Beta_distribution)
+
+Which ones give you integers? positive numbers? numbers in a bounded region?
+
+
