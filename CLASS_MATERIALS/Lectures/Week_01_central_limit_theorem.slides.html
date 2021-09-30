@@ -516,7 +516,7 @@ background-color: var(--r-background-color);
 <p>The <a href="https://en.wikipedia.org/wiki/Central_limit_theorem">Central Limit Theorem</a> says, roughly, that net effect of the <em>sum</em> of a bunch of small, <em>independent</em> random things can be well-approximated by a <a href="https://en.wikipedia.org/wiki/Normal_distribution">Gaussian distribution</a>, almost regardless of the details.</p>
 <div class="fragment">
 <p>For instance: say <span class="math inline">\(X_1, X_2, \ldots, X_n\)</span> are independent, random draws with mean <span class="math inline">\(\mu\)</span> and standard deviation <span class="math inline">\(\sigma\)</span>.</p>
-<p>Then, the difference between the “true” mean, <span class="math inline">\(\mu\)</span>, and the sample mean is Gaussian, <span class="math display">\[\begin{aligned}
+<p>Then, the sample mean is Gaussian, centered on the true mean: <span class="math display">\[\begin{aligned}
     \bar x = \frac{1}{n}\sum_{i=1}^n X_i \approx \Normal\left(\mu, \frac{\sigma}{\sqrt{n}}\right) .
 \end{aligned}\]</span></p>
 </div>

@@ -29,7 +29,7 @@ almost regardless of the details.
 For instance: say $X_1, X_2, \ldots, X_n$ are independent, random draws
 with mean $\mu$ and standard deviation $\sigma$.
 
-Then, the difference between the "true" mean, $\mu$, and the sample mean is Gaussian,
+Then, the sample mean is Gaussian, centered on the true mean:
 $$\begin{aligned}
     \bar x = \frac{1}{n}\sum_{i=1}^n X_i \approx \Normal\left(\mu, \frac{\sigma}{\sqrt{n}}\right) .
 \end{aligned}$$
