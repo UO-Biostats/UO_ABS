@@ -63,9 +63,9 @@ The weight change across the two weeks are highly correlated with each other
 
 We have also provided a "full" example:
 
-- [the assignment](../CLASS_MATERIALS/Homeworks/HW_Example.html)
-- a solution: [Rmarkdown source](../CLASS_MATERIALS/Homeworks/HW_Example_solution.Rmd)
-- a solution: [rendered html](../CLASS_MATERIALS/Homeworks/HW_Example_solution.html)
+- [the assignment](../CLASS_MATERIALS/Tutorials/HW_Example.html)
+- a solution: [Rmarkdown source](../CLASS_MATERIALS/Tutorials/HW_Example_solution.Rmd)
+- a solution: [rendered html](../CLASS_MATERIALS/Tutorials/HW_Example_solution.html)
 
 This example is a rather short assignment,
 but it should give you the idea.

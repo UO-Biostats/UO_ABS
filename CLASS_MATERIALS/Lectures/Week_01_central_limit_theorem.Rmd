@@ -47,7 +47,7 @@ $$\begin{equation}
 \end{equation}$$
 means that
 $$\begin{equation}
-    \P\left\{Z \ge \frac{x - \mu}{\sigma}\right\} = \int_x^\infty \frac{1}{\sqrt{2 \pi}} e^{-u^2/2} du .
+    \P\left\{Z \ge \mu + x \sigma \right\} = \int_x^\infty \frac{1}{\sqrt{2 \pi}} e^{-u^2/2} du .
 \end{equation}$$
 
 . . .
