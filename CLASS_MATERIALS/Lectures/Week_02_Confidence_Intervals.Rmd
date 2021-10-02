@@ -1,0 +1,236 @@
+---
+title: "Confident in confidence intervals?"
+author: "Peter Ralph"
+date: "5 October 2021 -- Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+```
+
+
+# $t$ distribution reminder
+
+##
+
+Recall our AirBnB example:
+```{r airbnb, warning=FALSE}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
+airbnb$price <- as.numeric(gsub("$", "", airbnb$price, fixed=TRUE))
+airbnb$instant_bookable <- (airbnb$instant_bookable == "t")
+instant <- airbnb$price[airbnb$instant_bookable]
+not_instant <- airbnb$price[!airbnb$instant_bookable]
+(tt <- t.test(instant, not_instant))
+```
+
+## How's the $t$ test work?
+
+The *central limit theorem*.
+
+## In words:
+
+The number of *standard errors* that the *sample mean* is
+away from the *true mean* has a $t$ distribution.
+
+. . .
+
+- ... with $n-2$ degrees of freedom.
+- "standard error" = $s / \sqrt{n}$ = SD of the sample mean
+
+. . .
+
+```{r t_smpling_distx, echo=FALSE}
+n <- 20
+xm <- replicate(1000, {
+            x <- 2 * runif(n) - 1;
+            mean(x) * sqrt(n) / sd(x) })
+xh <- hist(xm, breaks=40, main=sprintf('t of %d samples', n), col='red')
+xx <- xh$breaks
+polygon(c(xx[-1] - diff(xx)/2, xx[1]),
+        c(length(xm)* diff(pt(xx, df=(n-1))), 0),
+        col=adjustcolor("blue", 0.4))
+```
+
+##
+
+For instance,
+the probability that the sample mean is within 2 standard errors
+of the true mean [is approximately](https://en.wikipedia.org/wiki/Student%27s_t-distribution)
+
+$$\begin{aligned}
+    \int_{-2}^2
+        \frac{\Gamma\left(\frac{n-1}{2}\right)}{\sqrt{(n-2) \pi}\Gamma\left(\frac{n-2}{2}\right)}
+        \left(1 + \frac{x^2}{n-2}\right)^{-\frac{n - 1}{2}} dx .
+\end{aligned}$$
+
+. . .
+
+```{r t_integral, echo=FALSE, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+xx <- seq(-5, 5, length.out=101)
+a <- xx[-1] - diff(xx)/2
+a <- c(a, a[length(a)], a[1])
+b <- c(diff(pt(xx, df=4)), 0, 0)
+plot(a, b, type='l', xlab='t', ylab='probability density')
+polygon(a, b, col=adjustcolor("blue", 0.4))
+xx <- xx[abs(xx) <= 2]
+a <- xx[-1] - diff(xx)/2
+a <- c(a, a[length(a)], a[1])
+b <- c(diff(pt(xx, df=4)), 0, 0)
+polygon(a, b, col=adjustcolor("red", 0.4))
+```
+
+
+## Intuition
+
+1. Simulate a dataset of 20 random draws from a Normal distribution
+    with mean 0, and do a $t$ test of the hypothesis that $\mu=0$.
+
+. . .
+
+2. Do that 1,000 times, and make a histogram of the resulting $p$-values.
+    What proportion are less than 0.05?
+
+. . .
+
+3. Change mean of the simulated values to 1, and do the same.
+
+
+
+
+# Confidence intervals
+
+##
+
+A *95% confidence interval* for an estimate
+is constructed so that no matter what the true values,
+95% of the the confidence intervals you construct will overlap the truth.
+
+. . .
+
+In other words,
+if we collect 100 independent samples from a population with true mean $\mu$,
+and 95% construct confidence intervals for the mean from each,
+then about 95 of these should overlap $\mu$.
+
+## How's that work?
+
+```{r plot_t, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+xx <- seq(-5, 5, length.out=101)
+a <- xx[-1] - diff(xx)/2
+a <- c(a, a[length(a)], a[1])
+b <- c(diff(pt(xx, df=4)), 0, 0)
+plot(a, b, type='l', xlab='t', ylab='probability density')
+polygon(a, b, col=adjustcolor("blue", 0.4))
+text(-2.5, 0.03, expression(mu == bar(x) + t %*% frac(s, sqrt(n))), cex=3)
+```
+
+## How's that work?
+
+```{r plot_t2, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+plot(a, b, type='l', xlab='t', ylab='probability density')
+polygon(a, b, col=adjustcolor("blue", 0.4))
+xx <- xx[abs(xx) <= qt(0.975, df=4)]
+a <- xx[-1] - diff(xx)/2
+a <- c(a, a[length(a)], a[1])
+b <- c(diff(pt(xx, df=4)), 0, 0)
+polygon(a, b, col=adjustcolor("red", 0.4))
+text(-2.5, 0.03, expression(mu == bar(x) + t %*% frac(s, sqrt(n))), cex=3)
+text(0.0, 0.01, "95%", cex=3)
+```
+
+
+## Check this.
+
+> if we collect 100 independent samples from a population with true mean $\mu$,
+> and construct 95% confidence intervals from each,
+> then about 95 of these should overlap $\mu$.
+
+Let's take independent samples of size $n=20$ from a Normal distribution with $\mu = 0$.
+Example:
+```{r conf_int}
+n <- 20; mu <- 0
+t.test(rnorm(n, mean=mu))$conf.int
+```
+
+## 
+
+```{r many conf_int}
+tci <- replicate(300, t.test(rnorm(n, mean=mu))$conf.int)
+mean(tci[1,] > 0 | tci[2,] < 0)
+```
+
+##
+
+```{r many_conf_int_plot, fig.height=2*fig.dim, echo=FALSE} 
+tci <- tci[,order(colSums(tci))]
+plot((tci[1,] + tci[2,])/2, 1:ncol(tci), xlim=range(tci), type='n',
+     xlab='value', ylab='')
+segments(x0=tci[1,], x1=tci[2,], y0=1:ncol(tci), col=ifelse(tci[2,] < 0 | tci[1,] > 0, 'red', 'black'))
+points((tci[1,] + tci[2,])/2, 1:ncol(tci), pch=20)
+abline(v=0)
+```
+
+## What's that 95% mean?
+
+Suppose we survey 100 random UO students
+and find that 10 had been to a party recently
+and so get a 95% confidence interval of 4%-16% for the percentage
+of UO students who have been to a party recently.
+
+. . .
+
+> There is a 95% chance that
+> the true proportion of UO students who have been to a party recently
+> is between 4% and 16%.
+
+. . .
+
+*Not so good:* the true proportion is a *fixed* number,
+so it doesn't make sense to talk about a *probability* here.
+
+# Power analysis
+
+##
+
+**Statistical power**
+is how good our statistics can find things out.
+
+. . .
+
+Formally:
+the probability of identifying a true effect.
+
+. . .
+
+*Example:*
+Suppose two snail species' speeds differ by 3cm/h.
+What's the chance our experiment will identify the difference?
+
+
+## A prospective study
+
+Suppose that we're going to do a survey of room prices of an AirBnB competitor.
+How do our power and accuracy depend on sample size?
+Supposing that prices roughly match AirBnB's:
+mean $\mu =$ \$`r round(mean(airbnb$price, na.rm=TRUE))`
+and SD $\sigma =$ \$`r round(sd(airbnb$price, na.rm=TRUE))`,
+estimate:
+
+1. The size of the difference between the mean price of a random sample of size `n`
+   and the (true) mean price.
+
+2. The probability that a sample of size `n` rooms has a sample mean within \$10 of the (true) mean price.
+
+
+## Group exercise
+
+Answer those questions *empirically:*
+by taking random samples from the `price` column of the `airbnb` data, make two plots:
+
+1. Expected difference between the mean price of a random sample of `n` Portland AirBnB rooms and the (true) mean price of *all* rooms, as a function of `n`.
+
+2. Probability that a sample of size `n` of Portland AirBnB rooms has a sample mean within \$10 of the (true) mean price of *all* rooms, as a function of `n`.

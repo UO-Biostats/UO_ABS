@@ -38,6 +38,9 @@ Week 2 (*10/6*)
 
 : Analysis of Variance (ANOVA) and experimental design; tidy data; power and false positives
 
+    - Slides: [Confidence intervals](../CLASS_MATERIALS/Lectures/Week_02_Confidence_Intervals.slides.html)
+    - Slides: [Experimental design](../CLASS_MATERIALS/Lectures/Week_02_Experimental_design.slides.html)
+    - Slides: [Analysis of Variance](../CLASS_MATERIALS/Lectures/Week_02_ANOVA.slides.html)
     - Reading: Quinn & Keough chapters 5, 7, 8
 
 Week 3 (*10/13*)
