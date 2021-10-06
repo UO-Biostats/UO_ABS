@@ -1,0 +1,68 @@
+---
+title: "Untitled"
+author: "Peter Ralph"
+date: "October 5, 2021"
+output: html_document
+---
+
+Read in data:
+```{r data}
+airbnb <- read.csv("../Datasets/Airbnb_data/Airbnb_listings_Portland.csv")
+prices <- na.omit(as.numeric(gsub("$", "", airbnb$price, fixed=TRUE)))
+```
+
+Find the difference between sample mean and true mean as a function of $n$:
+```{r diff_mean}
+true_mean <- mean(prices)
+mean_diff <- function (n) {
+    # This function takes a sample size, n, and estimates
+    # the mean absolute error that you get when estimating
+    # the mean price using a sample of size n.
+    differences <- replicate(200, {
+        x <- sample(prices, size=n)
+        abs(mean(x) - true_mean)  # absolute error
+    })
+    return(mean(differences)) # mean absolute error
+}
+```
+Let's make a plot of how the mean absolute error depends on $n$:
+```{r plotit}
+nvals <- 10*(10:100)
+maes <- rep(NA, length(nvals))
+for (j in seq_along(nvals)) {
+    maes[j] = mean_diff(nvals[j])
+}
+plot(nvals, maes, type='l',
+     xlab='sample size (n)',
+     ylab='mean absolute error ($)')
+```
+We see that, for instance, if we take a sample of size 200,
+then we'll probably get an estimate of the mean within around $7
+of the true mean,
+and at a sample of size 1000, the error will be between 2 and 3 dollars.
+
+## When is the error within $10?
+
+Next we'd like to estimate the *probability* that a sample
+of size $n$ will return an estimate within $10 of the true mean.
+```{r prob_mean}
+prop_lt_10 <- function (n) {
+    # This function takes a sample size, n, and estimates
+    # the probability that the sample mean is within $10
+    # of the true mean.
+    differences <- replicate(200, {
+        x <- sample(prices, size=n)
+        abs(mean(x) - true_mean)  # absolute error
+    })
+    return(mean(differences < 10)) # proportion less than 10
+}
+```
+Here's the results:
+```{r plot_probs}
+probs <- sapply(nvals, prop_lt_10)
+plot(nvals, probs, type='l',
+     xlab='sample size (n)',
+     ylab='prob error is less than $10')
+```
+To be confident that the error is within $10,
+it looks like you'd need a sample of at least size 400 or 500.
