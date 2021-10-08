@@ -42,6 +42,7 @@ Week 2 (*10/6*)
     - Slides: [Experimental design](../CLASS_MATERIALS/Lectures/Week_02_Experimental_design.slides.html)
     - Slides: [Analysis of Variance](../CLASS_MATERIALS/Lectures/Week_02_ANOVA.slides.html)
     - [In-class coding](../CLASS_MATERIALS/Lectures/Week_02_in_class.Rmd)
+    - [Homework 2](../CLASS_MATERIALS/Homeworks/HW02.html) *(due 10/14)*
     - Reading: Quinn & Keough chapters 5, 7, 8
 
 Week 3 (*10/13*)

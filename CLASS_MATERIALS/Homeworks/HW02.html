@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>HW02</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <div style="display: none">
+  \[
+  %%
+  % Add your macros here; they&#39;ll be included in pdf and html output.
+  %%
+
+  \newcommand{\R}{\mathbb{R}}    % reals
+  \newcommand{\E}{\mathbb{E}}    % expectation
+  \renewcommand{\P}{\mathbb{P}}  % probability
+  \DeclareMathOperator{\logit}{logit}
+  \DeclareMathOperator{\logistic}{logistic}
+  \DeclareMathOperator{\sd}{sd}
+  \DeclareMathOperator{\var}{var}
+  \DeclareMathOperator{\cov}{cov}
+  \DeclareMathOperator{\cor}{cor}
+  \DeclareMathOperator{\Normal}{Normal}
+  \DeclareMathOperator{\LogNormal}{logNormal}
+  \DeclareMathOperator{\Poisson}{Poisson}
+  \DeclareMathOperator{\Beta}{Beta}
+  \DeclareMathOperator{\Binom}{Binomial}
+  \DeclareMathOperator{\Gam}{Gamma}
+  \DeclareMathOperator{\Exp}{Exponential}
+  \DeclareMathOperator{\Cauchy}{Cauchy}
+  \DeclareMathOperator{\Unif}{Unif}
+  \DeclareMathOperator{\Dirichlet}{Dirichlet}
+  \DeclareMathOperator{\Wishart}{Wishart}
+  \DeclareMathOperator{\StudentsT}{StudentsT}
+  \DeclareMathOperator{\Weibull}{Weibull}
+
+  \newcommand{\given}{\;\vert\;}
+  \]
+  </div>
+</head>
+<body>
+<h1 id="homework-2-anova">Homework 2: ANOVA</h1>
+<p><strong>Assignment:</strong> Your task is to use Rmarkdown to write a short report. Your report may include visible R code, but should still be <em>readable</em>, as a narrative, with paragraphs describing methods, interpreting plots, and communicating results.</p>
+<p>Please submit <strong>both the Rmd file <em>and</em> the resulting html or pdf file</strong>. You can work with other members of class, but I expect you to construct and run all of the scripts yourself.</p>
+<h2 id="the-problem">The problem</h2>
+<p>You’ll be looking at the PanTHERIA dataset, which is</p>
+<blockquote>
+<p>… a global species-level data set of key life-history, ecological and geographical traits of all known extant and recently extinct mammals (PanTHERIA) developed for a number of macroecological and macroevolutionary research projects.</p>
+</blockquote>
+<p>Metadata is available at <a href="http://esapubs.org/archive/ecol/E090/184/metadata.htm">the Ecological Archives</a>, and (along with some hints about how to load it appropriately) is included in this repository, <a href="../Datasets/PanTHERIA/README.md">here</a>.</p>
+<ol type="1">
+<li>The first question is: <em>Does average adult body size differ significantly between trophic levels? By how much?</em> For “body size” you should use the <code>AdultBodyMass_g</code> variable, and “trophic level” of a species, <code>TrophicLevel</code>, is either <em>herbivore</em>, <em>carnivore</em>, or <em>omnivore</em>. In your report, you should</li>
+</ol>
+<ul>
+<li>summarize or plot adult body mass across the dataset</li>
+<li>transform to log10 body mass, and explain why this is a good idea</li>
+<li>show a plot of the distribution of log10 body mass by trophic level</li>
+<li>perform an ANOVA of log10 body mass against trophic level</li>
+<li>carefully explain the conclusion, including a short discussion of ways that this dataset violates the assumptions of ANOVA.</li>
+</ul>
+<p>In your conclusion, consider that this is observational data, and furthermore, species share differing amounts of evolutionary history, making them highly nonindependent: bats (Order Chiroptera) are smaller than whales (Order Cetacea).</p>
+</body>
+</html>
