@@ -68,6 +68,7 @@ eggs <- na.omit(data.frame(
         num_eggs=unlist(x[,-1])
      ))
 eggs <- eggs[order(match(eggs$breed, x[,1])),]
+rownames(eggs) <- NULL
 knitr::kable(eggs)
 ```
 :::
@@ -116,12 +117,12 @@ are made easier by the [tidyverse](https://tidyverse.org).
 
 - also includes `ggplot` (for "Grammar of Graphics")
 
-## A tibble is a data frame
+## A "tibble" is a data frame
 
 ![](images/tibble.jpeg)
 
 
-## A tibble is a data frame
+## A "tibble" is a data frame
 
 ![](images/tibble2.jpeg)
 
@@ -133,7 +134,7 @@ are made easier by the [tidyverse](https://tidyverse.org).
 - Create new variables with functions of existing variables with `mutate()`.
 - Collapse many values down to a single summary with `summarise()`.
 
-## `filter()`, `arrange()` and `select()`
+## `select()`, `filter()`, and `arrange()`
 
 ```
 a1 <- select(airbnb, neighbourhood, price, host_id, beds, bathrooms)
@@ -152,7 +153,7 @@ a3 <- arrange(a2, price, neighbourhood)
 ## Also, the "pipe"
 
 ```
-a3 <- (select(airbnb, neighbourhood, price, host_id, beds, bathrooms)
+a3 <- (airbnb %>% select(neighbourhood, price, host_id, beds, bathrooms)
         %>% filter(neighbourhood == "Richmond" 
                      | neighbourhood == "Woodlawn"
                      | neighbourhood == "Downtown")
@@ -163,7 +164,7 @@ a3 <- (select(airbnb, neighbourhood, price, host_id, beds, bathrooms)
 
 Tidyverse:
 ```
-a3 <- (select(airbnb, neighbourhood, price, host_id, beds, bathrooms)
+a3 <- (airbnb %>% select(neighbourhood, price, host_id, beds, bathrooms)
         %>% filter(neighbourhood == "Richmond" 
                      | neighbourhood == "Woodlawn"
                      | neighbourhood == "Downtown")

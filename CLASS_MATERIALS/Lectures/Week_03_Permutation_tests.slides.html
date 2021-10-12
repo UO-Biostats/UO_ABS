@@ -524,7 +524,7 @@ background-color: var(--r-background-color);
 ## sample estimates:
 ## mean of x mean of y 
 ##  124.6409  114.9668</code></pre>
-<p><strong>But,</strong> the <span class="math inline">\(t\)</span> test relies on <em>Normality</em>. Is the distribution of AirBnB prices too “weird”? How can we be sure?</p>
+<p><strong>But,</strong> the <span class="math inline">\(t\)</span> test relies on <em>Normality</em> (a little). Is the distribution of AirBnB prices too “weird”? How can we be sure?</p>
 <div class="fragment">
 <p>Methods:</p>
 <ol type="1">
@@ -585,7 +585,8 @@ background-color: var(--r-background-color);
 <ol type="1">
 <li><p>Find pairs of species in the same family for which one is a omnivores and the other an herbivore.</p></li>
 <li><p>Compute within each pair <strong>(some statistic)</strong> comparing omnivore to herbivore size, and average these (the test statistic).</p></li>
-<li><p><em>Randomly reassign</em> “trophic level” within families many times, recomputing this ratio.</p></li>
+<li><p><em>Randomly reassign</em> “trophic level” within families many times, recomputing this statistic.</p></li>
+<li><p>The <span class="math inline">\(p\)</span>-value is the proportion of shuffled statistics greater than the observed statistic.</p></li>
 </ol>
 </section>
 <section id="in-class" class="slide level2">

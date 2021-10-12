@@ -27,7 +27,7 @@ airbnb$instant_bookable <- (airbnb$instant_bookable == "t")
 t.test(airbnb$price[airbnb$instant_bookable], airbnb$price[!airbnb$instant_bookable])
 ```
 
-**But,** the $t$ test relies on *Normality*.
+**But,** the $t$ test relies on *Normality* (a little).
 Is the distribution of AirBnB prices too "weird"?
 How can we be sure?
 
@@ -107,7 +107,9 @@ in the Pantheria data:
 2. Compute within each pair **(some statistic)** comparing omnivore to herbivore size,
    and average these (the test statistic).
 
-3. *Randomly reassign* "trophic level" within families many times, recomputing this ratio.
+3. *Randomly reassign* "trophic level" within families many times, recomputing this statistic.
+
+4. The $p$-value is the proportion of shuffled statistics greater than the observed statistic.
 
 ## In class
 
