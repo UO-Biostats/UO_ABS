@@ -1,0 +1,118 @@
+---
+title: "Permutation tests"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+library(tidyverse)
+```
+
+# Permutation tests
+
+
+## 
+
+```{r ttest, echo=FALSE, warning=FALSE}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
+airbnb$price <- as.numeric(gsub("$", "", airbnb$price, fixed=TRUE))
+airbnb$instant_bookable <- (airbnb$instant_bookable == "t")
+t.test(airbnb$price[airbnb$instant_bookable], airbnb$price[!airbnb$instant_bookable])
+```
+
+**But,** the $t$ test relies on *Normality*.
+Is the distribution of AirBnB prices too "weird"?
+How can we be sure?
+
+. . .
+
+Methods:
+
+1. Remove the big values and try again.
+
+2. Use a nonparametric test.
+
+
+
+## The permutation test
+
+*Observation:*
+**If** there was no meaningful difference in prices between "instant bookable" and not,
+**then randomly shuffling that label** won't change anything.
+
+. . .
+
+Strategy:
+
+1. Shuffle the `instant_bookable` column.
+2. Compute the difference in means.
+3. Repeat, many times.
+4. Compare: the $p$-value is the proportion of "shuffled" values more extreme than observed.
+
+. . .
+
+![Rightarrow](images/finger_right.png){.finger width="15%"} 
+*Why* is this a $p$-value?  For what hypothesis?
+
+## Shuffle once
+
+```{r shuf}
+fake_is_instant <- sample(airbnb$instant_bookable)
+(mean(airbnb$price[fake_is_instant], na.rm=TRUE) - 
+                mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
+```
+
+## Many times
+
+```{r many_shuf, cache=TRUE}
+real_diff <- (mean(airbnb$price[airbnb$instant_bookable], na.rm=TRUE)
+               - mean(airbnb$price[!airbnb$instant_bookable], na.rm=TRUE))
+permuted_diffs <- replicate(10000, {
+        fake_is_instant <- sample(airbnb$instant_bookable)
+        (mean(airbnb$price[fake_is_instant], na.rm=TRUE)
+             - mean(airbnb$price[!fake_is_instant], na.rm=TRUE))
+   } )
+hist(permuted_diffs, xlab="shuffled differences in mean", xlim=range(c(permuted_diffs, real_diff)))
+abline(v=real_diff, col='red', lwd=3)
+```
+
+## How surprising was the real value?
+
+```{r perm_p}
+mean(abs(permuted_diffs) > abs(real_diff))
+```
+
+. . .
+
+> The difference in price between instant bookable and not instant bookable
+> is highly statistically significant ($p \approx 0.0003$, permutation test).
+
+
+## Our turn
+
+Here's a *nonparametric* method
+to see if omnivores tend to be bigger than herbivores
+in the Pantheria data:
+
+1. Find pairs of species in the same family
+   for which one is a omnivores and the other an herbivore.
+
+2. Compute within each pair **(some statistic)** comparing omnivore to herbivore size,
+   and average these (the test statistic).
+
+3. *Randomly reassign* "trophic level" within families many times, recomputing this ratio.
+
+## In class
+
+```{r inclass}
+source("../Datasets/PanTHERIA/read_pantheria.R")
+pantheria <- read_pantheria("../Datasets/PanTHERIA")
+```
+
