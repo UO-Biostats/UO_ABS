@@ -792,6 +792,32 @@ a3 &lt;- a2[order(a2$price, a2$price), ]</code></pre>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a>                         <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">arrange</span>(count))</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a>top_ten &lt;-<span class="st"> </span>neighbourhood_counts<span class="op">$</span>neighbourhood[<span class="kw">nrow</span>(neighbourhood_counts) <span class="op">-</span><span class="st"> </span><span class="dv">0</span><span class="op">:</span><span class="dv">9</span>]</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>sub_bnb &lt;-<span class="st"> </span><span class="kw">filter</span>(airbnb, neighbourhood <span class="op">%in%</span><span class="st"> </span>top_ten) <span class="op">%&gt;%</span><span class="st"> </span>droplevels</span></code></pre></div>
+</section>
+<section id="summarise" class="slide level2">
+<h2>Summarise</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a>(sub_bnb</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(neighbourhood)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>           <span class="dt">mean_price=</span><span class="kw">mean</span>(price, <span class="dt">na.rm=</span><span class="ot">TRUE</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>           <span class="dt">mean_cleaning_fee=</span><span class="kw">mean</span>(cleaning_fee, <span class="dt">na.rm=</span><span class="ot">TRUE</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>           <span class="dt">price_q1=</span><span class="kw">quantile</span>(price, <span class="dt">probs=</span><span class="fl">0.25</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>           <span class="dt">price_q3=</span><span class="kw">quantile</span>(price, <span class="dt">probs=</span><span class="fl">0.75</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a> )</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">ratio=</span>mean_price<span class="op">/</span>mean_cleaning_fee)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a> )</span></code></pre></div>
+<pre><code>## # A tibble: 10 × 6
+##    neighbourhood      mean_price mean_cleaning_fee price_q1 price_q3 ratio
+##    &lt;fct&gt;                   &lt;dbl&gt;             &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
+##  1 Boise-Eliot              118.              62.6     75       135   1.89
+##  2 Buckman                  129.              58.6     84.5     146   2.20
+##  3 Concordia                113.              55.8     70       130.  2.02
+##  4 Downtown                 237.              85.5    101       300   2.77
+##  5 Hosford-Abernethy        133.              58.8     84       153   2.26
+##  6 King                     121.              60.8     69       138   1.99
+##  7 Northwest District       142.              65.5     89       163   2.16
+##  8 Overlook                 105.              54.7     65.8     119.  1.91
+##  9 Richmond                 118.              59.7     75       129   1.98
+## 10 Sunnyside                114.              56.8     73.2     134.  2.01</code></pre>
 </section></section>
     </div>
   </div>

@@ -232,3 +232,21 @@ neighbourhood_counts <- (airbnb
 top_ten <- neighbourhood_counts$neighbourhood[nrow(neighbourhood_counts) - 0:9]
 sub_bnb <- filter(airbnb, neighbourhood %in% top_ten) %>% droplevels
 ```
+
+## Summarise
+
+```{r summ}
+(sub_bnb
+ %>% group_by(neighbourhood)
+ %>% summarise(
+           mean_price=mean(price, na.rm=TRUE),
+           mean_cleaning_fee=mean(cleaning_fee, na.rm=TRUE),
+           price_q1=quantile(price, probs=0.25, na.rm=TRUE),
+           price_q3=quantile(price, probs=0.75, na.rm=TRUE)
+ )
+ %>% mutate(ratio=mean_price/mean_cleaning_fee)
+ )
+```
+
+
+
