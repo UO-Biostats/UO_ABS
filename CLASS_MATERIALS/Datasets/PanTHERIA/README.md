@@ -10,7 +10,7 @@ which is
 - the [dataset](PanTHERIA_WR05_mammals.txt)
 
 Code to read in the data and assign levels in columns appropriately
-is provided in the file `[read_pantheria.R](read_pantheria.R)`,
+is provided in the file [read_pantheria.R](read_pantheria.R),
 which you can use as follows.
 If you are working in this directory (e.g., from the github repository) then you can just run:
 ```r
