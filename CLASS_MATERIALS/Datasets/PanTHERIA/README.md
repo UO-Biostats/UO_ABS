@@ -11,8 +11,18 @@ which is
 
 Code to read in the data and assign levels in columns appropriately
 is provided in the file `[read_pantheria.R](read_pantheria.R)`,
-which you can use as follows:
+which you can use as follows.
+If you are working in this directory (e.g., from the github repository) then you can just run:
 ```r
 source("read_pantheria.R")
-pantheria <- read_pantheria("<name of directory with PanTHERIA_WR05_mammals.txt in it>")
+pantheria <- read_pantheria(".")
 ```
+
+If you need to download the files, then you can do this in R by first running:
+```r
+url <- "https://uo-biostats.github.io/UO_ABS/CLASS_MATERIALS/Datasets/PanTHERIA/"
+for (x in c("PanTHERIA_WR05_mammals.txt", "read_pantheria.R")) {
+    download.file(paste0(url, x), x)
+}
+```
+and then running the code above.
