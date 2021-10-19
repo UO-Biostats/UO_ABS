@@ -51,7 +51,6 @@ Week 3 (*10/13*)
 
     - Slides: [Permutation tests](../CLASS_MATERIALS/Lectures/Week_03_Permutation_tests.slides.html)
     - Slides: [Tidy data](../CLASS_MATERIALS/Lectures/Week_03_Tidy_data.slides.html)
-    - Slides: [Visualization](../CLASS_MATERIALS/Lectures/Week_03_Visualization.slides.html)
     - Slides: [The bootstrap](../CLASS_MATERIALS/Lectures/Week_03_Bootstrap.slides.html)
     - [Homework 3](../CLASS_MATERIALS/Homeworks/HW03.html) *(due 10/21)*
     - Reading: Quinn & Keough chapter 9
@@ -60,6 +59,9 @@ Week 4 (*10/20*)
 
 : Multivariate ANOVA, regression, least-squares likelihood
 
+    - Slides: [Visualization](../CLASS_MATERIALS/Lectures/Week_04_Visualization.slides.html)
+    - Slides: [Multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_04_Multivariate_ANOVA.slides.html)
+    - Slides: [Formulas](../CLASS_MATERIALS/Lectures/Week_04_Formulas.slides.html)
     - Reading: Quinn & Keough chapter 6
 
 Week 5 (*10/27*)
