@@ -619,12 +619,13 @@ background-color: var(--r-background-color);
 </section>
 <section id="next-a-data-format" class="slide level2">
 <h2>Next, a data format</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">head</span>( <span class="kw">expand.grid</span>(</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>pumpkins &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>          <span class="dt">fertilizer=</span><span class="kw">c</span>(<span class="st">&quot;low&quot;</span>, <span class="st">&quot;medium&quot;</span>, <span class="st">&quot;high&quot;</span>),</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>          <span class="dt">water=</span><span class="kw">c</span>(<span class="st">&quot;no water&quot;</span>, <span class="st">&quot;water&quot;</span>),</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>          <span class="dt">plot=</span><span class="dv">1</span><span class="op">:</span><span class="dv">4</span>,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>          <span class="dt">plant=</span><span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>          <span class="dt">weight=</span><span class="ot">NA</span>))</span></code></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>          <span class="dt">weight=</span><span class="ot">NA</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="kw">head</span>(pumpkins)</span></code></pre></div>
 <pre><code>##   fertilizer    water plot plant weight
 ## 1        low no water    1     1     NA
 ## 2     medium no water    1     1     NA
@@ -632,6 +633,75 @@ background-color: var(--r-background-color);
 ## 4        low    water    1     1     NA
 ## 5     medium    water    1     1     NA
 ## 6       high    water    1     1     NA</code></pre>
+</section>
+<section class="slide level2">
+
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co"># true parameters</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>params &lt;-<span class="st"> </span><span class="kw">list</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>    <span class="dt">mu =</span> <span class="dv">4</span>, <span class="co"># kg</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>    <span class="dt">alpha =</span> <span class="kw">c</span>(<span class="st">&quot;low&quot;</span> =<span class="st"> </span><span class="dv">-1</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>              <span class="st">&quot;medium&quot;</span> =<span class="st"> </span><span class="dv">0</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>              <span class="st">&quot;high&quot;</span> =<span class="st"> </span><span class="op">+</span><span class="dv">1</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>    ),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>    <span class="dt">beta =</span> <span class="kw">c</span>(<span class="st">&quot;no water&quot;</span> =<span class="st"> </span><span class="dv">-2</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>             <span class="st">&quot;water&quot;</span> =<span class="st"> </span><span class="op">+</span><span class="dv">1</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>    ),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>    <span class="dt">gamma =</span> <span class="kw">c</span>(<span class="st">&quot;high,water&quot;</span> =<span class="st"> </span><span class="dv">3</span>),</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a>    <span class="dt">sigma =</span> <span class="fl">0.5</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a>)</span></code></pre></div>
+</section>
+<section class="slide level2">
+
+<p>We’ll first get the mean valeus in there. First, we’ll do this using a for loop (easier to think through!):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co"># for loop</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>pumpkins<span class="op">$</span>mean_weight &lt;-<span class="st"> </span><span class="ot">NA</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(pumpkins)) {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    fert &lt;-<span class="st"> </span>pumpkins<span class="op">$</span>fertilizer[j]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>    water &lt;-<span class="st"> </span>pumpkins<span class="op">$</span>water[j]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>    gamma &lt;-<span class="st"> </span>params<span class="op">$</span>gamma[<span class="kw">paste</span>(fert, water, <span class="dt">sep=</span><span class="st">&#39;,&#39;</span>)]</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>    <span class="cf">if</span> (<span class="kw">is.na</span>(gamma)) {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>        gamma &lt;-<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>    }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>     pumpkins<span class="op">$</span>mean_weight[j] &lt;-<span class="st"> </span>(params<span class="op">$</span>mu</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>            <span class="op">+</span><span class="st"> </span>params<span class="op">$</span>alpha[fert]</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>            <span class="op">+</span><span class="st"> </span>params<span class="op">$</span>beta[water]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>            <span class="op">+</span><span class="st"> </span>gamma</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>    )</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>}</span></code></pre></div>
+</section>
+<section class="slide level2">
+
+<p>Here’s an alternative implementation, vectorized:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="co"># not-for-loop version</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>pumpkins<span class="op">$</span>interaction &lt;-<span class="st"> </span><span class="kw">paste</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    pumpkins<span class="op">$</span>fertilizer, </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>    pumpkins<span class="op">$</span>water, </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>    <span class="dt">sep=</span><span class="st">&#39;,&#39;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>mw &lt;-<span class="st"> </span>(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>    params<span class="op">$</span>mu</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a>    <span class="op">+</span><span class="st"> </span>params<span class="op">$</span>alpha[pumpkins<span class="op">$</span>fertilizer]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>    <span class="op">+</span><span class="st"> </span>params<span class="op">$</span>beta[pumpkins<span class="op">$</span>water]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>    <span class="op">+</span><span class="st"> </span><span class="kw">ifelse</span>(pumpkins<span class="op">$</span>interaction <span class="op">%in%</span><span class="st"> </span><span class="kw">names</span>(params<span class="op">$</span>gamma),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>             params<span class="op">$</span>gamma[pumpkins<span class="op">$</span>interaction],</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>             <span class="dv">0</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a>    )</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a><span class="co"># check it agrees with the previous code:</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a><span class="kw">stopifnot</span>(<span class="kw">all</span>( mw <span class="op">==</span><span class="st"> </span>pumpkins<span class="op">$</span>mean_weight ))</span></code></pre></div>
+</section>
+<section class="slide level2">
+
+<p>Finally, we can draw the random values:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="co"># now draw random weights with these means</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>pumpkins<span class="op">$</span>weight &lt;-<span class="st"> </span><span class="kw">rnorm</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>    <span class="kw">nrow</span>(pumpkins),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>    <span class="dt">mean=</span>pumpkins<span class="op">$</span>mean_weight,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>    <span class="dt">sd=</span>params<span class="op">$</span>sigma</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>    </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a><span class="kw">ggplot</span>(pumpkins) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>fertilizer, <span class="dt">fill=</span>water, <span class="dt">y=</span>weight))</span></code></pre></div>
+<p><img src="data:image/png;base64,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73/xxRerqqpiY2N9fHx8fHzCw8P79u17/vz5vn37si5QvcaOHfvFF1+89tpreXl5Xbp0mThxYlpa2qJFixwOR8M6sbGx+/fvX7hwYWVlJcNS4Ubjx4//5JNPli1bptPpVDsiojrhRmYAULbTp09XVVWFhYWlpqY+//zzrq9cQmuCAAMAZbPb7fv27btw4cLw4cNxLVlVEGAAAKBIuAYGAACKhAADAABFQoCBWiQlJU2YMMH1OjU1NStWrCCivXv3Tps27cCBAxMnTpQee6RGAPgNcA0MVKG2trZ3797nz593sY7NZqusrBwyZEhubm5NTU1lZeV3333317/+dcuWLZWVldJty81hs9m0Wq0cVQOAKzgCA1WQRjh88skniWjNmjU9e/YMDw9ftmwZEWVkZCQlJSUmJq5bty45Obm4uPiZZ57JyspauHCh9LfS4/fff79///79+/eX/tZ1O+w2FEBFMJQUqMKGDRsOHTr07rvvHjp0KC0tLScnR6vVTpgwYfPmzb169dq9e3dOTk5ISMiVK1dOnTr11ltvHThw4LoWpkyZMmXKFIfDMWbMmFmzZrluh8UmAqgOAgzU5dChQ1evXp00aRIRnT9//ujRo7169RowYEAzU2fhwoV33XXXxIkTly5d6k47AOA+BBioi9FoTE5OnjdvHhHV1taKopidne3n59ecv/3www9zcnI+//xzN9sBAFngGhioy+jRo997772KigqLxZKQkJCbm3vdCo3HP2zsm2++Wbp06YcffijNL3XLdgCgpSHAQF1iYmJmzJgRExMTFhY2YsSI62ajb9u2rdlsTkpKuvEPV6xYUVVVdf/99w8YMGDAgAH9+/d30Q4AeAC60QMAgCLhCAwAABQJAQYAAIqEAAMAAEVCgAEAgCIhwAAAQJEQYAAAoEgIMAAAUKT/B+Mffz3lq+M7AAAAAElFTkSuQmCC" title="plot of chunk r randoms" alt="plot of chunk r randoms" style="display: block; margin: auto;" /></p>
 </section></section>
 <section>
 <section id="questions-that-linear-models-and-anova-can-answer" class="title-slide slide level1">
@@ -640,19 +710,51 @@ background-color: var(--r-background-color);
 </section>
 <section id="what-are-estimates-of-the-coefficents" class="slide level2">
 <h2>What are (estimates of) the coefficents?</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">summary</span>(<span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
-<pre><code>## Error in is.data.frame(data): object &#39;pumpkins&#39; not found</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">summary</span>(<span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = weight ~ fertilizer + water, data = pumpkins)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.65344 -0.56985 -0.01622  0.66858  1.59462 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        0.4415     0.1507   2.930  0.00408 ** 
+## fertilizermedium   1.0873     0.1845   5.893  3.8e-08 ***
+## fertilizerhigh     3.5027     0.1845  18.984  &lt; 2e-16 ***
+## waterwater         4.1258     0.1507  27.386  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.8252 on 116 degrees of freedom
+## Multiple R-squared:  0.9067, Adjusted R-squared:  0.9043 
+## F-statistic: 375.9 on 3 and 116 DF,  p-value: &lt; 2.2e-16</code></pre>
 </section>
 <section id="do-different-fertilizer-levels-differ-water" class="slide level2">
 <h2>Do different fertilizer levels differ? water?</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">summary</span>(<span class="kw">aov</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
-<pre><code>## Error in terms.formula(formula, &quot;Error&quot;, data = data): object &#39;pumpkins&#39; not found</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">summary</span>(<span class="kw">aov</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
+<pre><code>##              Df Sum Sq Mean Sq F value Pr(&gt;F)    
+## fertilizer    2  257.1   128.6   188.8 &lt;2e-16 ***
+## water         1  510.7   510.7   750.0 &lt;2e-16 ***
+## Residuals   116   79.0     0.7                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </section>
 <section class="slide level2">
 
 <p>Or equivalently,</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">anova</span>(<span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
-<pre><code>## Error in is.data.frame(data): object &#39;pumpkins&#39; not found</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="kw">anova</span>(<span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: weight
+##             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## fertilizer   2 257.14  128.57  188.83 &lt; 2.2e-16 ***
+## water        1 510.66  510.66  749.99 &lt; 2.2e-16 ***
+## Residuals  116  78.98    0.68                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </section>
 <section id="what-are-all-those-numbers" class="slide level2">
 <h2>What are all those numbers?</h2>
@@ -701,24 +803,73 @@ Description:
 </section>
 <section id="example" class="slide level2">
 <h2>Example</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">TukeyHSD</span>(<span class="kw">aov</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
-<pre><code>## Error in terms.formula(formula, &quot;Error&quot;, data = data): object &#39;pumpkins&#39; not found</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="kw">TukeyHSD</span>(<span class="kw">aov</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
+<pre><code>##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = weight ~ fertilizer + water, data = pumpkins)
+## 
+## $fertilizer
+##                 diff       lwr      upr p adj
+## medium-low  1.087309 0.6492477 1.525371 1e-07
+## high-low    3.502706 3.0646438 3.940767 0e+00
+## high-medium 2.415396 1.9773344 2.853458 0e+00
+## 
+## $water
+##                    diff      lwr      upr p adj
+## water-no water 4.125756 3.827369 4.424143     0</code></pre>
 </section>
 <section id="does-the-effect-of-fertilizer-depend-on-water" class="slide level2">
 <h2>Does the effect of fertilizer depend on water?</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="kw">summary</span>(<span class="kw">aov</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">*</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
-<pre><code>## Error in terms.formula(formula, &quot;Error&quot;, data = data): object &#39;pumpkins&#39; not found</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="kw">summary</span>(<span class="kw">aov</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">*</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
+<pre><code>##                   Df Sum Sq Mean Sq F value Pr(&gt;F)    
+## fertilizer         2  257.1   128.6   575.4 &lt;2e-16 ***
+## water              1  510.7   510.7  2285.3 &lt;2e-16 ***
+## fertilizer:water   2   53.5    26.8   119.7 &lt;2e-16 ***
+## Residuals        114   25.5     0.2                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </section>
 <section class="slide level2">
 
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="kw">summary</span>(<span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">*</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
-<pre><code>## Error in is.data.frame(data): object &#39;pumpkins&#39; not found</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">summary</span>(<span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">*</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = weight ~ fertilizer * water, data = pumpkins)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.23696 -0.26951  0.00257  0.32312  0.85524 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                   0.9672     0.1057   9.151 2.64e-15 ***
+## fertilizermedium              0.9780     0.1495   6.543 1.79e-09 ***
+## fertilizerhigh                2.0347     0.1495  13.611  &lt; 2e-16 ***
+## waterwater                    3.0742     0.1495  20.566  &lt; 2e-16 ***
+## fertilizermedium:waterwater   0.2186     0.2114   1.034    0.303    
+## fertilizerhigh:waterwater     2.9360     0.2114  13.888  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4727 on 114 degrees of freedom
+## Multiple R-squared:  0.9699, Adjusted R-squared:  0.9686 
+## F-statistic: 735.1 on 5 and 114 DF,  p-value: &lt; 2.2e-16</code></pre>
 </section>
 <section class="slide level2">
 
 <p>Or equivalently,</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="kw">anova</span>(<span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">*</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
-<pre><code>## Error in is.data.frame(data): object &#39;pumpkins&#39; not found</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a><span class="kw">anova</span>(<span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">*</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins))</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: weight
+##                   Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## fertilizer         2 257.14  128.57  575.37 &lt; 2.2e-16 ***
+## water              1 510.66  510.66 2285.29 &lt; 2.2e-16 ***
+## fertilizer:water   2  53.51   26.75  119.73 &lt; 2.2e-16 ***
+## Residuals        114  25.47    0.22                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </section></section>
 <section>
 <section id="model-comparison-with-anova" class="title-slide slide level1">
@@ -749,12 +900,22 @@ F
 </section>
 <section id="nested-model-analysis" class="slide level2">
 <h2>Nested model analysis</h2>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">anova</span>(</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a>      <span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins),</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true"></a>      <span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins),</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true"></a>      <span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">*</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true"></a>)</span></code></pre></div>
-<pre><code>## Error in is.data.frame(data): object &#39;pumpkins&#39; not found</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="kw">anova</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a>      <span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a>      <span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">+</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a>      <span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>fertilizer <span class="op">*</span><span class="st"> </span>water, <span class="dt">data=</span>pumpkins)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a>)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: weight ~ water
+## Model 2: weight ~ fertilizer + water
+## Model 3: weight ~ fertilizer * water
+##   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1    118 336.12                                  
+## 2    116  78.98  2   257.138 575.37 &lt; 2.2e-16 ***
+## 3    114  25.47  2    53.509 119.73 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </section>
 <section id="your-turn" class="slide level2">
 <h2>Your turn</h2>

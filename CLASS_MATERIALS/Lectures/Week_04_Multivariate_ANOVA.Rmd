@@ -134,12 +134,93 @@ but also makes you realize things you hadn't, previously.
 ## Next, a data format
 
 ```{r data_fromat}
-head( expand.grid(
+pumpkins <- expand.grid(
           fertilizer=c("low", "medium", "high"),
           water=c("no water", "water"),
           plot=1:4,
           plant=1:5,
-          weight=NA))
+          weight=NA)
+head(pumpkins)
+```
+
+----------------
+
+```{r params}
+# true parameters
+params <- list(
+    mu = 4, # kg
+    alpha = c("low" = -1,
+              "medium" = 0,
+              "high" = +1
+    ),
+    beta = c("no water" = -2,
+             "water" = +1
+    ),
+    gamma = c("high,water" = 3),
+    sigma = 0.5
+)
+```
+
+----------------
+
+We'll first get the mean valeus in there.
+First, we'll do this using a for loop (easier to think through!):
+
+```{r forloop}
+# for loop
+pumpkins$mean_weight <- NA
+for (j in 1:nrow(pumpkins)) {
+    fert <- pumpkins$fertilizer[j]
+    water <- pumpkins$water[j]
+    gamma <- params$gamma[paste(fert, water, sep=',')]
+    if (is.na(gamma)) {
+        gamma <- 0
+    }
+     pumpkins$mean_weight[j] <- (params$mu
+            + params$alpha[fert]
+            + params$beta[water]
+            + gamma
+    )
+}
+```
+
+---------------
+
+Here's an alternative implementation, vectorized:
+
+```{r vectorized}
+# not-for-loop version
+pumpkins$interaction <- paste(
+    pumpkins$fertilizer, 
+    pumpkins$water, 
+    sep=','
+)
+mw <- (
+    params$mu
+    + params$alpha[pumpkins$fertilizer]
+    + params$beta[pumpkins$water]
+    + ifelse(pumpkins$interaction %in% names(params$gamma),
+             params$gamma[pumpkins$interaction],
+             0
+    )
+)
+# check it agrees with the previous code:
+stopifnot(all( mw == pumpkins$mean_weight ))
+```
+
+---------------
+
+Finally, we can draw the random values:
+
+```{r randoms}
+# now draw random weights with these means
+pumpkins$weight <- rnorm(
+    nrow(pumpkins),
+    mean=pumpkins$mean_weight,
+    sd=params$sigma
+)
+    
+ggplot(pumpkins) + geom_boxplot(aes(x=fertilizer, fill=water, y=weight))
 ```
 
 # Questions that (linear models and) ANOVA can answer
