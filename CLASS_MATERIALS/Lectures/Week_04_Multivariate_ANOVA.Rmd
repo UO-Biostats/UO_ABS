@@ -219,7 +219,7 @@ pumpkins$weight <- rnorm(
     mean=pumpkins$mean_weight,
     sd=params$sigma
 )
-write.csv(pumpkins, file="pumpkins.csv")
+write.table(pumpkins, file="data/pumpkins.tsv")
     
 ggplot(pumpkins) + geom_boxplot(aes(x=fertilizer, fill=water, y=weight))
 ```
