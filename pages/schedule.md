@@ -62,6 +62,7 @@ Week 4 (*10/20*)
     - Slides: [Visualization](../CLASS_MATERIALS/Lectures/Week_04_Visualization.slides.html)
     - Slides: [Multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_04_Multivariate_ANOVA.slides.html)
     - Slides: [Formulas](../CLASS_MATERIALS/Lectures/Week_04_Formulas.slides.html)
+    - [Homework 4](../CLASS_MATERIALS/Homeworks/HW04.html) *(due 10/28)*
     - Reading: Quinn & Keough chapter 6
 
 Week 5 (*10/27*)
