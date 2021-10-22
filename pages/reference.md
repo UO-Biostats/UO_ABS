@@ -41,6 +41,10 @@ description: useful links for Advanced Biological Statistics
 
 If you are looking for more reference or reading material, these are also good:
 
+- Bruce, Bruce, and Gedeck, *Practical Statistics for Data Scientists.* O'Reilley Publishers.
+    [code repository](https://github.com/gedeck/practical-statistics-for-data-scientists)
+    and [link to the book](https://www.oreilly.com/library/view/practical-statistics-for/9781491952955/)
+
 * Logan, M. 2010. *Biostatistical Design and Analysis Using R.* Wiley-Blackwell.
     A fairly comprehensive book that covers how to use R to do many of the topics in Quinn and Keough.
 
