@@ -51,7 +51,8 @@ legend("topleft", lty=1, col=c('red', 'blue'), legend=c('y=x', 'mean(y|x)'))
 
 ## Covariance and correlation
 
-Pearson's product-moment correlation coefficient:
+"Pearson's product-moment correlation coefficient"
+(by Bravais):
 $$
 r^2 = \frac{\sum_{i=1}^n (x_i - \bar x) (y_i - \bar y)}{\sqrt{\sum_{i=1}^n (y_i - \bar y)^2} \sqrt{\sum_{i=1}^n (y_i - \bar y)^2}}
 $$
@@ -146,7 +147,9 @@ $$
 . . .
 
 Amazing fact:
-if $k=1$ then $$b_1 = r \frac{\text{sd}(y)}{\text{sd}(x)} .$$
+if $k=1$ then
+the *slope* is $r$ (scaled):
+$$b_1 = r \frac{\text{sd}(y)}{\text{sd}(x)} .$$
 
 
 ## Why least squares?
