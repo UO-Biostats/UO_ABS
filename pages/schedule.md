@@ -71,6 +71,7 @@ Week 5 (*10/27*)
 
     - Slides: [Linear models and least squares](../CLASS_MATERIALS/Lectures/Week_05_Linear_models.slides.html)
     - Slides: [Random effects](../CLASS_MATERIALS/Lectures/Week_05_Random_effects.slides.html)
+    - Homework: [peer review](peer_reviews.html) (see Canvas for assignment)
     - Reading: Quinn & Keough chapter 13
 
 Week 6 (*11/3*)
