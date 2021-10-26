@@ -69,6 +69,8 @@ Week 5 (*10/27*)
 
 : Model selection; random effects and mixed models - a first look.
 
+    - Slides: [Linear models and least squares](../CLASS_MATERIALS/Lectures/Week_05_Linear_models.slides.html)
+    - Slides: [Random effects](../CLASS_MATERIALS/Lectures/Week_05_Random_effects.slides.html)
     - Reading: Quinn & Keough chapter 13
 
 Week 6 (*11/3*)
