@@ -190,7 +190,7 @@ Here's an alternative implementation, vectorized:
 
 ```{r vectorized}
 # not-for-loop version
-pumpkins$interaction <- paste(
+interaction <- paste(
     pumpkins$fertilizer, 
     pumpkins$water, 
     sep=','
@@ -199,8 +199,8 @@ mw <- (
     params$mu
     + params$alpha[pumpkins$fertilizer]
     + params$beta[pumpkins$water]
-    + ifelse(pumpkins$interaction %in% names(params$gamma),
-             params$gamma[pumpkins$interaction],
+    + ifelse(interaction %in% names(params$gamma),
+             params$gamma[interaction],
              0
     )
 )
@@ -363,3 +363,89 @@ Think about what *order* to do the comparison in.
 Make sure they are nested!
 
 Data: [data/pumpkins.tsv](data/pumpkins.tsv)
+
+
+--------------
+
+Recall that `plot` is *nested within*
+the treatments, so we should get one "plot"
+effect for each plot level in each combination
+of treatments.
+(Doing `weight ~ water * fertilizer + plot` is *wrong* -
+why?)
+First we check we get the right thing:
+```{r inclass2}
+pumpkins$plot <- factor(pumpkins$plot)
+summary(
+    lm(weight ~ water * fertilizer / plot, data=pumpkins)
+)
+```
+
+-----------
+
+And, the ANOVA:
+
+```
+anova(
+    lm(weight ~ water * fertilizer, data=pumpkins),
+    lm(weight ~ water * fertilizer / plot, data=pumpkins)
+)
+```
+
+
+## IN CLASS:
+
+Also: what *are* the lines when you call
+`anova( )` on just one linear model?
+Look for the "Sum of Sq(uares)" entries that agree
+(F-statistics will not because the denominator differs):
+```{r inclass}
+anova(lm(weight ~ fertilizer * water, data=pumpkins))
+```
+
+---------
+
+First line is comparing adding fertilizer to not:
+```
+##                   Df Sum Sq Mean Sq F value    Pr(>F)    
+## fertilizer         2 257.14  128.57  575.37 < 2.2e-16 ***
+```
+
+```{r inclass_fert}
+anova(
+    lm(weight ~ water, data=pumpkins),
+    lm(weight ~ water + fertilizer, data=pumpkins)
+)
+```
+
+-------
+
+Second line is comparing adding water to not:
+```
+##                   Df Sum Sq Mean Sq F value    Pr(>F)    
+## water              1 510.66  510.66 2285.29 < 2.2e-16 ***
+```
+
+```{r inclass_water}
+anova(
+    lm(weight ~ fertilizer, data=pumpkins),
+    lm(weight ~ fertilizer + water, data=pumpkins)
+)
+```
+
+-------
+
+Third line is comparison with and without interactions:
+```
+##                   Df Sum Sq Mean Sq F value    Pr(>F)    
+## fertilizer:water   2  53.51   26.75  119.73 < 2.2e-16 ***
+```
+
+```{r inclass_inter}
+anova(
+    lm(weight ~ fertilizer + water, data=pumpkins),
+    lm(weight ~ fertilizer + water + fertilizer: water, data=pumpkins)
+)
+
+```
+
