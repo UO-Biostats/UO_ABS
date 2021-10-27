@@ -10,7 +10,8 @@ MATHJAX = https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js
 LOCAL_MATHJAX = /usr/share/javascript/mathjax/MathJax.js
 
 # may want to add "--self-contained" to the following
-PANDOC_OPTS = --standalone  --self-contained
+# NOTE: to build offline
+PANDOC_OPTS = --standalone --self-contained
 MATHJAX_OPTS = --mathjax
 LOCAL_MATHJAX_OPTS = --mathjax=$(LOCAL_MATHJAX)?config=TeX-AMS-MML_HTMLorMML
 # optionally add in a latex file with macros
@@ -51,7 +52,7 @@ endif
 
 
 ## VARIOUS SLIDE METHODS
-REVEALJS_OPTS = -t revealjs -V theme=simple -V slideNumber=true -V transition=none -H resources/adjust-revealjs.style --slide-level 2
+REVEALJS_OPTS = -t revealjs -V theme=simple -V slideNumber=true -V transition=none -H resources/adjust-revealjs.style --slide-level 2 -V revealjs-url=./reveal.js
 SLIDES_OPTS = $(REVEALJS_OPTS)
 
 %.slides.html : %.md .pandoc.$(LATEX_MACROS)
