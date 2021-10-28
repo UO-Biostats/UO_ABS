@@ -451,38 +451,6 @@ subset(genes, pvals < 0.05/nrow(genes))
 
 </div>
 
-# What's up with $p < 0.05$?
-
-##
-
-::: {.scrollable height=500}
-![xkcd:882](images/xkcd-significant.png){width=50%}
-:::
-
-::: {.caption .floatright}
-[xkcd:882](https://xkcd.com/882/)
-:::
-
-
----------
-
-![xkcd:1478](images/xkcd-p-values.png){width=30%}
-
-
-::: {.caption .floatright}
-[xkcd:1478](https://xkcd.com/1478/)
-:::
-
-##
-
-![Fisher quote on p-value thresholds](images/fisher_p_value.jpg){width=60%}
-
-
-## $p$-values control the Type I error rate
-
-![Neyman & Pearson](images/neyman_pearson_type_I_and_II.png)
-
-
 # Another look at error rates
 
 ##
