@@ -385,7 +385,7 @@ summary(
 
 And, the ANOVA:
 
-```
+```{r the_anova}
 anova(
     lm(weight ~ water * fertilizer, data=pumpkins),
     lm(weight ~ water * fertilizer / plot, data=pumpkins)

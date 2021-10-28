@@ -78,6 +78,8 @@ Week 6 (*11/3*)
 
 : Multiple testing, error rates, and some history.
 
+    - Slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_06_Multiple_testing.slides.html)
+    - Slides: [Statistics and eugenics](../CLASS_MATERIALS/Lectures/Week_06_Statistics_and_eugenics.slides.html)
     - install [Stan](https://mc-stan.org)
 
 Week 7 (*11/10*)
