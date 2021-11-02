@@ -80,6 +80,15 @@ Why is this wrong?
 summary(lm(ALGAE ~ TREAT, data=andrew_data))
 ```
 
+----------
+
+![xkcd:2533](images/slope_hypothesis_testing_2x.png){width=90%}
+
+::: {.caption .floatright}
+[xkcd:2533](https://xkcd.com/2533/)
+:::
+
+
 ##
 
 What we really want:
@@ -226,10 +235,89 @@ $$ H_0 : \eta = 0. $$
 4. Assess significance by using `anova( )` to compare to a nested model.
 
 
-Data: [data/pumpkins.tsv](data/pumpkins.tsv)
-```{r read_pumpkins2}
-pumpkins <- read.table("data/pumpkins.tsv", header=TRUE)
+
+## Simulate data
+
+First we'll add in the effect of plot:
+```{r simdata}
+pumpkins <- expand.grid(
+          fertilizer=c("low", "medium", "high"),
+          water=c("no water", "water"),
+          plot=1:4,
+          plant=1:5,
+          weight=NA)
 pumpkins$plot <- factor(pumpkins$plot)
-pumpkins$fertilizer <- factor(pumpkins$fertilizer)
-pumpkins$water <- factor(pumpkins$water)
+# true parameters
+params <- list(
+    mu = 4, # kg
+    alpha = c("low" = -1,
+              "medium" = 0,
+              "high" = +1
+    ),
+    beta = c("no water" = -2,
+             "water" = +1
+    ),
+    gamma = c("high,water" = 3),
+    sigma = 0.5
+)
+interaction <- paste(
+    pumpkins$fertilizer, 
+    pumpkins$water, 
+    sep=','
+)
+plot_label <- paste(
+    pumpkins$fertilizer, 
+    pumpkins$water, 
+    pumpkins$plot,
+    sep=','
+)
+stopifnot(length(unique(plot_label))
+          == nlevels(pumpkins$water) * nlevels(pumpkins$fertilizer) * nlevels(pumpkins$plot))
+
+plot_names <- unique(plot_label)
+params$delta <- rnorm(length(plot_names), mean=0, sd=1)
+names(params$delta) <- plot_names
+
+# mean weights
+mw <- (
+    params$mu
+    + params$alpha[pumpkins$fertilizer]
+    + params$beta[pumpkins$water]
+    + ifelse(interaction %in% names(params$gamma),
+             params$gamma[interaction],
+             0
+    )
+    + params$delta[plot_label]
+)
+pumpkins$weight <- rnorm(
+    nrow(pumpkins),
+    mean=mw,
+    sd=params$sigma
+)
+```
+
+## Fit the model
+
+```{r fitmodel}
+# add a unique label by plot
+pumpkins$plot_label <- plot_label
+
+library(lme4)
+rfit <- lmer(
+    weight ~ water * fertilizer + (1|plot_label),
+    data=pumpkins)
+
+summary(rfit)
+# not in the right order! FIXME
+plot(
+    params$delta,
+    ranef(rfit)[["plot_label"]][[1]],
+    xlab='true random effects',
+    ylab='estimated')
+
+anova(
+    rfit,
+    lm(weight ~ fertilizer * water, data=pumpkins)
+)
+
 ```

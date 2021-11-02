@@ -310,8 +310,8 @@ From [*Host Genotype and Microbiota Contribute Asymmetrically to Transcriptional
 Clayton M. Small,  Kathryn Milligan-Myhre,  Susan Bassham,  Karen Guillemin, William A. Cresko.
 Genome Biology and Evolution, March 2017.](https://academic.oup.com/gbe/article/9/3/504/3058199)
 
-- Metadata: [CVvsGF_RNAseq_Metadata.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv)
-- RNA-Seq: [CVvsGF_RNAseq_CPM.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv")
+- Metadata: [CVvsGF_RNAseq_Metadata.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv) ([direct link](https://github.com/UO-Biostats/UO_ABS/raw/master/CLASS_MATERIALS/Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv))
+- RNA-Seq: [CVvsGF_RNAseq_CPM.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv") ([direct link](https://github.com/UO-Biostats/UO_ABS/raw/master/CLASS_MATERIALS/Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv))
 
 ## Study design:
 
@@ -350,7 +350,9 @@ plot(rowMedians(expr), rowMads(expr), log='xy',
      xlab='median normalized expression', ylab='MAD normalized expression')
 ```
 
-##
+## 
+
+Gene expression varies across many orders of magnitude:
 
 ```{r matplot, fig.width=3*fig.dim, fig.height=1.5*fig.dim, warning=FALSE}
 matplot(expr[1:1000,], pch=20, log='y', xlab='gene', ylab='normalized expression')
@@ -391,6 +393,13 @@ hist(pvals, breaks=500, xlab='p-values')
 
 But, out of `r length(pvals)`, we'd *expect* about `r round(0.05 * length(pvals))` to be less than 0.05.
 
+. . .
+
+Let's look at the three *coefficients* for all the models:
+```
+    x ~ Population + Treatment + Sex
+```
+
 ##
 
 Coefficents, with $p < 0.05$ in red:
@@ -400,7 +409,7 @@ pairs(t(all_coefs[2:4,]), pch=20, col=ifelse(pvals < 0.05, 'red', adjustcolor('b
 
 ##
 
-Coefficents, with $p < 0.05/n$ in red:
+Coefficents, with $p < 0.05/n$ in red (*Bonferroni!*):
 ```{r signif2, fig.width=2*fig.dim, fig.height=2*fig.dim, echo=FALSE}
 pairs(t(all_coefs[2:4,]), pch=20, col=ifelse(pvals < 0.05/length(pop_lms), 'red', adjustcolor('black',0.2)))
 ```

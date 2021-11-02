@@ -70,7 +70,6 @@ Week 5 (*10/27*)
 : Model selection; random effects and mixed models - a first look.
 
     - Slides: [Linear models and least squares](../CLASS_MATERIALS/Lectures/Week_05_Linear_models.slides.html)
-    - Slides: [A note on P-value thresholds](../CLASS_MATERIALS/Lectures/Week_05_P_threshold.slides.html)
     - Slides: [Random effects](../CLASS_MATERIALS/Lectures/Week_05_Random_effects.slides.html)
     - Homework: [peer review](peer_reviews.html) (see Canvas for assignment)
     - Reading: Quinn & Keough chapter 13
@@ -81,6 +80,7 @@ Week 6 (*11/3*)
 
     - Slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_06_Multiple_testing.slides.html)
     - Slides: [Statistics and eugenics](../CLASS_MATERIALS/Lectures/Week_06_Statistics_and_eugenics.slides.html)
+    - Slides: [A note on P-value thresholds](../CLASS_MATERIALS/Lectures/Week_06_P_threshold.slides.html)
     - install [Stan](https://mc-stan.org)
 
 Week 7 (*11/10*)
