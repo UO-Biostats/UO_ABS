@@ -128,7 +128,7 @@ Eugenics Laboratory Lecture Series, IX
 ## Who gets to "direct"? {data-background-image="images/runquist-science-large.jpg" data-background-position=center data-background-size=25%}
 
 
-<!-- ![Runquist mural at Knight library](images/runquist-science-large.jpg){width=20%} -->
+<!-- [![Runquist mural at Knight library](images/runquist-science-large.jpg){width=20%}](https://researchguides.uoregon.edu/historic-knight/development-sciences) -->
 
 ## 
 
@@ -327,10 +327,10 @@ Today we have many problems that we need quantitative work to solve.
 :::
 ::::::: {.column width=30%}
 
-![David Blackwell](images/David_Blackwell_1999.jpeg){width=45%}
-![FN David](images/FN-David.jpg){width=45%}
-![Bin Yu](images/binyu.jpg){width=45%}
-![Simone Gray](images/simone-gray.png){width=45%}
+[![David Blackwell](images/David_Blackwell_1999.jpeg){width=45%}](https://en.wikipedia.org/wiki/David_Blackwell)
+[![FN David](images/FN-David.jpg){width=45%}](https://en.wikipedia.org/wiki/Florence_Nightingale_David)
+[![Bin Yu](images/binyu.jpg){width=45%}](https://en.wikipedia.org/wiki/Bin_Yu)
+[![Simone Gray](images/simone-gray.png){width=45%}](https://magazine.amstat.org/blog/2019/03/01/simone-gray/)
 
 :::
 :::::::
