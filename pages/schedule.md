@@ -81,6 +81,7 @@ Week 6 (*11/3*)
     - Slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_06_Multiple_testing.slides.html)
     - Slides: [Statistics and eugenics](../CLASS_MATERIALS/Lectures/Week_06_Statistics_and_eugenics.slides.html)
     - Slides: [A note on P-value thresholds](../CLASS_MATERIALS/Lectures/Week_06_P_threshold.slides.html)
+    - [Homework 6](../CLASS_MATERIALS/Homeworks/HW06.html) *(due 11/12)*
     - install [Stan](https://mc-stan.org)
 
 Week 7 (*11/10*)
