@@ -1,0 +1,112 @@
+---
+title: "The Beta distribution"
+author: "Peter Ralph"
+date: "9 November -- Advanced Biological Statistics"
+---
+
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+```
+
+
+
+# Stochastic Minute
+
+## The Beta Distribution
+
+If $$P \sim \text{Beta}(a,b)$$
+then $P$ has *probability density*
+$$p(\theta) = \frac{ \theta^{a-1} (1 - \theta)^{b-1} }{ B(a,b) } . $$
+
+- Takes values between 0 and 1.
+
+- If $U_{(1)} < U_{(2)} < \cdots < U_{(n)}$ are sorted, independent $\text{Unif}[0,1]$
+  then $U_{(k)} \sim \text{Beta}(k, n-k+1)$.
+
+- Mean: $a/(a+b)$.
+
+- Larger $a+b$ is more tightly concentrated (like $1/\sqrt{a+b}$)
+
+##
+
+```{r beta_stuff, echo=FALSE, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
+shadecurve <- function (pf, xlim, plot=TRUE, xlab='', ylab='', main='', yaxt='n',
+                        border="black", col=adjustcolor(border, 0.25), ...) {
+    x <- seq(xlim[1], xlim[2], length.out=401)
+    mids <- x[-1] - diff(x)/2
+    df <- diff(pf(x, ...))
+    if (plot) { plot(0, type='n', xlim=range(x), ylim=range(df),
+                     main=main, xlab=xlab, ylab=ylab, yaxt=yaxt) }
+    polygon(c(mids, x[length(x)], x[1]), c(df, 0, 0), col=col, border=border) 
+    return(invisible(list(x=x, y=df)))
+}
+
+a <- 20
+b <- 40
+par(mar=c(3,1,3,0)+.1)
+xy <- shadecurve(pbeta, c(0, 1), shape1=a, shape2=b, border="blue", xlab='', ylab='')
+title(main="Beta(a, b)")
+abline(v=a/(a+b), lty=3, lwd=2)
+text(x=a/(a+b)+0.05, y=max(xy$y)*0.8,
+     labels=expression(mu == frac(a,a+b)), pos=4)
+qy <- xy$y[findInterval(qbeta(0.05, a, b), xy$x)]
+lines(x=xy$x[diff(xy$y > qy) != 0],
+      y=rep(xy$y[diff(xy$y > qy) > 0], 2), lwd=2)
+text(x=xy$x[diff(xy$y > qy) < 0],
+     y=xy$y[diff(xy$y > qy) > 0],
+     labels=expression(sqrt(frac(mu * (1-mu), a + b + 1))), pos=4)
+```
+
+
+
+## Beta-Binomial Bayesian analysis
+
+If
+$$\begin{aligned}
+P &\sim \text{Beta}(a,b) \\
+Z &\sim \text{Binom}(n,P) ,
+\end{aligned}$$
+then by Bayes' rule:
+$$\begin{aligned}
+ \P\{ P = \theta \given Z = z\}
+ &=
+ \frac{\P\{Z = z \given P = \theta \} \P\{P = \theta\}}{\P\{Z = z\}} \\
+ &= 
+ \frac{
+ \binom{n}{z}\theta^z (1-\theta)^{n-z}
+ \times
+ \frac{\theta^{a-1}(1-\theta)^{b-1}}{B(a,b)}
+ }{
+ \text{(something)}
+ } \\
+ &=
+ \text{(something else)} \times \theta^{a + z - 1} (1-\theta)^{b + n - z - 1} .
+\end{aligned}$$
+
+-------------
+
+"Miraculously"\
+*(the Beta is the conjugate prior for the Binomial)*,
+$$\begin{aligned}
+(P \given Z = z) \sim \text{Beta}(a+z, b+n-z) .
+\end{aligned}$$
+
+## Exercise
+
+*Simulate:*
+
+1. One thousand "random coins" whose probabilities are drawn from a $\Beta(5,5)$ distribution.
+    (`rbeta()`)  Make a histogram of these probabilities.
+
+2. Flip each coin ten times and record the number of heads. (`rbinom()`)
+
+3. Make a histogram of the *probabilities* of those coins
+    that got exactly 3 heads, and compare to the first histogram.
+
+

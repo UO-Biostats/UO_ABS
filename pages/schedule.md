@@ -84,10 +84,16 @@ Week 6 (*11/3*)
     - [Homework 6](../CLASS_MATERIALS/Homeworks/HW06.html) *(due 11/12)*
     - install [Stan](https://mc-stan.org)
 
-Week 7 (*11/10*)
+Week 7 (*11/10*, no class Thursday)
 
 : Introduction to Bayesian statistics
 
+    - Slides: [A note on P-value thresholds](../CLASS_MATERIALS/Lectures/Week_06_P_threshold.slides.html)
+    - Slides: [Prior distributions](Week_07_Prior_distributions.slides.html)
+    - Slides: [Probability rules](Week_07_Probability_rules.slides.html)
+    - Slides: [The Beta distribution](Week_07_Beta_distribution.slides.html)
+    - Slides: [Posterior sampling with MCMC](Week_07_Posterior_sampling.slides.html)
+    - [Homework 7](../CLASS_MATERIALS/Homeworks/HW07.html) *(due 11/18)*
     - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
 
 Week 8 (*11/17*)
@@ -96,7 +102,7 @@ Week 8 (*11/17*)
 
     - Reading: Kruschke, chapters 9, 10
 
-Week 9 (*11/24*)
+Week 9 (*11/24*, no class Thursday)
 
 : Logistic models, and sharing power
 
