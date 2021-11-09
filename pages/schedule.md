@@ -88,10 +88,10 @@ Week 7 (*11/10*, no class Thursday)
 
 : Introduction to Bayesian statistics
 
-    - Slides: [Prior distributions](Week_07_Prior_distributions.slides.html)
-    - Slides: [Probability rules](Week_07_Probability_rules.slides.html)
-    - Slides: [The Beta distribution](Week_07_Beta_distribution.slides.html)
-    - Slides: [Posterior sampling with MCMC](Week_07_Posterior_sampling.slides.html)
+    - Slides: [Prior distributions](../CLASS_MATERIALS/Lectures/Week_07_Prior_distributions.slides.html)
+    - Slides: [Probability rules](../CLASS_MATERIALS/Lectures/Week_07_Probability_rules.slides.html)
+    - Slides: [The Beta distribution](../CLASS_MATERIALS/Lectures/Week_07_Beta_distribution.slides.html)
+    - Slides: [Posterior sampling with MCMC](../CLASS_MATERIALS/Lectures/Week_07_Posterior_sampling.slides.html)
     - [Homework 7](../CLASS_MATERIALS/Homeworks/HW07.html) *(due 11/18)*
     - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
 
