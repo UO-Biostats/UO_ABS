@@ -88,7 +88,6 @@ Week 7 (*11/10*, no class Thursday)
 
 : Introduction to Bayesian statistics
 
-    - Slides: [A note on P-value thresholds](../CLASS_MATERIALS/Lectures/Week_06_P_threshold.slides.html)
     - Slides: [Prior distributions](Week_07_Prior_distributions.slides.html)
     - Slides: [Probability rules](Week_07_Probability_rules.slides.html)
     - Slides: [The Beta distribution](Week_07_Beta_distribution.slides.html)
