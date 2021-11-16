@@ -91,7 +91,6 @@ Week 7 (*11/10*, no class Thursday)
     - Slides: [Prior distributions](../CLASS_MATERIALS/Lectures/Week_07_Prior_distributions.slides.html)
     - Slides: [Probability rules](../CLASS_MATERIALS/Lectures/Week_07_Probability_rules.slides.html)
     - Slides: [The Beta distribution](../CLASS_MATERIALS/Lectures/Week_07_Beta_distribution.slides.html)
-    - Slides: [Posterior sampling with MCMC](../CLASS_MATERIALS/Lectures/Week_07_Posterior_sampling.slides.html)
     - [Homework 7](../CLASS_MATERIALS/Homeworks/HW07.html) *(due 11/18)*
     - Reading: Kruschke, chapters 1, 2, 4, 5, 6, 7
 
@@ -99,6 +98,8 @@ Week 8 (*11/17*)
 
 : Bayesian hierarchical modeling - shrinkage, and sharing power
 
+    - Slides: [Posterior sampling with MCMC](../CLASS_MATERIALS/Lectures/Week_08_Posterior_sampling.slides.html)
+    - Slides: [Models with Stan](../CLASS_MATERIALS/Lectures/Week_08_Levels_of_randomness.slides.html)
     - Reading: Kruschke, chapters 9, 10
 
 Week 9 (*11/24*, no class Thursday)

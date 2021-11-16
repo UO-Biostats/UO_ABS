@@ -503,9 +503,56 @@ background-color: var(--r-background-color);
 <section id="title-slide">
   <h1 class="title">Posterior sampling with Markov chain Monte Carlo</h1>
   <p class="author">Peter Ralph</p>
-  <p class="date">9 November – Advanced Biological Statistics</p>
+  <p class="date">16 November – Advanced Biological Statistics</p>
 </section>
 
+<section>
+<section id="reporting-uncertainty" class="title-slide slide level1">
+<h1>Reporting uncertainty</h1>
+
+</section>
+<section id="how-do-we-communicate-results" class="slide level2">
+<h2>How do we communicate results?</h2>
+<p>If we want a <em>point estimate</em>:</p>
+<ol type="1">
+<li>posterior mean,</li>
+<li>posterior median, or</li>
+<li>maximum <em>a posteriori</em> estimate (“MAP”: highest posterior density).</li>
+</ol>
+<p>These all convey “where the posterior distribution is”, more or less.</p>
+<div class="fragment">
+<p>What about uncertainty?</p>
+</div>
+</section>
+<section id="credible-region" class="slide level2">
+<h2>Credible region</h2>
+<p><strong>Definition:</strong> A 95% <em>credible region</em> is a portion of parameter space having a total of 95% of the <em>posterior probability</em>.</p>
+<div class="fragment">
+<p>(same with other numbers for “95%”)</p>
+</div>
+</section>
+<section id="interpretation-1" class="slide level2">
+<h2>Interpretation #1</h2>
+<p>If we construct a 95% credible interval for <span class="math inline">\(\theta\)</span> for each of many datasets; <em>and</em> the coin in each dataset has <span class="math inline">\(\theta\)</span> drawn independently from the prior, <em>then</em> the true <span class="math inline">\(\theta\)</span> will fall in its credible interval for 95% of the datasets.</p>
+</section>
+<section id="interpretation-2" class="slide level2">
+<h2>Interpretation #2</h2>
+<p>If we construct a 95% credible interval for <span class="math inline">\(\theta\)</span> with a dataset, and the distribution of the coin’s true <span class="math inline">\(\theta\)</span> across many parallel universes is given by the prior, then the true <span class="math inline">\(\theta\)</span> will be in the credible interval in 95% of those universes.</p>
+</section>
+<section id="interpretation-3" class="slide level2">
+<h2>Interpretation #3</h2>
+<p>Given my prior beliefs (prior distribution), the posterior distribution is the most rational<span class="math inline">\({}^*\)</span> way to update my beliefs to account for the data.</p>
+<div class="fragment">
+<p><span class="math inline">\({}^*\)</span> if you do this many times you will be wrong least often</p>
+</div>
+<div class="fragment">
+<p><span class="math inline">\({}^*\)</span> <strong>or</strong> you will be wrong in the fewest possible universes</p>
+</div>
+</section>
+<section id="but-which-credible-interval" class="slide level2">
+<h2>But which credible interval?</h2>
+<p><strong>Definition:</strong> The “95% highest density interval” is the 95% credible interval with the highest posterior probability density at each point.</p>
+</section></section>
 <section>
 <section id="hierarchical-coins" class="title-slide slide level1">
 <h1>Hierarchical coins</h1>
@@ -518,10 +565,12 @@ background-color: var(--r-background-color);
 <h2>Motivating problem: more coins</h2>
 <p>Suppose now we have data from <span class="math inline">\(n\)</span> different coins from the same source. We don’t assume they have the <em>same</em> <span class="math inline">\(\theta\)</span>, but don’t know what its distribution is, so try to <em>learn</em> it.</p>
 <p><span class="math display">\[\begin{aligned}
+  &amp;\left. \begin{aligned}
     Z_i &amp;\sim \Binom(N_i, \theta_i) \\
-    \theta_i &amp;\sim \Beta(\alpha, \beta) \\
-    \alpha &amp;\sim \Unif(0, 100) \\
-    \beta &amp;\sim \Unif(0, 100)
+    \theta_i &amp;\sim \Beta(\alpha, \beta)
+  \end{aligned} \right\} \qquad \text{for } 1 \le i \le n \\
+    &amp;\alpha \sim \Unif(0, 100) \\
+    &amp;\beta \sim \Unif(0, 100)
 \end{aligned}\]</span></p>
 <p><strong>Goal:</strong> find the posterior distribution of <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta\)</span>.</p>
 </section>
@@ -620,11 +669,10 @@ generated quantities {
 <section class="slide level2">
 
 <p><strong>Toy example:</strong></p>
-<p><em>(from beta-binomial coin example)</em></p>
-<p>Do we think that <span class="math inline">\(\theta &lt; 0.5\)</span>?</p>
-<p><em>(before:)</em></p>
+<p>If we didn’t know about the <code>pbeta( )</code> function, how could we find the probability that <span class="math inline">\(\theta &lt; 0.5\)</span>?</p>
+<p><em>(math:)</em></p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">pbeta</span>(<span class="fl">0.5</span>, post_a, post_b)</span></code></pre></div>
-<p><em>(now:)</em></p>
+<p><em>(Monte Carlo:)</em></p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">mean</span>(<span class="kw">rbeta</span>(<span class="fl">1e6</span>, post_a, post_b) <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.5</span>)</span></code></pre></div>
 </section>
 <section id="how-markov-chain-monte-carlo" class="slide level2">
