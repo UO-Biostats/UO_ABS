@@ -581,7 +581,74 @@ model {
 ::::::::::::::
 
 
+
+## IN CLASS
+
+```{r model, cache=TRUE}
+model_code <- "
+data {
+    int n;      // number of coins
+    int N[n];   // number of flips
+    int Z[n];   // number of heads
+}
+parameters {
+    // probability of heads
+    real<lower=0,upper=1> theta[n];
+    real<lower=0,upper=100> alpha;
+    real<lower=0,upper=100> beta;
+}
+model {
+    Z ~ binomial(N, theta);
+    theta ~ beta(alpha, beta);
+    // uniform priors 'go without saying'
+    // alpha ~ uniform(0, 100);
+    // beta ~ uniform(0, 100);
+}
+"
+model <- stan_model(model_code=model_code)
+
+```
+
+## data:
+
+```{r sim_data}
+set.seed(23)
+ncoins <- 100
+true_theta <- rbeta(ncoins, 20, 50)
+N <- rep(50, ncoins)
+Z <- rbinom(ncoins, size=N, prob=true_theta)
+```
+
+## fit mmmodel
+
+```{r fit, cache=TRUE, dependson="model"}
+fit1 <- sampling(model,
+         data=list(N=N, Z=Z, n=ncoins),
+         chains=3, iter=1000)
+
+fit2 <- sampling(model,
+         data=list(N=N, Z=Z, n=ncoins),
+         chains=3, iter=5000)
+```
+
+## plot trace
+
+```{r plottrace, cache=TRUE, dependson="model"}
+stan_trace(fit2, pars=c("alpha", "beta"))
+```
+
+## look at results
+
+Note the posterior intervals for `alpha` and `beta`:
+```{r results, cache=TRUE, dependson="model"}
+rstan::summary(fit2)$summary
+```
+
+
+
 # Some notes on Stan
+
+
 
 ## Variable types in Stan:
 

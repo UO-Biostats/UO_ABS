@@ -102,7 +102,7 @@ to see if omnivores tend to be bigger than herbivores
 in the Pantheria data:
 
 1. Find pairs of species in the same family
-   for which one is a omnivores and the other an herbivore.
+   for which one is a omnivore and the other an herbivore.
 
 2. Compute within each pair **(some statistic)** comparing omnivore to herbivore size,
    and average these (the test statistic).
@@ -114,7 +114,93 @@ in the Pantheria data:
 ## In class
 
 ```{r inclass}
+library(tidyverse) 
+
 source("../Datasets/PanTHERIA/read_pantheria.R")
-pantheria <- read_pantheria("../Datasets/PanTHERIA")
+pantheria <- (read_pantheria("../Datasets/PanTHERIA")
+              %>% select(Family, Binomial, AdultBodyMass_g, TrophicLevel)
+              %>% filter(
+                    !is.na(AdultBodyMass_g)
+                    & !is.na(TrophicLevel)))
+
+# find families with both an herbivore and an omnivore
+families <- unique(pantheria$Family)
+family_counts <- table(pantheria$Family, pantheria$TrophicLevel)
+good_families <- rownames(family_counts)[
+                             (family_counts[,"herbivore"] > 0
+                               & family_counts[,"omnivore"] > 0)
+                        ]
 ```
 
+---------
+
+```{r inclass2}
+sp_pairs <- data.frame(
+               family=good_families,
+               herbivore=NA,
+               omnivore=NA
+)
+for (j in 1:nrow(sp_pairs)) {
+    fam <- sp_pairs$family[j]
+    sp_pairs$herbivore[j] <- sample(
+                    subset(pantheria,
+                             Family==fam & TrophicLevel == "herbivore"
+                           )$Binomial,
+          1)
+    sp_pairs$omnivore[j] <- sample(
+                    subset(pantheria,
+                             Family==fam & TrophicLevel == "omnivore"
+                           )$Binomial,
+          1)
+}
+
+# consistency check:
+for (colname in c("herbivore", "omnivore")) {
+    stopifnot(all(
+        pantheria$TrophicLevel[
+                match(sp_pairs[[colname]], pantheria$Binomial)
+           ] == colname
+    ))
+}
+```
+
+--------------
+
+Next, compare the sizes:
+```{r plots}
+sp_pairs$herbivore_size <- pantheria$AdultBodyMass_g[
+         match(sp_pairs$herbivore, pantheria$Binomial)
+ ]
+sp_pairs$omnivore_size <- pantheria$AdultBodyMass_g[
+        match(sp_pairs$omnivore, pantheria$Binomial)
+]                                                    
+
+plot(omnivore_size ~ herbivore_size, data=sp_pairs, log='xy')
+```
+
+--------------
+
+```{r plots2}
+sp_pairs$diff <- sp_pairs$omnivore_size - sp_pairs$herbivore_size
+sp_pairs$ratio <- sp_pairs$omnivore_size / sp_pairs$herbivore_size
+# let's use this one
+sp_pairs$log_ratio <- log(sp_pairs$omnivore_size / sp_pairs$herbivore_size)
+
+observed <- mean(sp_pairs$log_ratio)
+```
+
+--------------
+
+On average, ominovres are a fraction `r exp(observed)` of their paired herbivore size.
+
+```{r shuffle}
+shuffled <- replicate(1000, {
+    coins <- (runif(nrow(sp_pairs)) < 0.5)
+    fake_herbs <- ifelse(coins, sp_pairs$herbivore_size, sp_pairs$omnivore_size)
+    fake_omnis <- ifelse(coins, sp_pairs$omnivore_size, sp_pairs$herbivore_size)
+    mean(log(fake_omnis / fake_herbs))
+})
+
+hist(shuffled, breaks=30)
+abline(v=observed, col='red')
+```

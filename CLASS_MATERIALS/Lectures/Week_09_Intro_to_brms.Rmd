@@ -1,0 +1,286 @@
+---
+title: "Introduction to brms"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 5
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+library(lme4)
+library(brms)
+```
+
+
+# Stan, but with formulas
+
+## 
+
+The [`brms`](https://github.com/paul-buerkner/brms) package lets you
+
+. . .
+
+::: {.centered}
+fit hierarchical models using Stan
+:::
+
+. . .
+
+::: {.flushright}
+with mixed-model syntax!!!
+:::
+
+. . .
+
+::: {.columns}
+::::::: {.column width=70%}
+
+
+```
+# e.g.
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = poisson(link='log'))
+# or
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = student(link='identity'))
+```
+
+:::
+::::::: {.column width=30%}
+
+![brms logo](images/brms.png)
+
+:::
+:::::::
+
+# Overview of brms
+
+## Fitting models
+
+```
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = gaussian(link='identity'))
+```
+
+- `formula`: almost just like `lme4`
+- `data`: must contain all the variables
+- `family`: distribution of response
+- `link`: connects mean to linear predictor
+
+## Parameterization
+
+There are several *classes* of parameter in a brms model:
+
+- `b` : the *population-level* (or, *fixed*) effects
+- `sd` : the standard deviations of *group-level* (or, *random*) effects
+- family-specific parameters, like `sigma` for the Gaussian
+
+. . .
+
+Examples:
+
+- `b_x` : the slope of `x` : `class="b", coef="x"`
+- `sd_f` : the SD of effects for levels of `f` : `class="sd", coef="f"`
+
+## Setting priors
+
+Pass a *vector* of "priors", specified by
+```
+    set_prior(prior, class="b", ...)
+```
+where `prior` is some valid Stan code.
+
+. . .
+
+```
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = gaussian(link='identity'),
+    prior=c(set_prior("normal(0, 5)", class="b"),
+            set_prior("cauchy(0, 1)", class="sd", coef="f")))
+```
+
+## 1. Set up the formula
+
+```{r xydata, cache=TRUE}
+xy <- data.frame(x = rnorm(100),
+                 y = rexp(100),
+                 f = factor(sample(letters[1:3], 100, replace=TRUE)))
+xy$z <- xy$x + as.numeric(xy$f) * xy$y + rnorm(100, sd=0.1)
+```
+
+```{r bf, cache=TRUE}
+the_formula <- brmsformula(z ~ x + y + (1 + y | f))
+```
+
+## 2. Choose priors
+
+Default:
+```{r gp}
+get_prior(the_formula, data=xy)
+```
+
+. . .
+
+Choose modifications:
+```{r somep, cache=TRUE}
+# for example, no good reason to do this
+the_priors = c(set_prior("normal(0, 5)", class = "b"),
+               set_prior("normal(0, 1)", class = "sd", coef="y", group="f"))
+```
+
+## 3. Fit the model
+
+```{r dobrms, cache=TRUE, dependson=c("xydata", "bf", "somep")}
+the_fit <- brm(the_formula, data=xy, family=gaussian(), 
+               prior=the_priors)
+```
+
+## 4. Check converence
+
+
+```{r mcbrms}
+summary(the_fit)
+```
+
+##
+
+Or...
+```
+launch_shinystan(the_fit)
+```
+
+
+## 4. Look at results
+
+Summaries of, or samples from, the posteriors of:
+
+- `fixef( )`: "fixed" effects
+- `ranef( )`: "random" effects
+- `fitted( )`: posterior distribution of *mean* response (see `posterior_epred`)
+- `predict( )`: posterior distribution of actual responses (see `posterior_predict`)
+- `hypothesis( )`: get posterior distributions of *functions* of various parameters (e.g., difference between two classes)
+- `conditional_effects( )`: effect of one predictor conditioned on values of others
+
+## More tools:
+
+- `parnames( )`: list of parameter names
+- `pp_check( )`: compare response distribution to posterior predictive simulations
+- `loo( )` leave-one-out crossvalidation for model comparison
+- `bayes_R2( )`: [Bayesian $r^2$](https://doi.org/10.1080/00031305.2018.1549100)
+
+## More info:
+
+- formulas: `help(brmsformula)`
+- families: `help(brmsfamily)` (but note can use those in `help(family)` also)
+- priors: `help(set_prior)` and also check what can have a prior with `get_prior( )`
+- get the Stan code: `stancode(the_fit)` (and `standata(the_fit)`)
+- compare models with `loo( )`
+- more technical notes at [this tutorial](../Tutorials/using_brms.html)
+
+# `pp_check`
+
+## 
+
+*Question:* does our model fit the data?
+
+. . .
+
+*Possible answer:* gee, I dunno, let's simulate from it and see?
+
+
+## Posterior predictive simulations
+
+1. Fit a model.
+
+2. Draw a set of parameters from the posterior distribution.
+
+3. With these, simulate a new data set.
+
+4. Do this a few times, and compare the results to the original dataset.
+
+. . .
+
+`brms` lets you do this with the `pp_check(brms_fit, type='xyz')` method
+
+
+# Example: pumpkins
+
+##
+
+Let's first go back to the pumpkin data from Week 5:
+```{r read_pumpkins, cache=TRUE}
+pumpkins <- read.table("data/pumpkins.tsv", header=TRUE)
+pumpkins$plot <- factor(pumpkins$plot)
+pumpkins$fertilizer <- factor(pumpkins$fertilizer)
+pumpkins$water <- factor(pumpkins$water)
+```
+
+##
+
+```{r plot_pumpkins}
+ggplot(pumpkins) + geom_boxplot(aes(x=fertilizer:water, y=weight, fill=water))
+```
+
+## A mixed model with `lme4`:
+
+Then, we fit a *mixed model* with `lme4`:
+```{r fit_lme4}
+lme_pumpkins <- lmer( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
+summary(lme_pumpkins)
+```
+
+## ... with `brms`:
+
+Here's the "same thing" with `brms`:
+```{r fit_brms, cache=TRUE, dependson="read_pumpkins"}
+brms_pumpkins <- brm( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
+```
+
+----------
+
+```r
+brms_pumpkins <- brm( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
+```
+
+```{r fit_brms_summary}
+summary(brms_pumpkins)
+```
+
+## Quick comparison:
+
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```{r brmp_summary}
+summary(brms_pumpkins)
+```
+
+:::
+::::::: {.column width=50%}
+
+```{r lmep_summary}
+summary(lme_pumpkins)
+```
+
+:::
+:::::::
+
+# Your turn
+
+##
+
+
+Try out:
+
+1. `launch_shinystan(brms_pumpkins)`
+
+2. `conditional_effects(brms_pumpkins)`
+
+3. `pp_check(brms_pumpkins, type='scatter')`

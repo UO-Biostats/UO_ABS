@@ -1,0 +1,573 @@
+---
+title: "Baseball data"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 5
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(bayesplot)
+library(posterior)
+library(brms)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+
+# Baseball
+
+## Baseball
+
+We have [a dataset](data/BattingAverage.csv) of batting averages of baseball players,
+having
+
+1. name
+2. position
+3. number of at bats
+4. number of hits
+5. height
+6. weight
+7. handedness
+
+
+```{r basedata}
+batting <- read.csv("data/BattingAveragePlus.csv", header=TRUE, stringsAsFactors=TRUE)
+head(batting)
+```
+
+------------------------
+
+The *overall* batting average of the `r nrow(batting)` players is `r sum(batting$Hits)/sum(batting$AtBats)`.
+
+Here is the average by position.
+```{r by_pos}
+batting %>% group_by(PriPos) %>% 
+    summarise(num=n(), BatAvg=sum(Hits)/sum(AtBats)) %>% 
+    select(PriPos, num, BatAvg)
+```
+
+## Questions?
+
+1. What's the overall batting average?
+
+2. Do some positions tend to be better batters?
+
+3. How much variation in batting average is there between players of the same position?
+
+4. Do height or weight predict batting average?
+
+. . .
+
+**Exercise:**
+
+*Come up with some quick-and-dirty statistics to answer these questions.*
+
+
+# Predicting probabilities
+
+----------
+
+*Motivation:*
+```r
+lm( Hits/AtBats ~ PriPos + weight + height, data=batting )
+```
+
+. . .
+
+which is
+$$\begin{aligned}
+    \frac{\text{Hits}_i}{\text{AtBats}_i} &\sim \Normal(\mu_i, \sigma) \\
+    \mu_i &= \beta_0 + \beta_{\text{PriPos}_i} + \beta_w w_i + \beta_h h_i
+\end{aligned}$$
+
+. . .
+
+*But:* that's not right - `Hits/AtBats` is between 0 and 1!
+
+. . .
+
+And, 2/5 is very different than 2000/5000!
+
+## A better Binomial model
+
+
+$$\begin{aligned}
+    \text{Hits}_i &\sim \Binom(\text{AtBats}_i, \mu_i) \\
+    \mu_i &= \beta_0 + \beta_{\text{PriPos}_i} + \beta_w w_i + \beta_h h_i
+\end{aligned}$$
+
+. . .
+
+*But:* what's to keep $\mu_i$ between 0 and 1?
+
+
+# The logistic function
+
+## The logistic function
+
+$$\begin{aligned}
+   \logistic(x) = \frac{1}{1 + e^{-x}} . 
+\end{aligned}$$
+
+```{r logistic_intro, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
+curve(1/(1+exp(-x)), from=-5, to=5, main="logistic function")
+```
+
+## ... is the inverse of the logit function
+
+
+$$\begin{aligned}
+   \logit(x) = \log\left(\frac{x}{1-x}\right) . 
+\end{aligned}$$
+
+```{r logit, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
+curve(log(x/(1-x)), from=0.005, to=0.995, main="logit function")
+```
+
+
+
+# Let's build a model
+
+
+## Binomial response with logistic predictor
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &= \logistic(\mu_i)
+\end{aligned}$$
+
+::::::::::::::
+::: {.column width="50%"}
+
+For the $i$th player:
+
+- $N_i$: number of *at-bats*
+- $Z_i$: number of *hits*
+- $\theta_i$: "true" batting average
+
+
+::::::::::::::
+:::
+
+
+## Everyone is the same
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i)) \\
+    \theta_i &= \logistic(\mu_i) \\
+    \mu_i &= \beta_0
+\end{aligned}$$
+
+::::::::::::::
+::: {.column width="50%"}
+
+For the $i$th player:
+
+- $N_i$: number of *at-bats*
+- $Z_i$: number of *hits*
+- $\theta_i$: "true" batting average
+
+and
+
+- $\beta_0$: overall mean logit batting avg
+
+::::::::::::::
+:::
+
+
+## All pitchers are the same
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &= \logistic(\mu_i) \\
+    \mu_i &= \beta_{p_i}
+\end{aligned}$$
+
+::::::::::::::
+::: {.column width="50%"}
+
+For the $i$th player:
+
+- $N_i$: number of *at-bats*
+- $Z_i$: number of *hits*
+- $p_i$: *position*
+
+and
+
+- $\beta_p$: mean logit batting avg of position $p$
+
+::::::::::::::
+:::
+
+# First model, with brms
+
+## First, we need priors!
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &= \logistic(\mu_i) \\
+    \mu_i &= \beta_{p_i}
+\end{aligned}$$
+and
+$$\begin{aligned}
+    \beta_p &\sim \Normal(0, 5)
+\end{aligned}$$
+
+::::::::::::::
+::: {.column width="40%"}
+
+For the $i$th player:
+
+- $N_i$: number of *at-bats*
+- $Z_i$: number of *hits*
+- $p_i$: *position*
+
+and
+
+- $\beta_p$: mean logit batting avg of position $p$
+
+::::::::::::::
+:::
+
+## Fit the model
+
+We'll see more about [brms](https://paul-buerkner.github.io/brms/reference/brm.html) soon!
+
+```{r brmsfirst, cache=TRUE}
+fm <- brm(
+      Hits  | trials(AtBats) ~ 0 + PriPos,
+      data=batting,
+      family='binomial',
+      prior = c(prior(normal(0, 5), class = b)),
+      iter = 2000, chains = 3
+)
+```
+
+## Check convergence
+
+```{r check_conv}
+print(fm)
+```
+
+------
+
+```{r first_plot, fig.width=3*fig.dim}
+mcmc_trace(fm)
+```
+
+## Look at results
+
+```{r first_results, message=FALSE}
+mcmc_intervals(fm, regex_pars="b_PriPos.*") +
+    scale_y_discrete(labels=levels(batting$PriPos)) +
+    xlab("coefficient (logit scale)")
+```
+
+------------
+
+```{r first_pred}
+empty <- data.frame(
+            PriPos=levels(batting$PriPos),
+            AtBats=10000)
+(fm_post <- predict(fm, newdata=empty))
+```
+
+--------
+
+```{r plot_first_pred}
+par(mar=c(5,7,1,1)+.1)
+plot(fm_post[,"Estimate"] / empty$AtBats, 1:nrow(empty), xlim=c(0.1, 0.3), xlab='batting avg', ylab='', yaxt='n', type='n')
+segments(x0=fm_post[,"Q2.5"]/empty$AtBats, x1=fm_post[,"Q97.5"]/empty$AtBats, y0=1:nrow(empty), col='red')
+points(fm_post[,"Estimate"] / empty$AtBats, 1:nrow(empty), pch=20)
+axis(2, at=1:nrow(empty), labels=empty$PriPos, las=2)
+```
+
+## Are right fielders better than catchers?
+
+Let's get the posterior distribution
+of the difference between the two batting averages.
+
+```{r first_diff, echo=1:4}
+fm_samps <- posterior_predict(fm, newdata=empty)
+right_fielders <- fm_samps[,match("Right Field", empty$PriPos)]
+catchers <- fm_samps[,match("Catcher", empty$PriPos)]
+post_diff <- right_fielders - catchers
+layout(t(1:2))
+plot(right_fielders, catchers, xlab="Right fielder batting avg", ylab="Catcher batting avg", pch=20)
+abline(0, 1, col='red')
+hist(post_diff, xlab='Difference in batting average',
+     main='Posterior distrib, Right Field - Catcher', breaks=50)
+abline(v=0, col='red', lwd=3)
+```
+
+## Goodness-of-fit
+
+*Is* this a good model for the data?
+
+. . .
+
+```{r first_predall}
+fm_pp <- predict(fm)
+ut <- (batting$AtBats > 40)
+ba_order <- rank((batting$Hits / batting$AtBats)[ut])
+plot(ba_order, (batting$Hits / batting$AtBats)[ut], type='n', ylim=c(0.0, 0.4))
+segments(x0=ba_order, y0=(fm_pp[,"Q2.5"] / batting$AtBats)[ut], y1=(fm_pp[,"Q97.5"] / batting$AtBats)[ut], col='red')
+points(ba_order, (batting$Hits / batting$AtBats)[ut], pch=20)
+```
+
+
+# Back to the model
+
+## Everyone is different, but pitchers are similar
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &= \logistic(\mu_i) \\
+    \mu_i &= \beta_{p_i} + \epsilon_i \\
+    \epsilon_i &\sim \Normal(0, \sigma)
+\end{aligned}$$
+
+::::::::::::::
+::: {.column width="50%"}
+
+For the $i$th player:
+
+- $N_i$: number of *at-bats*
+- $Z_i$: number of *hits*
+- $p_i$: *position*
+- $\epsilon_i$: difference to typical for position
+
+and
+
+- $\beta_p$: batting avg for position $p$
+- $\sigma$: size of differences between players
+
+::::::::::::::
+:::
+
+## Add in height and weight
+
+:::::::::::::: {.columns}
+::: {.column width="50%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &= \logistic(\mu_i) \\
+    \mu_i &= \beta_{p_i} + \beta_h h_i + \beta_w w_i + \epsilon_i \\
+    \epsilon_i &\sim \Normal(0, \sigma)
+\end{aligned}$$
+
+::::::::::::::
+::: {.column width="50%"}
+
+For the $i$th player:
+
+- $N_i$: number of *at-bats*
+- $Z_i$: number of *hits*
+- $p_i$: *position*
+- $\epsilon_i$: difference to typical for position
+- $h_i$, $w_i$: height and weight
+
+and
+
+- $\beta_p$: batting avg for position $p$
+- $\sigma$: size of differences between players
+- $\beta_h$, $\beta_w$: coefficients on height and weight
+
+::::::::::::::
+:::
+
+
+## Fit the model
+
+Scaling variables can improve convergence:
+
+```{r brmsmodel, cache=TRUE}
+library(brms)
+batting$scaled_height <- (batting$height - mean(batting$height))/sd(batting$height)
+batting$scaled_weight <- (batting$weight - mean(batting$weight))/sd(batting$weight)
+logistic_fit <- brm(
+      Hits  | trials(AtBats) ~ 0 + scaled_weight + scaled_height + PriPos + (1 | PriPos:Player),
+      data = batting,
+      family = "binomial",
+      prior = c(prior(normal(0, 5), class = b),
+                prior(normal(0, 5), class = sd)),
+      iter = 2000, chains = 3
+)
+```
+
+## Check convergence
+
+```{r secondcheck}
+print(logistic_fit)
+```
+
+------
+
+```{r secondtrace, fig.width=3*fig.dim}
+mcmc_trace(logistic_fit, regex_pars="b_PriPos.*")
+```
+
+
+## Look at results
+
+```{r viz, message=FALSE}
+samps <- as_draws_array(logistic_fit)
+mcmc_intervals(samps, regex_pars=c("b_PriPos.*")) +
+    scale_y_discrete(labels=levels(batting$PriPos)) +
+    xlab("coefficient (logit scale)")
+```
+
+## Let's look at some players?
+
+`posterior_epred()` gives posterior samples of expected responses:
+```{r viz2, message=FALSE}
+players <- c("Mark Buehrle", "Matt Harvey", "Mike Leake")
+player_data <- subset(batting, Player %in% players)
+player_preds <- posterior_epred(logistic_fit, newdata=player_data)
+player_preds <- player_preds / player_data$AtBats[col(player_preds)]
+head(player_preds)
+```
+
+-------
+
+```{r plotviz2, fig.height=1.4*fig.dim}
+layout(seq_along(players))
+for (j in seq_along(players)) {
+    hist(player_preds[,j], xlim=range(player_preds), main=players[j], xlab='batting average')
+}
+```
+
+## Exercise:
+
+What are some questions would you like to answer using this model?
+
+
+# With Stan instead
+
+## First model
+
+:::::::::::::: {.columns}
+::: {.column width="40%"}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &= \logistic(\mu_i) \\
+    \mu_i &= \beta_{p_i}
+\end{aligned}$$
+and
+$$\begin{aligned}
+    \beta_p &\sim \Normal(0, 5)
+\end{aligned}$$
+
+::::::::::::::
+::: {.column width="60%"}
+
+
+```{r first_code, cache=TRUE}
+first_code <- "
+data {
+    int N;    // number of players
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+}
+parameters {
+    vector[npos] beta;
+    real alpha_w;
+    real alpha_h;
+    vector[N] epsilon;
+    real<lower=0> sigma;
+}
+model {
+    hits ~ binomial(
+            at_bats,
+            inv_logit(beta[position]));
+    beta ~ normal(0, 5);
+} "
+first_model <- stan_model(model_code=first_code)
+```
+
+:::::::::::::
+:::
+
+
+
+## Second model
+
+
+
+```r
+logistic_code <- "
+data {
+    int N;    // number of players
+    int hits[N];
+    int at_bats[N];
+    int npos; // number of positions
+    int position[N];
+    vector[N] height;
+    vector[N] weight;
+}
+parameters {
+    vector[npos] gamma;
+    real alpha_w;
+    real alpha_h;
+    vector[N] epsilon;
+    vector<lower=0> sigma;
+}
+transformed parameters {
+    vector<lower=0, upper=1>[N] theta;
+    theta = inv_logit(
+        gamma[position] + alpha_h * height + alpha_w * weight + epsilon
+    );
+}
+model {
+    hits ~ binomial(at_bats, theta);
+    epsilon ~ normal(0, sigma);
+    gamma ~ normal(0, 5);
+    alpha_h ~ normal(0, 5);
+    alpha_w ~ normal(0, 5);
+    sigma ~ normal(0, 5);
+} "
+```
+
+--------
+
+Next steps:
+```r
+logistic_model <- stan_model(model_code=logistic_code)
+scaled_height <- (batting$height - mean(batting$height))/sd(batting$height)
+scaled_weight <- (batting$weight - mean(batting$weight))/sd(batting$weight)
+logistic_fit <- sampling(logistic_model, chains=3, iter=1000,
+                     data=list(N=nrow(batting),
+                               hits=batting$Hits,
+                               at_bats=batting$AtBats,
+                               npos=nlevels(batting$PriPos),
+                               position=as.numeric(batting$PriPos),
+                               height=scaled_height,
+                               weight=scaled_weight) )
+```
+

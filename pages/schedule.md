@@ -100,12 +100,14 @@ Week 8 (*11/17*)
 
     - Slides: [Posterior sampling with MCMC](../CLASS_MATERIALS/Lectures/Week_08_Posterior_sampling.slides.html)
     - Slides: [Models with Stan](../CLASS_MATERIALS/Lectures/Week_08_Levels_of_randomness.slides.html)
+    - Slides: [Baseball: Hierarchical logistic models](../CLASS_MATERIALS/Lectures/Week_08_Baseball.slides.html)
     - Reading: Kruschke, chapters 9, 10
 
 Week 9 (*11/24*, no class Thursday)
 
 : Logistic models, and sharing power
 
+    - Slides: [Intro to brms](../CLASS_MATERIALS/Lectures/Week_09_Intro_to_brms.slides.html)
     - Reading: Kruschke, chapters 13, 21
 
 Week 10 (*12/1*)
