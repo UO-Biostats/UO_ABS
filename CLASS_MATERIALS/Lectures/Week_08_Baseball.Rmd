@@ -363,7 +363,8 @@ Then, fit the model! (time remaining)
 
 $$\begin{aligned}
     Z_i &\sim \Binom(N_i, \theta_i) \\
-    \theta_i &= \frac{1}{1 + \exp(-\beta_{p_i}) + \epsilon_i} \\
+    \theta_i &= \frac{1}{1 + \exp(-\mu_i)} \\
+    \mu_i &= \beta_{p_i} + \epsilon_i \\
     \epsilon_i &\sim \Normal(0, 0.05) .
 \end{aligned}$$
 
