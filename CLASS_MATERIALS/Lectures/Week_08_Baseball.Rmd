@@ -166,7 +166,7 @@ For the $i$th player:
 ::: {.column width="50%"}
 
 $$\begin{aligned}
-    Z_i &\sim \Binom(N_i, \theta_i)) \\
+    Z_i &\sim \Binom(N_i, \theta_i) \\
     \theta_i &= \logistic(\mu_i) \\
     \mu_i &= \beta_0
 \end{aligned}$$
@@ -274,7 +274,7 @@ print(fm)
 mcmc_trace(fm)
 ```
 
-## Look at results
+## Results: on a logit scale
 
 ```{r first_results, message=FALSE}
 mcmc_intervals(fm, regex_pars="b_PriPos.*") +
@@ -282,23 +282,24 @@ mcmc_intervals(fm, regex_pars="b_PriPos.*") +
     xlab("coefficient (logit scale)")
 ```
 
-------------
+## Results: with `predict( )`
 
 ```{r first_pred}
-empty <- data.frame(
+pos_df <- data.frame(
             PriPos=levels(batting$PriPos),
             AtBats=10000)
-(fm_post <- predict(fm, newdata=empty))
+fm_post <- predict(fm, newdata=pos_df)
+cbind(pos_df, fm_post)
 ```
 
 --------
 
 ```{r plot_first_pred}
 par(mar=c(5,7,1,1)+.1)
-plot(fm_post[,"Estimate"] / empty$AtBats, 1:nrow(empty), xlim=c(0.1, 0.3), xlab='batting avg', ylab='', yaxt='n', type='n')
-segments(x0=fm_post[,"Q2.5"]/empty$AtBats, x1=fm_post[,"Q97.5"]/empty$AtBats, y0=1:nrow(empty), col='red')
-points(fm_post[,"Estimate"] / empty$AtBats, 1:nrow(empty), pch=20)
-axis(2, at=1:nrow(empty), labels=empty$PriPos, las=2)
+plot(fm_post[,"Estimate"] / pos_df$AtBats, 1:nrow(pos_df), xlim=c(0.1, 0.3), xlab='batting avg', ylab='', yaxt='n', type='n')
+segments(x0=fm_post[,"Q2.5"]/pos_df$AtBats, x1=fm_post[,"Q97.5"]/pos_df$AtBats, y0=1:nrow(pos_df), col='red')
+points(fm_post[,"Estimate"] / pos_df$AtBats, 1:nrow(pos_df), pch=20)
+axis(2, at=1:nrow(pos_df), labels=pos_df$PriPos, las=2)
 ```
 
 ## Are right fielders better than catchers?
@@ -307,9 +308,9 @@ Let's get the posterior distribution
 of the difference between the two batting averages.
 
 ```{r first_diff, echo=1:4}
-fm_samps <- posterior_predict(fm, newdata=empty)
-right_fielders <- fm_samps[,match("Right Field", empty$PriPos)]
-catchers <- fm_samps[,match("Catcher", empty$PriPos)]
+fm_samps <- posterior_predict(fm, newdata=pos_df)
+right_fielders <- fm_samps[,match("Right Field", pos_df$PriPos)]
+catchers <- fm_samps[,match("Catcher", pos_df$PriPos)]
 post_diff <- right_fielders - catchers
 layout(t(1:2))
 plot(right_fielders, catchers, xlab="Right fielder batting avg", ylab="Catcher batting avg", pch=20)
@@ -317,6 +318,7 @@ abline(0, 1, col='red')
 hist(post_diff, xlab='Difference in batting average',
      main='Posterior distrib, Right Field - Catcher', breaks=50)
 abline(v=0, col='red', lwd=3)
+text(0, 150, label=sprintf("p=%0.2f", mean(post_diff < 0)), col='red', pos=2)
 ```
 
 ## Goodness-of-fit
@@ -327,12 +329,51 @@ abline(v=0, col='red', lwd=3)
 
 ```{r first_predall}
 fm_pp <- predict(fm)
+head(fm_pp)
+```
+
+---------
+
+```{r plot_first_predall, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
 ut <- (batting$AtBats > 40)
-ba_order <- rank((batting$Hits / batting$AtBats)[ut])
-plot(ba_order, (batting$Hits / batting$AtBats)[ut], type='n', ylim=c(0.0, 0.4))
+ba_order <- batting$AtBats[ut]
+plot(ba_order, (batting$Hits / batting$AtBats)[ut], type='n', ylim=c(0.0, 0.4), xlab='at bats', ylab='batting avg')
 segments(x0=ba_order, y0=(fm_pp[,"Q2.5"] / batting$AtBats)[ut], y1=(fm_pp[,"Q97.5"] / batting$AtBats)[ut], col='red')
 points(ba_order, (batting$Hits / batting$AtBats)[ut], pch=20)
+legend("topleft", pch=c(20, NA), col=c('black', 'red'), lty=c(NA, 1), legend=c('obs', '95% CI'))
 ```
+
+# Exercise
+
+## In groups
+
+::: {.columns}
+::::::: {.column width=50%}
+
+Simulate from the model: 
+
+1. Make up 20 players' names, positions, and at-bats,
+2. simulate their true batting averages as on the right,
+3. and draw their Hits using `rbinom( )`.
+
+Then, fit the model! (time remaining)
+
+:::
+::::::: {.column width=50%}
+
+$$\begin{aligned}
+    Z_i &\sim \Binom(N_i, \theta_i) \\
+    \theta_i &= \frac{1}{1 + \exp(-\beta_{p_i}) + \epsilon_i} \\
+    \epsilon_i &\sim \Normal(0, 0.05) .
+\end{aligned}$$
+
+with:
+
+- $\beta_\text{pitcher} = 0.15$
+- and all other $\beta_p = 0.24$
+
+:::
+:::::::
 
 
 # Back to the model
