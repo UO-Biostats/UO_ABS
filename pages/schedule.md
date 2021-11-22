@@ -115,7 +115,9 @@ Week 10 (*12/1*)
 
 : Robust linear models; Generalized Linear Models (GLMs).
 
+    - [Homework 9](../CLASS_MATERIALS/Homeworks/HW09.html) *(due 12/9)*
     - Reading: Kruschke, chapters 15, 16, 17
+
 
 # Winter 2022
 
