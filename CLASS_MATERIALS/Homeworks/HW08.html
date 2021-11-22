@@ -62,14 +62,13 @@
 <p>Please write your report to answer the following questions:</p>
 <ol type="1">
 <li><p>How many surveys do we have, from what states and which years? Are there any strange or alarming features of the data?</p></li>
-<li><p>How much does cigarette use differ by state, education level, gender, and year? Is there evidence of a decline (or increase) in use over time? To answer these questions, fit a binomial model with brms:</p></li>
-</ol>
-<pre><code>brm(Number_Yes | trials(Sample_Size) ~ Gender + Education + YEAR + (1|state),
-           data=d, family=binomial(link=&#39;logit&#39;))</code></pre>
-<p>Explain the model, and use the results provide quantitative estimates of how much cigarette use differs by state, education level, gender, and year.</p>
-<ol start="3" type="1">
+<li><p>How much does cigarette use differ by state, education level, gender, and year? Is there evidence of a decline (or increase) in use over time? To answer these questions, fit a binomial model with brms:</p>
+<pre><code> brm(Number_Yes | trials(Sample_Size) ~ Gender + Education + YEAR + (1|state),
+            data=d, family=binomial(link=&#39;logit&#39;))</code></pre>
+<p>Explain the model, and use the results provide quantitative estimates of how much cigarette use differs by state, education level, gender, and year.</p></li>
 <li><p>Use the fitted model to <em>predict</em> the percent of female high school students that would report cigarette use in 2019 in Utah and in New Jersey. Provide estimates of uncertainty on your prediction.</p></li>
 <li><p>Finally, check the quality of these estimates by out-of-sample prediction: fit your model without 2017 data and use the model to predict 2017, then report how often the observed values fall within the predicted ranges of uncertainty.</p></li>
 </ol>
+<p>As always, please write a readable report, as might be read by someone working on youth smoking policy, for instance. Please do not include code, or (for instance) copy-paste the questions above into numbered headers.</p>
 </body>
 </html>
