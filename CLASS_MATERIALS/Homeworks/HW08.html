@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>HW08</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <div style="display: none">
+  \[
+  %%
+  % Add your macros here; they&#39;ll be included in pdf and html output.
+  %%
+
+  \newcommand{\R}{\mathbb{R}}    % reals
+  \newcommand{\E}{\mathbb{E}}    % expectation
+  \renewcommand{\P}{\mathbb{P}}  % probability
+  \DeclareMathOperator{\logit}{logit}
+  \DeclareMathOperator{\logistic}{logistic}
+  \DeclareMathOperator{\sd}{sd}
+  \DeclareMathOperator{\var}{var}
+  \DeclareMathOperator{\cov}{cov}
+  \DeclareMathOperator{\cor}{cor}
+  \DeclareMathOperator{\Normal}{Normal}
+  \DeclareMathOperator{\LogNormal}{logNormal}
+  \DeclareMathOperator{\Poisson}{Poisson}
+  \DeclareMathOperator{\Beta}{Beta}
+  \DeclareMathOperator{\Binom}{Binomial}
+  \DeclareMathOperator{\Gam}{Gamma}
+  \DeclareMathOperator{\Exp}{Exponential}
+  \DeclareMathOperator{\Cauchy}{Cauchy}
+  \DeclareMathOperator{\Unif}{Unif}
+  \DeclareMathOperator{\Dirichlet}{Dirichlet}
+  \DeclareMathOperator{\Wishart}{Wishart}
+  \DeclareMathOperator{\StudentsT}{StudentsT}
+  \DeclareMathOperator{\Weibull}{Weibull}
+
+  \newcommand{\given}{\;\vert\;}
+  \]
+  </div>
+</head>
+<body>
+<h1 id="homework-9-youth-smoking-rates">Homework 9: Youth smoking rates</h1>
+<p><strong>Assignment:</strong> Your task is to use Rmarkdown to write a short report, readable by a technically literate person. The code you used should not be visible in the final report (unless you have a good reason to show it).</p>
+<p><strong>Due:</strong> Submit your work via Canvas by the end of the day (midnight) on Thursday, December 12th. Please submit <strong>both the Rmd file and the resulting html or pdf file.</strong> You can work with other members of class, but I expect each of you to construct and run all of the scripts yourself.</p>
+<h2 id="the-problem">The Problem</h2>
+<p>For this assignment, you’ll be using a subset of data from the CDC National Youth Tobacco Survey: <a href="yts.csv">yts.csv</a>. These data describe the prevelence of cigarette use in middle and high school students by state or US terrritory from 2000-2017. The methodology and detailed descriptions of the data can be found <a href="https://chronicdata.cdc.gov/Survey-Data/Youth-Tobacco-Survey-YTS-Glossary-and-Methodology/i6st-vu2f">here</a>. The data were in fact collected using a two-stage stratified survey design, but for the purposes of this assignment, let’s assume (somewhat unrealistically) that the data were produced by taking a random sample of all students in the state in that year. For instance, the first row is</p>
+<pre><code>  YEAR   state Gender     Education Number_Yes Sample_Size
+  2000 Alabama Female   High School        227         816
+</code></pre>
+<p>… and so assume that the CDC surveyed 816 randomly chosen female high school students in Alabama in 2000, of whom 227 reported that they currently smoke cigarettes.</p>
+<p>Please write your report to answer the following questions:</p>
+<ol type="1">
+<li><p>How many surveys do we have, from what states and which years? Are there any strange or alarming features of the data?</p></li>
+<li><p>How much does cigarette use differ by state, education level, gender, and year? Is there evidence of a decline (or increase) in use over time? To answer these questions, fit a binomial model with brms:</p></li>
+</ol>
+<pre><code>brm(Number_Yes | trials(Sample_Size) ~ Gender + Education + YEAR + (1|state),
+           data=d, family=binomial(link=&#39;logit&#39;))</code></pre>
+<p>Explain the model, and use the results provide quantitative estimates of how much cigarette use differs by state, education level, gender, and year.</p>
+<ol start="3" type="1">
+<li><p>Use the fitted model to <em>predict</em> the percent of female high school students that would report cigarette use in 2019 in Utah and in New Jersey. Provide estimates of uncertainty on your prediction.</p></li>
+<li><p>Finally, check the quality of these estimates by out-of-sample prediction: fit your model without 2017 data and use the model to predict 2017, then report how often the observed values fall within the predicted ranges of uncertainty.</p></li>
+</ol>
+</body>
+</html>
