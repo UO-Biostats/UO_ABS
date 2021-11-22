@@ -108,7 +108,7 @@ Week 9 (*11/24*, no class Thursday)
 : Logistic models, and sharing power
 
     - Slides: [Intro to brms](../CLASS_MATERIALS/Lectures/Week_09_Intro_to_brms.slides.html)
-    - [Homework 8](../CLASS_MATERIALS/Homeworks/HW08.html) *(due 12/10)*
+    - [Homework 8](../CLASS_MATERIALS/Homeworks/HW08.html) *(due 12/3)*
     - Reading: Kruschke, chapters 13, 21
 
 Week 10 (*12/1*)
