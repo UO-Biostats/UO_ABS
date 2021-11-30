@@ -116,6 +116,8 @@ Week 10 (*12/1*)
 
 : Robust linear models; Generalized Linear Models (GLMs).
 
+    - Slides: [Cauchy distribution](../CLASS_MATERIALS/Lectures/Week_10_Cauchy_distribution.slides.html)
+    - Slides: [Robust models](../CLASS_MATERIALS/Lectures/Week_10_Robust_fitting.slides.html)
     - [Homework 9](../CLASS_MATERIALS/Homeworks/HW09.html) *(due 12/9)*
     - Reading: Kruschke, chapters 15, 16, 17
 
@@ -124,7 +126,7 @@ Week 10 (*12/1*)
 
 Week 11 (*1/4*)
 
-: Survival analysis and [introduction to `brms`](https://github.com/paul-buerkner/brms)
+: Survival analysis
 
     - Reading: 
 

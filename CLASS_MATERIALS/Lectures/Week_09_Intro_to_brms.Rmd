@@ -390,6 +390,46 @@ cbind(mc,
 ```
 
 
+# Exercise
+
+## 
+
+:::{.columns}
+:::::::{.column width=50%}
+
+$$\begin{aligned}
+Z_i  &\sim \Binom(N_i, \theta_i) \\
+\theta_i &= \logit(\beta_{p_i} + u_i) \\
+u_i &\sim \Normal(0, \sigma^2)
+\end{aligned}$$
+
+where for the $i^\text{th}$ player,
+
+- $N_i$: number of at-bats
+- $Z_i$: number of hits
+- $p_i$: position
+- $\beta_p$: position effect
+- $u_i$: random player effect
+
+:::
+:::::::{.column width=50%}
+
+```{r albert, echo=FALSE}
+subset(batting, Player == "Albert Pujols")[, c("Player", "PriPos", "Hits", "AtBats", "scaled_height", "scaled_weight")]
+```
+
+How would we use the posterior to summarize:
+
+1. Mean batting average of 1st base players of average weight and height?
+2. Range of batting averages of 1st base players?
+3. Albert Pujol's batting average?
+4. How many hits Albert Pujol would get out of 100 at bats?
+
+:::
+:::::::
+
+
+
 # `pp_check`
 
 ## 
@@ -439,7 +479,7 @@ pp_check(bb_fit, type='intervals_grouped', group='PriPos')
 ## pp_check: scatterplots
 
 ```{r bb_pp4, message=FALSE}
-pp_check(bb_fit, type='scatter', group='PriPos')
+pp_check(bb_fit, type='scatter')
 ```
 
 
