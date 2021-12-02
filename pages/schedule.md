@@ -118,6 +118,9 @@ Week 10 (*12/1*)
 
     - Slides: [Cauchy distribution](../CLASS_MATERIALS/Lectures/Week_10_Cauchy_distribution.slides.html)
     - Slides: [Robust models](../CLASS_MATERIALS/Lectures/Week_10_Robust_fitting.slides.html)
+    - Slides: [Poisson distribution](../CLASS_MATERIALS/Lectures/Week_10_Poisson_distribution.slides.html)
+    - Slides: [Poisson models](../CLASS_MATERIALS/Lectures/Week_10_Poisson_lineage_models.slides.html)
+    - Slides: [Summary](../CLASS_MATERIALS/Lectures/Week_10_Summary.slides.html)
     - [Homework 9](../CLASS_MATERIALS/Homeworks/HW09.html) *(due 12/9)*
     - Reading: Kruschke, chapters 15, 16, 17
 

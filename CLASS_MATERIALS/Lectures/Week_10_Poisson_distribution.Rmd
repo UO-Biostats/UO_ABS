@@ -1,0 +1,56 @@
+---
+title: "The Poisson distribution"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+
+# Stochastic minute
+
+## The Poisson distribution
+
+If $N \sim \Poisson(\mu)$ then $N \ge 0$ and
+$$\begin{aligned}
+    \P\{N = k\} = \frac{\mu^k}{k!} e^{-\mu}
+\end{aligned}$$
+
+> - $N$ is a nonnegative integer (i.e., a *count*)
+> 
+> - $\E[N] = \var[N] = \mu$
+> 
+> - If a machine makes widgets very fast,
+>   producing on average one broken widget per minute (and many good ones),
+>   each breaking independent of the others,
+>   then the number of broken widgets in $\mu$ minutes is $\Poisson(\mu)$.
+> 
+> - If busses arrive randomly every $\Exp(1)$ minutes,
+>   then the number of busses to arrive in $\mu$ minutes
+>   is $\Poisson(\mu)$.
+
+##
+
+Important point:
+
+- the standard deviation is the square root of the mean
+
+```{r plot_poisson, echo=FALSE, fig.height=2*fig.dim, fig.width=2.5*fig.dim}
+muvals <- c(1, 10, 100, 1000)
+layout(matrix(1:4, nrow=2))
+for (mu in muvals) {
+    x <- rpois(1e5, mu)
+    hist(x, xlim=range(0, x), xlab='value', main=sprintf("mean = %d", mu), freq=FALSE)
+}
+```

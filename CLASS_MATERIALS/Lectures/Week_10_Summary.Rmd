@@ -1,0 +1,145 @@
+---
+title: "Summary"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+```
+
+# Wrap-up
+
+## Steps in data analysis
+
+1. Care, or at least think, about the data.
+
+2. Look at the data.
+
+3. Query the data.
+
+4. Check the results.
+
+5. Communicate.
+
+
+## Modeling
+
+1. How well a statistical method works depends on the situation.
+
+2. We can describe the "situation" with a *probability model*.
+
+3. Inference usually works best if the probabilistic model reflects reality .
+
+4. Explicit models make it easy to simulate, and therefore test your methods.
+
+5. Stan/brms lets you do inference using (almost) arbitrary models.
+
+
+## Hierarchical Bayesian models
+
+1. It is often possible to infer things about *populations* that we can't infer about individuals.
+
+2. Doing so leads to *sharing of information* (or, "power") between samples,
+   and can improve accuracy.
+
+
+
+## Concepts
+
+::: {.columns}
+:::::::: {.column width="50%"}
+
+
+- statistic versus parameter
+- quantifying uncertainty
+- experiment vs observation
+- controls
+- statistical power/sensitivity
+- tidy data
+- Markov chain Monte Carlo
+- permutation test
+- multiple comparisons
+- shrinkage and sharing power
+
+:::
+:::::::: {.column width="50%"}
+
+- probability models
+- simulation
+- $p$-values
+- hypothesis testing
+- confidence and credible intervals
+- linear models
+- random effects
+- prior, likelihood, and posterior
+- goodness-of-fit
+
+:::
+::::::::
+
+------------------
+
+::: {.columns}
+:::::::: {.column width="50%"}
+
+**Distributions:**
+
+- Central Limit Theorem
+- Gaussian/Normal
+- Student's $t$
+- Binomial
+- Beta
+- Beta-Binomial
+- Gamma
+- Cauchy
+- Poisson
+
+:::
+:::::::: {.column width="50%"}
+
+**Visualization:**
+
+- center, spread, outliers
+- histograms
+- scatter plots
+- boxplots
+- maximize information per unit of ink
+
+**Statistical models:**
+
+- ANOVA, partition of variance
+- least-squares fitting $\sim$ Gaussian
+- Beta-Binomial
+- logistic linear models
+- robust linear models
+- Generalized Linear (Mixed) Models
+
+:::
+::::::::
+
+
+# Identify the GLM
+
+## Which response distribution for the GLM?
+
+1. How number of pumpkins per vine
+   depends on fertilizer and water amount.
+
+2. How distance from home to workplace is predicted by
+   income, job category, and city.
+
+3. How (presence or absence of) hip dysplasia in dogs
+   depends on age and breed.
+
+4. How doughnut weight varies between and within bakeries and doughnut types.
+
+5. How house prices are predicted by elevation, distance to stores,
+   and square footage.
+
+*Options:* normal / binomial / poisson / gamma / cauchy

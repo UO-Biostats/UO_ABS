@@ -1,0 +1,313 @@
+---
+title: "Poisson linear models"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 5
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(brms)
+library(bayesplot)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+# Count data
+
+## A hypothetical situation:
+
+1. We have **counts** of mutations,
+
+2. from some individuals of different **ages**
+   and past **exposures** to solar irradiation,
+
+3. of two **genotypes**.
+
+. . .
+
+*Model:*
+
+* Counts are **Poisson**,
+
+* with mean that depends on age and exposure,
+
+* but effect of exposure depends on genotype.
+
+
+
+-------------------------
+
+::: {.columns}
+::::::::: {.column width="50%"}
+
+
+1. Counts are **Poisson**,
+
+2. with mean that depends on age and exposure,
+
+3. but effect of exposure depends on genotype.
+
+:::
+:::::::::: {.column width="50%"}
+
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\mu_i) \\
+\end{aligned}$$
+
+:::
+:::::::::::
+
+
+
+-------------------------
+
+::: {.columns}
+::::::::: {.column width="50%"}
+
+
+1. Counts are **Poisson**,
+
+2. with mean that depends on age and exposure,
+
+3. but effect of exposure depends on genotype.
+
+:::
+:::::::::: {.column width="50%"}
+
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\mu_i) \\
+    \mu_i &= a + b \times \text{age}_i + c \times \text{exposure}_i 
+\end{aligned}$$
+
+:::
+:::::::::::
+
+-------------------------
+
+::: {.columns}
+::::::::: {.column width="50%"}
+
+
+1. Counts are **Poisson**,
+
+2. with mean that depends on age and exposure,
+
+3. but effect of exposure depends on genotype.
+
+:::
+:::::::::: {.column width="50%"}
+
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\mu_i) \\
+    \mu_i &= a_{g_i} + b \times \text{age}_i + c_{g_i} \times \text{exposure}_i
+\end{aligned}$$
+
+:::
+:::::::::::
+
+
+
+-------------------------
+
+::: {.columns}
+::::::::: {.column width="50%"}
+
+
+1. Counts are **Poisson**,
+
+2. with mean that depends on age and exposure,
+
+3. but effect of exposure depends on genotype.
+
+:::
+:::::::::: {.column width="50%"}
+
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\mu_i) \\
+    \mu_i &= \exp\left( a_{g_i} + b \times \text{age}_i \right. \\
+        &\qquad \left. {} + c_{g_i} \times \text{exposure}_i \right)
+\end{aligned}$$
+
+:::
+:::::::::::
+
+# Poisson modeling, in practice
+
+## The data
+
+
+```{r sim_counts, include=FALSE, cache=TRUE}
+true_params <- list(a=c(0, 2),
+                    b=1/20,
+                    c=c(1/10, -1/10),
+                    sigma=0.7)
+nsamples <- 500
+data <- data.frame(genotype=factor(sample(c('A','B'), nsamples, 
+                                          replace=TRUE)),
+                   age = rgamma(nsamples, 10, 1),
+                   exposure = rexp(nsamples, 0.2))
+data$y <- with(data, true_params$a[genotype] +
+                      true_params$b * age +
+                      true_params$c[genotype] * exposure)
+data$mu <- exp(rnorm(nrow(data), mean=data$y, 
+                     sd=true_params$sigma))
+data$counts <- rpois(nsamples, data$mu)
+```
+
+```{r save_data, include=FALSE}
+write.table(data, file="data/poisson_counts_data.tsv", row.names=FALSE)
+write.table(data[,c(1,2,3,6)], file="data/poisson_counts.tsv", row.names=FALSE)
+```
+
+```{r plot_counts, echo=FALSE, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+layout(t(1:2))
+plot(counts ~ age, col=genotype, data=data, pch=20)
+for (g in levels(data$genotype)) {
+    abline(coef(lm(counts ~ age, data=subset(data, genotype == g))), col=match(g, levels(data$genotype)))
+}
+plot(counts ~ exposure, col=genotype, data=data, pch=20)
+for (g in unique(data$genotype)) {
+    abline(coef(lm(counts ~ exposure, data=subset(data, genotype == g))), col=match(g, levels(data$genotype)))
+}
+legend("topright", pch=20, col=1:2,
+       legend=paste("genotype", 1:2))
+```
+
+-----------
+
+
+Here are [the data](data/poisson_counts.tsv):
+```{r show_data}
+head( countdata <- read.table("data/poisson_counts.tsv", header=TRUE, stringsAsFactors=TRUE) )
+```
+
+
+## A GLM
+
+```{r pois_fmla, cache=TRUE}
+bf <- brmsformula(counts ~ 0 + genotype + age + genotype:exposure)
+get_prior(bf, data=countdata)
+```
+
+-----------
+
+```{r run_simple_pois, cache=TRUE, dependson=c("sim_counts", "pois_fmla")}
+fit1 <- brm(
+   counts ~ 0 + genotype + age + genotype:exposure,
+   family=poisson(link='log'),
+   prior=set_prior("normal(0, 1)", class="b"),
+   data=countdata
+)
+```
+
+## 
+
+```{r printit}
+print(fit1)
+```
+
+## 
+
+```{r not_warmup}
+mcmc_trace(fit1, regex_pars=c("b_.*"))
+```
+
+## 
+
+Posterior distributions of the parameters:
+```{r true_fit_1, echo=FALSE}
+mcmc_intervals(fit1, regex_pars=c("b_.*"))
+```
+
+
+# Goodness of fit
+
+## Posterior predictive simulations
+
+*Idea:* Let's simulate up data *under this model*
+and see if it looks like the real data.
+
+. . .
+
+A bunch of times, we'll
+
+1. pick a set of parameters from the posterior
+2. compute the vector of means (`mu`)
+3. simulate a vector of Poisson counts with mean `mu`
+
+. . .
+
+... with the `pp_check` function!
+
+## The data are *overdispersed* relative to our simulations
+
+```{r plot_post_sims1, echo=-1, fig.height=1.5*fig.dim}
+fit1$data$order <- rank(countdata$counts, ties='first')
+pp_check(fit1, type='intervals', x="order")
+```
+
+## One solution:
+
+Use the `negbinomial ` family
+
+. . .
+
+... which introduces more randomness:
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(M_i) \\
+    M_i &\sim \Gam(\text{mean}=\mu_i, \text{shape}=r) \\
+    \mu_i &= \exp(y_i) \\
+    y_i &= a_{g_i} + b \times \text{age}_i \\
+        &\qquad {} + c_{g_i} \times \text{exposure}_i
+\end{aligned}$$
+
+
+-----------
+
+```{r run2, cache=TRUE, dependson=c("sim_counts", "pois_fmla")}
+fit2 <- brm(
+   counts ~ 0 + genotype + age + genotype:exposure,
+   family=negbinomial(link='log'),
+   prior=set_prior("normal(0, 1)", class="b"),
+   data=countdata
+)
+```
+## 
+
+```{r printit2}
+print(fit2)
+```
+
+## 
+
+```{r not_warmup2}
+mcmc_trace(fit2, regex_pars=c("b_.*"))
+```
+
+## 
+
+Posterior distributions of the parameters:
+```{r true_fit_2, echo=FALSE}
+mcmc_intervals(fit2, regex_pars=c("b_.*"))
+```
+
+---------------
+
+
+```{r plot_post_sims2, echo=-1, fig.height=1.5*fig.dim}
+fit2$data$order <- rank(countdata$counts, ties='first')
+pp_check(fit2, type='intervals', x="order")
+```
+
+
