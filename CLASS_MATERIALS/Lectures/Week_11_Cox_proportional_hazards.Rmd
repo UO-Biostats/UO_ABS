@@ -1,0 +1,137 @@
+---
+title: "Cox's Proportional Hazards"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 5
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center',
+                      warning=FALSE)
+set.seed(42)
+library(survival)
+library(matrixStats)
+```
+
+# Cox's proportional hazards
+
+##
+
+![Cox's orange pippin (credit: Wikimedia)](images/Cox_orange_renette2.JPG){width=80%}
+
+## Proportional Hazards
+
+*Goal:* understand how covariates affect survival time.
+
+. . .
+
+*Idea:* modify a nonparametric hazard rate
+by a linear predictor:
+$$ h(t) = h_0(t) e^{\beta x} .$$
+
+. . .
+
+```{r plotcoxph, echo=FALSE}
+layout(t(1:2))
+plot(survfit(Surv(time, status) ~ sex, data=lung), col=1:2, main='Kaplan-Meier')
+plot(survfit(coxph(Surv(time, status) ~ sex, data=lung),
+              newdata=data.frame(sex=c(1,2))), col=1:2, main='Cox Proportional Hazards')
+legend('topright', lty=1, col=1:2, legend=c("male", "female"))
+```
+
+
+## Covariates
+
+::: {.columns}
+:::::: {.column width=50%}
+
+How does survival probability
+depend on the covariates?
+
+```
+age:        Age in years                                                        
+sex:        Male=1 Female=2                                                     
+ph.ecog:    ECOG performance score as rated by the physician. 
+            (good=0-bad=4)
+ph.karno:   Karnofsky performance score (bad=0-good=100) rated by physician     
+pat.karno:  Karnofsky performance score as rated by patient                     
+meal.cal:   Calories consumed at meals                                          
+wt.loss:    Weight loss in last six months     
+```
+
+:::
+:::::: {.column width=50%}
+
+
+:::
+::::::
+
+## Covariates
+
+::: {.columns}
+:::::: {.column width=50%}
+
+How does survival probability
+depend on the covariates?
+
+```
+age:        Age in years                                                        
+sex:        Male=1 Female=2                                                     
+ph.ecog:    ECOG performance score as rated by the physician. 
+            (good=0-bad=4)
+ph.karno:   Karnofsky performance score (bad=0-good=100) rated by physician     
+pat.karno:  Karnofsky performance score as rated by patient                     
+meal.cal:   Calories consumed at meals                                          
+wt.loss:    Weight loss in last six months     
+```
+
+:::
+:::::: {.column width=50%}
+
+
+$$\begin{aligned}
+    h(t) &= \text{(baseline hazard rate at $t$)} \\
+    y_i &= \beta_0 + \sum_j \beta_j x_{ij} \\
+    h_i(t) &= \text{(hazard rate for $i$ at $t$)} \\
+        &= h(t) \times \exp\left( y_i \right) \\
+    S_i(t) &= \P\left\{\text{survival of $i$ until $t$}\right\} \\
+        &= \exp\left( - \int_0^t h_i(s) ds \right) .
+\end{aligned}$$
+
+
+:::
+::::::
+
+## Fitting a Cox model
+
+```{r fitcox}
+fullcox <- coxph(Surv(time, status)
+                     ~ age + sex + ph.ecog + ph.karno + pat.karno
+                     + meal.cal + wt.loss,
+                 data = lung)
+summary(fullcox)
+```
+
+## Model comparison
+
+```{r anova}
+subcox <- coxph(Surv(time, status) ~ sex + ph.ecog, data = lung, subset=rowSums(is.na(lung[,2:10]))==0)
+anova(fullcox, subcox)
+```
+
+## Predictions
+
+```{r prediction}
+subcox_pred <- survfit(subcox, newdata=expand.grid(ph.ecog=0:3, sex=2))
+plot(subcox_pred, lty=1, col=1:4, main='predicted survival, females')
+legend("topright", lty=1, col=1:4, legend=paste("ECOG=", 0:3))
+```
+
+
+## In class
+
+1. Look at the data
+2. Fit a model
+3. Interpret results

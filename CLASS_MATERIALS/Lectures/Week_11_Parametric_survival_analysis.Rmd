@@ -1,0 +1,291 @@
+---
+title: "Parametric Survival Analysis"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center',
+                      warning=FALSE)
+set.seed(42)
+library(brms)
+library(survival)
+library(rstan)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+
+# Fully parametric models
+
+## Modeling
+
+The idea: choose a (parametric) distribution for the time-until-event.
+
+. . .
+
+Some choices:
+
+- Exponential (constant rate)
+- Weibull
+- Gompertz
+- logNormal
+
+##
+
+::: {.columns}
+:::::: {.column width=50%}
+
+Model:
+
+- lifetimes are Weibull distributed
+- mean lifetime depends on covariates
+
+:::
+:::::: {.column width=50%}
+
+:::
+::::::
+
+##
+
+::: {.columns}
+:::::: {.column width=50%}
+
+Model:
+
+- lifetimes are Weibull distributed
+- mean lifetime depends on covariates
+
+:::
+:::::: {.column width=50%}
+
+$$\begin{aligned}
+    T_i &\sim \Weibull(\text{shape}=k, \\
+        &\qquad \text{mean}=\mu_i) \\
+    \mu_i &= \exp(y_i) \\
+    y_i &= \beta_0 + \sum_j \beta_j x_{ij} 
+\end{aligned}$$
+
+:::
+::::::
+
+## 
+
+Three ways to do parametric survival analysis:
+
+- `survival::survreg` : maximum likelihood
+- `brms::brm` : Baysian, with Stan
+- MC Stan
+
+## Maximum likelihood: survreg
+
+```{r survreg}
+weifit <- survreg(Surv(time, status) ~ sex + ph.ecog + ph.karno,
+                  data = lung, dist='weibull')
+```
+
+## Bayesian: brms
+
+```{r brms, cache=TRUE}
+lung$censored <- ifelse(lung$status == 1, 'right', 'none')
+
+brmfit <- brm(time | cens(censored) ~ sex + ph.ecog + ph.karno,
+              data=lung, family='weibull')
+```
+
+##
+
+```{r dummy, include=FALSE}
+summary(weifit)
+summary(brmfit)
+```
+
+::: {.columns}
+:::::: {.column width=50%}
+
+<pre style="width:120%; margin-left:-20%;">
+```{r ssum, echo=FALSE, results='asis', message=FALSE}
+summary(weifit)
+```
+</pre>
+
+:::
+:::::: {.column width=50%}
+
+<pre style="width:120%;">
+```{r bsum, echo=FALSE, results='asis', message=FALSE}
+summary(brmfit)
+```
+</pre>
+
+:::
+::::::
+
+
+## Random effects, with brms
+
+Recall there are 19 different institutions:
+```{r do_insts}
+table( lung$inst <- factor(lung$inst) )
+```
+
+```{r brms2, cache=TRUE}
+brmfit2 <- brm(time | cens(censored) ~ sex + ph.ecog + ph.karno + (1|inst),
+               data=subset(lung, !is.na(inst)), family='weibull')
+```
+
+##
+
+```{r sb2, message=FALSE}
+summary(brmfit2)
+```
+
+-------------
+
+The conditional effect of sex on mean survival time (with mean values of other variables):
+```{r insts_sex}
+conditional_effects(brmfit2, effects='sex')
+```
+
+-------------
+
+The conditional effect of ECOG on mean survival time:
+```{r insts_ecog}
+conditional_effects(brmfit2, effects='ph.ecog')
+```
+
+
+-------------
+
+The conditional effect of Karnofsky score on mean survival time:
+```{r insts_karno}
+conditional_effects(brmfit2, effects='ph.karno')
+```
+
+-------------
+
+A posterior predictive check: data are dark points, posterior medians are large points,
+and lines give 50% and 90% posterior ranges:
+```{r ppcheck, message=FALSE}
+pp_check(brmfit2, type='intervals')
+```
+
+---------------
+
+Consulting [vignette("brms_families")](https://cran.r-project.org/web/packages/brms/vignettes/brms_families.html),
+the survival curve is $\exp(-(t / \lambda)^k)$ where $\lambda = \mu / \Gamma(1 + 1/k)$. Here are 100 samples from the posterior:
+```{r surv_curvs, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+post_means <- posterior_epred(brmfit2, newdata=data.frame(age=60, sex=2, ph.ecog=0:3, ph.karno=50), re_formula=NA, dpar="mu")[1:100,]
+post_shape <- posterior_epred(brmfit2, newdata=data.frame(age=60, sex=2, ph.ecog=0:3, ph.karno=50), re_formula=NA, dpar="shape")[1:100,]
+tvals <- seq(0, 2000, length.out=101)
+Svals <- array(NA, dim=c(length(tvals), nrow(post_means), ncol(post_means)))
+for (k in 1:nrow(post_means)) {
+    lambda <- post_means[k,] / gamma(1 + 1/post_shape[k,])
+    for (j in 1:ncol(post_means)) {
+        Svals[,k,j] <- exp(- (tvals / lambda[j])^post_shape[k,j])
+    }
+}
+layout(matrix(1:4, nrow=2, byrow=TRUE))
+for (j in 1:dim(Svals)[3]) {
+    plot(tvals, rowMeans(Svals[,,j]), lty=1, ylim=c(0,1), type='l', xlab='time (t)', ylab='S(t)', col=j, main=paste("ECOG =", j-1))
+    matlines(tvals, Svals[,,j], type='l', col=adjustcolor(j, 0.25), lty=1)
+    abline(v=1000, lty=3)
+}
+```
+
+----------
+
+Here's the code for that last one:
+```{r surv_curvs2, eval=FALSE}
+post_means <- posterior_epred(brmfit2, newdata=data.frame(age=60, sex=2, ph.ecog=0:3, ph.karno=50), re_formula=NA, dpar="mu")[1:100,]
+post_shape <- posterior_epred(brmfit2, newdata=data.frame(age=60, sex=2, ph.ecog=0:3, ph.karno=50), re_formula=NA, dpar="shape")[1:100,]
+tvals <- seq(0, 2000, length.out=101)
+Svals <- array(NA, dim=c(length(tvals), nrow(post_means), ncol(post_means)))
+for (k in 1:nrow(post_means)) {
+    lambda <- post_means[k,] / gamma(1 + 1/post_shape[k,])
+    for (j in 1:ncol(post_means)) {
+        Svals[,k,j] <- exp(- (tvals / lambda[j])^post_shape[k,j])
+    }
+}
+layout(matrix(1:4, nrow=2, byrow=TRUE))
+for (j in 1:dim(Svals)[3]) {
+    plot(tvals, rowMeans(Svals[,,j]), lty=1, ylim=c(0,1), type='l', xlab='time (t)', ylab='S(t)', col=j, main=paste("ECOG =", j-1))
+    matlines(tvals, Svals[,,j], type='l', col=adjustcolor(j, 0.25), lty=1)
+    abline(v=1000, lty=3)
+}
+```
+
+
+# Application
+
+## 
+
+Fit (and select) a proportional hazards model to the `veteran` dataset.
+What are the most important predictors of survival?
+
+```{r vetdata, eval=1}
+data(veteran)
+help(veteran)
+```
+```
+Veterans' Administration Lung Cancer study
+
+Description:
+
+     Randomised trial of two treatment regimens for lung cancer.  This
+     is a standard survival analysis data set.
+
+Usage:
+
+     veteran
+     
+Format:
+
+       trt:       1=standard 2=test                            
+       celltype:  1=squamous,  2=smallcell,  3=adeno,  4=large 
+       time:      survival time                                
+       status:    censoring status                             
+       karno:     Karnofsky performance score (100=good)       
+       diagtime:  months from diagnosis to randomisation       
+       age:       in years                                     
+       prior:     prior therapy 0=no, 10=yes      
+```
+
+
+# Review
+
+##
+
+Nonparametric:
+
+- simple
+- does not depend on model fit
+
+. . .
+
+Parametric:
+
+- makes more sense: real hazard rates are not piecewise constant
+- better power, *if* the model fits
+- can simulate
+
+
+
+## The Kaplan-Meier curve, by hand:
+
+```{r byhand}
+f1 <- survfit(Surv(time, status) ~ 1, data = lung)
+
+y <- data.frame(time=sort(unique(lung$time[lung$status == 2])))
+y$k <- sapply(y$time, function (t) sum(lung$status == 2 & lung$time == t))
+y$n <- sapply(y$time, function (t) sum(lung$time > t | (lung$time == t & lung$status == 2)))
+y$p <- cumprod(1 - y$k/y$n)
+
+plot(f1)
+points(p ~ time, data=y, col='red', pch=20, cex=0.5)
+```

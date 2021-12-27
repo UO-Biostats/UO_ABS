@@ -17,6 +17,76 @@ Below:
 - [Winter 2022](#winter-2022)
 
 
+# Winter 2022
+
+Week 11 (*1/4*)
+
+: Survival analysis
+
+    - slides: [Survival curves](../CLASS_MATERIALS/Lectures/2020/Week_11_Survival_curves.slides.html)
+    - slides: [Cox's Proportional Hazards](../CLASS_MATERIALS/Lectures/2020/Week_11_Cox_proportional_hazards.slides.html)
+    - slides: [the Weibull distribution](../CLASS_MATERIALS/Lectures/2020/Week_11_Weibull_distribution.slides.html)
+    - slides: [Parametric survival analysis](../CLASS_MATERIALS/Lectures/2020/Week_11_Parametric_survival_analysis.slides.html)
+    - [Homework 11](../CLASS_MATERIALS/Homeworks/HW11.html) *(due 1/13)*
+    - Reading: [Survival Analysis in R](https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html) by Emily Zabor
+
+Week 12 (*1/11*)
+
+: Time series: temporal autocorrelation, autoregressive models; mechanistic models
+
+    - Reading: 
+
+Week 13 (*1/18*)
+
+: Categorical data: chi-square for contingency tables, permutation tests.
+
+    - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
+        chapter 24 (Poisson, contingency tables)
+
+Week 14 (*1/25*)
+
+: Crossvalidation for model comparison; sparsifying priors and variable selection
+
+    - Reading: Kruschke, chapters 17 (one-variable linear models), 18 (multivariate linear models)
+
+Week 15 (*2/1*)
+
+: Many response variables
+
+    - Reading: 
+
+Week 16 (*2/8*)
+
+: Data analysis example
+
+    - Group presentations
+
+Week 17 (*2/15*)
+
+: Factor analysis, dimensionality reduction, and visualization; clustering; PCA, PCoA, MDS, t-SNE, UMAP
+
+    - Reading: 
+
+Week 18 (*2/22*)
+
+: Latent factors, deconvolution for mixtures of expression data; nonnegative matrix factorization
+
+    - Reading: 
+
+Week 19 (*3/1*)
+
+: Deconvolution continued; introduction to spatial statistics and spatial autocorrelation.
+
+    - Reading: 
+
+Week 20 (*3/8*)
+
+: Spatial statistics: kernel density estimation and interpolation.
+
+    - Reading: 
+
+
+
 # Fall 2021
 
 Week 1 (*9/29*)
@@ -123,68 +193,4 @@ Week 10 (*12/1*)
     - Slides: [Summary](../CLASS_MATERIALS/Lectures/Week_10_Summary.slides.html)
     - [Homework 9](../CLASS_MATERIALS/Homeworks/HW09.html) *(due 12/9)*
     - Reading: Kruschke, chapters 15, 16, 17
-
-
-# Winter 2022
-
-Week 11 (*1/4*)
-
-: Survival analysis
-
-    - Reading: 
-
-Week 12 (*1/11*)
-
-: Time series: temporal autocorrelation, autoregressive models; mechanistic models
-
-    - Reading: 
-
-Week 13 (*1/18*)
-
-: Categorical data: chi-square for contingency tables, permutation tests.
-
-    - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
-        chapter 24 (Poisson, contingency tables)
-
-Week 14 (*1/25*)
-
-: Crossvalidation for model comparison; sparsifying priors and variable selection
-
-    - Reading: Kruschke, chapters 17 (one-variable linear models), 18 (multivariate linear models)
-
-Week 15 (*2/1*)
-
-: Many response variables
-
-    - Reading: 
-
-Week 16 (*2/8*)
-
-: Data analysis example
-
-    - Group presentations
-
-Week 17 (*2/15*)
-
-: Factor analysis, dimensionality reduction, and visualization; clustering; PCA, PCoA, MDS, t-SNE, UMAP
-
-    - Reading: 
-
-Week 18 (*2/22*)
-
-: Latent factors, deconvolution for mixtures of expression data; nonnegative matrix factorization
-
-    - Reading: 
-
-Week 19 (*3/1*)
-
-: Deconvolution continued; introduction to spatial statistics and spatial autocorrelation.
-
-    - Reading: 
-
-Week 20 (*3/8*)
-
-: Spatial statistics: kernel density estimation and interpolation.
-
-    - Reading: 
 
