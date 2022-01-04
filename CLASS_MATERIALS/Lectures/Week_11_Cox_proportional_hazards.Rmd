@@ -132,6 +132,11 @@ legend("topright", lty=1, col=1:4, legend=paste("ECOG=", 0:3))
 
 ## In class
 
-1. Look at the data
-2. Fit a model
-3. Interpret results
+Interpretation:
+
+- describe the data
+- explain and explore the results
+- interpret conclusions.
+
+
+
