@@ -35,9 +35,9 @@ $$ h(t) = h_0(t) e^{\beta x} .$$
 
 ```{r plotcoxph, echo=FALSE}
 layout(t(1:2))
-plot(survfit(Surv(time, status) ~ sex, data=lung), col=1:2, main='Kaplan-Meier')
+plot(survfit(Surv(time, status) ~ sex, data=lung), col=1:2, main='Kaplan-Meier', xlab='days')
 plot(survfit(coxph(Surv(time, status) ~ sex, data=lung),
-              newdata=data.frame(sex=c(1,2))), col=1:2, main='Cox Proportional Hazards')
+              newdata=data.frame(sex=c(1,2))), col=1:2, main='Cox Proportional Hazards', xlab='days')
 legend('topright', lty=1, col=1:2, legend=c("male", "female"))
 ```
 
@@ -138,5 +138,52 @@ Interpretation:
 - explain and explore the results
 - interpret conclusions.
 
+## Describe the data
 
+We have survival time data for 228 lung cancer patients,
+of whom 90 are female and 138 are male.
+Most of the patients are between 55 and 75 years old,
+and the extremes are 39 and 82 years old.
+The median survival time was around 1-1.5 years,
+with females having around 20% longer survival times.
+The longest-living pateients lived for (at least) three years.
+*Note: explain variables also.*
 
+## Describe the covariates
+
+```{r plotit}
+pairs(as.data.frame(sapply(lung[c("age", "ph.ecog", "ph.karno", "pat.karno")], jitter)), col=lung$sex, pch=20)
+```
+
+The ECOG scores and Karnoffsky scores
+*(say something about the ranges of these)*.
+
+The physician- and patient-assigned Karnofsky scores were
+positively correlated ($r=0.5$),
+and were negatively correlated with ECOG score ($r=-0.8$ for physician-assigned).
+These were not strongly correlated with age.
+
+## Results
+
+We fit a Cox proportional hazards model (...)
+The covariates that most strongly predicted survival
+were sex and ECOG score, and both were strongly statistically significant.
+Females were predicted to have about a 15% higher surivival probability
+at one year (*todo: get precise number*).
+Lower ECOG scores (ie, better patient health at initial diagnosis)
+predicted higher survival, with a 30% survival for ECOG 3
+to 80% survival for ECOG 0.
+The difference between ECOG scores was larger than between sexes.
+
+## 
+
+TODO: say something about uncertainty in estimates.
+
+TODO: re-fit with ECOG as a factor, and compare
+
+TODO: figure out why Karnofsky score is going the opposite direction
+
+```{r only_karno}
+only_karno <- coxph(Surv(time, status) ~ sex + ph.karno, data = lung)
+summary(only_karno)
+```
