@@ -1,0 +1,51 @@
+---
+title: "The chi-squared distribution"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(matrixStats)
+options(digits=2)
+```
+
+# Stochastic minute
+
+## The chi-squared distribution
+
+Suppose that $Z_1, \ldots, Z_k$ are independent $\Normal(0, 1)$.
+Then
+
+$$ \chi^2 = Z_1^2 + \cdots + Z_k^2 $$
+
+has the *chi squared distribution* with $k$ degrees of freedom.
+
+. . .
+
+*Notes:*
+
+1. $\chi^2$ is a unitless nonnegative number.
+
+2. $\E[\chi^2] = k$.
+
+3. If instead $Z_i \sim \Normal(\mu_i, \sigma_i)$,
+   then $\chi^2 = \sum_{i=1}^k (Z_i - \mu_i)^2 / \sigma_i$.
+
+4. $\chi^2 \sim \Gam(k/2, 1/2)$.
+
+## Asymptotics
+
+If the number of observations in a contingency table with $r$ rows and $c$ columns is large,
+then the chi-squared *statistic*
+has, approximately, the chi-squared distribution with $(r-1)\times(c-1)$ degrees of freedom
+under the hypothesis of independence of rows and columns.
+
+. . .
+
+(*Asymptotically*, i.e., as the number of observations goes to infinity.)

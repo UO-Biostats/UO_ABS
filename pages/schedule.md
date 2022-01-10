@@ -34,10 +34,10 @@ Week 12 (*1/11*)
 
 : Categorical data: chi-square for contingency tables, permutation tests.
 
-    - slides: [The chi-squared test for categorical data](../CLASS_MATERIALS/Lectures/2020/Week_13_Categorical_chisquared.slides.html)
-    - slides: [Permutation testing for categorical data](../CLASS_MATERIALS/Lectures/2020/Week_13_Categorical_permutation.slides.html)
-    - slides: [Poisson models for categorical data (using brms)](../CLASS_MATERIALS/Lectures/2020/Week_13_Categorical_brms.slides.html)
-    - slides: [The chi-squared distribution](../CLASS_MATERIALS/Lectures/2020/Week_13_Chi_squared.slides.html)
+    - slides: [The chi-squared test for categorical data](../CLASS_MATERIALS/Lectures/2020/Week_12_Categorical_chisquared.slides.html)
+    - slides: [Permutation testing for categorical data](../CLASS_MATERIALS/Lectures/2020/Week_12_Categorical_permutation.slides.html)
+    - slides: [Poisson models for categorical data (using brms)](../CLASS_MATERIALS/Lectures/2020/Week_12_Categorical_brms.slides.html)
+    - slides: [The chi-squared distribution](../CLASS_MATERIALS/Lectures/2020/Week_12_Chi_squared.slides.html)
     - [Homework 12](../CLASS_MATERIALS/Homeworks/HW12.html) *(group homework, due 1/19)*
     - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
         chapter 24 (Poisson, contingency tables)
