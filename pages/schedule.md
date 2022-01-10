@@ -32,16 +32,21 @@ Week 11 (*1/4*)
 
 Week 12 (*1/11*)
 
-: Time series: temporal autocorrelation, autoregressive models; mechanistic models
+: Categorical data: chi-square for contingency tables, permutation tests.
 
-    - Reading: 
+    - slides: [The chi-squared test for categorical data](../CLASS_MATERIALS/Lectures/2020/Week_13_Categorical_chisquared.slides.html)
+    - slides: [Permutation testing for categorical data](../CLASS_MATERIALS/Lectures/2020/Week_13_Categorical_permutation.slides.html)
+    - slides: [Poisson models for categorical data (using brms)](../CLASS_MATERIALS/Lectures/2020/Week_13_Categorical_brms.slides.html)
+    - slides: [The chi-squared distribution](../CLASS_MATERIALS/Lectures/2020/Week_13_Chi_squared.slides.html)
+    - [Homework 12](../CLASS_MATERIALS/Homeworks/HW12.html) *(group homework, due 1/19)*
+    - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
+        chapter 24 (Poisson, contingency tables)
 
 Week 13 (*1/18*)
 
-: Categorical data: chi-square for contingency tables, permutation tests.
+: Time series: temporal autocorrelation, autoregressive models; mechanistic models
 
-    - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
-        chapter 24 (Poisson, contingency tables)
+    - Reading: 
 
 Week 14 (*1/25*)
 

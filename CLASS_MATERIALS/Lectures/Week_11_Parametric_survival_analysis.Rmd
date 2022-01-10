@@ -229,7 +229,7 @@ Fit (and select) a proportional hazards model to the `veteran` dataset.
 What are the most important predictors of survival?
 
 ```{r vetdata, eval=1}
-data(veteran)
+data(cancer, package='survival')
 help(veteran)
 ```
 ```
