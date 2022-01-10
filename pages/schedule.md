@@ -23,10 +23,10 @@ Week 11 (*1/4*)
 
 : Survival analysis
 
-    - slides: [Survival curves](../CLASS_MATERIALS/Lectures/2020/Week_11_Survival_curves.slides.html)
-    - slides: [Cox's Proportional Hazards](../CLASS_MATERIALS/Lectures/2020/Week_11_Cox_proportional_hazards.slides.html)
-    - slides: [the Weibull distribution](../CLASS_MATERIALS/Lectures/2020/Week_11_Weibull_distribution.slides.html)
-    - slides: [Parametric survival analysis](../CLASS_MATERIALS/Lectures/2020/Week_11_Parametric_survival_analysis.slides.html)
+    - slides: [Survival curves](../CLASS_MATERIALS/Lectures/Week_11_Survival_curves.slides.html)
+    - slides: [Cox's Proportional Hazards](../CLASS_MATERIALS/Lectures/Week_11_Cox_proportional_hazards.slides.html)
+    - slides: [the Weibull distribution](../CLASS_MATERIALS/Lectures/Week_11_Weibull_distribution.slides.html)
+    - slides: [Parametric survival analysis](../CLASS_MATERIALS/Lectures/Week_11_Parametric_survival_analysis.slides.html)
     - [Homework 11](../CLASS_MATERIALS/Homeworks/HW11.html) *(due 1/13)*
     - Reading: [Survival Analysis in R](https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html) by Emily Zabor
 
@@ -34,10 +34,10 @@ Week 12 (*1/11*)
 
 : Categorical data: chi-square for contingency tables, permutation tests.
 
-    - slides: [The chi-squared test for categorical data](../CLASS_MATERIALS/Lectures/2020/Week_12_Categorical_chisquared.slides.html)
-    - slides: [Permutation testing for categorical data](../CLASS_MATERIALS/Lectures/2020/Week_12_Categorical_permutation.slides.html)
-    - slides: [Poisson models for categorical data (using brms)](../CLASS_MATERIALS/Lectures/2020/Week_12_Categorical_brms.slides.html)
-    - slides: [The chi-squared distribution](../CLASS_MATERIALS/Lectures/2020/Week_12_Chi_squared.slides.html)
+    - slides: [The chi-squared test for categorical data](../CLASS_MATERIALS/Lectures/Week_12_Categorical_chisquared.slides.html)
+    - slides: [Permutation testing for categorical data](../CLASS_MATERIALS/Lectures/Week_12_Categorical_permutation.slides.html)
+    - slides: [Poisson models for categorical data (using brms)](../CLASS_MATERIALS/Lectures/Week_12_Categorical_brms.slides.html)
+    - slides: [The chi-squared distribution](../CLASS_MATERIALS/Lectures/Week_12_Chi_squared.slides.html)
     - [Homework 12](../CLASS_MATERIALS/Homeworks/HW12.html) *(group homework, due 1/19)*
     - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
         chapter 24 (Poisson, contingency tables)
