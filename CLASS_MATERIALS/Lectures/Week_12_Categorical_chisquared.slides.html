@@ -797,7 +797,15 @@ References:
 </section>
 <section id="what-about-by-sex" class="slide level2">
 <h2>What about by sex?</h2>
-<p>Compute the chi-squared statistic with <code>chisq.test( )</code>:</p>
+<ol type="1">
+<li>Are hair and eye color independent in this sample?</li>
+</ol>
+<p><em>No! (unsurprisingly)</em> Also, we know <em>how</em> nonindependent they are.</p>
+<ol start="2" type="1">
+<li>Do hair and eye color proportions differ by sex?</li>
+</ol>
+<div class="fragment">
+<p>Attempt #1 (what’s wrong with this?):</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="kw">chisq.test</span>(HairEyeColor[,,<span class="st">&quot;Female&quot;</span>])</span></code></pre></div>
 <pre><code>## Warning in chisq.test(HairEyeColor[, , &quot;Female&quot;]): Chi-squared approximation may be incorrect</code></pre>
 <pre><code>## 
@@ -805,6 +813,7 @@ References:
 ## 
 ## data:  HairEyeColor[, , &quot;Female&quot;]
 ## X-squared = 107, df = 9, p-value &lt;2e-16</code></pre>
+</div>
 </section></section>
     </div>
   </div>

@@ -49,3 +49,12 @@ under the hypothesis of independence of rows and columns.
 . . .
 
 (*Asymptotically*, i.e., as the number of observations goes to infinity.)
+
+. . .
+
+*Exercise:* Test this by making a plot of
+(probability the chi-squared statistic is less than 5)
+against sample size (from 20 to 200) for simulated data
+in which rows and columns are independent.
+(*Useful: `rmultinom( )`, `pchisq( )`.)
+

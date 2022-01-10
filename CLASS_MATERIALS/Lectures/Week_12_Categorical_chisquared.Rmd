@@ -273,7 +273,15 @@ Normalized by $\sqrt{\text{expected}}$:
 
 ## What about by sex?
 
-Compute the chi-squared statistic with `chisq.test( )`:
+1. Are hair and eye color independent in this sample?
+
+*No! (unsurprisingly)* Also, we know *how* nonindependent they are.
+
+2. Do hair and eye color proportions differ by sex?
+
+. . .
+
+Attempt #1 (what's wrong with this?):
 ```{r do_chisq}
 chisq.test(HairEyeColor[,,"Female"])
 ```
