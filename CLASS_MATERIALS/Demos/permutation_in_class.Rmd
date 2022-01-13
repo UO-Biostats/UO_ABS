@@ -1,0 +1,109 @@
+---
+title: "Permutation test"
+author: "Peter Ralph"
+date: "1/13/2022"
+output: html_document
+---
+
+
+
+Your turn:
+
+Use a permutation test to assess whether the relation between hair and eye color differs by sex.
+
+To do this, we’ll:
+
+1.    Compute the sum of squared differences between each of the 16 proportions between males and females (4 eye x 4 hair colors). (test statistic)
+
+2.    Compute the same thing, after shuffling up the sex column, a bunch of times.
+
+    Compare the observed value to the distribution under permutations from (2).
+
+We want to write
+```
+Don't Repeat Yourself
+```
+code, not
+```
+Write Everything Twice
+```
+code!
+
+```{r the_data}
+data(HairEyeColor)
+haireye <- as.data.frame(HairEyeColor)
+names(haireye) <- tolower(names(haireye))
+names(haireye)[names(haireye) == "freq"] <- "number"
+long_haireye <- haireye[rep(1:nrow(haireye), haireye$number), 
+                        c("hair", "eye", "sex")]
+stopifnot(nrow(long_haireye) == sum(haireye$number))
+````
+
+# Compute the test statistic on the data
+
+```{r test_stat}
+tab <- table(long_haireye)
+stopifnot(all(tab == HairEyeColor))
+# male proportions
+pm <- tab[,,"Male"] / sum(tab[,,"Male"])
+stopifnot(sum(pm) == 1)
+pf <- tab[,,"Female"] / sum(tab[,,"Female"])
+stopifnot(sum(pf) == 1)
+
+# consistency check:
+for (e in levels(long_haireye$eye)) {
+    for (h in levels(long_haireye$hair)) {
+        for (g in levels(long_haireye$sex)) {
+            p <- with(long_haireye,
+                      sum(eye == e & hair == h & sex == g)
+                      /
+                      sum(sex == g)
+            )
+            if (g == "Male") {
+                stopifnot(pm[h, e] == p)
+            } else {
+                stopifnot(pf[h, e] == p)
+            }
+        }
+    }
+}
+
+summary_stat <- function (tab) {
+    pm <- tab[,,"Male"] / sum(tab[,,"Male"])
+    stopifnot(sum(pm) == 1)
+    pf <- tab[,,"Female"] / sum(tab[,,"Female"])
+    stopifnot(sum(pf) == 1)
+    ssd <- sum( (pm - pf)^2 )
+    return(ssd)
+}
+
+stopifnot( sum( (pm - pf)^2 ) == summary_stat(tab) )
+```
+
+# Do the same thing after shuffling up the `sex` column a bunch
+
+```{r do_perms}
+nperms <- 10000
+
+shuffle <- function(x) {
+    x$sex <- sample(x$sex)
+    return(x)
+}
+
+reps <- replicate(nperms, { 
+    newtab <- shuffle(long_haireye)
+    summary_stat( table(newtab) )
+    }
+)
+```
+
+# 3. Compare observed value to distribution under permutations
+
+```{r compare}
+observed <- summary_stat(table(long_haireye))
+hist(reps, breaks=40)
+abline(v=observed, col='red', lwd=3)
+```
+
+The $p$-value from the permutation test is (approximately)
+`r mean(reps > observed)`.
