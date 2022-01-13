@@ -347,7 +347,7 @@ hair = `r levels(haireye$hair)[1]`
 and 
 eye = `r levels(haireye$eye)[1]`
 ```{r coef_plot, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim, echo=FALSE}
-mcmc_plot(he_fit, pars="b_hair.*:eye.*")
+mcmc_plot(he_fit, variable="b_hair.*:eye.*", regex=TRUE)
 ```
 
 
@@ -369,7 +369,7 @@ hair = `r levels(haireye$hair)[1]`
 and 
 eye = `r levels(haireye$eye)[1]`
 ```{r bysexq, echo=FALSE}
-mcmc_plot(he_fit, pars="b_hair.*:eye.*")
+mcmc_plot(he_fit, variable="b_hair.*:eye.*", regex=TRUE)
 ```
 
 ------------
@@ -469,6 +469,6 @@ cowplot::plot_grid(plotlist=lapply(lapply(
 
 ```{r plot_sims2, fig.width=4*fig.dim, fig.height=3*fig.dim, echo=FALSE}
 cowplot::plot_grid(
-           plotlist=lapply(c(list(he_fit), sim_fits), mcmc_plot, pars="b_hair.*:eye.*"),
+           plotlist=lapply(c(list(he_fit), sim_fits), mcmc_plot, variable="b_hair.*:eye.*", regex=TRUE),
            nrow=2, ncol=3)
 ```
