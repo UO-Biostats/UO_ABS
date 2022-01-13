@@ -41,7 +41,7 @@ Week 12 (*1/11*)
     - [Homework 12](../CLASS_MATERIALS/Homeworks/HW12.html) *(group homework, due 1/19)*
     - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
         chapter 24 (Poisson, contingency tables)
-    - Code from in-class [demo on permutation testing][../CLASS_MATERIALS/Demos/permutation_in_class.Rmd]
+    - Code from in-class [demo on permutation testing](../CLASS_MATERIALS/Demos/permutation_in_class.Rmd)
 
 Week 13 (*1/18*)
 
