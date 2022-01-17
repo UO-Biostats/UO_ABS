@@ -1,0 +1,375 @@
+---
+title: "Looking under the hood, at Stan"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(matrixStats)
+library(rstan)
+```
+
+
+# MC Stan
+
+## Stan
+
+![Stanislaw Ulam](images/stan.jpeg){height=10em}
+
+## Steps in running Stan
+
+1. Write the model down (on paper).
+2. Write the Stan code.
+3. Compile the Stan model (`stan_model( )`).
+4. Sample from the posterior (`sampling( )`).
+5. Check for convergence (Rhat, traceplots).
+6. Summarize the posterior ([bayesplot::](https://mc-stan.org/users/interfaces/bayesplot)).
+
+
+# 1. Write down the model
+
+## `lm( )`, Stan-style
+
+::: {.columns}
+::::::: {.column width=50%}
+
+Simulate:
+```{r demo, cache=TRUE}
+xy <- data.frame(x = rnorm(20))
+xy$y <- 1.2 + 0.5 * xy$x + rnorm(nrow(xy), sd=0.3)
+lm(y ~ x, data=xy) %>% summary()
+```
+
+:::
+::::::: {.column width=50%}
+
+The model:
+$$\begin{aligned}
+    Y_i &\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma) 
+\end{aligned}$$
+
+The parameter values:
+$$\begin{aligned}
+    1 &\le i \le n \\
+    \beta_0 &= 1.2 \\
+    \beta_x &= 0.5 \\
+    \sigma &= 0.3
+\end{aligned}$$
+
+:::
+:::::::
+
+# 2. Write the Stan code 
+
+## The skeletal Stan program
+
+```
+data {
+    // stuff you input
+}
+transformed data {
+    // stuff that's calculated from the data (just once, at the start)
+}
+parameters {
+    // stuff you want to learn about
+}
+transformed parameters {
+    // stuff that's calculated from the parameters (at every step)
+}
+model {
+    // the action!
+}
+generated quantities {
+    // stuff you want computed also along the way
+}
+```
+
+--------------
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```
+data {
+    // stuff you input
+}
+parameters {
+    // stuff you want to learn about
+}
+model {
+    // the action!
+}
+```
+
+
+:::
+::::::: {.column width=50%}
+
+The model:
+$$\begin{aligned}
+    Y_i &\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma) 
+\end{aligned}$$
+
+:::
+:::::::
+
+
+-----------------
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```
+data {
+    int n;
+    vector[n] x;
+    vector[n] y;
+}
+parameters {
+    // stuff you want to learn about
+}
+model {
+    // the action!
+}
+```
+
+
+:::
+::::::: {.column width=50%}
+
+
+The model:
+$$\begin{aligned}
+    Y_i &\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma) 
+\end{aligned}$$
+
+:::
+:::::::
+
+
+-----------------
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```
+data {
+    int n;
+    vector[n] x;
+    vector[n] y;
+}
+parameters {
+    real beta_0; // intercept
+    real beta_x; // slope
+    real<lower=0> sigma;  // residual SD
+}
+model {
+    // the action!
+}
+```
+
+
+:::
+::::::: {.column width=50%}
+
+The model:
+$$\begin{aligned}
+    Y_i &\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma) 
+\end{aligned}$$
+
+:::
+:::::::
+
+
+-----------------
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```
+data {
+    int n;
+    vector[n] x;
+    vector[n] y;
+}
+parameters {
+    real beta_0; // intercept
+    real beta_x; // slope
+    real<lower=0> sigma;  // residual SD
+}
+model {
+    y ~ normal(beta_0 + beta_x * x, sigma);
+}
+```
+
+:::
+::::::: {.column width=50%}
+
+The model:
+$$\begin{aligned}
+    Y_i &\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma) 
+\end{aligned}$$
+
+:::
+:::::::
+
+-----------------
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```
+data {
+    int n;
+    vector[n] x;
+    vector[n] y;
+}
+parameters {
+    real beta_0; // intercept
+    real beta_x; // slope
+    real<lower=0> sigma;  // residual SD
+}
+model {
+    y ~ normal(beta_0 + beta_x * x, sigma);
+    beta_0 ~ normal(0, 5);
+    beta_1 ~ normal(0, 5);
+    sigma ~ normal(0, 5);
+}
+```
+
+:::
+::::::: {.column width=50%}
+
+The model, with priors:
+$$\begin{aligned}
+    Y_i &\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma)  \\
+    \beta_0 &\sim \Normal(0, 5) \\
+    \beta_1 &\sim \Normal(0, 5) \\
+    \sigma &\sim \Normal(0, 5)
+\end{aligned}$$
+
+:::
+:::::::
+
+
+# 3. Compile the Stan code
+
+------------
+
+```{r compileit, cache=TRUE}
+stanlm_code <- "
+data {
+    int n;
+    vector[n] x;
+    vector[n] y;
+}
+parameters {
+    real beta_0; // intercept
+    real beta_x; // slope
+    real<lower=0> sigma;  // residual SD
+}
+model {
+    y ~ normal(beta_0 + beta_x * x, sigma);
+    beta_0 ~ normal(0, 5);
+    beta_x ~ normal(0, 5);
+    sigma ~ normal(0, 5);
+}
+"
+stanlm_mod <- stan_model(model_code=stanlm_code)
+```
+
+# 4. Sample from the posterior, etcetera
+
+-------------
+
+```{r sampling, cache=TRUE, dependson=c("compileit", "demo")}
+stanlm_fit <- sampling(
+        stanlm_mod,
+        data=list(
+               n=nrow(xy),
+               x=xy$x,
+               y=xy$y
+        ),
+        chains=4,
+        iter=1000
+)
+```
+
+---------------
+
+```{r summ}
+print(stanlm_fit)
+```
+
+## Check for convergence
+
+```{r trace}
+bayesplot::mcmc_trace(stanlm_fit)
+```
+
+# Your turn
+
+
+## A heteroskedastic model
+
+::: {.columns}
+::::::: {.column width=50%}
+
+Metabolic rate depends on sunlight,
+but measurement noise depends on temperature:
+```{r demo2, cache=TRUE}
+xyu <- data.frame(
+         x = rnorm(20), # relative sunlight
+         u = runif(20)  # temperature
+)
+xyu$sigma <- abs(rnorm(20, sd=1/(3 * xyu$u))) # measurement SD
+xyu$y <- (  # metabolic rate
+     1.2
+     + 0.5 * xyu$x
+     + rnorm(nrow(xyu), sd=xyu$sigma)
+)
+```
+
+:::
+::::::: {.column width=50%}
+
+$$\begin{aligned}
+    Y_i &\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma) \\
+    \sigma_i &\sim \Normal_+(0, \text{sd}=\gamma U_i)
+\end{aligned}$$
+
+1. On a whiteboard, write this down,
+2. and label each variable as "data" or "parameter",
+3. and it's type, length, and bounds.
+4. Modify the stan code from before to include the new things,
+5. compile it, and fix any errors.
+
+:::
+:::::::
+
+
+# Looking under brms's hood
+
+## 
+
+"Equivalently":
+```{r brmit, cache=TRUE, dependson="demo", echo=FALSE}
+bm <- brm(y ~ x, data=xy)
+```
+```{r brmresults}
+summary(bm)
+```
+
+--------------
+
+Under the hood...
+```{r stancode}
+stancode(bm)
+```

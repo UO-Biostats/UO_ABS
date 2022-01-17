@@ -1,0 +1,435 @@
+---
+title: "Time series"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(brms)
+library(rstan)
+library(matrixStats)
+library(tidyverse)
+options(mc.cores = parallel::detectCores())
+```
+
+# Time series data
+
+## Time series
+
+A *time series* is a sequence of observations
+$$\begin{aligned}
+    (y_1, y_2, \ldots, y_N) ,
+\end{aligned}$$
+that were taken at some set of *times*
+$$\begin{aligned}
+    t_1 < t_2 < \cdots < t_N .
+\end{aligned}$$
+
+. . .
+
+Goals might be to:
+
+- describe patterns
+- discover trends
+- quantify correlations
+- predict future values
+
+
+## The thing about time
+
+Many statistical methods assume *independence* of observations.
+
+. . .
+
+Nearby observations in a time series are *definately* not.
+
+. . .
+
+Today: a *mechanistic model*.
+
+
+# An oscillator
+
+## A discrete, noisy oscillator
+
+Suppose we have regular, noisy observations
+from a discrete, noisy oscillator.
+
+The system itself does
+$$\begin{aligned}
+    x_{t+1} - x_t &= \alpha y_t + \Normal(0, \sigma_{xy}) \\
+    y_{t+1} - y_t &= - \beta x_t + \Normal(0, \sigma_{xy}) 
+\end{aligned}$$
+but we only get to observe
+$$\begin{aligned}
+    X_t &= x_t + \Normal(0, \sigma_\epsilon) \\
+    Y_t &= y_t + \Normal(0, \sigma_\epsilon) .
+\end{aligned}$$
+
+. . .
+
+*Note:* $\sigma_{xy}$ is *process noise*,
+and $\sigma_\epsilon$ is *observation noise*.
+
+## Some data
+
+[`data/osc_data.csv`](data/osc_data.csv)
+
+```{r sim_osc_data, echo=FALSE}
+set.seed(101)
+real_params <- list(alpha=.1,
+                    beta=.05,
+                    sigma_xy=.01,
+                    sigma_eps=1)
+N <- 500
+xy <- matrix(nrow=N, ncol=2)
+xy[1,] <- c(3,0)
+for (k in 1:(N-1)) {
+    xy[k+1,] <- (xy[k,] 
+                + c(real_params$alpha * xy[k,2],
+                    (-1) * real_params$beta * xy[k,1])
+                + rnorm(2, 0, real_params$sigma_xy))
+}
+osc_data <- xy + rnorm(N*2, 0, real_params$sigma_eps)
+colnames(osc_data) <- c("X", "Y")
+write.csv(osc_data, file="data/osc_data.csv", row.names=FALSE)
+```
+```{r load_osc_data, cache=TRUE}
+head(
+     osc_data <- read.csv("data/osc_data.csv", header=TRUE)
+)
+```
+
+---------------
+
+```{r plot_osc_data, echo=FALSE, fig.height=2*fig.dim, fig.width=3*fig.dim}
+layout(1:2, heights=c(1,1.2))
+par(mar=c(1,4,1,1)+.1)
+plot(osc_data[,1], col=rainbow(nrow(osc_data)), pch=20, xlab='', ylab='X', xaxt='n')
+par(mar=c(5,4,1,1)+.1)
+plot(osc_data[,2], col=rainbow(nrow(osc_data)), pch=20, xlab='time', ylab='Y')
+```
+
+
+---------------
+
+```{r plot_osc_data2, echo=FALSE, fig.width=2.7*fig.dim, fig.height=2.5*fig.dim}
+plot(osc_data, xlab='X', ylab='Y', asp=1, col=rainbow(nrow(osc_data)), pch=20)
+segments(x0=osc_data[-nrow(osc_data),1],
+         x1=osc_data[-1,1],
+         y0=osc_data[-nrow(osc_data),2],
+         y1=osc_data[-1,2],
+         col=rainbow(nrow(osc_data)-1))
+```
+
+
+## Our model-building plan
+
+0. Write down a model.
+
+1. Simulate from the model.
+
+2. Check the simulations kinda look like the real data.
+
+3. Write a method to fit the model.
+
+4. Check the method correctly infers the true parameters of simulated data.
+
+5. Fit the model to the real data.
+
+6. Check that posterior predictive simulations look like the real data.
+
+7. Celebrate!
+
+# Simulate, and check it looks like the real data
+
+## 
+
+
+::: {.columns}
+::::::: {.column width=50%}
+
+
+```{r sim_osc}
+true_osc <- list(alpha=.1,
+                 beta=.05,
+                 sigma_xy=.01,
+                 sigma_eps=1)
+N <- 500
+xy <- matrix(nrow=N, ncol=2)
+xy[1,] <- c(3,0)
+for (k in 1:(N-1)) {
+    xy[k+1,] <- (xy[k,] 
+        + c(true_osc$alpha * xy[k,2],
+            (-1) * true_osc$beta * xy[k,1])
+        + rnorm(2, 0, true_osc$sigma_xy))
+}
+XY <- (xy
+   + rnorm(N*2, 0, true_osc$sigma_eps))
+```
+
+:::
+::::::: {.column width=50%}
+
+The system itself does
+$$\begin{aligned}
+    &x_{t+1} - x_t = \alpha y_t \\
+    &\qquad {} + \Normal(0, \sigma_{xy}) \\
+    &y_{t+1} - y_t = - \beta x_t \\
+    &\qquad {} + \Normal(0, \sigma_{xy}) 
+\end{aligned}$$
+but we only get to observe
+$$\begin{aligned}
+    X_t &= x_t + \Normal(0, \sigma_\epsilon) \\
+    Y_t &= y_t + \Normal(0, \sigma_\epsilon) .
+\end{aligned}$$
+
+
+:::
+:::::::
+-----------------
+
+```{r plot_osc, echo=FALSE, fig.height=1.5*fig.dim, fig.width=1.5*fig.dim}
+plot(xy, type='l', col='red', xlab='x', ylab='y')
+points(XY, col=rainbow(N))
+legend("topright", lty=c(1, NA), pch=c(NA,1), col=c("red","black"),
+       legend=c("xy", "XY"))
+```
+
+## Exercise:
+
+1. Suppose $\alpha = \beta = 0.1$ and $\sigma_\epsilon = 1$ and $\sigma_{xy} = 0.01$.
+   How well do you think we can estimate $\alpha$ and $\beta$?
+   (Play around with them, to see how much they change the data.)
+
+2. What if $\sigma_{\epsilon} = 10$?
+
+. . .
+
+Plotting code:
+```r
+plot(xy, type='l', col='red', xlab='x', ylab='y')
+points(XY, col=rainbow(N))
+legend("topright", lty=c(1, NA), pch=c(NA,1), col=c("red","black"),
+       legend=c("xy", "XY"))
+```
+
+
+
+# Write a Stan model, and check it works.
+
+## A Stan block
+
+```{r osc_stan, cache=TRUE}
+osc_block <- "
+data {
+    int N;
+    vector[N] X;
+    vector[N] Y;
+}
+parameters {
+    real alpha;
+    real beta;
+    real<lower=0> sigma_xy;
+    real<lower=0> sigma_eps;
+    vector[N] x;
+    vector[N] y;
+}
+model {
+    x[1] ~ normal(0, 5);
+    y[1] ~ normal(0, 5);
+    x[2:N] ~ normal(x[1:(N-1)] + alpha * y[1:(N-1)], sigma_xy);
+    y[2:N] ~ normal(y[1:(N-1)] - beta * x[1:(N-1)], sigma_xy);
+    X ~ normal(x, sigma_eps);
+    Y ~ normal(y, sigma_eps);
+    alpha ~ normal(0, 1);
+    beta ~ normal(0, 1);
+    sigma_xy ~ normal(0, 1);
+    sigma_eps ~ normal(0, 1);
+}
+"
+osc_model <- stan_model(model_code=osc_block)
+```
+
+-------------------
+
+```{r run_osc, cache=TRUE, dependson="osc_block"}
+osc_fit <- sampling(osc_model,
+                    data=list(N=N,
+                              X=XY[,1],
+                              Y=XY[,2]),
+                    iter=1000, chains=3,
+                    control=list(max_treedepth=14))
+```
+
+## How'd we do?
+
+```{r summarize_osc}
+cbind(truth=c(true_osc$alpha, true_osc$beta, true_osc$sigma_xy, true_osc$sigma_eps),
+      rstan::summary(osc_fit, pars=c("alpha", "beta", "sigma_xy", "sigma_eps"))$summary)
+```
+
+-------------------
+
+Here is a density plot of 100 estimated trajectories (of `x` and `y`) from the Stan fit,
+with the true values in red.
+
+```{r show_osc_fit, echo=FALSE, fig.height=1.5*fig.dim, fig.width=1.5*fig.dim}
+osc_results <- rstan::extract(osc_fit)
+plot(xy, lwd=2, xlab='x', ylab='y', type='l')
+for (k in 1:100) {
+    lines(osc_results$x[k,], osc_results$y[k,],
+          col=adjustcolor('black', 0.2))
+}
+lines(xy[,1], xy[,2], col='red', lwd=2)
+```
+
+# Check it works some more
+
+## A noisier oscillator
+
+Let's try that again, with more noise.
+
+Here's what this looks like.
+```{r sim_osc2, cache=TRUE}
+true_osc2 <- list(alpha=.1,
+                 beta=.05,
+                 sigma_xy=2.0,
+                 sigma_eps=4.0)
+xy2 <- matrix(nrow=N, ncol=2)
+xy2[1,] <- c(3,0)
+for (k in 1:(N-1)) {
+    xy2[k+1,] <- (xy2[k,] 
+                + c(true_osc2$alpha * xy2[k,2],
+                    (-1) * true_osc2$beta * xy2[k,1])
+                + rnorm(2, 0, true_osc2$sigma_xy))
+}
+XY2 <- xy2 + rnorm(N*2, 0, true_osc2$sigma_eps)
+```
+
+-----------------
+
+```{r plot_osc2, echo=FALSE, fig.height=1.5*fig.dim, fig.width=1.5*fig.dim}
+plot(xy2, type='l', col='red', xlab='x', ylab='y')
+points(XY2, col=rainbow(N))
+legend("topright", lty=c(1, NA), pch=c(NA,1), col=c("red","black"),
+       legend=c("xy", "XY"))
+```
+
+-------------------
+
+```{r run_osc2, cache=TRUE, dependson=c("osc_block", "sim_osc2")}
+osc_fit2 <- sampling(osc_model,
+                    data=list(N=N,
+                              X=XY2[,1],
+                              Y=XY2[,2]),
+                    iter=1000, chains=3,
+                    control=list(max_treedepth=12))
+```
+
+## How'd we do?
+
+```{r summarize_osc2}
+cbind(truth=c(true_osc2$alpha, true_osc2$beta, true_osc2$sigma_xy, true_osc2$sigma_eps),
+      rstan::summary(osc_fit2, pars=c("alpha", "beta", "sigma_xy", "sigma_eps"))$summary)
+```
+
+-------------------
+
+Here is a density plot of 100 estimated trajectories (of `x` and `y`) from the Stan fit,
+with the true values in red.
+
+```{r show_osc_fit2, echo=FALSE, fig.height=1.5*fig.dim, fig.width=1.5*fig.dim}
+osc_results2 <- rstan::extract(osc_fit2)
+plot(xy2, lwd=2, xlab='x', ylab='y', type='l')
+for (k in 1:100) {
+    lines(osc_results2$x[k,], osc_results2$y[k,],
+          col=adjustcolor('black', 0.2))
+}
+lines(xy2[,1], xy2[,2], col='red', lwd=2)
+```
+
+# Fit the model to real data, and do posterior predictive checks
+
+## Fit the model, again
+
+```{r run_osc_for_reals, cache=TRUE, dependson="load_osc_data"}
+real_fit <- sampling(osc_model,
+                    data=list(N=nrow(osc_data),
+                              X=osc_data[,1],
+                              Y=osc_data[,2]),
+                    iter=1000, chains=3,
+                    control=list(max_treedepth=14))
+```
+
+## Check for convergence
+
+
+```{r summary_osc}
+rstan::summary(real_fit)$summary
+```
+
+## Posterior predictive sampling
+
+```{r sim_data_fn}
+sim_data <- function (x0, y0, alpha, beta, sigma_xy, sigma_eps, N) {
+    xy <- matrix(nrow=N, ncol=2)
+    xy[1,] <- c(x0, y0)
+    for (k in 1:(N-1)) {
+        xy[k+1,] <- (xy[k,] 
+                    + c(alpha * xy[k,2],
+                        (-1) * beta * xy[k,1])
+                    + rnorm(2, 0, sigma_xy))
+    }
+    XY <- xy + rnorm(N*2, 0, sigma_eps)
+    return(XY)
+}
+```
+
+-----------
+
+```{r pp_sims}
+post <- rstan::extract(real_fit)
+nsims <- 50
+pp_XY <- array(NA, dim=c(N, 2, nsims))
+for (k in 1:nsims) {
+    pp_XY[,,k] <- sim_data(
+                           x0=post$x[k,1],
+                           y0=post$y[k,1],
+                           alpha=post$alpha[k],
+                           beta=post$beta[k],
+                           sigma_xy=post$sigma_xy[k],
+                           sigma_eps=post$sigma_eps[k],
+                           N=N)
+}
+```
+
+-------------
+
+Real data in red:
+```{r plot_pp_sims, echo=FALSE}
+matplot(pp_XY[,1,], pp_XY[,2,], col=adjustcolor('black', 0.5), lty=1, type='l', xlab="X", ylab="Y")
+lines(osc_data[,1], osc_data[,2], col='red', lwd=2)
+```
+
+
+-------------
+
+```{r plot_pp_sims2, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+layout(matrix(1:12, nrow=3))
+par(mar=c(2,2,1,1)+.1)
+for (k in 1:6) {
+    matplot(osc_data[,1], pp_XY[,1,k], pch=20,
+            xlab='observed X', ylab='simulated X', mgp=c(1,1,0), xaxt='n', yaxt='n', asp=1)
+    abline(0,1, col='red', lwd=2)
+    matplot(osc_data[,2], pp_XY[,2,k], pch=20,
+            xlab='observed Y', ylab='simulated Y', mgp=c(1,1,0), xaxt='n', yaxt='n')
+    abline(0,1, col='red', lwd=2)
+}
+```
+

@@ -45,8 +45,10 @@ Week 12 (*1/11*)
 
 Week 13 (*1/18*)
 
-: Time series: temporal autocorrelation, autoregressive models; mechanistic models
+: Time series models with Stan: mechanistic models
 
+    - slides: [Writing Stan code](../CLASS_MATERIALS/Lectures/Week_13_Intro_to_Stan.slides.html)
+    - slides: [Time series](../CLASS_MATERIALS/Lectures/Week_13_Time_series.slides.html)
     - Reading: 
 
 Week 14 (*1/25*)
