@@ -433,3 +433,21 @@ for (k in 1:6) {
 }
 ```
 
+# Doing this in brms
+
+------------
+
+*Note:* this is an *autoregressive* model with *measurement error*,
+and it's (now) possible to fit this model in brms,
+using a [multivariate model](https://paul-buerkner.github.io/brms/reference/brmsformula.html),
+[`ar()` terms](https://paul-buerkner.github.io/brms/reference/ar.html) for the "autoregressive" part,
+and [`mi()` terms](https://paul-buerkner.github.io/brms/reference/mi.html) for the measurement error:
+```{r brmsit, cache=TRUE}
+(ar_fit <- brm( mvbf(
+        Y | mi() ~ 0 + X + ar(),
+        X | mi() ~ 0 + Y + ar(),
+        rescor=FALSE
+    ),
+    data=osc_data, chains=2
+))
+```

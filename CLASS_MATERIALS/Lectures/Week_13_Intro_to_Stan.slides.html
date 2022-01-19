@@ -895,21 +895,21 @@ model {
 <h2>A heteroskedastic model</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<p>Metabolic rate depends on sunlight, but measurement noise depends on temperature:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a>xyu &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a>         <span class="dt">x =</span> <span class="kw">rnorm</span>(<span class="dv">20</span>), <span class="co"># relative sunlight</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a>         <span class="dt">u =</span> <span class="kw">runif</span>(<span class="dv">20</span>)  <span class="co"># temperature</span></span>
+<p>Metabolic rate (<span class="math inline">\(Y\)</span>) depends on sunlight (<span class="math inline">\(X\)</span>), but measurement noise depends on temperature (<span class="math inline">\(T\)</span>):</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a>xyt &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a>         <span class="dt">x =</span> <span class="kw">rnorm</span>(<span class="dv">20</span>),</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a>         <span class="dt">t =</span> <span class="kw">runif</span>(<span class="dv">20</span>)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a>)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a>xyu<span class="op">$</span>sigma &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">rnorm</span>(<span class="dv">20</span>, <span class="dt">sd=</span><span class="dv">1</span><span class="op">/</span>(<span class="dv">3</span> <span class="op">*</span><span class="st"> </span>xyu<span class="op">$</span>u))) <span class="co"># measurement SD</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a>xyu<span class="op">$</span>y &lt;-<span class="st"> </span>(  <span class="co"># metabolic rate</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a>xyt<span class="op">$</span>sigma &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">rnorm</span>(<span class="dv">20</span>, <span class="dt">sd=</span><span class="dv">1</span><span class="op">/</span>(<span class="dv">3</span> <span class="op">*</span><span class="st"> </span>xyt<span class="op">$</span>t)))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a>xyt<span class="op">$</span>y &lt;-<span class="st"> </span>(</span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true"></a>     <span class="fl">1.2</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true"></a>     <span class="op">+</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>xyu<span class="op">$</span>x</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true"></a>     <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="kw">nrow</span>(xyu), <span class="dt">sd=</span>xyu<span class="op">$</span>sigma)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true"></a>     <span class="op">+</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>xyt<span class="op">$</span>x</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true"></a>     <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="kw">nrow</span>(xyt), <span class="dt">sd=</span>xyt<span class="op">$</span>sigma)</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true"></a>)</span></code></pre></div>
 </div><div class="column" style="width:50%;">
 <p><span class="math display">\[\begin{aligned}
-    Y_i &amp;\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma) \\
-    \sigma_i &amp;\sim \Normal_+(0, \text{sd}=\gamma U_i)
+    Y_i &amp;\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma_i) \\
+    \sigma_i &amp;\sim \Normal_+(0, \text{sd}=\gamma T_i)
 \end{aligned}\]</span></p>
 <ol type="1">
 <li>On a whiteboard, write this down,</li>

@@ -322,18 +322,18 @@ bayesplot::mcmc_trace(stanlm_fit)
 ::: {.columns}
 ::::::: {.column width=50%}
 
-Metabolic rate depends on sunlight,
-but measurement noise depends on temperature:
+Metabolic rate ($Y$) depends on sunlight ($X$),
+but measurement noise depends on temperature ($T$):
 ```{r demo2, cache=TRUE}
-xyu <- data.frame(
-         x = rnorm(20), # relative sunlight
-         u = runif(20)  # temperature
+xyt <- data.frame(
+         x = rnorm(20),
+         t = runif(20)
 )
-xyu$sigma <- abs(rnorm(20, sd=1/(3 * xyu$u))) # measurement SD
-xyu$y <- (  # metabolic rate
+xyt$sigma <- abs(rnorm(20, sd=1/(3 * xyt$t)))
+xyt$y <- (
      1.2
-     + 0.5 * xyu$x
-     + rnorm(nrow(xyu), sd=xyu$sigma)
+     + 0.5 * xyt$x
+     + rnorm(nrow(xyt), sd=xyt$sigma)
 )
 ```
 
@@ -341,8 +341,8 @@ xyu$y <- (  # metabolic rate
 ::::::: {.column width=50%}
 
 $$\begin{aligned}
-    Y_i &\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma) \\
-    \sigma_i &\sim \Normal_+(0, \text{sd}=\gamma U_i)
+    Y_i &\sim \Normal(\beta_0 + \beta_x \times X_i, \text{sd}=\sigma_i) \\
+    \sigma_i &\sim \Normal_+(0, \text{sd}=\gamma T_i)
 \end{aligned}$$
 
 1. On a whiteboard, write this down,
