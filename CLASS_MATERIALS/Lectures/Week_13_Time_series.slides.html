@@ -1863,15 +1863,8 @@ background-color: var(--r-background-color);
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true"></a>    ),</span>
 <span id="cb29-6"><a href="#cb29-6" aria-hidden="true"></a>    <span class="dt">data=</span>osc_data, <span class="dt">chains=</span><span class="dv">2</span></span>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true"></a>))</span></code></pre></div>
-<pre><code>## Warning: partial match of &#39;X&#39; to &#39;X_Y&#39;</code></pre>
-<pre><code>## Warning: partial match of &#39;X&#39; to &#39;X_X&#39;</code></pre>
-<pre><code>## Warning: partial match of &#39;X&#39; to &#39;X_Y&#39;</code></pre>
-<pre><code>## Warning: partial match of &#39;X&#39; to &#39;X_X&#39;</code></pre>
 <pre><code>## Compiling Stan program...</code></pre>
 <pre><code>## Start sampling</code></pre>
-<pre><code>## Warning: partial match of &#39;X&#39; to &#39;X_Y&#39;
-
-## Warning: partial match of &#39;X&#39; to &#39;X_X&#39;</code></pre>
 <pre><code>##  Family: MV(gaussian, gaussian) 
 ##   Links: mu = identity; sigma = identity
 ##          mu = identity; sigma = identity 
@@ -1883,18 +1876,49 @@ background-color: var(--r-background-color);
 ## 
 ## Correlation Structures:
 ##         Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## ar_Y[1]     0.91      0.02     0.87     0.95 1.00     2780     1420
-## ar_X[1]     0.95      0.01     0.92     0.98 1.00     2852     1527
+## ar_Y[1]     0.91      0.02     0.87     0.95 1.00     2744     1401
+## ar_X[1]     0.95      0.01     0.92     0.98 1.00     2727     1543
 ## 
 ## Population-Level Effects: 
 ##     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Y_X     0.02      0.04    -0.06     0.10 1.00     3085     1468
-## X_Y     0.02      0.05    -0.07     0.12 1.00     2591     1462
+## Y_X     0.02      0.04    -0.06     0.09 1.00     2400     1605
+## X_Y     0.02      0.05    -0.07     0.12 1.00     2391     1481
 ## 
 ## Family Specific Parameters: 
 ##         Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma_Y     1.45      0.05     1.36     1.54 1.00     2594     1535
-## sigma_X     1.58      0.05     1.49     1.68 1.00     2272     1457
+## sigma_Y     1.44      0.05     1.36     1.53 1.00     2681     1461
+## sigma_X     1.58      0.05     1.48     1.68 1.00     2170     1631
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</section>
+<section class="slide level2">
+
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a>ar_fit</span></code></pre></div>
+<pre><code>##  Family: MV(gaussian, gaussian) 
+##   Links: mu = identity; sigma = identity
+##          mu = identity; sigma = identity 
+## Formula: Y | mi() ~ 0 + X + ar() 
+##          X | mi() ~ 0 + Y + ar() 
+##    Data: osc_data (Number of observations: 500) 
+##   Draws: 2 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 2000
+## 
+## Correlation Structures:
+##         Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## ar_Y[1]     0.91      0.02     0.87     0.95 1.00     2744     1401
+## ar_X[1]     0.95      0.01     0.92     0.98 1.00     2727     1543
+## 
+## Population-Level Effects: 
+##     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Y_X     0.02      0.04    -0.06     0.09 1.00     2400     1605
+## X_Y     0.02      0.05    -0.07     0.12 1.00     2391     1481
+## 
+## Family Specific Parameters: 
+##         Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma_Y     1.44      0.05     1.36     1.53 1.00     2681     1461
+## sigma_X     1.58      0.05     1.48     1.68 1.00     2170     1631
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential

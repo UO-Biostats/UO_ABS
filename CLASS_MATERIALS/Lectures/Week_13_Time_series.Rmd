@@ -442,7 +442,7 @@ and it's (now) possible to fit this model in brms,
 using a [multivariate model](https://paul-buerkner.github.io/brms/reference/brmsformula.html),
 [`ar()` terms](https://paul-buerkner.github.io/brms/reference/ar.html) for the "autoregressive" part,
 and [`mi()` terms](https://paul-buerkner.github.io/brms/reference/mi.html) for the measurement error:
-```{r brmsit, cache=TRUE}
+```{r brmsit, cache=TRUE, warning=FALSE}
 (ar_fit <- brm( mvbf(
         Y | mi() ~ 0 + X + ar(),
         X | mi() ~ 0 + Y + ar(),
@@ -450,4 +450,10 @@ and [`mi()` terms](https://paul-buerkner.github.io/brms/reference/mi.html) for t
     ),
     data=osc_data, chains=2
 ))
+```
+
+-------------
+
+```{r brms_results}
+ar_fit
 ```
