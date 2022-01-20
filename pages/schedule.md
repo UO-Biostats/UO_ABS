@@ -42,6 +42,7 @@ Week 12 (*1/11*)
     - Reading: Kruschke, chapter 16 (metric data with one or two groups), and
         chapter 24 (Poisson, contingency tables)
     - Code from in-class [demo on permutation testing](../CLASS_MATERIALS/Demos/permutation_in_class.Rmd)
+    - Code from in-class [demo on posterior summaries from brms](../CLASS_MATERIALS/Demos/post_summary_in_class.Rmd)
 
 Week 13 (*1/18*)
 

@@ -1,0 +1,126 @@
+
+# Simple example
+
+```{r simple}
+library(brms)
+xy <- data.frame(x=rnorm(20), y=rnorm(20))
+bf <- brm(y ~ x, data=xy, chains=2, file="cache/simple_fit.rds")
+
+ba <- as_draws_array(bf)
+```
+
+Suppose we want to get the posterior distribution of
+the slope divided by 10 plus the intercept.
+The slope is called `b_x` and the intercept is called `b_Intercept`.
+The array we get has one row per MCMC iteration, i.e., one row per random walk step,
+and the third dimension corresponds to the parameters.
+
+So, we want the posterior distribution of `b_x / (10 + b_Intercept)`:
+We'll call this statistic `made_up_thing`, for lack of a better name.
+
+```{r posterior}
+library(bayesplot)
+
+post_array <- ba[,,"b_x"] / (10 + ba[,,"b_Intercept"])
+dimnames(post_array)[[3]] <- "made_up_thing"
+
+mcmc_hist(post_array)
+
+```
+
+
+# The real data
+
+Here's the brms model:
+
+```{r thedata}
+data(HairEyeColor)
+haireye <- as.data.frame(HairEyeColor)
+names(haireye) <- tolower(names(haireye))
+names(haireye)[names(haireye) == "freq"] <- "number"
+he_formula <- brmsformula(number ~ sex + hair * eye + (hair + eye) * sex)
+get_prior(he_formula, data=haireye, family='poisson')
+he_priors <- c(prior('normal(0,3)', class='b'))
+he_fit <- brm(he_formula,
+              data=haireye,
+              family=poisson(link='log'),
+              prior=he_priors, chains=2,
+              file="cache/he_fit.rds"
+)
+```
+
+We *could* get the posterior distribution
+of the *parameters*:
+```{r get_post}
+ba <- as_draws_array(he_fit)
+names(dimnames(ba))
+dimnames(ba)[2:3]
+```
+
+
+... but, we actually want the posterior distribution
+of the $\lambda_{ij}$, which are the *predicted means*:
+```{r ppe}
+ppe <- posterior_epred(he_fit)
+dim(ppe)
+dim(haireye)
+```
+
+First, let's find the proportion of people with *red hair*
+among males.
+So, first we need to find which rows in the dataset
+correspond to "red-haired male",
+and divide each by the rows which correspond to "male".
+```{r blond}
+red_m_cols <- which(
+        haireye$sex == "Male"
+        & haireye$hair == "Red"
+)
+m_cols <- which(
+        haireye$sex == "Male"
+)
+post_red_m <- rowSums(ppe[,red_m_cols])
+post_m <- rowSums(ppe[,m_cols])
+post_red_prop_m <- post_red_m / post_m
+
+hist(post_red_prop_m, main="proportion of males with red hair")
+```
+
+Ok, let's abstract that:
+```{r abstr}
+get_post <- function (gender, hair) {
+    red_m_cols <- which(
+            haireye$sex == gender
+            & haireye$hair == hair
+    )
+    m_cols <- which(
+            haireye$sex == gender
+    )
+    post_red_m <- rowSums(ppe[,red_m_cols])
+    post_m <- rowSums(ppe[,m_cols])
+    return(post_red_m / post_m)
+}
+hist(get_post("Male", "Red"),
+     main="Proportion of males with red hair")
+```
+
+Now we'll look across all hair colors by gender:
+```{r by_gender}
+hair_props <- data.frame(
+    gender=numeric(0),
+    hair=numeric(0),
+    post=numeric(0)
+)
+for (g in levels(haireye$sex)) {
+    for (h in levels(haireye$hair)) {
+        hair_props <- rbind(hair_props,
+                            data.frame(gender=g,
+                                       hair=h,
+                                       post=get_post(g, h)
+                            )
+        )
+    }
+}
+
+ggplot(hair_props) + geom_boxplot(aes(x=hair, y=post, fill=gender))
+```
