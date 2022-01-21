@@ -354,6 +354,34 @@ $$\begin{aligned}
 :::
 :::::::
 
+## IN CLASS
+
+
+```{r compileit2, cache=TRUE}
+stanlm_code2 <- "
+data {
+    int n;
+    vector[n] x;
+    vector[n] y;
+    vector<lower=0>[n] t;
+}
+parameters {
+    real beta_0; // intercept
+    real beta_x; // slope
+    real<lower=0> gamma;
+    vector<lower=0>[n] sigma;  // residual SD
+}
+model {
+    y ~ normal(beta_0 + beta_x * x, sigma);
+    beta_0 ~ normal(0, 5);
+    beta_x ~ normal(0, 5);
+    sigma ~ normal(0, gamma * t);
+    gamma ~ normal(0, 5);
+}
+"
+stanlm_mod2 <- stan_model(model_code=stanlm_code2)
+```
+
 
 # Looking under brms's hood
 

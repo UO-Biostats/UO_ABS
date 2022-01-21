@@ -1,8 +1,11 @@
+```{r setup, echo=FALSE}
+library(brms)
+library(ggplot2)
+```
 
 # Simple example
 
 ```{r simple}
-library(brms)
 xy <- data.frame(x=rnorm(20), y=rnorm(20))
 bf <- brm(y ~ x, data=xy, chains=2, file="cache/simple_fit.rds")
 
@@ -56,6 +59,52 @@ ba <- as_draws_array(he_fit)
 names(dimnames(ba))
 dimnames(ba)[2:3]
 ```
+
+For instance, to get the posterior distribution
+of the expected number
+of males with red hair and brown eyes, 
+since default is Male, Brown eyes we do
+`exp(b_Intercept + b_hairRed)`.
+
+So, we instead use `posterior_epred( )`.
+```{r ppe}
+ppe <- posterior_epred(he_fit)
+post_male_brown_red <- exp(ba[,,"b_Intercept"] + ba[,,"b_hairRed"])
+k <- which(
+    haireye$sex == "Male"
+    & haireye$hair == "Red"
+    & haireye$eye == "Brown"
+)
+post_male_brown_red2 <- ppe[,k]
+plot(
+    sort(post_male_brown_red2),
+    sort(post_male_brown_red)
+)
+abline(0,1)
+
+stopifnot(all(    sort(post_male_brown_red2)
+        ==
+    sort(post_male_brown_red)
+))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ... but, we actually want the posterior distribution
