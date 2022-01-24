@@ -1,0 +1,495 @@
+---
+title: "Overfitting, crossvalidation, and sparsification"
+author: "Aidan W. Short"
+date: "1/15/2022"
+output:
+  ioslides_presentation:
+    widescreen: true
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 3
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(brms)
+library(bayesplot)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+options(digits=2)
+```
+
+```{r helpers, include=FALSE}
+shadecurve <- function (pf, xlim, plot=TRUE, xlab='', ylab='', main='',
+                        border="black", col=adjustcolor(border, 0.25), ...) {
+    x <- seq(xlim[1], xlim[2], length.out=400)
+    mids <- x[-1] - diff(x)/2
+    df <- diff(pf(x, ...))
+    if (plot) { plot(0, type='n', xlim=range(x), ylim=range(df),
+                     main=main, xlab=xlab, ylab=ylab) }
+    polygon(c(mids, x[length(x)], x[1]), c(df, 0, 0), col=col, border=border) 
+}
+```
+
+## Using models to make predictions
+
+<div class="centered">
+"No scientific theory is worth anything unless it enables us to predict something which is actually going on. Until that is done, theories are a mere game of words, and not such a good game as poetry." -- J. B. S. Haldane
+</div>
+
+## Is having too many predictor variables a problem?
+
+- The more predictor variables you add to a model the better it will seem to be at predicting the response variables in your dataset
+
+## Is having too many predictor variables a problem?
+
+- The more predictor variables you add to a model the better it will seem to be at predicting the response variables in your dataset
+
+- Even if you are not giving it any additional useful information
+
+## Is having too many predictor variables a problem?
+
+- The more predictor variables you add to a model the better it will seem to be at predicting the response variables in your dataset
+
+- Even if you are not giving it any additional useful information
+
+- When you have as many predictor variables as observations it is possible to exactly match the data that you initially used to construct your model.
+
+## Is having too many predictor variables a problem?
+
+- The more predictor variables you add to a model the better it will seem to be at predicting the response variables in your dataset
+
+- Even if you are not giving it any additional useful information
+
+- When you have as many predictor variables as observations it is possible to exactly match the data that you initially used to construct your model.
+
+- It’s possible to come up with a model that will give you precise predictions for the response variables included in your initial dataset 
+
+## Is having too many predictor variables a problem?
+
+- The more predictor variables you add to a model the better it will seem to be at predicting the response variables in your dataset
+
+- Even if you are not giving it any additional useful information
+
+- When you have as many predictor variables as observations it is possible to exactly match the data that you initially used to construct your model.
+
+- It’s possible to come up with a model that will give you precise predictions for the response variables included in your initial dataset 
+
+- But that is not generalizable to new data at all. 
+
+# Overfitting: when you have too much information
+
+# Overfitting: when you have too much information
+
+![](/Users/ashort/Downloads/overfitting.png)
+
+## Overfitting example
+
+1. Simulate data with `y ~ a + b x[1] + c x[2]`
+2. Add spurious variables
+3. Fit a linear model and measure prediction error with different numbers of predictor variables.
+4. Report the prediction error as a function of the number of variables.
+
+## Simulating data: $y = a + b_1 x_1 + b_2 x_2 + \epsilon$.
+
+```{r in_class1, echo=-1, cache=TRUE}
+set.seed(23)
+N <- 500
+df <- data.frame(x1 = rnorm(N), x2 = runif(N))
+params <- list(intercept = 2.0, x1 = 7.0, x2 = -8.0, sigma = 1)
+pred_y <- params$intercept + params$x1 * df$x1 + params$x2 * df$x2 
+df$y <- rnorm(N, mean=pred_y, sd=params$sigma)
+pairs(df)
+```
+
+## Breaking down our simulating data code
+
+```{r in_class1.1, echo=-1, cache=TRUE}
+# Set seed to make sure that we can reproduce our output
+set.seed(23)
+# Decide how many data points we want in our simulated dataset
+N <- 500
+
+```
+
+## 
+
+```{r in_class1.2, echo=-1, cache=TRUE}
+set.seed(23)
+N <- 500
+# Create a dataframe with values for our two predictor variables
+df <- data.frame(x1 = rnorm(N), x2 = runif(N))
+# rnorm samples from a normal distribution with mean 0
+# runif samples from a uniform distribution between 0 and 1
+head(df)
+```
+
+## 
+
+```{r in_class1.3, echo=-1, cache=TRUE}
+set.seed(23)
+N <- 500
+df <- data.frame(x1 = rnorm(N), x2 = runif(N))
+# Create a list of parameters that we will use in our model
+params <- list(intercept = 2.0, x1 = 7.0, x2 = -8.0, sigma = 1)
+#x1 is the coefficient for the x1 variable
+#x2 is the coefficient for the x2 variable
+#sigma is the random error in our model
+params
+```
+
+## 
+
+```{r in_class1.4, echo=-1, cache=TRUE}
+set.seed(23)
+N <- 500
+df <- data.frame(x1 = rnorm(N), x2 = runif(N))
+params <- list(intercept = 2.0, x1 = 7.0, x2 = -8.0, sigma = 1)
+# Write out our model which takes info from our df and the params list
+pred_y <- params$intercept + params$x1 * df$x1 + params$x2 * df$x2 
+```
+
+## 
+
+```{r in_class1.5, echo=-1, cache=TRUE}
+set.seed(23)
+N <- 500
+df <- data.frame(x1 = rnorm(N), x2 = runif(N))
+params <- list(intercept = 2.0, x1 = 7.0, x2 = -8.0, sigma = 1)
+pred_y <- params$intercept + params$x1 * df$x1 + params$x2 * df$x2 
+# Simulate the values of our responsible variables 
+df$y <- rnorm(N, mean=pred_y, sd=params$sigma)
+```
+
+## Breaking down our simulating data code
+
+```{r in_class1.6, echo=-1, cache=TRUE}
+set.seed(23)
+N <- 500
+df <- data.frame(x1 = rnorm(N), x2 = runif(N))
+params <- list(intercept = 2.0, x1 = 7.0, x2 = -8.0, sigma = 1)
+pred_y <- params$intercept + params$x1 * df$x1 + params$x2 * df$x2 
+df$y <- rnorm(N, mean=pred_y, sd=params$sigma)
+# Look at the relationship between our variables
+pairs(df)
+```
+
+## Overfitting excercise
+
+1. Simulate data for this model: `y ~ a + b x[1] + c x[2]`
+2. Add an additional 298 spurious variables to your data
+3. Fit linear models with different numbers of predictor variables
+4. Calculate the root mean squared error for the models you fit
+4. Plot how prediction error changes with the number of predictor variables.
+
+```{r in_class1.7, echo=-1, cache=TRUE}
+set.seed(23)
+N <- 500
+df <- data.frame(x1 = rnorm(N), x2 = runif(N))
+params <- list(intercept = 2.0, x1 = 7.0, x2 = -8.0, sigma = 1)
+pred_y <- params$intercept + params$x1 * df$x1 + params$x2 * df$x2 
+df$y <- rnorm(N, mean=pred_y, sd=params$sigma)
+```
+
+## Add spurious variables
+ 
+```{r in_class2, cache=TRUE, dependson=c("in_class1")}
+max_M <- 300  # max number of spurious variables
+noise_df <- matrix(rnorm(nrow(df) * (max_M-2)), nrow=nrow(df))
+colnames(noise_df) <- paste0('z', 1:ncol(noise_df))
+new_df <- cbind(df, noise_df)
+head(new_df[,1:10])
+```
+
+## Linear model and predictior error results
+ 
+```{r in_class3, cache=TRUE, dependson=c("in_class1")}
+all_results <- data.frame(m=floor(seq(from=2, to=max_M-1, length.out=40)), error=NA)
+for (j in 1:nrow(all_results)) {
+    m <- all_results$m[j]
+    the_lm <- lm(y ~ ., data=new_df[,1:(m+1)])
+    all_results$error[j] <- sqrt(mean(resid(the_lm)^2))
+}
+```
+
+## Create a dataframe to store our results
+ 
+```{r in_class3.1, cache=TRUE, dependson=c("in_class1")}
+# Create a dataframe with an increasing number of values between 2 ansd 299
+# We will fit linear models using these different numbers of variables
+# Then store the error for each model in the data frame
+# So that we have a calculated error for each number of variables
+all_results <- data.frame(m=floor(seq(from=2, to=max_M-1, length.out=40)), error=NA)
+head(all_results)
+```
+
+## Fitting models with different numbers of variables
+ 
+```{r in_class3.2, cache=TRUE, dependson=c("in_class1")}
+# Then for the different numbers of variables in the m column of allresults
+# We fit linear models and calculate the error
+for (j in 1:nrow(all_results)) {
+    m <- all_results$m[j]
+    the_lm <- lm(y ~ ., data=new_df[,1:(m+1)])
+    all_results$error[j] <- sqrt(mean(resid(the_lm)^2))
+}
+```
+
+## Digging into this for loop 
+ 
+```{r in_class3.3, cache=TRUE, dependson=c("in_class1")}
+# Set the number of predictors to include in our model
+m <- all_results$m[2]
+all_results$m[2]
+```
+
+## Fitting linear models
+ 
+```{r in_class3.4, cache=TRUE, dependson=c("in_class1")}
+# Set the number of predictors to include in our model
+m <- all_results$m[2]
+# Fit our linear model using those number of predictor variables
+the_lm <- lm(y ~ ., data=new_df[,1:(m+1)])
+summary(the_lm)$coefficients
+```
+
+## Calculating error for a model
+
+```{r in_class3.5, cache=TRUE, dependson=c("in_class1")}
+# Set the number of predictors to include in our model
+m <- all_results$m[2]
+# Fit our linear model using those number of predictor variables
+the_lm <- lm(y ~ ., data=new_df[,1:(m+1)])
+# Calculate the square root of the mean squared residuals
+all_results$error[j] <- sqrt(mean(resid(the_lm)^2))
+```
+
+   $$\begin{aligned}
+    S = \sqrt{\frac{1}{M} \sum_{k=1}^M (\hat y_i - y_i)^2}
+   \end{aligned}$$
+
+## Linear model and predictor error results
+ 
+```{r in_class3.6, cache=TRUE, dependson=c("in_class1")}
+all_results <- data.frame(m=floor(seq(from=2, to=max_M-1, length.out=40)), error=NA)
+for (j in 1:nrow(all_results)) {
+    m <- all_results$m[j]
+    the_lm <- lm(y ~ ., data=new_df[,1:(m+1)])
+    all_results$error[j] <- sqrt(mean(resid(the_lm)^2))
+}
+```
+
+##
+
+```{r in_class4, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
+plot(all_results$m, all_results$error, type='l', col=2, lwd=2,
+     xlab='number of variables', ylab='root mean square error',
+     ylim=range(all_results$error, 0))
+```
+
+## Out-of-sample prediction
+
+To test predictive ability (and diagnose overfitting!):
+
+## Out-of-sample prediction
+
+To test predictive ability (and diagnose overfitting!):
+
+1. Split the data into *test* and *training* pieces.
+
+## Out-of-sample prediction
+
+To test predictive ability (and diagnose overfitting!):
+
+1. Split the data into *test* and *training* pieces.
+2. Fit the model using the training data.
+
+## Out-of-sample prediction
+
+To test predictive ability (and diagnose overfitting!):
+
+1. Split the data into *test* and *training* pieces.
+2. Fit the model using the training data.
+3. See how well it predicts the test data.
+
+# Crossvalidation
+
+## Crossvalidation example
+
+1. Simulate data with `y ~ a + b x[1] + c x[2]`, and fit a linear model.
+2. Measure in-sample and out-of-sample prediction error.
+3. Add spurious variables, and report the above as a function of number of variables.
+
+## Crossvalidation plan
+
+1. Put aside 20% of the data for *testing*.
+
+2. Refit the model.
+
+## Crossvalidation plan
+
+1. Put aside 20% of the data for *testing*.
+
+2. Refit the model.
+
+3. Predict the test data; compute the square root of the mean squared residuals
+
+## Crossvalidation plan
+
+1. Put aside 20% of the data for *testing*.
+
+2. Refit the model.
+
+3. Predict the test data; compute
+   $$\begin{aligned}
+    S = \sqrt{\frac{1}{M} \sum_{k=1}^M (\hat y_i - y_i)^2}
+   \end{aligned}$$
+
+4. Repeat for the other four 20%s.
+
+5. Compare
+
+## Crossvalidation Example
+
+1. Randomly put aside 20% of your data for testing
+
+2. Fit a linear model to the remaining 80% of your data
+
+3. Compute the training (80%) and test error (20%)
+ #add r code 
+
+4. Perform five-fold crossvalidation (repeat steps 1 to 3 four more times)
+
+5. Compare the prediction error for your test and training data
+
+6. Repeat this process this with different numbers of predictors
+
+7. Plot how the test and training errors differ with the number of predictors
+
+## Crossvalidation error function
+
+```{r in_class5, cache=TRUE}
+kfold <- function (K, df) {
+    Kfold <- sample(rep(1:K, nrow(df)/K))
+    results <- data.frame(test_error=rep(NA, K), train_error=rep(NA, K))
+    for (k in 1:K) {
+        the_lm <- lm(y ~ ., data=df, subset=(Kfold != k))
+        results$train_error[k] <- sqrt(mean(resid(the_lm)^2))
+        test_y <- df$y[Kfold == k]
+        results$test_error[k] <- sqrt(mean(
+                       (test_y - predict(the_lm, newdata=subset(df, Kfold==k)))^2 ))
+    }
+    return(results)
+}
+```
+
+## 
+
+```{r in_class5.1, cache=TRUE}
+#Assign every row of our dataframe a random number from 1 to the number of folds
+df <- new_df[,1:(9+1)]
+K <- 5  
+Kfold <- sample(rep(1:K, nrow(df)/K))
+Kfold
+```
+
+## Dissecting this function
+
+```{r in_class5.2, cache=TRUE}
+# Make an empty dataframe to store our test and training error
+df <- new_df[,1:(9+1)]
+K <- 5  
+Kfold <- sample(rep(1:K, nrow(df)/K))
+results <- data.frame(test_error=rep(NA, 5), train_error=rep(NA, 5))
+results
+```
+
+## Dissecting the for loop in our function
+
+```{r in_class5.3, cache=TRUE}
+# Fit a linear model with 80% of the data for each fold
+    for (k in 1:K) {
+        the_lm <- lm(y ~ ., data=df, subset=(Kfold != k))
+        results$train_error[k] <- sqrt(mean(resid(the_lm)^2))
+        test_y <- df$y[Kfold == k]
+        results$test_error[k] <- sqrt(mean(
+                       (test_y - predict(the_lm, newdata=subset(df, Kfold==k)))^2 ))
+    }
+```
+
+## Dissecting the for loop in our function
+
+```{r in_class5.4, cache=TRUE}
+# By specifying Kfold != k we only use rows with a label that is not equal to k
+# Each time we fit a linear model we put aside 20% of the data for testing
+df <- new_df[,1:(9+1)]
+K <- 5  
+Kfold <- sample(rep(1:K, nrow(df)/K))
+results <- data.frame(test_error=rep(NA, 5), train_error=rep(NA, 5))
+the_lm <- lm(y ~ ., data=df)
+the_lm$df.residual
+the_lm <- lm(y ~ ., data=df, subset=(Kfold != 1))
+the_lm$df.residual
+```
+
+## Dissecting the for loop in our function
+
+```{r in_class5.5, cache=TRUE}
+df <- new_df[,1:(9+1)]
+K <- 5  
+Kfold <- sample(rep(1:K, nrow(df)/K))
+results <- data.frame(test_error=rep(NA, 5), train_error=rep(NA, 5))
+results <- data.frame(test_error=rep(NA, 5), train_error=rep(NA, 5))
+    for (k in 1:K) {
+        the_lm <- lm(y ~ ., data=df, subset=(Kfold != k))
+        # Calculate the training error for the models we fit during each fold
+        results$train_error[k] <- sqrt(mean(resid(the_lm)^2))
+        # Create a vector with our test response variable values
+        test_y <- df$y[Kfold == k]
+        # Calculate the test error for the models we fit during each fold
+        # Store these values in the results dataframe with the training error values
+        results$test_error[k] <- sqrt(mean(
+                       (test_y - predict(the_lm, newdata=subset(df, Kfold==k)))^2 ))
+    }
+```
+
+## Crossvalidation error function
+
+```{r in_class5.6, cache=TRUE}
+kfold <- function (K, df) {
+    Kfold <- sample(rep(1:K, nrow(df)/K))
+    results <- data.frame(test_error=rep(NA, K), train_error=rep(NA, K))
+    for (k in 1:K) {
+        the_lm <- lm(y ~ ., data=df, subset=(Kfold != k))
+        results$train_error[k] <- sqrt(mean(resid(the_lm)^2))
+        test_y <- df$y[Kfold == k]
+        results$test_error[k] <- sqrt(mean(
+                       (test_y - predict(the_lm, newdata=subset(df, Kfold==k)))^2 ))
+    }
+    return(results)
+}
+```
+
+## Perform crossvalidation
+
+```{r in_class6, cache=TRUE, dependson=c("in_class1","in_class2","in_class4")}
+all_results <- data.frame(m=floor(seq(from=2, to=max_M-1, length.out=40)), 
+                          test_error=NA, train_error=NA)
+for (j in 1:nrow(all_results)) {
+    m <- all_results$m[j]
+    all_results[j,2:3] <- colMeans(kfold(K=5, new_df[,1:(m+1)]))
+}
+```
+
+##
+
+```{r in_class7, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
+plot(all_results$m, all_results$test_error, type='l', lwd=2, 
+     xlab='number of variables', ylab='root mean square error',
+     ylim=range(all_results[,2:3], 0))
+lines(all_results$m, all_results$train_error, col=2, lwd=2)
+legend("topleft", lty=1, col=1:2, lwd=2, legend=paste(c("test", "train"), "error"))
+```
