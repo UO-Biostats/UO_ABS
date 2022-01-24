@@ -50,12 +50,12 @@ Week 13 (*1/18*)
 
     - slides: [Writing Stan code](../CLASS_MATERIALS/Lectures/Week_13_Intro_to_Stan.slides.html)
     - slides: [Time series](../CLASS_MATERIALS/Lectures/Week_13_Time_series.slides.html)
-    - Reading: 
 
 Week 14 (*1/25*)
 
 : Crossvalidation for model comparison; sparsifying priors and variable selection
 
+    - slides: [Overfitting and crossvalidation](../CLASS_MATERIALS/Lectures/Week_14_overfitting_crossvalidation.slides.html)
     - Reading: Kruschke, chapters 17 (one-variable linear models), 18 (multivariate linear models)
 
 Week 15 (*2/1*)
