@@ -1,0 +1,81 @@
+
+# The data
+
+Downloaded daily case counts
+from [the CDC](https://data.cdc.gov/Case-Surveillance/United-States-COVID-19-Cases-and-Deaths-by-State-o/9mfq-cb36),
+and subset it to only observations on the 1st, 11th, or 21st of each month,
+and the 52 states (fifty plus Puerto Rico and DC):
+```{r the_data}
+library(lubridate)
+
+x <- read.csv("United_States_COVID-19_Cases_and_Deaths_by_State_over_Time.csv")
+x$submission_date <- mdy(x$submission_date)
+    
+firsts <- subset(x, day(submission_date) == 1 | day(submission_date) == 11 | day(submission_date) == 21)[,c("submission_date", "state", "new_case")]
+names(firsts)[1] <- "date"
+by_date <- reshape(firsts, direction = "wide",
+        idvar = "state", timevar = "date"
+)
+names(by_date) <- gsub("new_case.", "", names(by_date))
+by_date <- subset(by_date, state %in%
+    c("AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", 
+      "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", 
+      "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", 
+      "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR", 
+      "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", 
+      "WI", "WV", "WY")
+)
+```
+
+# Predicting the future
+
+Let's see how well we can predict the most recent case counts (21 January)
+using previous data:
+
+```{r predict}
+jan_lm <- lm(`2022-01-21` ~ . - state, data=by_date)
+
+plot(predict(jan_lm), by_date$`2022-01-21`,
+     xlab='predicted case numbers', ylab='observed case numbers', type='n')
+text(predict(jan_lm), by_date$`2022-01-21`,
+     labels=by_date$state)
+legend("topleft", bty='n',
+       legend=sprintf("r = %f", cor(predict(jan_lm), by_date$`2022-01-21`)))
+abline(0, 1)
+
+```
+
+We can predict the case counts *perfectly*!
+
+# Predicting across states
+
+Now let's see how well the case counts in Oregon
+are predicted by other states,
+using only the 1st and 15th of each month, this time:
+
+```{r bystate}
+firsts <- subset(x, day(submission_date) == 1 | day(submission_date) == 15 )[,c("submission_date", "state", "new_case")]
+names(firsts)[1] <- "date"
+by_state <- reshape(firsts, direction = "wide",
+        timevar = "state", idvar = "date"
+)
+names(by_state) <- gsub("new_case.", "", names(by_state))
+by_state <- by_state[, c("date", 
+    c("AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", 
+      "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", 
+      "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", 
+      "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR", 
+      "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", 
+      "WI", "WV", "WY")
+)]
+by_state <- by_state[order(by_state$date),]
+
+OR_lm <- lm(OR ~ . - date, data=by_state)
+
+plot(OR ~ date, data=by_state, type='l', lwd=2,
+     ylab="Oregon new cases")
+lines(by_state$date, predict(OR_lm), col='red', lty=2, lwd=2)
+legend("topleft", lty=c(1, 2), col=c("black", "red"), lwd=c(2,2), legend=c("observed", "predicted using other states"))
+
+
+```
