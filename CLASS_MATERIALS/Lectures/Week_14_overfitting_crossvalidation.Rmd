@@ -80,6 +80,50 @@ shadecurve <- function (pf, xlim, plot=TRUE, xlab='', ylab='', main='',
 
 - But that is not generalizable to new data at all. 
 
+## Overfitting in real data
+
+- Downloaded daily case counts
+from [the CDC](https://data.cdc.gov/Case-Surveillance/United-States-COVID-19-Cases-and-Deaths-by-State-o/9mfq-cb36).
+- Subset the data to only include new case counts from the 1st and 15th of each month for each state 
+- Resulting in a data frame with 48 rows and 53 columns
+
+```{r data, cache=TRUE, include=FALSE}
+library(lubridate)
+x <- read.csv("/Users/ashort/Downloads/United_States_COVID-19_Cases_and_Deaths_by_State_over_Time.csv")
+x$submission_date <- mdy(x$submission_date)
+firsts <- subset(x, day(submission_date) == 1 | day(submission_date) == 15 )[,c("submission_date", "state", "new_case")]
+names(firsts)[1] <- "date"
+by_state <- reshape(firsts, direction = "wide",
+        timevar = "state", idvar = "date"
+)
+names(by_state) <- gsub("new_case.", "", names(by_state))
+by_state <- by_state[, c("date", 
+    c("AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", 
+      "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", 
+      "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", 
+      "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR", 
+      "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", 
+      "WI", "WV", "WY")
+)]
+by_state <- by_state[order(by_state$date),]
+```
+```{r data_prep}
+head(by_state[,1:17])
+```
+
+## Predicting COVID case count across states
+
+Now let's see how well the case counts in Oregon are predicted by other states, 
+using only the 1st and 15th of each month:
+
+```{r bystate}
+OR_lm <- lm(OR ~ . - date, data=by_state)
+plot(OR ~ date, data=by_state, type='l', lwd=2, ylab="Oregon new cases")
+lines(by_state$date, predict(OR_lm), col='red', lty=2, lwd=2)
+legend("topleft", lty=c(1, 2), col=c("black", "red"), lwd=c(2,2), 
+       legend=c("observed", "predicted using other states"))
+```
+
 # Overfitting: when you have too much information
 
 # Overfitting: when you have too much information
@@ -137,7 +181,7 @@ df <- data.frame(x1 = rnorm(N), x2 = runif(N))
 params <- list(intercept = 2.0, x1 = 7.0, x2 = -8.0, sigma = 1)
 #x1 is the coefficient for the x1 variable
 #x2 is the coefficient for the x2 variable
-#sigma is the random error in our model
+#sigma is the standard deviation of the random error in our model
 params
 ```
 
@@ -182,8 +226,8 @@ pairs(df)
 1. Simulate data for this model: `y ~ a + b x[1] + c x[2]`
 2. Add an additional 298 spurious variables to your data
 3. Fit linear models with different numbers of predictor variables
-4. Calculate the root mean squared error for the models you fit
-4. Plot how prediction error changes with the number of predictor variables.
+4. Calculate the root mean squared error for the models you fit: `sqrt(mean(resid(lm)^2))`
+5. Plot how prediction error changes with the number of predictor variables.
 
 ```{r in_class1.7, echo=-1, cache=TRUE}
 set.seed(23)
@@ -335,7 +379,9 @@ To test predictive ability (and diagnose overfitting!):
 
 2. Refit the model.
 
-3. Predict the test data; compute the square root of the mean squared residuals
+3. Predict the test data; 
+
+4. Compute test error square root of the mean squared difference between the actual and predicted values
 
 ## Crossvalidation plan
 
@@ -343,12 +389,11 @@ To test predictive ability (and diagnose overfitting!):
 
 2. Refit the model.
 
-3. Predict the test data; compute
-   $$\begin{aligned}
-    S = \sqrt{\frac{1}{M} \sum_{k=1}^M (\hat y_i - y_i)^2}
-   \end{aligned}$$
+3. Predict the test data;
 
-4. Repeat for the other four 20%s.
+4. Compute test error square root of the mean squared difference between the actual and predicted values
+
+5. Repeat for the other four 20%s.
 
 5. Compare
 
@@ -358,16 +403,17 @@ To test predictive ability (and diagnose overfitting!):
 
 2. Fit a linear model to the remaining 80% of your data
 
-3. Compute the training (80%) and test error (20%)
- #add r code 
+3. Compute the training (80%) error: `sqrt(mean(resid(lm)^2))`
 
-4. Perform five-fold crossvalidation (repeat steps 1 to 3 four more times)
+4. And the test (20%) error: `sqrt(mean(("actual y" - "predicted y")^2))`
 
-5. Compare the prediction error for your test and training data
+5. Perform five-fold crossvalidation (repeat steps 1 to 3 four more times)
 
-6. Repeat this process this with different numbers of predictors
+6. Compare the prediction error for your test and training data
 
-7. Plot how the test and training errors differ with the number of predictors
+7. Repeat this process this with different numbers of predictors
+
+8. Plot how the test and training errors differ with the number of predictors
 
 ## Crossvalidation error function
 
