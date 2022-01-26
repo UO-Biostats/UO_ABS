@@ -58,6 +58,7 @@ Week 14 (*1/25*)
     - slides: [Overfitting and crossvalidation](../CLASS_MATERIALS/Lectures/Week_14_overfitting_crossvalidation.slides.html)
     - slides: [Multicollinear example](../CLASS_MATERIALS/Lectures/Week_14_Example.slides.html)
     - Reading: Kruschke, chapters 17 (one-variable linear models), 18 (multivariate linear models)
+    - [Homework 13](../CLASS_MATERIALS/Homeworks/HW13.html) *(group homework, individual writeups due 1/3)*
 
 Week 15 (*2/1*)
 
