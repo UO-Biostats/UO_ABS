@@ -49,8 +49,9 @@ $$\begin{aligned}
 
 ```{r run_simple_pois, cache=TRUE, dependson=c("load_data")}
 fit1 <- brm(counts ~ genotype + age + exposure * genotype,
-             data=count_data, family=poisson(link='log'),
-            prior=prior("normal(0, 5)", class="b"))
+            data=count_data, family=poisson(link='log'),
+            prior=prior("normal(0, 5)", class="b"),
+            file="cache/overdispersion_fit1.rds")
 ```
 
 ## Conditional effects
@@ -159,7 +160,8 @@ $$\begin{aligned}
 count_data$id <- 1:nrow(count_data)
 fit2 <- brm(counts ~ genotype + age + exposure * genotype + (1|id),
             data=count_data, family=poisson(link='log'),
-            prior=prior("normal(0, 5)", class="b"))
+            prior=prior("normal(0, 5)", class="b"),
+            file="cache/overdispersion_fit2.rds")
 ```
 
 
@@ -227,7 +229,7 @@ brms_kfold2 <- function (K, models, xy) {
         train <- test <- rep(NA, K)
         for (k in 1:K) {
             new_fit <- update(models[[j]], newdata=subset(xy, Kfold != k))
-            train[k] <- sqrt(mean(resid(new_fit, re_formula=NA)[,"Estimate"]^2))
+            train[k] <- sqrt(mean(resid(new_fit)[,"Estimate"]^2))
             test_y <- xy$y[Kfold == k]
             test[k] <- sqrt(mean(
                    (test_y - predict(new_fit, newdata=subset(xy, Kfold==k), re_formula=NA)[,"Estimate"])^2 ))
@@ -239,18 +241,80 @@ brms_kfold2 <- function (K, models, xy) {
 }
 ```
 
+
 ---------
 
-```{r do_xval2, cache=TRUE, dependson=c("brms_kfoldfn", "run_simple_pois", "run_odpois")}
-xval_results2 <- brms_kfold2(10, list(poisson=fit1, overdispersed=fit2), count_data)
+```{r do_xval2, cache=TRUE, dependson=c("brms_kfoldfn2", "run_simple_pois", "run_odpois")}
+xval_results2 <- brms_kfold2(9, list(poisson=fit1, overdispersed=fit2), count_data)
 ```
 
-## Which model would you rather use?
+## Well, this is odd.
+
+<!--
+Part of what's going on here is that the posterior distribution for the training data
+has a longer tail than the test data (for some reason), and using posterior medians
+reflects things better. Using posterior mean(RMSE) gets nearly identical numbers.
+However, there's still lower test error than training error; this seems to have to
+do with presence/absence of a few difficult data point(s), suggesting a lack of
+robustness in the model.
+-->
 
 ```{r show_brms_xvals2, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
 matplot(xval_results2[,c(paste0("poisson", c("_test", "_train")), paste0("overdispersed", c("_test", "_train")))],
         type='l', col=c(1, 1, 2, 2), lty=c(1, 2, 1, 2),
         ylab='root mean squared error', xlab='fold number')
+legend("topright", col=c(1,1,2,2), lty=c(1,2,1,2),
+       legend=c("poisson test",
+                "poisson train",
+                "overdispersed test",
+                "overdispersed train"))
+```
+
+
+## Crossvalidation, take 2
+
+```{r brms_kfoldfn3, cache=TRUE}
+brms_kfold3 <- function (K, models, xy) {
+    stopifnot(!is.null(names(models)))
+    Kfold <- sample(rep(1:K, nrow(xy)/K))
+    results <- data.frame(rep=1:K)
+    for (j in seq_along(models)) {
+        train <- test <- rep(NA, K)
+        for (k in 1:K) {
+            new_fit <- update(models[[j]], newdata=subset(xy, Kfold != k))
+            train_post <- posterior_epred(new_fit, re_formula=NA)
+            train_y <- xy$y[Kfold != k]
+            train[k] <- sqrt(mean(
+                  (train_y - matrixStats::colMedians(train_post))^2
+            ))
+            test_y <- xy$y[Kfold == k]
+            test_post <- posterior_epred(new_fit, newdata=subset(xy, Kfold==k), re_formula=NA)
+            test[k] <- sqrt(mean(
+                  (test_y - matrixStats::colMedians(test_post))^2
+            ))
+        }
+        results[[paste0(names(models)[j], "_train")]] <- train
+        results[[paste0(names(models)[j], "_test")]] <- test
+    }
+    return(results)
+}
+```
+
+---------
+
+```{r do_xval3, cache=TRUE, dependson=c("brms_kfoldfn3", "run_simple_pois", "run_odpois")}
+xval_results3 <- brms_kfold2(9, list(poisson=fit1, overdispersed=fit2), count_data)
+```
+
+
+
+## Which model would you rather use?
+
+```{r show_brms_xvals3, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
+matplot(xval_results3[,c(paste0("poisson", c("_test", "_train")), paste0("overdispersed", c("_test", "_train")))],
+        type='l', col=c(1, 1, 2, 2), lty=c(1, 2, 1, 2),
+        ylab='root mean squared error', xlab='fold number',
+        main='posterior medians')
 legend("topright", col=c(1,1,2,2), lty=c(1,2,1,2),
        legend=c("poisson test",
                 "poisson train",
