@@ -429,6 +429,20 @@ qqnorm(ols_resids)
 qqline(ols_resids)
 ```
 
+## Exercise
+
+Suppose we measure the expression of gene FLC
+in 100 individuals with heights between 15cm and 100cm.
+The mean expression level in plants of height $h$cm is $2.3 h$ RPKM,
+with a standard deviation of 10 RPKM.
+Simulate data, then make histograms of:
+
+1. the expression levels
+2. the residual expression levels, given height.
+
+Which looks Normally distributed?
+
+
 ## Posterior preditive checks:
 
 ```{r the_pp}

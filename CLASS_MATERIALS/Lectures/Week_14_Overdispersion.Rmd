@@ -1,0 +1,260 @@
+---
+title: "Overdiserpersion"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(rstan)
+library(brms)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+```
+
+
+# Count data
+
+## A hypothetical situation:
+
+1. We have **counts** of transcript numbers,
+
+2. from some individuals of different **ages**
+   and past **exposures** to solar irradiation,
+
+3. of two **genotypes**.
+
+. . .
+
+The data:
+```{r load_data, cache=TRUE}
+count_data <- read.table("data/poisson_counts_data.tsv", header=TRUE)
+```
+
+## Poisson linear model
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(y_i) \\
+    y_i &= \exp(a_{g_i} + b \times \text{age}_i \\
+        &\qquad {} + c_{g_i} \times \text{exposure}_i )
+\end{aligned}$$
+
+## The result
+
+
+```{r run_simple_pois, cache=TRUE, dependson=c("load_data")}
+fit1 <- brm(counts ~ genotype + age + exposure * genotype,
+             data=count_data, family=poisson(link='log'),
+            prior=prior("normal(0, 5)", class="b"))
+```
+
+## Conditional effects
+
+```{r condeffs, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+cowplot::plot_grid(
+           plotlist=plot(conditional_effects(fit1, effects=c("genotype", "age", "exposure", "exposure:genotype"), plot=FALSE), plot=FALSE),
+           nrow=2, ncol=2)
+```
+
+## Posterior predictive ECDF: uh-oh
+
+```{r pp_check, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+pp_check(fit1, type='ecdf_overlay', nsamples=40) + labs(x="order", y="quantile")
+```
+
+
+## True data are *overdispersed* relative to posterior predictive sims
+
+```{r plot_post_sims1, fig.width=3*fig.dim, fig.height=2.0*fig.dim, echo=FALSE}
+pp_samples <- posterior_predict(fit1)
+ord <- rank(colMeans(pp_samples))
+plot(count_data$counts, ylab="counts", ylim=range(pp_samples, count_data$counts), type='n')
+segments(x0=ord, y0=colQuantiles(pp_samples, probs=0.05), y1=colQuantiles(pp_samples, probs=0.9))
+points(ord, count_data$counts, pch=20, col='red')
+legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "90% CI"), col=c('red', 'black'))
+```
+
+## True data are *overdispersed* relative to Poisson
+
+Recall that if $X \sim \Poisson(\lambda)$ then
+$$
+    \E[X] = \var[X] = \lambda,
+$$
+and so a "$z$-score" is
+$$\begin{aligned}
+    \E\left(\frac{X - \lambda}{\sqrt{\lambda}}\right) = 0, 
+    \qquad \qquad
+    \text{SD}\left(\frac{X - \lambda}{\sqrt{\lambda}}\right) = 1.
+\end{aligned}$$
+
+```{r plot_overdisp, echo=FALSE, fig.width=2.5*fig.dim, fig.height=1.0*fig.dim}
+f <- function (x, mu) { (x - mu)/sqrt(mu) }
+mean_mu <- colMeans(posterior_epred(fit1))
+layout(t(1:2))
+plot(mean_mu, f(rpois(length(mean_mu), mean_mu), mean_mu), pch=20, ylim=range(f(count_data$counts, mean_mu)),
+     main="Poisson", xlab=expression(mu), ylab=expression((X-mu)/sqrt(mu)))
+plot(mean_mu, f(count_data$counts, mean_mu), pch=20,
+     main="our data", xlab=expression(mu), ylab=expression((X-mu)/sqrt(mu)))
+```
+
+-----------
+
+```{r thesumm1}
+summary(fit1)
+```
+
+
+# Adding overdispersion
+
+## Add overdispersion
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\exp(\mu_i)) \\
+    \mu_i &\sim \Normal(y_i, \sigma) \\
+    y_i &= a_{g_i} + b \times \text{age}_i + c_{g_i} \times \text{exposure}_i 
+\end{aligned}$$
+
+. . .
+
+is equivalent to
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\exp(y_i)) \\
+    y_i &= a_{g_i} + b \times \text{age}_i + c_{g_i} \times \text{exposure}_i  + \epsilon_i \\
+    \epsilon_i &\sim \Normal(0, \sigma)
+\end{aligned}$$
+
+## Exercise:
+
+1. Simulate 1000 draws from 
+   $$ X_i \sim \Normal(\text{mean}=3, \text{sd}=3) .$$
+
+2. Simulate 1000 draws from 
+   $$ Y_i \sim \Poisson(\lambda=\exp(X_i)). $$
+
+3. Simulate 1000 draws from
+   $$\begin{aligned}
+       Z_i &\sim \Poisson(\lambda=\exp(U_i)) \\
+       U_i &\sim \Normal(\text{mean}=X_i, \text{sd}=2)
+   \end{aligned}$$
+
+4. Compare $Y$ and $Z$ to $X$, and compare the distribution of the residuals.
+
+
+## Add overdispersion
+
+
+$$\begin{aligned}
+    Z_i &\sim \Poisson(\exp(y_i)) \\
+    y_i &= a_{g_i} + b \times \text{age}_i + c_{g_i} \times \text{exposure}_i  + \epsilon_i \\
+    \epsilon_i &\sim \Normal(0, \sigma)
+\end{aligned}$$
+
+```{r run_odpois, cache=TRUE, dependson=c("load_data")}
+count_data$id <- 1:nrow(count_data)
+fit2 <- brm(counts ~ genotype + age + exposure * genotype + (1|id),
+            data=count_data, family=poisson(link='log'),
+            prior=prior("normal(0, 5)", class="b"))
+```
+
+
+
+## conditional effects
+
+```{r condeffs2, echo=FALSE, fig.width=3*fig.dim, fig.height=2*fig.dim}
+cowplot::plot_grid(
+           plotlist=plot(conditional_effects(fit2, effects=c("genotype", "age", "exposure", "exposure:genotype"), plot=FALSE), plot=FALSE),
+           nrow=2, ncol=2)
+```
+
+## Posterior predictive ECDF: much better!
+
+```{r pp_check2, fig.width=3*fig.dim, fig.height=1.5*fig.dim}
+pp_check(fit2, type='ecdf_overlay', nsamples=40) + labs(x="order", y="quantile")
+```
+
+
+## Empirical coverage: also looks good
+
+```{r plot_post_sims2, fig.width=3*fig.dim, fig.height=2.0*fig.dim, echo=FALSE}
+tmp <- count_data
+tmp$id <- nrow(tmp) + 1:nrow(tmp)
+pp_samples <- posterior_predict(fit2, newdata=tmp, allow_new_levels=TRUE)
+ord <- rank(colMeans(pp_samples))
+plot(count_data$counts, ylab="counts", ylim=range(count_data$counts), type='n')
+segments(x0=ord, y0=colQuantiles(pp_samples, probs=0.05), y1=colQuantiles(pp_samples, probs=0.9))
+points(ord, count_data$counts, pch=20, col='red')
+legend("topleft", pch=c(20,NA), lty=c(NA,1), legend=c("observed", "90% CI"), col=c('red', 'black'))
+```
+
+-----------
+
+```{r thesumm}
+summary(fit2)
+```
+
+## Conclusions?
+
+
+
+# Comparing the models
+
+##
+
+The overdispersed model fits better, but *is* it better?
+
+## The predictions are different:
+
+```{r xval, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim}
+pred1 <- predict(fit1)
+pred2 <- predict(fit2)
+plot(pred1[,"Estimate"], pred2[,"Estimate"], xlab='predictions, first model', ylab='predictions, second model', asp=1)
+```
+
+## Crossvalidation
+
+```{r brms_kfoldfn2, cache=TRUE}
+brms_kfold2 <- function (K, models, xy) {
+    stopifnot(!is.null(names(models)))
+    Kfold <- sample(rep(1:K, nrow(xy)/K))
+    results <- data.frame(rep=1:K)
+    for (j in seq_along(models)) {
+        train <- test <- rep(NA, K)
+        for (k in 1:K) {
+            new_fit <- update(models[[j]], newdata=subset(xy, Kfold != k))
+            train[k] <- sqrt(mean(resid(new_fit, re_formula=NA)[,"Estimate"]^2))
+            test_y <- xy$y[Kfold == k]
+            test[k] <- sqrt(mean(
+                   (test_y - predict(new_fit, newdata=subset(xy, Kfold==k), re_formula=NA)[,"Estimate"])^2 ))
+        }
+        results[[paste0(names(models)[j], "_train")]] <- train
+        results[[paste0(names(models)[j], "_test")]] <- test
+    }
+    return(results)
+}
+```
+
+---------
+
+```{r do_xval2, cache=TRUE, dependson=c("brms_kfoldfn", "run_simple_pois", "run_odpois")}
+xval_results2 <- brms_kfold2(10, list(poisson=fit1, overdispersed=fit2), count_data)
+```
+
+## Which model would you rather use?
+
+```{r show_brms_xvals2, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
+matplot(xval_results2[,c(paste0("poisson", c("_test", "_train")), paste0("overdispersed", c("_test", "_train")))],
+        type='l', col=c(1, 1, 2, 2), lty=c(1, 2, 1, 2),
+        ylab='root mean squared error', xlab='fold number')
+legend("topright", col=c(1,1,2,2), lty=c(1,2,1,2),
+       legend=c("poisson test",
+                "poisson train",
+                "overdispersed test",
+                "overdispersed train"))
+```
+
