@@ -66,13 +66,14 @@ Week 15 (*2/1*)
 
 : Many response variables
 
+    - Group presentations
     - Reading: 
 
 Week 16 (*2/8*)
 
 : Data analysis example
 
-    - Group presentations
+    - Reading: 
 
 Week 17 (*2/15*)
 
