@@ -138,7 +138,7 @@ ols_mse <- sqrt(mean((ols_pred - test_d$y)^2))
 c(train=sqrt(mean(resid(ols)^2)),
   test=ols_mse)
 ```
-With ordinary linear regression, we got a root-mean-square-prediction-error of `r ols_mse` (on the *test* data),
+With an ordinary linear model, we got a root-mean-square-prediction-error of `r ols_mse` (on the *test* data),
 compared to a root-mean-square-error of `r sqrt(mean(resid(ols)^2))` for the *training* data.
 
 . . .
@@ -170,7 +170,7 @@ $$\begin{aligned}
 
 ## Encouraging sparseness
 
-Suppose we do regression with a *large* number of predictor variables.
+Suppose we do a linear model with a *large* number of predictor variables.
 
 . . .
 
