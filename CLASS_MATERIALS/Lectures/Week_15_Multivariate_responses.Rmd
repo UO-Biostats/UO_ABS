@@ -222,6 +222,12 @@ Also, recall that
 
 3. Is there an effect of "nest", and is it correlated between the four measures?
 
+## Exercise:
+
+Without fitting a model,
+how would you estimate the "nest effect"
+on tarsus length and mass at 6 days?
+
 ##
 
 Let's add *random effects* by nest:
@@ -278,14 +284,6 @@ cowplot::plot_grid(
             nrow=2, ncol=2)
 ```
 
-## Exercise:
-
-Without fitting a model,
-how would you estimate the strength of correlation between
-(the nest effect on tarsus length at 6 days)
-and
-(the nest effect on mass at 6 days)?
-
 
 # Back to the questions
 
@@ -314,7 +312,6 @@ mcmc_intervals(ps,
 ## 3. Is there an effect of "nest"
 
 
-Well,*
 ```{r plot_hists, echo=FALSE}
 mcmc_intervals(ps,
        pars=c(paste0("sd_nest__", c("mass6", "tars6", "mass14", "tars14"), "_Intercept")))

@@ -1,0 +1,29 @@
+---
+title: "Untitled"
+author: "Peter Ralph"
+date: "2/1/2022"
+output: html_document
+---
+
+We'd like to simulate correlated multivariate normals,
+and then plot them.
+
+```{r demo}
+varnames <- c("engine size", "top speed", "mpg")
+means <- c(200, 100, 30) # in3, mph, mpg
+sds <- c(20, 10, 5)
+cors <- c(0.8, -0.6, -0.7) # size-speed, size-mpg, speed-mpg
+
+cormat <- diag(3)
+cormat[upper.tri(cormat)] <- cors
+cormat[lower.tri(cormat)] <- t(cormat)[lower.tri(cormat)]
+stopifnot(all(cormat == t(cormat)))
+
+# covariance matrix
+Sigma <- diag(sds) %*% cormat %*% diag(sds)
+
+library(mvtnorm)
+X <- rmvnorm(10000, mean=means, sigma=Sigma)
+pairs(X, pch=20, cex=0.5, col=adjustcolor('black', 0.1))
+
+```

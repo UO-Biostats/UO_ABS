@@ -68,6 +68,7 @@ Week 15 (*2/1*)
 
     - slides: [Multivariate responses](../CLASS_MATERIALS/Lectures/Week_15_Multivariate_responses.slides.html)
     - slides: [the Multivariate Normal](../CLASS_MATERIALS/Lectures/Week_15_Multivariate_normal.slides.html)
+    - Code from in-class [demo on correlated Normals](../CLASS_MATERIALS/Demos/Correlated_normals.Rmd)
     - Group presentations
     - Reading: 
 
