@@ -66,6 +66,8 @@ Week 15 (*2/1*)
 
 : Many response variables
 
+    - slides: [Multivariate responses](../CLASS_MATERIALS/Lectures/Week_15_Multivariate_responses.slides.html)
+    - slides: [the Multivariate Normal](../CLASS_MATERIALS/Lectures/Week_15_Multivariate_normal.slides.html)
     - Group presentations
     - Reading: 
 

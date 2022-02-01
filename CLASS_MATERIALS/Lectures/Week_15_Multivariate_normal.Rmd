@@ -1,0 +1,141 @@
+---
+title: "The multivariate normal distribution"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+options(digits=2)
+```
+
+```{r helpers, include=FALSE}
+draw_ellipse <- function (Sigma, r=1, ...) {
+    ev <- eigen(Sigma)
+    a <- ev$values[1]^2
+    b <- ev$values[2]^2
+    theta <- seq(0, 2*pi, length.out=100)
+    xy <- cbind(cos(theta), sin(theta)) %*% (sqrt(ev$values[1:2]) * t(ev$vectors[,1:2]))
+    for (rr in r) {
+        lines(rr * xy[,1], rr * xy[,2], ...)
+    }
+}
+```
+
+# The multivariate Normal
+
+## ... also known as
+
+multivariate Gaussian
+
+. . .
+
+or **MVN**
+
+------------
+
+If $X$ is random *vector*
+that has a [*multivariate Normal distribution*](https://en.wikipedia.org/wiki/Multivariate_normal_distribution), we say
+$$\begin{aligned}
+   X = (X_1, \ldots, X_k) \sim \MVN(\mu, \Sigma) .
+\end{aligned}$$
+
+The parameters are the *mean vector* $\mu$ and *covariance matrix* $\Sigma$:
+$$\begin{aligned}
+   \E[X_i] = \mu_i
+\end{aligned}$$
+and
+$$\begin{aligned}
+    \cov[X_i, X_j] = \Sigma_{i,j}  .
+\end{aligned}$$
+
+. . .
+
+*Properties:*
+
+1. $X_i \sim \Normal(\mu_i, \sqrt{\Sigma_{i,i}})$ 
+
+2. If $\Sigma_{i,j} = 0$ then $X_i$ and $X_j$ are independent.
+
+3. Level curves of the probability density function
+   are *ellipses*.
+
+## Example: a univariate linear model
+
+Let's say that $X \sim \Normal(0, 1)$ and
+$$\begin{aligned}
+   Y &= \beta X + \epsilon  \\
+   \epsilon &\sim \Normal(0, \sigma) .
+\end{aligned}$$
+
+. . .
+
+Then $Y$ also has a Normal distribution, and
+$$\begin{aligned}
+   \var[X] &= 1, \\
+   \var[Y] &= \beta^2 + \sigma^2 \qquad \text{and} \\
+   \cov[X, Y] &= \beta, 
+\end{aligned}$$
+
+. . .
+
+so
+$$\begin{aligned}
+    (X, Y) \sim \MVN\left(
+        \begin{bmatrix}
+            0 \\ 0
+        \end{bmatrix}
+        \begin{bmatrix}
+           1 & \beta \\ 
+           \beta & \beta^2 + \sigma^2
+        \end{bmatrix}
+    \right) .
+\end{aligned}$$
+
+------------------
+
+Let's have a look:
+```{r sim_mvn, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim}
+nobs <- 100000
+beta <- 0.7
+sigma <- 1
+xy <- data.frame(x = rnorm(nobs, mean=0, sd=1))
+xy$y <- beta * xy$x + rnorm(nobs, mean=0, sd=sigma)
+plot(y ~ x, data=xy, asp=1, pch=20, cex=0.25, col=adjustcolor('black', 0.15))
+covmat <- cbind(c(1, beta), c(beta, beta^2 + sigma^2))
+```
+
+
+------------------
+
+Let's have a look:
+```{r sim_mvn2, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim, echo=8}
+nobs <- 100000
+beta <- 0.7
+sigma <- 1
+xy <- data.frame(x = rnorm(nobs, mean=0, sd=1))
+xy$y <- beta * xy$x + rnorm(nobs, mean=0, sd=sigma)
+plot(y ~ x, data=xy, asp=1, pch=20, cex=0.25, col=adjustcolor('black', 0.15))
+covmat <- cbind(c(1, beta), c(beta, beta^2 + sigma^2))
+draw_ellipse(covmat, r=seq(0,1.5,length.out=5), col='red')
+```
+
+## Exercise:
+
+1. Think of three, correlated variables and decide what their means
+   and covariance matrix, $\Sigma$ should be.
+   (Do this by choosing (a) standard deviations, `sigma`, (b) correlations `C` and using
+   `Sigma <- diag(sigma) %*% C %*% diag(sigma)`.)
+
+2. Use `mvtnorm::rmvnorm( )` to
+    simulate 10,000 random draws from this distribution.
+    This will give you a $10^4 \times 3$ matrix.
+    Make histograms of each variable,
+    and look at a `pairs(X, asp=1)` plot.
+
+
