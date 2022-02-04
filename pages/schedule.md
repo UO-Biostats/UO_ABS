@@ -70,7 +70,7 @@ Week 15 (*2/1*)
     - slides: [the Multivariate Normal](../CLASS_MATERIALS/Lectures/Week_15_Multivariate_normal.slides.html)
     - Code from in-class [demo on correlated Normals](../CLASS_MATERIALS/Demos/Correlated_normals.Rmd)
     - Group presentations
-    - Reading: 
+    - [Homework 14](../CLASS_MATERIALS/Homeworks/HW14.html) *(due 2/11)*
 
 Week 16 (*2/8*)
 
