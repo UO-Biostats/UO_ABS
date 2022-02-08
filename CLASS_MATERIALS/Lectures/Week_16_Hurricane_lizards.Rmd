@@ -103,3 +103,26 @@ with(lizards, table(Sex, Origin, Hurricane))
 ```{r datahead, echo=FALSE}
 head(lizards)
 ```
+
+# Ideas
+
+---
+
+*Which variables do we expect?*
+Anything that lowers the cetner of gravity might be associated. Also, big feet might be important.
+
+2. Look at the distributions, with the pre- and post-hurricane histograms overlaid. Or, boxplots.
+
+3. Look at measurements as a ratio of body length, since bigger bodies = bigger sails. (eg make histograms of this)
+
+4. With  boxplots, we might do t-tests to compare before/after.
+
+
+
+
+
+
+
+
+
+

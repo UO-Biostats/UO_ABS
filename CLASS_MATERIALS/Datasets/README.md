@@ -23,7 +23,7 @@ is another very important skill to practice, but it helps to separate these when
 
 Here are links to data from some studies that other people have done, and also some datasets for teaching.
 
--   [Data Dryad](http://datadryad.org) - data sets from scientific studies.
+-   [Data Dryad](http://datadryad.org), [Pangaea](https://www.pangaea.de/), [KNB](https://knb.ecoinformatics.org/) - repositories for data sets from scientific studies.
 
 -   [Data And Story Library](http://lib.stat.cmu.edu/cgi-bin/dasl.cgi?query=data&submit=Search%21&metaname=swishdefault&sort=swishrank)
 
