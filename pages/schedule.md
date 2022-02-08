@@ -76,7 +76,7 @@ Week 16 (*2/8*)
 
 : Data analysis example
 
-    - Reading: 
+    - slides: [Hurricane Lizards](../CLASS_MATERIALS/Lectures/Week_16_Hurricane_lizards.slides.html)
 
 Week 17 (*2/15*)
 
