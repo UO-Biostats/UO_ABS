@@ -104,25 +104,51 @@ with(lizards, table(Sex, Origin, Hurricane))
 head(lizards)
 ```
 
-# Ideas
+## Steps in data analysis
 
----
+1. Care, or at least think, about the data.
+
+2. Look at the data.
+
+3. Query the data.
+
+4. Check the results.
+
+5. Communicate.
+
+
+
+
+## Ideas
 
 *Which variables do we expect?*
 Anything that lowers the cetner of gravity might be associated. Also, big feet might be important.
 
-2. Look at the distributions, with the pre- and post-hurricane histograms overlaid. Or, boxplots.
+1. Look at the distributions, with the pre- and post-hurricane histograms overlaid. Or, boxplots.
 
-3. Look at measurements as a ratio of body length, since bigger bodies = bigger sails. (eg make histograms of this)
+2. Look at measurements as a ratio of body length, since bigger bodies = bigger sails. (eg make histograms of this)
 
-4. With  boxplots, we might do t-tests to compare before/after.
-
-
+3. With  boxplots, we might do t-tests to compare before/after.
 
 
+## Goals
+
+- describe how traits differ before/after hurricanes
+- account for confounding factor: overall size
+- also possibly account for differences between islands and sexes
+
+. . .
+
+*Exercise:*
+Write a possible conclusion sentence or two
+(imagining what might happen).
+Make sure to commnicate
+(a) the size of the effect we're looking for, in real-world terms;
+(b) the strenth of the statistical evidence; and
+(c) context
+(e.g., how's the size of the hurricane-induced change compare to other differences).
 
 
+# Look at the data
 
-
-
-
+## IN CLASS
