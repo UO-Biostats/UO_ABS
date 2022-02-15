@@ -139,6 +139,10 @@ but we want to make do with *fewer variables* - say, only $k$ of them.
 that best captures variability within the dataset.
 For instance, strongly correlated variables will be combined into one.
 
+. . .
+
+Try it out: [setosa.io/ev/principal-component-analysis/](https://setosa.io/ev/principal-component-analysis/)
+
 
 ## Notation:
 
@@ -450,7 +454,7 @@ Shows the *variance explained by each PC*
 plot(beer_pc)
 ```
 
-## The top four PCs
+## The top four PCs (plot by `biplot( )`)
 
 ```{r plot_prcomp_beer, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
 layout(t(1:2))
@@ -475,7 +479,28 @@ plot(beer_pc$loadings[,1:2], type='n', xlab="PC1 loadings", ylab="PC2 loadings",
 arrows(x0=0, y0=0,
        x1=beer_pc$loadings[,1],
        y1=beer_pc$loadings[,2])
-text(beer_pc$loadings[,1:2], xlab="PC1 loadings", ylab="PC2 loadings",
+text(beer_pc$loadings[,1:2],
+     col='red', cex=2,
+     labels=beer_vars)
+```
+
+
+## 
+
+```{r plot_b2, echo=FALSE, fig.width=4.0*fig.dim, fig.height=1.8*fig.dim}
+layout(t(1:3), widths=c(0.6, 1, 1))
+plot(0, type='n', xlab='', ylab='', xaxt='n', yaxt='n', bty='n')
+legend("topleft", col=beer_cols, legend=names(beer_cols),
+       pch=20, cex=2)
+plot(beer_pc$scores[,3:4], pch=20, cex=3,
+     xlab='PC3', ylab='PC4',
+     col=beer_cols[match(beer$Beer_Type, names(beer_cols))])
+plot(beer_pc$loadings[,3:4], type='n', xlab="PC3 loadings", ylab="PC4 loadings",
+     xlim=1.5 * range(beer_pc$loadings[,3]))
+arrows(x0=0, y0=0,
+       x1=beer_pc$loadings[,3],
+       y1=beer_pc$loadings[,4])
+text(beer_pc$loadings[,3:4],
      col='red', cex=2,
      labels=beer_vars)
 ```

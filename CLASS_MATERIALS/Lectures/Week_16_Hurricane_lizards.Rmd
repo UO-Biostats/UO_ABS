@@ -262,15 +262,28 @@ legend("bottomright", lty=1, col=c("black", "red"), legend=c("Before", "After"))
 
 # Fit some models
 
-## Choose a formula:
+## Today's plan
+
+- Fit a model to only `Femur` and `MeanFingerArea`,
+- check model fit, and
+- summarize results.
+
+. . .
 
 ```
-Femur ~ SVL_cm + Sex + Hurricane + Origin + Sex : Hurricane
+Femur, MeanFingerArea ~ SVL_cm * (Hurricane + Origin)
 ```
-- Should we include a nonlinear relationship with SVL?
-- How about different slopes (i.e., interactions of SVL with other factors)?
-- What about other interactions? 
 
+Later: add `I(SVL_cm^2)`, consider other variables.
 
-##
+-------------
+
+*Goal:*
+
+> Remaining female lizards of average size on Pine Cay had an average finger
+> pad area that was X% larger (95% CI of L-U%) than before the hurricane. This
+> difference of X square centimeters represents roughly Y standard deviations
+> of finger pad area. Similarly, males of average length ... 
+>
+> (same for femur length)
 

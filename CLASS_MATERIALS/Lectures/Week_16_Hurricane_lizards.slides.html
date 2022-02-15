@@ -748,17 +748,25 @@ number of lamellar scales on the forelimb and hind limb toepads.</code></pre>
 <h1>Fit some models</h1>
 
 </section>
-<section id="choose-a-formula" class="slide level2">
-<h2>Choose a formula:</h2>
-<pre><code>Femur ~ SVL_cm + Sex + Hurricane + Origin + Sex : Hurricane</code></pre>
+<section id="todays-plan" class="slide level2">
+<h2>Today’s plan</h2>
 <ul>
-<li>Should we include a nonlinear relationship with SVL?</li>
-<li>How about different slopes (i.e., interactions of SVL with other factors)?</li>
-<li>What about other interactions?</li>
+<li>Fit a model to only <code>Femur</code> and <code>MeanFingerArea</code>,</li>
+<li>check model fit, and</li>
+<li>summarize results.</li>
 </ul>
+<div class="fragment">
+<pre><code>Femur, MeanFingerArea ~ SVL_cm * (Hurricane + Origin)</code></pre>
+<p>Later: add <code>I(SVL_cm^2)</code>, consider other variables.</p>
+</div>
 </section>
-<section id="section-10" class="slide level2">
-<h2></h2>
+<section class="slide level2">
+
+<p><em>Goal:</em></p>
+<blockquote>
+<p>Remaining female lizards of average size on Pine Cay had an average finger pad area that was X% larger (95% CI of L-U%) than before the hurricane. This difference of X square centimeters represents roughly Y standard deviations of finger pad area. Similarly, males of average length …</p>
+<p>(same for femur length)</p>
+</blockquote>
 </section></section>
     </div>
   </div>
