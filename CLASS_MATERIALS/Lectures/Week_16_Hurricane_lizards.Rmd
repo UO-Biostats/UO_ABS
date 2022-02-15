@@ -287,3 +287,143 @@ Later: add `I(SVL_cm^2)`, consider other variables.
 >
 > (same for femur length)
 
+# IN CLASS
+
+## The family?
+```{r resids}
+hist(
+   resid(lm(Femur ~ SVL_cm, data=lizards)),
+   breaks=20
+)
+hist(
+   resid(lm(MeanFingerArea ~ SVL_cm, data=lizards)),
+   breaks=20
+)
+```
+*Note:* there are some outliers, maybe? 
+We can check that later,
+and if so, change the family to "student-t", maybe.
+
+## Check scale for priors
+
+The slope of these lines is about 4 for Femur and less than that for finger area, and the difference between them is about 0.5.
+```{r plitit2, fig.height=1.8*fig.dim, fig.width=2*fig.dim}
+simple_lm <- lm(MeanFingerArea ~ SVL_cm + Hurricane, data=lizards)
+plot(MeanFingerArea ~ SVL_cm, data=lizards, col=ifelse(Hurricane=="Before", "black", "red"), pch=20)
+coefs <- coef(simple_lm)
+abline(coefs["(Intercept)"], coefs["SVL_cm"])
+abline(coefs["(Intercept)"] + coefs["HurricaneAfter"], coefs["SVL_cm"], col='red', pch=20)
+legend("bottomright", lty=1, col=c("black", "red"), legend=c("Before", "After"))
+```
+
+## Fit a model
+
+```{r fitmodel}
+lfit <- 
+    brm(
+        brmsformula(
+     mvbind(Femur, MeanFingerArea) 
+       ~ SVL_cm * (Hurricane + Origin) + I(SVL_cm^2)
+    ) + rescor(TRUE),
+    data=lizards,
+    family=gaussian,
+    prior=set_prior("normal(0, 10)", class="b"),
+    file="femur_finger_fit.rds"
+)
+```
+
+## Check for convergence
+
+```{r summary}
+summary(lfit)
+```
+
+----
+
+fuzzy caterpillars good!
+```{r trace}
+mcmc_trace(lfit)
+```
+
+-----
+
+Hm - negative posterior correlation between slope and intercept
+```{r pairs}
+mcmc_pairs(lfit, regex_pars="Femur.*")
+````
+
+## Look at results
+
+```{r ceffs}
+# conditional_effects(lfit)
+plot(
+  conditional_effects(lfit,
+     effects="SVL_cm:Hurricane",
+     resp="MeanFingerArea",
+     conditions=data.frame(
+         Origin=levels(lizards$Origin),
+         cond__=levels(lizards$Origin)
+     ),
+     plot=FALSE),
+  points=TRUE
+)
+```
+
+---------
+```{r ceffs2}
+# conditional_effects(lfit)
+plot(
+  conditional_effects(lfit,
+     effects="SVL_cm:Hurricane",
+     resp="Femur",
+     conditions=data.frame(
+         Origin=levels(lizards$Origin),
+         cond__=levels(lizards$Origin)
+     ),
+     plot=FALSE),
+  points=TRUE
+)
+```
+
+------
+```{r predict}
+mean_female_length <- with(subset(lizards, Sex=="Female"),
+                           mean(SVL_cm))
+newdata <- data.frame(
+    Origin="Pine Cay",
+    SVL_cm=mean_female_length,
+    Hurricane=levels(lizards$Hurricane))
+)
+
+# TODO: document
+pp <- posterior_epred(lfit, newdata=newdata, resp="MeanFingerArea")
+# posterior distribution of the relative change
+# (ie the change divided by the mean beforehand)
+pp_ratio <- (pp[,2] - pp[,1])/pp[,1]
+
+# TODO: document
+pp_values <- posterior_predict(lfit, newdata=newdata, resp="MeanFingerArea")
+sd_response <- sd(pp_values[,1])
+```
+
+------
+
+Remaining female lizards of average size on Pine Cay had an average finger pad area that was `r round(100 * mean(pp_ratio))`% larger (95% CI of `r `quantile(pp_ratio, probs = 0.025)-`r `quantile(pp_ratio, probs = 0.975)`%) than before the hurricane. This difference of `r mean(pp[,2] - pp[,1])` square centimeters represents roughly three-quarters of a standard deviation of finger pad area. Similarly, males of average length ...
+
+
+# Model fit
+
+---------
+
+No outliers in the residuals:
+we're probably OK with the Normal family.
+```{r pp_check}
+pp_check(lfit, resp="MeanFingerArea", type='scatter')
+
+pp_check(lfit, resp="MeanFingerArea", type='error_hist')
+```
+
+
+
+
+
