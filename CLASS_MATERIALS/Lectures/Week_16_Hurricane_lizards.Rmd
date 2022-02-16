@@ -224,6 +224,7 @@ results[order(results$p),]
 ```
 
 ## Everything is correlated with everything else:
+
 ```{r pairs, echo=FALSE, fig.width=3*fig.dim, fig.height=2.1*fig.dim}
 pairs(lizards[,varnames], pch=20, cex=0.5,
       col=ifelse(lizards$Hurricane == "Before", "black", "red"),
@@ -289,16 +290,11 @@ Later: add `I(SVL_cm^2)`, consider other variables.
 
 # IN CLASS
 
-## The family?
-```{r resids}
-hist(
-   resid(lm(Femur ~ SVL_cm, data=lizards)),
-   breaks=20
-)
-hist(
-   resid(lm(MeanFingerArea ~ SVL_cm, data=lizards)),
-   breaks=20
-)
+## What family should we use?
+```{r resids, fig.width=2.5*fig.dim}
+layout(1:2)
+hist( resid(lm(Femur ~ SVL_cm, data=lizards)), breaks=20 )
+hist( resid(lm(MeanFingerArea ~ SVL_cm, data=lizards)), breaks=20 )
 ```
 *Note:* there are some outliers, maybe? 
 We can check that later,
@@ -307,7 +303,7 @@ and if so, change the family to "student-t", maybe.
 ## Check scale for priors
 
 The slope of these lines is about 4 for Femur and less than that for finger area, and the difference between them is about 0.5.
-```{r plitit2, fig.height=1.8*fig.dim, fig.width=2*fig.dim}
+```{r plitit2, fig.height=1.8*fig.dim, fig.width=2*fig.dim, echo=FALSE}
 simple_lm <- lm(MeanFingerArea ~ SVL_cm + Hurricane, data=lizards)
 plot(MeanFingerArea ~ SVL_cm, data=lizards, col=ifelse(Hurricane=="Before", "black", "red"), pch=20)
 coefs <- coef(simple_lm)
@@ -324,11 +320,11 @@ lfit <-
         brmsformula(
      mvbind(Femur, MeanFingerArea) 
        ~ SVL_cm * (Hurricane + Origin) + I(SVL_cm^2)
-    ) + rescor(TRUE),
+    ) + set_rescor(TRUE),
     data=lizards,
     family=gaussian,
     prior=set_prior("normal(0, 10)", class="b"),
-    file="femur_finger_fit.rds"
+    file="cache/femur_finger_fit.rds"
 )
 ```
 
@@ -348,8 +344,8 @@ mcmc_trace(lfit)
 -----
 
 Hm - negative posterior correlation between slope and intercept
-```{r pairs}
-mcmc_pairs(lfit, regex_pars="Femur.*")
+```{r pairs2, fig.width=3*fig.dim, fig.height=1.8*fig.dim}
+mcmc_pairs(lfit, pars=c("b_Femur_Intercept", "b_Femur_SVL_cm", "b_Femur_HurricaneAfter", "b_Femur_SVL_cm:HurricaneAfter"))
 ````
 
 ## Look at results
@@ -370,6 +366,7 @@ plot(
 ```
 
 ---------
+
 ```{r ceffs2}
 # conditional_effects(lfit)
 plot(
@@ -386,29 +383,51 @@ plot(
 ```
 
 ------
+
+We'd like to know the propoportional increase in finger pad area
+(to say "average finger pad area was X% larger after the hurricane"),
+and to get a credible interval for this (i.e., for the "X% larger" part).
+To do this, we'll use `posterior_epred()`, since this gets
+posterior distributions of *expected values* (given the predictors).
+
 ```{r predict}
 mean_female_length <- with(subset(lizards, Sex=="Female"),
                            mean(SVL_cm))
 newdata <- data.frame(
     Origin="Pine Cay",
     SVL_cm=mean_female_length,
-    Hurricane=levels(lizards$Hurricane))
+    Hurricane=levels(lizards$Hurricane)
 )
 
-# TODO: document
 pp <- posterior_epred(lfit, newdata=newdata, resp="MeanFingerArea")
 # posterior distribution of the relative change
 # (ie the change divided by the mean beforehand)
 pp_ratio <- (pp[,2] - pp[,1])/pp[,1]
+```
 
-# TODO: document
+------------
+
+We also want to know how the mean increase in finger pad area compares
+to between-individual variation, i.e.,
+the standard deviation of finger pad area for lizards
+of the same length and in the same situation.
+We get this using `posterior_predict( )`, since this obtains
+the posterior distribution of the *response*,
+i.e., of actual toe pad areas (not their mean values).
+
+```{r predict2}
 pp_values <- posterior_predict(lfit, newdata=newdata, resp="MeanFingerArea")
 sd_response <- sd(pp_values[,1])
 ```
 
 ------
 
-Remaining female lizards of average size on Pine Cay had an average finger pad area that was `r round(100 * mean(pp_ratio))`% larger (95% CI of `r `quantile(pp_ratio, probs = 0.025)-`r `quantile(pp_ratio, probs = 0.975)`%) than before the hurricane. This difference of `r mean(pp[,2] - pp[,1])` square centimeters represents roughly three-quarters of a standard deviation of finger pad area. Similarly, males of average length ...
+Remaining female lizards of average size on Pine Cay had an average finger pad
+area that was `r round(100 * mean(pp_ratio))`% larger (95% CI of
+`r sprintf("%d - %d", round(100 * quantile(pp_ratio, probs = 0.025)), round(100 * quantile(pp_ratio, probs = 0.975)))`%)
+than before the hurricane. This difference of `r mean(pp[,2] - pp[,1])` square
+centimeters represents roughly three-quarters of a standard deviation of finger
+pad area. Similarly, males of average length ...
 
 
 # Model fit
