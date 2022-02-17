@@ -89,6 +89,7 @@ Week 18 (*2/22*)
 
 : Factor analysis contiued; latent factors, deconvolution for mixtures of expression data; nonnegative matrix factorization
 
+    - slides: [t-SNE](../CLASS_MATERIALS/Lectures/Week_18_tSNE.slides.html)
     - Reading: 
 
 Week 19 (*3/1*)

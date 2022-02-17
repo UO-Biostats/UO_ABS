@@ -180,7 +180,7 @@ $$
 
 This is the *best possible* $k$-dimensional approximation,
 in the least-squares sense,
-so is the MLE for the low-dimesional model with Gaussian noise.
+so is the MLE for the low-dimensional model with Gaussian noise.
 
 ## Also known as
 
