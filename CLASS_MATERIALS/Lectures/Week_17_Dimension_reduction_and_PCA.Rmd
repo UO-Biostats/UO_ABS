@@ -521,12 +521,50 @@ Using this [dataset of chemical concentrations in wine](data/wine.tsv):
 (wine <- read.table("data/wine.tsv", header=TRUE))
 ```
 
+## IN CLASS
+
+```{r pcwine}
+wine_pcs <- princomp(wine[,-1], cor=TRUE)
+pairs(wine_pcs$scores[,1:4],
+      col=wine$Vineyard,
+      pch=20)
+```
+----------
+
+
+```{r biplot}
+biplot(wine_pcs)
+```
+
+---------
+
+```{r loadings}
+wine_pcs$loadings
+```
+
+
 ##
 
 1. Look at the data.
 2. Do PCA, and plot the results colored by vineyard.
 3. What happens if you set `cor=FALSE`?
 4. Which variables most strongly differentiate the three vineyards?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # PCA: Squaring the math and the code:
