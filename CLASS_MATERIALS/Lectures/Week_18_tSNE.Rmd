@@ -102,6 +102,23 @@ and $p_{ii} =  0$.
 This is the probability that point $i$ would pick point $j$ as a neighbor
 if these are chosen according to the Gaussian density centered at $x_i$.
 
+--------------
+
+*Exercise:*
+
+1. Draw 9 points in a 10m x 10m square. Label the points 1 to 9.
+2. Draw another square, and try to draw the points 1 to 9 in *that* one
+   so that the neighborhood of point `1` is similar to the first picture,
+   but the neighborhood of point `9` is not.
+
+*Reminder:* the "neighborhood" is defined by relative distances:
+for point $i$ it is
+$$\begin{aligned}
+    p_{ij} = \frac{ e^{-d(x_i, x_j)^2 / (2\sigma^2)} 
+                  }{ \sum_{\ell \neq i} e^{-d(x_i, x_\ell)^2 / (2 \sigma^2)} } ,
+\end{aligned}$$
+and $p_{ii} =  0$.
+
 
 --------------
 
