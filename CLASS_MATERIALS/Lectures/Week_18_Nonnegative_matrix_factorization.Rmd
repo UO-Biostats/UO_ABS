@@ -356,7 +356,7 @@ cat(nmf3 <- "model {
 3. $y_{i}$ : Total sequencing depth of sample $i$.
 
 $$\begin{aligned}
-    Z_{ij} \approx \sum_k w_{ik} x_{kj} .
+    Z_{ij} \approx y_i \sum_k w_{ik} x_{kj} .
 \end{aligned}$$
 
 4. $\bar x_j$, $\eta_j$ : mean and SD of expression of gene $j$ across *all* cell types;
@@ -525,6 +525,19 @@ Znorm[!is.finite(Znorm)] <- 1
 Znorm <- Znorm / rowMeans(Znorm)
 image(t(Znorm[w_ord,x_ord]), xlab='gene', ylab='sample')
 ```
+
+# Exercise
+
+------
+
+Suppose instead that
+$Z_{ij}$ is number of individuals of plant species $j$
+in a quadrat at spatial location $i$,
+sampled in a transect across an environmental transition
+(e.g., up the Cascades).
+
+Applying the same method, what are $x_{ik}$ and $w_{kj}$?
+
 
 # Fit the model
 
