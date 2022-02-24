@@ -92,11 +92,11 @@ Week 18 (*2/22*)
 
     - slides: [On ordination](../CLASS_MATERIALS/Lectures/Week_17_On_ordination.slides.html)
     - slides: [t-SNE](../CLASS_MATERIALS/Lectures/Week_18_tSNE.slides.html)
-    - Reading: 
+    - slides: [Deconvolution and NMF](../CLASS_MATERIALS/Lectures/Week_18_Nonnegative_matrix_factorization.slides.html)
 
 Week 19 (*3/1*)
 
-: Deconvolution continued; introduction to spatial statistics and spatial autocorrelation.
+: Introduction to spatial statistics and spatial autocorrelation; kernel density estimation.
 
     - Reading: 
 
