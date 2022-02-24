@@ -219,6 +219,35 @@ model {
 4. Plot the result (the pairwise plots, or in 3D).
 5. Do the same for $\alpha = (0.2, 0.1, 0.03)$.
 
+## IN CLASS
+
+```{r in_class}
+# 1. Simulate 10,000 samples from the Dirichlet(20, 10, 3)
+#   distribution. (This should be a 10,000 x 3 matrix.)
+
+alpha <- c(20, 10, 3)
+P <- matrix(NA, nrow=10000, ncol=length(alpha))
+for (i in 1:nrow(P)) {
+    X <- rgamma(3, shape=alpha)
+    P[i,] <- X / sum(X)
+}
+    
+# Confirm that rows sum to 1.
+
+stopifnot(all(
+    abs(rowSums(P) - 1) < 1e-15
+))
+
+# Confirm that columns have the correct means.
+
+true_means <- alpha / sum(alpha)
+rbind(true_means, colMeans(P))
+
+# Plot the result (the pairwise plots, or in 3D).
+
+pairs(P, pch=20, cex=0.25, col=adjustcolor("black", 0.1))
+```
+
 
 # Back to expression space
 
@@ -681,8 +710,9 @@ library(RcppML)
 nmfZ <- nmf(Z, k=5)
 ```
 
-## It works!
+## 
 
+It works just as well - maybe a bit better?
 ```{r results}
 cor(nmfZ$w, w)
 ```
