@@ -14,6 +14,7 @@ library(matrixStats)
 library(brms)
 library(bayesplot)
 options(mc.cores = parallel::detectCores())
+options(warnPartialMatchDollar = FALSE)
 ```
 
 
@@ -39,13 +40,13 @@ truth$covmat <- (truth$nugget * diag(N)
 xy$z <- as.vector(rmvnorm(1, mean=rep(truth$mu,N), sigma=truth$covmat))
 ```
 
-```{r show_study, echo=FALSE}
+```{r show_study, echo=FALSE, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
 layout(t(1:2))
-plot(xy$x, xy$y, xlab='eastings', ylab='northings', pch=21,
+plot(xy$x, xy$y, xlab='eastings', ylab='northings', pch=21, asp=1,
      cex=xy$z/4,
      bg=colorRampPalette(c('blue', 'red'))(10)[cut(xy$z, breaks=10)],
      main='size, color = abundance', asp=1)
-plot(dxy[ut], abs(xy$z[row(dxy)[ut]] - xy$z[col(dxy)[ut]]),
+plot(dxy[ut], abs(xy$z[row(dxy)[ut]] - xy$z[col(dxy)[ut]]), asp=1,
      pch=20, cex=0.5,
      xlab='distance apart',
      ylab='|difference in abundance|')
@@ -104,6 +105,11 @@ $$\begin{aligned}
 
 ![cov_exp_quad() documentation](images/cov_exp_quad.png)
 
+## In brms: `~ gp( )`
+
+[![brms gp documentation](images/brms_gp.png)](https://paul-buerkner.github.io/brms/reference/gp.html)
+
+
 ------------
 
 Here's an `R` function that takes a set of locations (`xy`),
@@ -124,64 +130,14 @@ and plot them, in space. Pick parameters so you can tell they are autocorrelated
 
 . . .
 
-*to color points by a continuous value:*
-```
-     colorRampPalette(c('blue', 'red'))(24)[cut(xy$z, breaks=24)]
-```
-
-## Simulation
-
-```{r sim_sp_pts}
-library(mvtnorm)
-N <- 100
-# spatial extent of order 1
-xy <- data.frame(y=runif(N),
-                 x=rnorm(N))
-rho <- .25
-alpha <- 1.0
-# compute covariance matrix
-K <- cov_exp_quad(xy, alpha, rho)
-# simulate z's
-xy$z <- as.vector(rmvnorm(1, mean=rep(0,N),
-                          sigma=K))
+*Hint:* `library(mvtnorm)` and
+```r
+    # to color points by a continuous value:
+    colorRampPalette(c('blue', 'red'))(24)[cut(xy$z, breaks=24)]
 ```
 
-##
 
-```{r sim_sp_plot1}
-plot(xy$x, xy$y, xlab='x spatial coord', 
-     ylab='y spatial coord', pch=20, asp=1,
-     cex=as.numeric(cut(xy$z, breaks=10))/2,
-     col=colorRampPalette(c('blue', 'red'))(24)[cut(xy$z, breaks=24)])
-```
-
-## Simulation number 2
-
-```{r sim_sp_pts2, cache=TRUE}
-library(mvtnorm)
-N <- 1000
-# spatial extent of order 1
-xy <- data.frame(x=runif(N),
-                 y=rnorm(N))
-rho <- .25
-alpha <- 1.0
-# compute covariance matrix
-K <- cov_exp_quad(xy, alpha, rho)
-# simulate z's
-xy$z <- as.vector(rmvnorm(1, mean=rep(0,N),
-                          sigma=K))
-```
-
--------------
-
-```{r plot_pts2, cache=TRUE, dependson="sim_sp_pts2"}
-plot(xy$y, xy$x, xlab='y spatial coord', 
-     ylab='x spatial coord', pch=20, asp=1,
-     cex=as.numeric(cut(xy$z, breaks=10))/2,
-     col=colorRampPalette(c('blue', 'red'))(24)[cut(xy$z, breaks=24)])
-```
-
-# Back to the data
+# Fitting a model
 
 ## Goals
 
@@ -192,12 +148,7 @@ plot(xy$y, xy$x, xlab='y spatial coord',
 
 2. (predictive) What are the likely (range of) abundances at new locations?
 
-    $\Rightarrow$ Add unobserved abundances as *parameters*.
-
-##
-
-`gp( )`
-
+    $\Rightarrow$ *Predict* at new locations.
 
 
 
@@ -205,7 +156,6 @@ plot(xy$y, xy$x, xlab='y spatial coord',
 
 
 ```{r sim_data, cache=TRUE}
-library(mvtnorm)
 N <- 20
 xy <- data.frame(x=runif(N), y=runif(N))
 dxy <- as.matrix(dist(xy))
@@ -217,6 +167,13 @@ truth <- list(rho=.6,
 truth$covmat <- (truth$delta * diag(N) 
                  + truth$alpha^2 * exp(-(dxy/truth$rho)^2))
 xy$z <- as.vector(rmvnorm(1, mean=rep(truth$mu,N), sigma=truth$covmat))
+```
+
+## Pick priors?
+
+Default looks okay:
+```{r the_params, warning=FALSE}
+get_prior(z ~ gp(x, y), data=xy)
 ```
 
 ## Fit the model
@@ -249,28 +206,44 @@ sp_fit <- brm(
     z ~ gp(x, y),
     data=xy,
     file="cache/sp_fit2.rds",
-    control=list(adapt_delta=0.9)
+    control=list(adapt_delta=0.95)
 )
 ```
 
 
+-----------
+
+```{r show_sp_fit}
+sp_fit
+```
+
 ## Does it work?
 
-```{r show_sp_results}
-cbind(truth=truth[c("alpha", "rho", "delta", "mu")],
-      summary(sp_fit, pars=c("alpha", "rho", "delta", "mu"))$summary)
+```{r show_sp_results, warning=FALSE, echo=FALSE, message=FALSE, error=FALSE}
+sp_sum <- summary(sp_fit)
+out <- as.data.frame(cbind(truth=truth[c("alpha", "rho", "delta", "mu")]))
+for (vn in c("Estimate", "l-95% CI", "u-95% CI")) {
+    out[[vn]] <- 
+      c(
+           alpha=sp_sum$gp["sdgp(gpxy)", vn],
+           rho=sp_sum$gp["lscale(gpxy)", vn],
+           delta=sp_sum$spec_pars["sigma", vn],
+           mu=sp_sum$fixed["Intercept", vn]
+      )
+}
+out
 ```
 
 ----------------
 
 
-```{r plot_pts_interp, cache=TRUE, dependson="sim_sp_pts2", echo=FALSE, fig.height=2*fig.dim}
+```{r plot_pts_interp, cache=TRUE, dependson="run_new_sp2", echo=FALSE, fig.height=2*fig.dim}
 new_xy = data.frame(x = runif(10), y=runif(10))
 new_z <- predict(sp_fit, newdata=new_xy)
-plot(c(xy$x,new_xy[,1]), c(xy$y,new_xy[,2]), xlab='x spatial coord', 
+plot(c(xy$x, new_xy[,1]), c(xy$y, new_xy[,2]), xlab='x spatial coord', 
      ylab='y spatial coord', pch=20, 
-     cex=as.numeric(cut(c(xy$z,colMeans(new_z)), breaks=0:10)),
-     col=colorRampPalette(c('blue', 'red'))(11)[cut(c(xy$z,colMeans(new_z)), breaks=0:10)])
+     cex=as.numeric(cut(c(xy$z,new_z[,"Estimate"]), breaks=0:10)),
+     col=colorRampPalette(c('blue', 'red'))(11)[cut(c(xy$z,new_z[,"Estimate"]), breaks=0:10)])
 points(new_xy[,1], new_xy[,2], cex=8)
 legend("topright", pch=1, pt.cex=8,
        legend="interpolated points")
@@ -281,36 +254,31 @@ legend("topright", pch=1, pt.cex=8,
 
 1. (descriptive) What spatial scale does abundance vary over?
 
-    Values are correlated over distances of order $\rho=`r mean(extract(sp_fit,pars="rho")$rho)`$ units of distance.
+    Values are correlated over distances of order
+    $\rho=`r round(sp_sum$gp["sdgp(gpxy)","Estimate"],2)`$
+    units of distance
+    (95% CI of `r round(sp_sum$gp["sdgp(gpxy)","u-95% CI"],2)`
+    to `r round(sp_sum$gp["sdgp(gpxy)","u-95% CI"], 2)`).
 
 2. (predictive) What are the likely (range of) abundances at new locations?
 
     These are
 ```{r new_z_summary, echo=FALSE}
-cbind(new_xy, rstan::summary(sp_fit, pars="new_z")$summary[,c(1,3)])
+cbind(new_xy, new_z)
 ```
 
 ## Interpolating to a grid
 
 
-```{r ineterp, cache=TRUE, dependson=c("new_spstan","sim_data")}
+```{r ineterp, cache=TRUE, dependson="run_new_sp2"}
 grid_xy <- expand.grid(x=seq(0,1,length.out=11), y=seq(0,1,length.out=11))
-grid_data <- list(N=nrow(xy),
-                old_xy=cbind(xy$x, xy$y),
-                old_z=xy$z,
-                n=nrow(grid_xy),
-                new_xy=as.matrix(grid_xy))
-
-(grid_time <- system.time(
-    grid_fit <- sampling(new_sp, data=grid_data,
-                         iter=1000, control=list(adapt_delta=0.95))))
+grid_pred <- predict(sp_fit, newdata=grid_xy)
 ```
 
 ---------
 
 ```{r plot_interp, fig.width=2*fig.dim, fig.height=2*fig.dim, echo=FALSE}
-# grid_z <- grid_fit$par[grepl("new_z", names(grid_fit$par))]
-grid_z <- colMeans(extract(grid_fit)$new_z)
+grid_z <- grid_pred[,"Estimate"]
 plot(c(xy$x,grid_xy[,1]), c(xy$y,grid_xy[,2]), xlab='x spatial coord', 
      ylab='y spatial coord', pch=20, asp=1,
      cex=as.numeric(cut(c(xy$z,grid_z), breaks=0:10)),

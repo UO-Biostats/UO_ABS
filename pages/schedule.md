@@ -98,6 +98,8 @@ Week 19 (*3/1*)
 
 : Introduction to spatial statistics and spatial autocorrelation; kernel density estimation.
 
+    - slides: [Making maps]((../CLASS_MATERIALS/Lectures/Week_19_Biketown_maps.slides.html)
+    - slides: [Spatial autocorrelation]((../CLASS_MATERIALS/Lectures/Week_19_Spatial_autocorrelation.slides.html)
     - Reading: 
 
 Week 20 (*3/8*)
