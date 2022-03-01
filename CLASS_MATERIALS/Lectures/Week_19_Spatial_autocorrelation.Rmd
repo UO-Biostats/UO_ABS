@@ -42,11 +42,11 @@ xy$z <- as.vector(rmvnorm(1, mean=rep(truth$mu,N), sigma=truth$covmat))
 
 ```{r show_study, echo=FALSE, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim}
 layout(t(1:2))
-plot(xy$x, xy$y, xlab='eastings', ylab='northings', pch=21, asp=1,
+plot(xy$x, xy$y, xlab='eastings', ylab='northings', pch=21,
      cex=xy$z/4,
      bg=colorRampPalette(c('blue', 'red'))(10)[cut(xy$z, breaks=10)],
      main='size, color = abundance', asp=1)
-plot(dxy[ut], abs(xy$z[row(dxy)[ut]] - xy$z[col(dxy)[ut]]), asp=1,
+plot(dxy[ut], abs(xy$z[row(dxy)[ut]] - xy$z[col(dxy)[ut]]),
      pch=20, cex=0.5,
      xlab='distance apart',
      ylab='|difference in abundance|')
