@@ -93,6 +93,7 @@ Week 18 (*2/22*)
     - slides: [On ordination](../CLASS_MATERIALS/Lectures/Week_17_On_ordination.slides.html)
     - slides: [t-SNE](../CLASS_MATERIALS/Lectures/Week_18_tSNE.slides.html)
     - slides: [Deconvolution and NMF](../CLASS_MATERIALS/Lectures/Week_18_Nonnegative_matrix_factorization.slides.html)
+    - [Homework 17](../CLASS_MATERIALS/Homeworks/HW17.html) *(due 3/8)*
 
 Week 19 (*3/1*)
 
@@ -100,7 +101,7 @@ Week 19 (*3/1*)
 
     - slides: [Making maps](../CLASS_MATERIALS/Lectures/Week_19_Biketown_maps.slides.html)
     - slides: [Spatial autocorrelation](../CLASS_MATERIALS/Lectures/Week_19_Spatial_autocorrelation.slides.html)
-    - Reading: 
+    - [Homework 18](../CLASS_MATERIALS/Homeworks/HW18.html) *(due 3/15)*
 
 Week 20 (*3/8*)
 
