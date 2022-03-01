@@ -94,7 +94,7 @@ Visualize:
 
 ##
 
-See [this tutorial](https://mgimond.github.io/Spatial/app1-1.html) by Manual Gimond.
+See [this tutorial](https://mgimond.github.io/Spatial/index.html) by Manual Gimond.
 
 ```{r spstuff}
 library(rgdal)
@@ -171,7 +171,7 @@ bt_start <- SpatialPointsDataFrame( # make a legit 'spatial' object
 
 ##
 
-```{r setup_map}
+```{r setup_map, cache=TRUE, echo=-1}
 library(sp)
 setup_map <- function (..., add=FALSE) {
     plot(bigstreets, col=grey(0.75), add=add, ...)
@@ -183,9 +183,24 @@ setup_map <- function (..., add=FALSE) {
 
 ##
 
-```{r plot_pdx, cache=TRUE, dependson="load_maps", echo=-1}
-library(sp)
+```{r plot_pdx, cache=TRUE, dependson=c("load_maps", "setup_map"), echo=-1}
+setup_map <- function (..., add=FALSE) {
+    sp::plot(bigstreets, col=grey(0.75), add=add, ...)
+    lines(freeways, col=adjustcolor('brown', 0.25), lwd=2)
+    sp::plot(river, col=adjustcolor('blue', 0.25), add=TRUE)
+    lines(bikepaths, col=adjustcolor(grey(0.25), 0.5))
+}
 layout(t(1:2))
 setup_map(main='starts'); points(bt_start, pch=20, cex=0.5, col='red')
 setup_map(main='ends'); points(bt_end, pch=20, cex=0.5, col='blue')
 ```
+
+# More resources:
+
+##
+
+- CRAN task view: [analysis of spatial data](https://cran.r-project.org/web/views/Spatial.html)
+
+- [Geocomputation with R](https://geocompr.robinlovelace.net/index.html), by Robin Lovelace
+
+- [Intro to GIS and Spatial Analysis](https://mgimond.github.io/Spatial/index.html), by Manual Gimond.
