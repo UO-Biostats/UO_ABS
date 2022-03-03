@@ -83,6 +83,7 @@ If you are looking for more reference or reading material, these are also good:
 
 ### General resources
 
+- [Hands-On Programming with R](https://rstudio-education.github.io/hopr/index.html), by Garrett Grolemund
 - [linuxcommand.org](http://linuxcommand.org/) and [bashguide](http://mywiki.wooledge.org/BashGuide)
 - [Software Carpentry](http://software-carpentry.org/lessons/)
 - Reproducible Research by Karl Broman:

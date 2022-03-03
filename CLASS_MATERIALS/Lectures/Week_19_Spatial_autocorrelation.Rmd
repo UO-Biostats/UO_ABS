@@ -136,6 +136,33 @@ and plot them, in space. Pick parameters so you can tell they are autocorrelated
     colorRampPalette(c('blue', 'red'))(24)[cut(xy$z, breaks=24)]
 ```
 
+## IN CLASS
+
+Let's say we're doing yearly snowfall
+across the Oregon cascades
+(and, never mind the negative snowfalls):
+```{r inclass}
+n <- 200
+xyz <- data.frame(
+    x = runif(n, 0, 1000), # in km
+    y = rnorm(n, sd=100)  # in km
+)
+
+# snowfall is in inches
+sigma <- cov_exp_quad(xyz[,c("x","y")], alpha=100, rho=100)
+
+xyz$z <- as.vector(rmvnorm(1, mean=rep(150, n), sigma=sigma))
+plot(xyz$x, xyz$y, asp=1,
+     cex=abs(xyz$z/100), pch=20,
+     col=colorRampPalette(c('red', 'blue'))(24)[cut(xyz$z, breaks=24)]
+)
+
+```
+
+
+
+
+
 
 # Fitting a model
 
