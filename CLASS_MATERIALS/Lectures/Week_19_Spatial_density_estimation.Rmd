@@ -121,18 +121,42 @@ $$
 2. The **bandwidth**, $\sigma$.
 
 
-## Try it out
+## Try it out (in one dimension)
 
 1. Simulate 200 spatial locations with a density having two "bumps".
    Plot these points.
     (`rnorm(n, mean=-3), rnorm(n, mean=+3)`)
 
-2. Make a $20 \times 20$ grid of "reference" locations.
-    (`expand.grid( )`)
+2. Make 20 "reference" locations.
 
 3. Compute the kernel density estimate for each reference location,
    with $\sigma$ chosen appropriately, and plot it.
    (`dnorm( )`)
+   
+   
+## IN CLASS
+   
+```{r inclass}
+n <- 100
+x <- c(
+       rnorm(n, mean=-3), rnorm(n, mean=+3)
+)
+z <- seq(-8, 8, length.out=20)
+
+plot(x, dnorm(z[1] - x, sd=0.1))
+
+out <- rep(NA, length(z))
+for (k in seq_along(z)) {
+    out[k] <- sum(dnorm(z[k] - x, sd=0.5))
+}
+
+plot(z, out, type='l', col='red')
+rug(x)
+```
+   
+   
+   
+   
 
 
 # Bike trip density estimation

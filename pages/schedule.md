@@ -108,6 +108,7 @@ Week 20 (*3/8*)
 
 : Spatial statistics: kernel density estimation and interpolation.
 
+    - slides: [Random forests](../CLASS_MATERIALS/Lectures/Week_20_Random_forests.slides.html)
     - Reading: 
 
 

@@ -204,3 +204,7 @@ setup_map(main='ends'); points(bt_end, pch=20, cex=0.5, col='blue')
 - [Geocomputation with R](https://geocompr.robinlovelace.net/index.html), by Robin Lovelace
 
 - [Intro to GIS and Spatial Analysis](https://mgimond.github.io/Spatial/index.html), by Manual Gimond.
+
+- [GIS stackexchange](https://gis.stackexchange.com/)
+
+- [r-sig-geo](https://stat.ethz.ch/mailman/listinfo/r-sig-geo)

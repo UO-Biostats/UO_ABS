@@ -1,0 +1,243 @@
+---
+title: "Random forests"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 5
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+```
+
+# The "two cultures"
+
+##
+
+![the two towers, by JRR Tolkein](images/two_towers.jpg)
+
+## 
+
+doi: [10.1214/ss/1009213726](https://dx.doi.org/10.1214/ss/1009213726)
+
+![the two cultures, by Leo Breiman](images/two-cultures.png)
+
+##
+
+Today: [link](https://link.springer.com/article/10.1023/A:1010933404324)
+
+![random forests, by Leo Breiman](images/random-forests-paper.png)
+
+. . .
+
+Thursday: discussion of "the two cultures" and review.
+
+
+# Exercise
+
+## 
+
+In an *experiment*, we usually go to great lengths
+to measure the effect of *just one thing* on the respose.
+
+. . .
+
+Out in the wild, we can't always do that.
+
+
+## Example: house prices
+
+*Easy:* predict house prices
+in South Eugene
+using square footage, elevation, lot size, distance to transit,
+latitude, longitude.
+
+. . .
+
+*Hard:* predict building prices
+in Oregon
+using square footage, elevation, lot size, distance to transit,
+latitude, longitude.
+
+
+## Exercise
+
+Think of an example of something that can be predicted well,
+but *not* by a linear model,
+and roughly sketch how to predict it.
+
+(The relationship between the response and the predictors
+should often be nonlinear,
+and depend a lot on the values of other predictors.)
+
+
+# Random forests
+
+## 
+
+How do we predict in highly nonlinear situations
+with a great many explanatory variables?
+
+
+## Use a decision tree?
+
+1. Split the data in two, optimally, according to the value
+   of some variable.
+
+2. Predict the value on each half.
+
+3. If good enough, stop. Otherwise, repeat on each subset.
+
+
+------------
+
+Benefits:
+
+- easy to explain
+
+- easy to visualize
+
+Problems:
+
+- seem arbitrary
+
+- prone to overfitting
+
+- high variance
+
+
+## Use lots of decision trees?
+
+*Potential solution:* "bagging".
+
+. . .
+
+1. Take lots of *bootstrap* subsamples from the data.
+
+2. Build a decision tree on *each one*.
+
+3. *Average* their predictions.
+
+
+-----------
+
+This works pretty well.
+
+*Problem:* with strong predictors,
+most trees look the same.
+
+. . .
+
+*Solution:* don't use all the data.
+
+
+## Random forests
+
+1. Take lots of *bootstrap* subsamples from the data.
+
+2. Build a decision tree on each,
+   at each split of each tree
+   using only a *random subset* of the variables.
+
+3. *Average* their predictions.
+
+
+# Let's try it out
+
+## Data:
+
+```{r bikeshare}
+library(ISLR2)
+head(Bikeshare)
+```
+
+----------
+
+```
+> ?Bikeshare
+
+Bikeshare                package:ISLR2                 R Documentation
+
+Bike sharing data
+
+Description:
+
+     This data set contains the hourly and daily count of rental bikes
+     between years 2011 and 2012 in Capital bikeshare system, along
+     with weather and seasonal information.
+
+Usage:
+
+     Bikeshare
+     
+Format:
+
+     A data frame with 8645 observations on a number of variables.
+
+     ‘season’ Season of the year, coded as Winter=1, Spring=2,
+          Summer=3, Fall=4.
+
+     ‘mnth’ Month of the year, coded as a factor.
+
+     ‘day’ Day of the year, from 1 to 365
+
+     ‘hr’ Hour of the day, coded as a factor from 0 to 23.
+
+     ‘holiday’ Is it a holiday? Yes=1, No=0.
+
+     ‘weekday’ Day of the week, coded from 0 to 6, where Sunday=0,
+          Monday=1, Tuesday=2, etc.
+
+     ‘workingday’ Is it a work day? Yes=1, No=0.
+
+     ‘weathersit’ Weather, coded as a factor.
+
+     ‘temp’ Normalized temperature in Celsius. The values are derived
+          via (t-t_min)/(t_max-t_min), t_min=-8, t_max=+39.
+
+     ‘atemp’ Normalized feeling temperature in Celsius. The values are
+          derived via (t-t_min)/(t_max-t_min), t_min=-16, t_max=+50.
+
+     ‘hum’ Normalized humidity. The values are divided to 100 (max).
+
+     ‘windspeed’ Normalized wind speed. The values are divided by 67
+          (max).
+
+     ‘casual’ Number of casual bikers.
+
+     ‘registered’ Number of registered bikers.
+
+     ‘bikers’ Total number of bikers.
+
+Source:
+
+     The UCI Machine Learning Repository <URL:
+     https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset>
+
+References:
+
+     James, G., Witten, D., Hastie, T., and Tibshirani, R. (2021) _An
+     Introduction to Statistical Learning with applications in R,
+     Second Edition_, <URL: https://www.statlearning.com>,
+     Springer-Verlag, New York
+
+Examples:
+
+     lm(bikers~hr, data=Bikeshare)
+
+```
+
+
+
+# More reading
+
+##
+
+- [An Introduction to Statistical Learning](https://www.statlearning.com/),
+  by James, Witten, Hastie, and Tibshirani
+
+
+
