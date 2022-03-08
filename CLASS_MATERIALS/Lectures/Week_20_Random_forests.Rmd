@@ -12,24 +12,28 @@ knitr::opts_chunk$set(fig.width=2*fig.dim,
 set.seed(23)
 library(matrixStats)
 ```
+```{r more_setup, include=FALSE}
+library(ISLR2)
+library(randomForest)
+```
 
 # The "two cultures"
 
 ##
 
-![the two towers, by JRR Tolkein](images/two_towers.jpg)
+![the two towers, by JRR Tolkein](images/two_towers.jpg){width=40%}
 
 ## 
 
 doi: [10.1214/ss/1009213726](https://dx.doi.org/10.1214/ss/1009213726)
 
-![the two cultures, by Leo Breiman](images/two-cultures.png)
+![the two cultures, by Leo Breiman](images/two-cultures.png){width=70%}
 
 ##
 
 Today: [link](https://link.springer.com/article/10.1023/A:1010933404324)
 
-![random forests, by Leo Breiman](images/random-forests-paper.png)
+![random forests, by Leo Breiman](images/random-forests-paper.png){width=60%}
 
 . . .
 
@@ -62,16 +66,27 @@ in Oregon
 using square footage, elevation, lot size, distance to transit,
 latitude, longitude.
 
+. . .
+
+*Why is it hard?*
+The effect of everything depends on everything else,
+and there's lots of nonlinearities.
+
 
 ## Exercise
 
-Think of an example of something that can be predicted well,
-but *not* by a linear model,
-and roughly sketch how to predict it.
+Think of an example
+where the effect of one variable on the response
+*changes direction*
+depending on the value of another variable.
+Sketch the relationship.
 
-(The relationship between the response and the predictors
-should often be nonlinear,
-and depend a lot on the values of other predictors.)
+. . .
+
+*Example:*
+temperature with cloud cover and day of the year:
+it's colder when it's cloudy in the summer,
+but warmer when it's cloudy in the winter.
 
 
 # Random forests
@@ -94,6 +109,25 @@ with a great many explanatory variables?
 
 ------------
 
+![](images/decision_tree1.png){width=100%}
+
+
+------------
+
+![](images/decision_tree2.png){width=100%}
+
+
+------------
+
+![](images/decision_tree3.png){width=100%}
+
+
+------------
+
+![](images/decision_tree4.png){width=100%}
+
+------------
+
 Benefits:
 
 - easy to explain
@@ -102,7 +136,7 @@ Benefits:
 
 Problems:
 
-- seem arbitrary
+- kinda arbitrary?
 
 - prone to overfitting
 
@@ -230,6 +264,16 @@ Examples:
 
 ```
 
+## The plan
+
+1. Install the `ISLR2` and `randomForest` packages.
+2. Use `randomForest( )` to predict `bikers` using the other variables
+   *except* `casual` and `registered`,
+   and keeping 20% of the data aside for testing.
+3. Compare predictions to `lm( )`.
+4. Look at conditional effects and variable importance in the random forest.
+5. Does `glm( )` do better?
+
 
 
 # More reading
@@ -239,5 +283,6 @@ Examples:
 - [An Introduction to Statistical Learning](https://www.statlearning.com/),
   by James, Witten, Hastie, and Tibshirani
 
-
+- [The two cultures (with comments)](https://dx.doi.org/10.1214/ss/1009213726),
+  by Leo Breiman
 
