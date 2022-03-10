@@ -275,6 +275,116 @@ Examples:
 5. Does `glm( )` do better?
 
 
+## IN CLASS
+
+```{r fit_rf}
+# TODO: subsample entire days? weeks?
+train <-sample( rep(c(TRUE, FALSE), c(0.8, 0.2) * nrow(Bikeshare)) )
+
+rf <- randomForest(bikers ~ . - casual - registered,
+                   data=Bikeshare,
+                   subset=train)
+bike_lm <- lm(bikers ~ . - casual - registered,
+              data=Bikeshare,
+              subset=train)
+
+ut <- (Bikeshare$weathersit != "heavy rain/snow")
+pred_rf <- predict(rf, newdata=Bikeshare[ut,])
+pred_lm <- predict(bike_lm, newdata=Bikeshare[ut,])
+```
+
+-----------------------
+
+```{r plot_rf, echo=FALSE}
+layout(t(1:2))
+plot(Bikeshare$bikers[ut], pred_rf,
+     xlab="observed number of bikers",
+     ylab="predicted number of bikers",
+     main="random forests",
+     pch=20, cex=0.5,
+     col=adjustcolor(ifelse(train[ut], "black", "red"), 0.2)
+)
+abline(0, 1, col='red')
+
+plot(Bikeshare$bikers[ut], pred_lm,
+     xlab="observed number of bikers",
+     ylab="predicted number of bikers",
+     main="lm()",
+     pch=20, cex=0.5, 
+     col=adjustcolor(ifelse(train[ut], "black", "red"), 0.2)
+)
+abline(0, 1, col='red')
+```
+
+---------------
+
+```{r lookat_rf}
+varImpPlot(rf)
+```
+
+----------------
+
+```{r look2}
+partialPlot(rf, pred.data=Bikeshare, x.var = "hr")
+```
+
+------------------
+
+Let's compare bicycling times by month:
+```{r look3}
+layout(1:2)
+partialPlot(rf, pred.data=subset(Bikeshare, mnth=="Dec"), x.var = "hr", main="December")
+partialPlot(rf, pred.data=subset(Bikeshare, mnth=="July"), x.var = "hr", main="July")
+```
+
+------------------
+
+And, between workdays and non-workdays:
+```{r look4}
+layout(1:2)
+partialPlot(rf, pred.data=subset(Bikeshare, workingday==0), x.var = "hr", main="non-workdays")
+partialPlot(rf, pred.data=subset(Bikeshare, workingday==1), x.var = "hr", main="workdays")
+```
+
+
+------
+
+Finally, compare to a quasiPoisson GLM:
+```{r glm}
+bike_glm <- glm(bikers ~ . - casual - registered,
+              data=Bikeshare,
+              family="quasipoisson",
+              subset=train)
+
+pred_glm <- predict(bike_glm, newdata=Bikeshare[ut,], type="response")
+```
+
+-------------------
+
+```{r plot2, echo=FALSE}
+layout(t(1:2))
+plot(Bikeshare$bikers[ut], pred_rf,
+     xlab="observed number of bikers",
+     ylab="predicted number of bikers",
+     main="random forests",
+     pch=20, cex=0.5,
+     col=adjustcolor(ifelse(train[ut], "black", "red"), 0.2)
+)
+abline(0, 1, col='red')
+
+plot(Bikeshare$bikers[ut], pred_glm,
+     xlab="observed number of bikers",
+     ylab="predicted number of bikers",
+     main="glm(quasipoisson)",
+     pch=20, cex=0.5, 
+     col=adjustcolor(ifelse(train[ut], "black", "red"), 0.2)
+)
+abline(0, 1, col='red')
+```
+
+
+
+
 
 # More reading
 
