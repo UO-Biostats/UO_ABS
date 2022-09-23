@@ -29,6 +29,7 @@ Week 1 (*9/27*)
     - Slides: [Hypothesis testing and p-values](../CLASS_MATERIALS/Lectures/Week_01_p_values.slides.html)
     - Slides: [The t distribution](../CLASS_MATERIALS/Lectures/Week_01_t_distribution.slides.html)
     - Slides: [The central limit theorem](../CLASS_MATERIALS/Lectures/Week_01_central_limit_theorem.slides.html)
+    - [Homework 1](../CLASS_MATERIALS/Homeworks/HW01.html) *(due 10/6)*
 
 
 Week 2 (*10/4*)
