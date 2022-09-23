@@ -27,8 +27,7 @@ options(warnPartialMatchDollar=FALSE) # hush, brms
 ##
 
 **Data from:**
-Donihue, C.M., Herrel, A., Fabre, AC. et al. [*Hurricane-induced selection on the morphology of an island lizard.*](https://doi.org/10.1038/s41586-018-0352-3
-) Nature 560, 88–91 (2018).
+Donihue, C.M., Herrel, A., Fabre, AC. et al. [*Hurricane-induced selection on the morphology of an island lizard.*](https://doi.org/10.1038/s41586-018-0352-3) Nature 560, 88–91 (2018).
 
 ```
 Anolis scriptus morphology and performance from before and after hurricanes
