@@ -1,0 +1,154 @@
+---
+title: "The Gaussian distribution and the Central Limit Theorem"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+```
+
+
+# Stochastic minute: the Central Limit Theorem and the Normal distribution
+
+## The CLT
+
+
+The [Central Limit Theorem](https://en.wikipedia.org/wiki/Central_limit_theorem)
+says, roughly, that net effect of the *sum* of a bunch of small, *independent* random things
+can be well-approximated by a [Gaussian distribution](https://en.wikipedia.org/wiki/Normal_distribution),
+almost regardless of the details.
+
+
+. . .
+
+For instance: say $X_1, X_2, \ldots, X_n$ are independent, random draws
+with mean $\mu$ and standard deviation $\sigma$.
+
+Then, the sample mean is Gaussian, centered on the true mean:
+$$\begin{aligned}
+    \bar x = \frac{1}{n}\sum_{i=1}^n X_i \approx \Normal\left(\mu, \frac{\sigma}{\sqrt{n}}\right) .
+\end{aligned}$$
+
+
+## The Gaussian distribution
+
+Also called the *Normal distribution*: see previous slide.
+
+. . .
+
+Saying that a random number $Z$ "is Normal":
+$$\begin{equation}
+    Z \sim \Normal(\mu, \sigma)
+\end{equation}$$
+means that
+$$\begin{equation}
+    \P\left\{Z \ge \mu + x \sigma \right\} = \int_x^\infty \frac{1}{\sqrt{2 \pi}} e^{-u^2/2} du .
+\end{equation}$$
+
+. . .
+
+What to remember:
+
+1. $Z$ is probably no more than a few times $\sigma$ away from $\mu$
+2. Using R,
+```
+rnorm(10, mean=3, sd=2)    # random simulations
+pnorm(5, mean=3, sd=2)     # probabilities
+qnorm(0.975, mean=3, sd=2) # quantiles
+```
+
+## A demonstration
+
+Let's check this, by doing:
+
+> find the sample mean of 100 random draws from some distribution
+
+lots of times, and looking at the distribution of those sample means.
+
+. . .
+
+Claim: no matter the distribution we sample from, it should look close to Normal.
+
+## One sample
+
+```{r one_smaple}
+n <- 100
+x <- runif(n)
+hist(x, xlab='value', main='sample', col=grey(0.5))
+abline(v=mean(x), col='red', lwd=2)
+```
+
+## More samples
+
+```{r more_samples, echo=FALSE, fig.height=2*fig.dim, fig.width=2.5*fig.dim}
+par(mar=c(4,3,1,1))
+layout(matrix(1:20, nrow=4))
+for (k in 1:20) {
+    x <- runif(n)
+    hist(x, xlab='value', main='', col=grey(0.5))
+    abline(v=mean(x), col='red', lwd=3)
+}
+```
+
+## Distribution of 1,000 sample means
+
+```{r smpling_dist}
+xm <- replicate(1000, mean(runif(n)))
+xh <- hist(xm, breaks=40, main=sprintf('mean of %d samples', n), col='red')
+```
+
+## Distribution of 1,000 sample means
+
+```{r smpling_dist2}
+plot(xh, main=sprintf('mean of %d samples', n), col='red')
+xx <- xh$breaks
+polygon(c(xx[-1] - diff(xx)/2, xx[1]),
+        c(length(xm)* diff(pnorm(xx, mean=0.5, sd=1/sqrt(n*12))), 0),
+        col=adjustcolor("blue", 0.4))
+```
+
+## Relationship to the $t$ distribution
+
+If $Y$ and $Z_1, \ldots, Z_n$ are independent $\Normal(0, \sigma)$, and
+$$\begin{equation}
+    X = \frac{Y}{ \sqrt{\frac{1}{n}\sum_{j=1}^n Z_j^2} }
+\end{equation}$$
+then
+$$\begin{equation}
+    X \sim \StudentsT(n) .
+\end{equation}$$
+
+. . .
+
+More usefully,
+*a sample mean divided by its standard error is$^*$ $t$ distributed.*
+
+. . .
+
+This is thanks to the Central Limit Theorem.
+($^*$ usually, approximately)
+
+
+## Simulation
+
+Simulate at least 1,000 random draws from each of these distributions,
+and make histograms:
+
+- [`rnorm( )`](https://en.wikipedia.org/wiki/Normal_distribution)
+- [`rexp( )`](https://en.wikipedia.org/wiki/Exponential_distribution)
+- [`runif( )`](https://en.wikipedia.org/wiki/Uniform_distribution)
+- [`rgamma( )`](https://en.wikipedia.org/wiki/Gamma_distribution)
+- [`rpois( )`](https://en.wikipedia.org/wiki/Poisson_distribution)
+- [`rgeom( )`](https://en.wikipedia.org/wiki/Geometric_distribution)
+- [`rbinom( )`](https://en.wikipedia.org/wiki/Binomial_distribution)
+- [`rnbinom( )`](https://en.wikipedia.org/wiki/Negative_binomial_distribution)
+- [`rbeta( )`](https://en.wikipedia.org/wiki/Beta_distribution)
+
+Which ones give you integers? positive numbers? numbers in a bounded region?
+
+

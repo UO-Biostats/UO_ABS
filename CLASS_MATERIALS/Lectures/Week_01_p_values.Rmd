@@ -1,0 +1,167 @@
+---
+title: "Hypothesis testing and $p$-values"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+
+# format numbers for display
+nf <- function (x, prefix="", digits=2, ...) {
+    paste(prefix, format(x, digits=digits, ...))
+}
+```
+
+
+```{r airbnb, include=FALSE}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
+airbnb$price <- as.numeric(gsub("$", "", airbnb$price, fixed=TRUE))
+airbnb$instant_bookable <- (airbnb$instant_bookable == "t")
+```
+
+
+# Hypothesis testing and $p$-values
+
+
+## A $p$-value is
+
+. . .
+
+> the probability of seeing a result at least as surprising
+> as what was observed in the data,
+> if the null hypothesis is true.
+
+. . .
+
+Usually, this means
+
+- *a result* - numerical value of a statistic
+- *surprising* - big
+- *null hypothesis* - the model we use to calculate the $p$-value
+
+which can all be defined to suit the situation.
+
+## What does a small $p$-value mean?
+
+*If* the null hypothesis *were* true,
+then you'd be really unlikely to see something like what you actually *did*.
+
+. . .
+
+So, either the "null hypothesis" is not a good description of reality
+or something surprising happened.
+
+. . .
+
+How useful this is depends on the null hypothesis.
+
+
+## For instance
+
+```{r airbnb_t2, echo=FALSE}
+(tt <- t.test(
+        airbnb$price[airbnb$instant_bookable],
+        airbnb$price[!airbnb$instant_bookable]
+))
+```
+
+## Also for instance
+
+```{r airbnb_t3}
+t.test(airbnb$price)
+```
+
+. . .
+
+Is *that* $p$-value useful?
+
+
+## Exercise:
+
+*My hypothesis:*
+People tend to have longer index fingers on the hand they write with
+because writing stretches the ligaments.
+
+*(class survey)*
+How many people have a longer index finger on the hand they write with?
+
+. . .
+
+*(class survey)*
+Everyone flip a coin:
+```
+ifelse(runif(1) < 0.5, "H", "T")
+```
+
+. . .
+
+We want to estimate the parameter
+
+$$\begin{equation}
+    \theta = \P(\text{random person has writing finger longer}) ,
+\end{equation}$$
+
+and now we have a *fake dataset with $\theta = 1/2$*.
+
+
+##
+
+Let's get some more data:
+```
+n <- 37 # class size
+sum(ifelse(runif(n) < 1/2, "H", "T") == "H")
+```
+
+. . .
+
+Now we can estimate the $p$-value for the hypothesis that $\theta = 1/2$.
+
+##
+
+A faster method:
+
+```
+replicate(1000, sum(rbinom(n, 1, 1/2) > 0))
+```
+
+. . .
+
+or, equivalently,
+```
+rbinom(1000, n, 1/2)
+```
+
+## (in class)
+
+
+
+## So, where do $p$-values come from?
+
+Either math:
+
+![table of p-values from a t distribution](images/t-table.png)
+
+. . .
+
+Or, computers. (maybe math, maybe simulation, maybe both)
+
+##
+
+So, where did *this* $p$-value come from?
+```{r p_again}
+(tt <- t.test(
+        airbnb$price[airbnb$instant_bookable],
+        airbnb$price[!airbnb$instant_bookable]
+))
+```
+
+. . .
+
+The $t$ distribution!
+(see separate slides)

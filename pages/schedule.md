@@ -23,15 +23,13 @@ Week 1 (*9/27*)
 : Overview of data science - description and estimation, uncertainty and simulation,
     hypothesis testing.
 
+    - Slides: [Introduction](../CLASS_MATERIALS/Lectures/Week_01_Introduction.slides.html)
     - [how to git the slide source](using-git.html)
     - Reading: Quinn & Keough chapters 1-4
-
-<!--
-    - Slides: [Introduction](../CLASS_MATERIALS/Lectures/Week_01_Introduction.slides.html)
     - Slides: [Hypothesis testing and p-values](../CLASS_MATERIALS/Lectures/Week_01_p_values.slides.html)
     - Slides: [The t distribution](../CLASS_MATERIALS/Lectures/Week_01_t_distribution.slides.html)
     - Slides: [The central limit theorem](../CLASS_MATERIALS/Lectures/Week_01_central_limit_theorem.slides.html)
--->
+
 
 Week 2 (*10/4*)
 
