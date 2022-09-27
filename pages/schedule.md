@@ -16,7 +16,7 @@ and [Fall 2018/Winter 2019](2018_schedule.html).
 Unlike previous years,
 this year (2022), there will *only* be a Fall term.
 
-# Fall 2021
+# Fall 2022
 
 Week 1 (*9/27*)
 
