@@ -8,7 +8,7 @@ See [the schedule](schedule.html) for a list of topics by week, with links to sl
 
 ## Description of the course
 
-This two-quarter graduate course aims to provide students with practical
+This graduate course aims to provide students with practical
 understanding of and experience with core concepts and methods in modern data
 analysis. The focus is on biological data, but skills will be transferable to
 other disciplines. Students will become familiar with major topics in
