@@ -65,50 +65,21 @@ and have some experience with programming.
 
 ## Class structure, remote learning, and support
 
-It's our goal to run this class in a way that provides everyone access
-in a way that feels safe, flexible, and supportive.
-As of the start of the quarter,
-UO requires [students and employees to be fully vaccinated](https://coronavirus.uoregon.edu/vaccine),
-and [masks to be properly worn inside](https://coronavirus.uoregon.edu/prevention).
-We expect everyone to follow these requirements.
-We plan to teach class wearing masks,
-but if you rely on lip reading to understand lectures, please let me know,
-and I'll figure something out.
-For more information about UO's current policy, see [this Q&A](https://provost.uoregon.edu/resource-rubric).
-And, here is the UO's [COVID containment plan](https://provost.uoregon.edu/covid-containment-plan-classes) for classes.
-In short, you should not come in if you have symptoms,
-and if you test positive or have come in close contact with a case you should
-fill out the [contact reporting form](https://oregon.qualtrics.com/jfe/form/SV_6lfKVJkE0jAGPvn).
-
-However, there will be times when you can't or don't want to attend class in person:
-for instance,
-if [you have COVID syptoms](https://coronavirus.uoregon.edu/prevention#health-checks),
-if you are a member of a high-risk group,
-or if life intervenes in some other way.
-So, we will make class available remotely as well,
+I aim to make class available remotely,
 by broadcasting lectures on zoom (see Canvas for the link)
 and making the recordings available afterwards on Canvas.
-We'll do our best to make participation possible for remote students,
-and will discuss ways to facilitate this in class.
-If something is not working for you, please tell us:
-we are committed to making the course accessible to everyone,
-and if it's a problem for you, it's almost certainly a problem for others as well.
+However, for most students in-class participation is more engaging
+and results in better learning outcomes,
+so I strongly encourage in-person attendance.
+However, I know that things happen in life that might make you unable to come --
+for instance, please do not come to class if you are sick.
+(Also note that UO currently requires
+[students and employees to be fully vaccinated](https://coronavirus.uoregon.edu/).)
 
-We recognize that it is still an extremely challenging time for many people.
-It certainly has been for us,
-given the ongoing pandemic, failure to address systemic racism,
-inaction on climate change, wildfires and other effects of climate change,
-elections increasingly affected by disinformation,
-and ongoing attacks on women's equality and autonomy.
-However: central to many (all?) of these issues are *information*,
-*science*, and *data*.
-One aim of this class is to empower you to engage meaningfully:
-to evaluate disparate sources of information,
-and to process and communicate lessons from data for a broader audience.
-That said, it is still a challenging time.
-If you need flexibility on assignments or projects,
-or even just someone to talk to,
-please let us know.
+If you are unable to turn in assignments on time,
+please let me know when you are able,
+so I can make alternative arrangements.
+
 
 ## Assignments and evaluation
 
