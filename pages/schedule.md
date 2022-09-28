@@ -35,13 +35,16 @@ Week 1 (*9/27*)
 
 Week 2 (*10/4*)
 
-: Visualization, confidence intervals, the bootstrap, and crossvalidation.
+: Visualization, confidence intervals, permutation tests, and the bootstrap.
 
     - Reading: Quinn & Keough chapters 1-4 (still)
 
+    - Slides: [Permutation tests](../CLASS_MATERIALS/Lectures/Week_02_Permutation_tests.slides.html)
+    - Slides: [The bootstrap](../CLASS_MATERIALS/Lectures/Week_02_Bootstrap.slides.html)
+    - Slides: [Visualization](../CLASS_MATERIALS/Lectures/Week_02_Visualization.slides.html)
+
 <!--
-    - Slides: [The bootstrap](../CLASS_MATERIALS/Lectures/Week_03_Bootstrap.slides.html)
-    - slides: [Overfitting and crossvalidation](../CLASS_MATERIALS/Lectures/Week_14_overfitting_crossvalidation.slides.html)
+    - Slides: [Overfitting and crossvalidation](../CLASS_MATERIALS/Lectures/Week_14_overfitting_crossvalidation.slides.html)
 -->
 
 Week 3 (*10/11*)
@@ -51,7 +54,6 @@ Week 3 (*10/11*)
     - Reading: Quinn & Keough chapter 5, 6, 8
 
 <!--
-    - Slides: [Visualization](../CLASS_MATERIALS/Lectures/Week_04_Visualization.slides.html)
     - Slides: [Multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_04_Multivariate_ANOVA.slides.html)
     - Slides: [Formulas](../CLASS_MATERIALS/Lectures/Week_04_Formulas.slides.html)
 -->
