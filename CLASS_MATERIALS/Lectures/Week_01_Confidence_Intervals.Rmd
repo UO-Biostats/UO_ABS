@@ -234,3 +234,28 @@ by taking random samples from the `price` column of the `airbnb` data, make two 
 1. Expected difference between the mean price of a random sample of `n` Portland AirBnB rooms and the (true) mean price of *all* rooms, as a function of `n`.
 
 2. Probability that a sample of size `n` of Portland AirBnB rooms has a sample mean within \$10 of the (true) mean price of *all* rooms, as a function of `n`.
+
+## (in class)
+
+```{r data}
+airbnb <- read.csv("../Datasets/portland-airbnb-listings.csv")
+airbnb$price <- as.numeric(gsub("$", "", airbnb$price, fixed=TRUE))
+price <- airbnb$price[!is.na(airbnb$price)]
+true_mean <- mean(price, na.rm=TRUE)
+```
+
+## 
+
+```{r do_reps}
+nvals <- c(10, 50, 100, 150, 200)
+mean_error <- rep(NA, length(nvals))
+for (k in seq_along(nvals)) {
+    n <- nvals[k]
+    reps <- replicate(1000, {
+        x <- sample(price, size=n, replace=FALSE)
+        abs(mean(x) - true_mean)
+    })
+    mean_error[k] <- mean(reps)
+}
+plot(nvals, mean_error, type='l')
+```
