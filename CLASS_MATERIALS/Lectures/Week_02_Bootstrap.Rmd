@@ -112,6 +112,31 @@ x <- c(0.6, 1, 3.1, 3.7, 4.8, 6.2, 12.5, 12.5, 13.4, 24.1)
 
 ## in class
 
+```{r fake_samples}
+boot_means <- rep(NA, 1000)
+for (k in seq_along(boot_means)) {
+    boot_x <- sample(x, size=10, replace=TRUE)
+    boot_means[k] <- mean(boot_x)
+}
+```
+
+-----------------
+
+```{r plot}
+hist(boot_means, breaks=40)
+```
+
+-----------------
+
+```{r get_se}
+boot_se <- sd(boot_means)
+theo_se <- sd(x) / sqrt(length(x))
+```
+The bootstrap standard error
+(based on 1000 boostrap resamples)
+is `r boot_se`
+and the theoretical standard error is `r theo_se`.
+
 
 ## Confidence intervals?
 
