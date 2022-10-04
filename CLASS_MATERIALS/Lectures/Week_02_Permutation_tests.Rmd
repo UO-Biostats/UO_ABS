@@ -99,7 +99,7 @@ mean(abs(permuted_diffs) > abs(real_diff))
 
 Here's a *nonparametric* method
 to see if omnivores tend to be bigger than herbivores
-in the [PanTHERIA data](https://esapubs.org/archive/ecol/E090/184/default.htm):
+in the [PanTHERIA data](https://github.com/UO-Biostats/UO_ABS/tree/master/CLASS_MATERIALS/Datasets/PanTHERIA):
 
 1. Find pairs of species in the same family
    for which one is a omnivore and the other an herbivore.
@@ -112,3 +112,8 @@ in the [PanTHERIA data](https://esapubs.org/archive/ecol/E090/184/default.htm):
 4. The $p$-value is the proportion of shuffled statistics greater than the observed statistic.
 
 ## In class
+
+```{r load_data}
+source("../Datasets/PanTHERIA/read_pantheria.R")
+pantheria <- read_pantheria("../Datasets/PanTHERIA")
+```

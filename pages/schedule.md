@@ -29,7 +29,6 @@ Week 1 (*9/27*)
     - Slides: [Hypothesis testing and p-values](../CLASS_MATERIALS/Lectures/Week_01_p_values.slides.html)
     - Slides: [The t distribution](../CLASS_MATERIALS/Lectures/Week_01_t_distribution.slides.html)
     - Slides: [Confidence intervals](../CLASS_MATERIALS/Lectures/Week_01_Confidence_Intervals.slides.html)
-    - Slides: [The central limit theorem](../CLASS_MATERIALS/Lectures/Week_01_central_limit_theorem.slides.html)
     - [Homework 1](../CLASS_MATERIALS/Homeworks/HW01.html) *(due 10/6)*
 
 
@@ -39,8 +38,9 @@ Week 2 (*10/4*)
 
     - Reading: Quinn & Keough chapters 1-4 (still)
 
-    - Slides: [Permutation tests](../CLASS_MATERIALS/Lectures/Week_02_Permutation_tests.slides.html)
     - Slides: [The bootstrap](../CLASS_MATERIALS/Lectures/Week_02_Bootstrap.slides.html)
+    - Slides: [The central limit theorem](../CLASS_MATERIALS/Lectures/Week_02_central_limit_theorem.slides.html)
+    - Slides: [Permutation tests](../CLASS_MATERIALS/Lectures/Week_02_Permutation_tests.slides.html)
     - Slides: [Visualization](../CLASS_MATERIALS/Lectures/Week_02_Visualization.slides.html)
     - [Homework 2](../CLASS_MATERIALS/Homeworks/HW02.html) *(due 10/13)*
 
