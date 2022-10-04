@@ -36,12 +36,12 @@ Week 2 (*10/4*)
 
 : Visualization, confidence intervals, permutation tests, and the bootstrap.
 
-    - Reading: Quinn & Keough chapters 1-4 (still)
 
+    - Slides: [Visualization](../CLASS_MATERIALS/Lectures/Week_02_Visualization.slides.html)
     - Slides: [The bootstrap](../CLASS_MATERIALS/Lectures/Week_02_Bootstrap.slides.html)
     - Slides: [The central limit theorem](../CLASS_MATERIALS/Lectures/Week_02_central_limit_theorem.slides.html)
     - Slides: [Permutation tests](../CLASS_MATERIALS/Lectures/Week_02_Permutation_tests.slides.html)
-    - Slides: [Visualization](../CLASS_MATERIALS/Lectures/Week_02_Visualization.slides.html)
+    - Reading: Quinn & Keough chapters 1-4 (still)
     - [Homework 2](../CLASS_MATERIALS/Homeworks/HW02.html) *(due 10/13)*
 
 Week 3 (*10/11*)
