@@ -117,3 +117,126 @@ in the [PanTHERIA data](https://github.com/UO-Biostats/UO_ABS/tree/master/CLASS_
 source("../Datasets/PanTHERIA/read_pantheria.R")
 pantheria <- read_pantheria("../Datasets/PanTHERIA")
 ```
+
+-----
+
+First, let's subset down to only the herbivores and omnivores,
+with non-missing data.
+```{r subset}
+pantheria <- subset(pantheria,
+                    TrophicLevel %in% c("herbivore", "omnivore")
+                    &
+                    !is.na(AdultBodyMass_g)
+) |> droplevels()
+```
+We still have `r nrow(pantheria)` species remaining.
+
+## For each family, pick a pair of species:
+
+```{r pick_species2}
+ratios <- rep(NA, nlevels(pantheria$Family))
+names(ratios) <- levels(pantheria$Family)
+for (fam in levels(pantheria$Family)) {
+    this_fam <- subset(pantheria, Family == fam)
+    omnis <- which(this_fam$TrophicLevel == "omnivore")
+    herbs <- which(this_fam$TrophicLevel == "herbivore")
+    if (length(omnis) > 0 && length(herbs) > 0) {
+        herb <- herbs[sample.int(length(herbs), 1)]
+        omni <- omnis[sample.int(length(omnis), 1)]
+        out <- this_fam$AdultBodyMass_g[herb] / this_fam$AdultBodyMass_g[omni]
+    } else {
+        out <- NA
+    }
+    ratios[fam] <- out
+}
+```
+
+## Do it again, after shuffling
+
+```{r shuffle}
+shuffled_mean_ratios <- replicate(100, {
+    shuffled_ratios <- rep(NA, nlevels(pantheria$Family))
+    names(ratios) <- levels(pantheria$Family)
+    for (fam in levels(pantheria$Family)) {
+        this_fam <- subset(pantheria, Family == fam)
+        # shuffle up trophic level column
+        this_fam$TrophicLevel <- sample(this_fam$TrophicLevel)
+        omnis <- which(this_fam$TrophicLevel == "omnivore")
+        herbs <- which(this_fam$TrophicLevel == "herbivore")
+        if (length(omnis) > 0 && length(herbs) > 0) {
+            herb <- herbs[sample.int(length(herbs), 1)]
+            omni <- omnis[sample.int(length(omnis), 1)]
+            out <- this_fam$AdultBodyMass_g[herb] / this_fam$AdultBodyMass_g[omni]
+        } else {
+            out <- NA
+        }
+        shuffled_ratios[fam] <- out
+    }
+    mean(shuffled_ratios, na.rm=TRUE)
+})
+```
+
+## Look at the results
+
+
+```{r hist}
+observed_mean_ratio <- mean(ratios, na.rm=TRUE)
+p_val <- mean(shuffled_mean_ratios > observed_mean_ratio)
+hist(shuffled_mean_ratios)
+abline(v=observed_mean_ratio, col='red')
+```
+
+## Conclusion
+
+On average the herbivore of the pair was
+`r observed_mean_ratio` times bigger than the omnivore;
+a mean ratio this big occurred `r p_val`
+of the time in the permuted datasets.
+So, this is not strong evidence that herbivores tend to
+be bigger than omnivores
+(p = `r p_val`, permutation test).
+
+*However*, we only did *one* random draw of the pairs
+to get the observed values.
+
+## Lots of draws of pairs, unshuffled
+
+```{r pick_species}
+observed_mean_ratio_vector <- replicate(100, {
+    ratios <- rep(NA, nlevels(pantheria$Family))
+    names(ratios) <- levels(pantheria$Family)
+    for (fam in levels(pantheria$Family)) {
+        this_fam <- subset(pantheria, Family == fam)
+        omnis <- which(this_fam$TrophicLevel == "omnivore")
+        herbs <- which(this_fam$TrophicLevel == "herbivore")
+        if (length(omnis) > 0 && length(herbs) > 0) {
+            herb <- herbs[sample.int(length(herbs), 1)]
+            omni <- omnis[sample.int(length(omnis), 1)]
+            out <- this_fam$AdultBodyMass_g[herb] / this_fam$AdultBodyMass_g[omni]
+        } else {
+            out <- NA
+        }
+        ratios[fam] <- out
+    }
+    mean(ratios, na.rm=TRUE)
+})
+```
+
+## Look at results again
+
+```{r plot2}
+xh <- hist(c(observed_mean_ratio_vector, shuffled_mean_ratios), plot=FALSE)
+hist(shuffled_mean_ratios, breaks=xh$breaks,  col=adjustcolor('red', 0.5))
+hist(observed_mean_ratio_vector, breaks=xh$breaks, add=TRUE, col=adjustcolor("grey", 0.5))
+legend("topright", col=c("white", "red"),
+       legend=c("observed", "shuffled")
+)
+```
+
+----
+
+Conclusion? Well, a t-test says:
+```{r t}
+t.test(observed_mean_ratio_vector, shuffled_mean_ratios)
+```
+... but we need to think about this more.
