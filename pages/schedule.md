@@ -39,7 +39,6 @@ Week 2 (*10/4*)
 
     - Slides: [Visualization](../CLASS_MATERIALS/Lectures/Week_02_Visualization.slides.html)
     - Slides: [The bootstrap](../CLASS_MATERIALS/Lectures/Week_02_Bootstrap.slides.html)
-    - Slides: [The central limit theorem](../CLASS_MATERIALS/Lectures/Week_02_central_limit_theorem.slides.html)
     - Slides: [Permutation tests](../CLASS_MATERIALS/Lectures/Week_02_Permutation_tests.slides.html)
     - Reading: Quinn & Keough chapters 1-4 (still)
     - [Homework 2](../CLASS_MATERIALS/Homeworks/HW02.html) *(due 10/13)*
@@ -48,11 +47,13 @@ Week 3 (*10/11*)
 
 : Linear models, ANOVA, and formulas.
 
+    - Slides: [The central limit theorem](../CLASS_MATERIALS/Lectures/Week_03_central_limit_theorem.slides.html)
+    - Slides: [Linear models](../CLASS_MATERIALS/Lectures/Week_03_Linear_models.slides.html)
+    - Slides: [Multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_03_Multivariate_ANOVA.slides.html)
+    - Slides: [Formulas](../CLASS_MATERIALS/Lectures/Week_03_Formulas.slides.html)
     - Reading: Quinn & Keough chapter 5, 6, 8
 
 <!--
-    - Slides: [Multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_04_Multivariate_ANOVA.slides.html)
-    - Slides: [Formulas](../CLASS_MATERIALS/Lectures/Week_04_Formulas.slides.html)
     - Slides: [Overfitting and crossvalidation](../CLASS_MATERIALS/Lectures/Week_14_overfitting_crossvalidation.slides.html)
 -->
 
