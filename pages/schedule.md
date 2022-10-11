@@ -51,6 +51,7 @@ Week 3 (*10/11*)
     - Slides: [Linear models](../CLASS_MATERIALS/Lectures/Week_03_Linear_models.slides.html)
     - Slides: [Multivariate ANOVA](../CLASS_MATERIALS/Lectures/Week_03_Multivariate_ANOVA.slides.html)
     - Slides: [Formulas](../CLASS_MATERIALS/Lectures/Week_03_Formulas.slides.html)
+    - [Homework 3](../CLASS_MATERIALS/Homeworks/HW03.html) *(due 10/20)*
     - Reading: Quinn & Keough chapter 5, 6, 8
 
 <!--
