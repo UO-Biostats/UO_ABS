@@ -124,11 +124,26 @@ but also makes you realize things you hadn't, previously.
 
 ## First, make up some numbers
 
-- $\mu$: 
-- $\alpha_i$: 
-- $\beta_j$: 
-- $\gamma_{ij}$: 
-- $\epsilon_{ijk}$: 
+::: {.columns}
+:::::: {.column width=60%}
+
+- $\mu = 5$ kg
+- $\alpha_{low} = 0$  kg
+- $\alpha_\text{med} = 0.5$  kg
+- $\alpha_\text{high} = 1.0$  kg
+- $\beta_\text{no water} = 0$  kg
+- $\beta_\text{water} = 1$  kg
+- $\gamma_{\text{high, water}} = -1$ kg
+- $\epsilon_{ijk} \sim$
+  Normal$(\text{mean}=0, \text{sd}=1.5)$ kg
+
+:::
+:::::: {.column width=50%}
+
+![picture of the board with parameter values on it](images/pumpkin_params.png)
+
+:::
+::::::
 
 
 ## Next, a data format
@@ -148,85 +163,41 @@ head(pumpkins)
 ```{r params}
 # true parameters
 params <- list(
-    mu = 4, # kg
-    alpha = c("low" = -1,
-              "medium" = 0,
+    mu = 5, # kg
+    alpha = c("low" = 0,
+              "medium" = +0.5,
               "high" = +1
     ),
-    beta = c("no water" = -2,
+    beta = c("no water" = 0,
              "water" = +1
     ),
-    gamma = c("high,water" = 3),
-    sigma = 0.5
+    gamma = c("high,water" = -1),
+    sigma = 1.5
 )
 ```
 
 ----------------
 
-We'll first get the mean valeus in there.
-First, we'll do this using a for loop (easier to think through!):
-
-```{r forloop}
-# for loop
-pumpkins$mean_weight <- NA
-for (j in 1:nrow(pumpkins)) {
-    fert <- pumpkins$fertilizer[j]
-    water <- pumpkins$water[j]
-    gamma <- params$gamma[paste(fert, water, sep=',')]
-    if (is.na(gamma)) {
-        gamma <- 0
-    }
-     pumpkins$mean_weight[j] <- (params$mu
-            + params$alpha[fert]
-            + params$beta[water]
-            + gamma
-    )
-}
-```
-
----------------
-
-Here's an alternative implementation, vectorized:
-
-```{r vectorized}
-# not-for-loop version
-interaction <- paste(
-    pumpkins$fertilizer, 
-    pumpkins$water, 
-    sep=','
-)
-mw <- (
-    params$mu
-    + params$alpha[pumpkins$fertilizer]
-    + params$beta[pumpkins$water]
-    + ifelse(interaction %in% names(params$gamma),
-             params$gamma[interaction],
-             0
-    )
-)
-# check it agrees with the previous code:
-stopifnot(all( mw == pumpkins$mean_weight ))
-```
+**(in class)**
 
 ---------------
 
 Finally, we can draw the random values:
 
 ```{r randoms}
-# now draw random weights with these means
-pumpkins$weight <- rnorm(
-    nrow(pumpkins),
-    mean=pumpkins$mean_weight,
-    sd=params$sigma
-)
-write.table(pumpkins, file="data/pumpkins.tsv")
-    
-ggplot(pumpkins) + geom_boxplot(aes(x=fertilizer, fill=water, y=weight))
+# write.table(pumpkins, file="data/pumpkins.tsv")
+#     
+# ggplot(pumpkins) + geom_boxplot(aes(x=fertilizer, fill=water, y=weight))
 ```
 
 # Questions that (linear models and) ANOVA can answer
 
 ## What are (estimates of) the coefficents?
+
+```{r get_data, include=FALSE}
+# for when the sim code above is deleted
+pumpkins <- read.table("data/pumpkins.tsv", header=TRUE)
+```
 
 
 ```{r lm}
@@ -360,35 +331,7 @@ anova(
 Do a stepwise model comparison of nested linear models,
 including `plant` and `plot` in the analysis.
 Think about what *order* to do the comparison in.
-Make sure they are nested!
+Make sure plot is nested within treatment!
 
-Data: [data/pumpkins.tsv](data/pumpkins.tsv)
-
-
---------------
-
-Recall that `plot` is *nested within*
-the treatments, so we should get one "plot"
-effect for each plot level in each combination
-of treatments.
-(Doing `weight ~ water * fertilizer + plot` is *wrong* -
-why?)
-First we check we get the right thing:
-```{r inclass2}
-pumpkins$plot <- factor(pumpkins$plot)
-summary(
-    lm(weight ~ water * fertilizer / plot, data=pumpkins)
-)
-```
-
------------
-
-And, the ANOVA:
-
-```{r the_anova}
-anova(
-    lm(weight ~ water * fertilizer, data=pumpkins),
-    lm(weight ~ water * fertilizer / plot, data=pumpkins)
-)
-```
+*Data:* [pumkpins.tsv](https://github.com/UO-Biostats/UO_ABS/raw/master/CLASS_MATERIALS/Lectures/data/pumpkins.tsv)
 
