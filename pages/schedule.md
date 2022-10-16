@@ -54,20 +54,18 @@ Week 3 (*10/11*)
     - [Homework 3](../CLASS_MATERIALS/Homeworks/HW03.html) *(due 10/20)*
     - Reading: Quinn & Keough chapter 5, 6, 8
 
-<!--
-    - Slides: [Overfitting and crossvalidation](../CLASS_MATERIALS/Lectures/Week_14_overfitting_crossvalidation.slides.html)
--->
-
 Week 4 (*10/18*)
 
 : Multiple testing, error rates, and some history.
 
+
+    - Slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_04_Multiple_testing.slides.html)
+    - Slides: [Statistics and eugenics](../CLASS_MATERIALS/Lectures/Week_04_Statistics_and_eugenics.slides.html)
+    - Slides: [A note on P-value thresholds](../CLASS_MATERIALS/Lectures/Week_04_P_threshold.slides.html)
     - Reading: Quinn & Keough chapter 7
 
 <!--
-    - Slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_06_Multiple_testing.slides.html)
-    - Slides: [Statistics and eugenics](../CLASS_MATERIALS/Lectures/Week_06_Statistics_and_eugenics.slides.html)
-    - Slides: [A note on P-value thresholds](../CLASS_MATERIALS/Lectures/Week_06_P_threshold.slides.html)
+    - Slides: [Overfitting and crossvalidation](../CLASS_MATERIALS/Lectures/Week_14_overfitting_crossvalidation.slides.html)
 -->
 
 Week 5 (*10/25*)

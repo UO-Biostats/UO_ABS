@@ -176,9 +176,60 @@ params <- list(
 )
 ```
 
-----------------
+## In class
 
-**(in class)**
+```{r stepwise}
+pumpkins$mean_weight <- NA
+for (j in 1:nrow(pumpkins)) {
+    f <- as.character(pumpkins$fertilizer[j])
+    w <- as.character(pumpkins$water[j])
+    fw <- paste(f, w, sep=",")
+    if (fw %in% names(params$gamma)) {
+        gamma <- params$gamma[fw]
+    } else {
+        gamma <- 0
+    }
+    pumpkins$mean_weight[j] <- (
+        params$mu
+        + params$alpha[f]
+        + params$beta[w]
+        + gamma
+    )
+}
+```
+Or, equivalently,
+```{r equiv}
+inter_name <- paste(pumpkins$fertilizer, pumpkins$water, sep=",")
+gamma <- ifelse(
+        inter_name %in% names(params$gamma),
+        params$gamma[inter_name],
+        0
+)
+pumpkins$mean_weight <- (
+    params$mu
+    + params$alpha[as.character(pumpkins$fertilizer)]
+    + params$beta[as.character(pumpkins$water)]
+    + gamma
+)
+```
+
+```{r do_sim}
+pumpkins$weight <- rnorm(
+    nrow(pumpkins),
+    mean=pumpkins$mean_weight,
+    sd=params$sigma
+)
+```
+
+```{r plotit}
+ggplot(pumpkins) + geom_boxplot(aes(y=weight, fill=water)) +
+    labs(x="", y="weight (kg)", title="pumpkin weights") +
+    facet_wrap(~ fertilizer)
+```
+
+
+
+
 
 ---------------
 

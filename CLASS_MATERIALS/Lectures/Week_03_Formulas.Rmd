@@ -169,7 +169,7 @@ Make formulas that give you estimates of
    ($\gamma_\text{high, water}$, $\gamma_\text{medium, water}$, $\gamma_\text{low, water}$, 
    $\gamma_\text{high, no water}$, $\gamma_\text{medium, no water}$, $\gamma_\text{low, no water}$).
 
-*Data:* [download pumpins.tsv](https://github.com/UO-Biostats/UO_ABS/raw/master/CLASS_MATERIALS/Lectures/data/pumpkins.tsv)
+*Data:* [pumkpins.tsv](https://github.com/UO-Biostats/UO_ABS/raw/master/CLASS_MATERIALS/Lectures/data/pumpkins.tsv)
 
 ## Example:
 
