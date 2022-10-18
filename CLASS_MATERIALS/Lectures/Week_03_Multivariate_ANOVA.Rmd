@@ -236,9 +236,9 @@ ggplot(pumpkins) + geom_boxplot(aes(y=weight, fill=water)) +
 Finally, we can draw the random values:
 
 ```{r randoms}
-# write.table(pumpkins, file="data/pumpkins.tsv")
-#     
-# ggplot(pumpkins) + geom_boxplot(aes(x=fertilizer, fill=water, y=weight))
+write.table(pumpkins, file="data/pumpkins.tsv")
+    
+ggplot(pumpkins) + geom_boxplot(aes(x=fertilizer, fill=water, y=weight))
 ```
 
 # Questions that (linear models and) ANOVA can answer

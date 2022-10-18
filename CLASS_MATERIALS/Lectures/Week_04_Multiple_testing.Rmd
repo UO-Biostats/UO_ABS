@@ -311,7 +311,7 @@ Clayton M. Small,  Kathryn Milligan-Myhre,  Susan Bassham,  Karen Guillemin, Wil
 Genome Biology and Evolution, March 2017.](https://academic.oup.com/gbe/article/9/3/504/3058199)
 
 - Metadata: [CVvsGF_RNAseq_Metadata.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv) ([direct link](https://github.com/UO-Biostats/UO_ABS/raw/master/CLASS_MATERIALS/Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv))
-- RNA-Seq: [CVvsGF_RNAseq_CPM.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv") ([direct link](https://github.com/UO-Biostats/UO_ABS/raw/master/CLASS_MATERIALS/Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv))
+- RNA-Seq: [CVvsGF_RNAseq_CPM.tsv](../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv) ([direct link](https://github.com/UO-Biostats/UO_ABS/raw/master/CLASS_MATERIALS/Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv))
 
 ## Study design:
 
@@ -321,8 +321,10 @@ Genome Biology and Evolution, March 2017.](https://academic.oup.com/gbe/article/
 ## The data
 
 ```{r parse_data, cache=TRUE, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim}
-fish <- read.table("../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv", header=TRUE, sep='\t')
-tmp <- read.table("../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv", header=TRUE, sep='\t', stringsAsFactors=FALSE, check.names=FALSE)
+fish <- read.table("../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_Metadata.tsv",
+                   header=TRUE, sep='\t')
+tmp <- read.table("../Datasets/stickleback_GFvsCV_RNAseq/CVvsGF_RNAseq_CPM.tsv",
+                  header=TRUE, sep='\t', stringsAsFactors=FALSE, check.names=FALSE)
 genes <- tmp[,1:5]
 expression <- as.matrix(tmp[,6:ncol(tmp)])
 # consistency check
@@ -331,11 +333,18 @@ stopifnot(all(match(colnames(expression), fish$Individual) == 1:nrow(fish)))
 
 There are `r nrow(genes)` genes whose expression is measured in `r nrow(fish)` fish.
 
---------------
+## The fish
 
-```{r plot_data, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
+```{r fish}
+fish
+```
+
+## Expression levels
+
+```{r plot_data, echo=FALSE, fig.width=2.5*fig.dim, fig.height=1.7*fig.dim}
 plot(rowMedians(expression), rowMads(expression), log='xy',
-     xlab='median expression', ylab='MAD expression')
+     xlab='median expression', ylab='MAD expression',
+     pch=20)
 ```
 
 ## Normalize
@@ -345,17 +354,10 @@ To put coefficients on the same scale:
 ```{r parse_data2}
 expr <- sweep(expression, 1, rowMeans(expression), "/")
 ```
-```{r plotdata2, echo=FALSE, fig.width=2*fig.dim, fig.height=1.5*fig.dim}
+```{r plotdata2, echo=FALSE, fig.width=2.5*fig.dim, fig.height=1.7*fig.dim}
 plot(rowMedians(expr), rowMads(expr), log='xy',
-     xlab='median normalized expression', ylab='MAD normalized expression')
-```
-
-## 
-
-Gene expression varies across many orders of magnitude:
-
-```{r matplot, fig.width=3*fig.dim, fig.height=1.5*fig.dim, warning=FALSE}
-matplot(expr[1:1000,], pch=20, log='y', xlab='gene', ylab='normalized expression')
+     xlab='median normalized expression', ylab='MAD normalized expression',
+     pch=20)
 ```
 
 ## 
