@@ -197,6 +197,9 @@ for (j in 1:nrow(pumpkins)) {
     )
 }
 ```
+
+-----------------
+
 Or, equivalently,
 ```{r equiv}
 inter_name <- paste(pumpkins$fertilizer, pumpkins$water, sep=",")
@@ -212,6 +215,8 @@ pumpkins$mean_weight <- (
     + gamma
 )
 ```
+
+-----------------
 
 ```{r do_sim}
 pumpkins$weight <- rnorm(

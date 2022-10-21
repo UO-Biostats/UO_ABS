@@ -62,6 +62,7 @@ Week 4 (*10/18*)
     - Slides: [Multiple testing](../CLASS_MATERIALS/Lectures/Week_04_Multiple_testing.slides.html)
     - Slides: [Statistics and eugenics](../CLASS_MATERIALS/Lectures/Week_04_Statistics_and_eugenics.slides.html)
     - Slides: [A note on P-value thresholds](../CLASS_MATERIALS/Lectures/Week_04_P_threshold.slides.html)
+    - [Homework 4](../CLASS_MATERIALS/Homeworks/HW04.html) *(due 10/27)*
     - Reading: Quinn & Keough chapter 7
 
 <!--
