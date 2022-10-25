@@ -75,12 +75,10 @@ Week 5 (*10/25*)
 
     - Reading: Quinn & Keough chapter 13
     - Reading: Kruschke, chapters 1, 2
-
-<!--
-    - Slides: [Linear models and least squares](../CLASS_MATERIALS/Lectures/Week_05_Linear_models.slides.html)
     - Slides: [Random effects](../CLASS_MATERIALS/Lectures/Week_05_Random_effects.slides.html)
-    - Slides: [Probability rules](../CLASS_MATERIALS/Lectures/Week_07_Probability_rules.slides.html)
--->
+    - Slides: [Probability rules](../CLASS_MATERIALS/Lectures/Week_05_Probability_rules.slides.html)
+    - Slides: [Prior distributions](../CLASS_MATERIALS/Lectures/Week_05_Prior_distributions.slides.html)
+
 
 Week 6 (*11/1*)
 
@@ -89,7 +87,6 @@ Week 6 (*11/1*)
     - Reading: Kruschke, chapters 4, 5, 6, 7
 
 <!--
-    - Slides: [Prior distributions](../CLASS_MATERIALS/Lectures/Week_07_Prior_distributions.slides.html)
     - Slides: [The Beta distribution](../CLASS_MATERIALS/Lectures/Week_07_Beta_distribution.slides.html)
     - Slides: [Posterior sampling with MCMC](../CLASS_MATERIALS/Lectures/Week_08_Posterior_sampling.slides.html)
     - Slides: [Baseball: Hierarchical logistic models](../CLASS_MATERIALS/Lectures/Week_08_Baseball.slides.html)

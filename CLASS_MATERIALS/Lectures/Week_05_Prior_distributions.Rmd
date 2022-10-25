@@ -1,0 +1,609 @@
+---
+title: "Prior distributions and uncertainty"
+author: "Peter Ralph"
+date: "9 November -- Advanced Biological Statistics"
+---
+
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(matrixStats)
+library(rstan)
+```
+
+
+# Biased coins
+
+## a motivating example
+
+Suppose I have two trick coins:
+
+* one (coin A) comes up heads 75% of the time, and 
+* the other (coin B) only 25% of the time.
+
+. . .
+
+But, I lost one and I don't know which!
+So, I flip it **10 times** and get **6 heads**.
+*Which is it, and how sure are you?*
+
+--------------
+
+## Possible answers:
+
+> 1. Er, probably coin (A)?
+> 
+> 2. Well,
+>    $$\begin{aligned}
+>    \P\{ \text{6 H in 10 flips} \given \text{coin A} \}
+>    &= \binom{10}{6} (.75)^6 (.25)^4 \\
+>    &= 0.146
+>    \end{aligned}$$
+>    and
+>    $$\begin{aligned}
+>    \P\{ \text{6 H in 10 flips} \given \text{coin B} \}
+>    &= \binom{10}{6} (.25)^6 (.75)^4 \\
+>    &= 0.016
+>    \end{aligned}$$
+>    ... so, probably coin (A)?
+
+---------------
+
+For a precise answer...
+
+3. *Before flipping*, each coin seems equally likely.  Then
+
+    $$\begin{aligned}
+    \P\{ \text{coin A} \given \text{6 H in 10 flips} \}
+    &= \frac{
+    \frac{1}{2} \times 0.146
+    }{
+    \frac{1}{2} \times 0.146
+    +
+    \frac{1}{2} \times 0.016
+    } \\
+    &= 0.9
+    \end{aligned}$$
+
+
+# Probability
+
+## Bayes' rule
+
+$$\begin{aligned}
+    \P\{B \given A\} = \frac{\P\{B\} \P\{A \given B\}}{ \P\{A\} } ,
+\end{aligned}$$
+
+where
+
+> - $B$: possible model
+> - $A$: data
+> - $\P\{B\}$: prior weight on model $B$
+> - $\P\{A \given B\}$: likelihood of data under $B$
+> - $\P\{B\} \P\{A \given B\}$: posterior weight on $B$
+> - $\P\{A\}$: total sum of posterior weights
+
+
+
+# Breaking it down with more coins
+
+##
+
+Suppose instead I had 9 coins, with probabilities 10%, 20%, ..., 90%;
+as before I flipped one 10 times and got 6 heads.
+For each $\theta$ in $0.1, 0.2, \ldots, 0.8, 0.9,$ find
+$$\begin{aligned}
+    \P\{\text{ coin has prob $\theta$ } \given \text{ 6 H in 10 flips } \} .
+\end{aligned}$$
+
+*Question:* which coin(s) is it, and how sure are we?
+(And, what does it mean when we say how sure we are?)
+
+
+
+
+
+## Uniform prior
+
+:::::::::::::: {.columns}
+::: {.column width="20%"}
+
+prior
+
+$\times$
+
+likelihood
+
+$\propto$
+
+posterior
+
+
+:::
+::: {.column width="80%"}
+
+```{r the_prior, echo=FALSE, fig.height=2.0*fig.dim}
+theta <- (1:9)/10
+prior <- rep(1/9, 9)
+likelihood <- dbinom(6, size=10, prob=theta)
+posterior <- prior*likelihood/sum(prior*likelihood)
+layout(1:3)
+par(mar=c(4,4,1.5,1)+.1, mgp=c(2.6,0.8,0))
+plot(theta, prior, type='b'); title("prior", line=0.5)
+plot(theta, likelihood, type='b'); title("likelihood", line=0.5)
+plot(theta, posterior, type='b'); title("posterior", line=0.5)
+```
+
+:::
+::::::::::::::
+
+----------------------------
+
+## Weak prior
+
+:::::::::::::: {.columns}
+::: {.column width="20%"}
+
+prior
+
+$\times$
+
+likelihood
+
+$\propto$
+
+posterior
+
+
+:::
+::: {.column width="80%"}
+
+```{r weak_prior, echo=FALSE, fig.height=2.0*fig.dim}
+theta <- (1:9)/10
+prior <- (9:1)/45
+likelihood <- dbinom(6, size=10, prob=theta)
+posterior <- prior*likelihood/sum(prior*likelihood)
+layout(1:3)
+par(mar=c(4,4,1.5,1)+.1, mgp=c(2.6,0.8,0))
+plot(theta, prior, type='b'); title("prior", line=0.5)
+plot(theta, likelihood, type='b'); title("likelihood", line=0.5)
+plot(theta, posterior, type='b'); title("posterior", line=0.5)
+```
+
+:::
+::::::::::::::
+
+----------------------------
+
+## Strong prior
+
+:::::::::::::: {.columns}
+::: {.column width="20%"}
+
+prior
+
+$\times$
+
+likelihood
+
+$\propto$
+
+posterior
+
+
+:::
+::: {.column width="80%"}
+
+```{r strong_prior, echo=FALSE, fig.height=2.0*fig.dim}
+theta <- (1:9)/10
+prior <- 2^(8:0)/511
+likelihood <- dbinom(6, size=10, prob=theta)
+posterior <- prior*likelihood/sum(prior*likelihood)
+layout(1:3)
+par(mar=c(4,4,1.5,1)+.1, mgp=c(2.6,0.8,0))
+plot(theta, prior, type='b'); title("prior", line=0.5)
+plot(theta, likelihood, type='b'); title("likelihood", line=0.5)
+plot(theta, posterior, type='b'); title("posterior", line=0.5)
+```
+
+:::
+::::::::::::::
+
+
+## The likelihood: 6 H in 10 flips
+
+:::::::::::::: {.columns}
+::: {.column width="20%"}
+
+prior
+
+$\times$
+
+likelihood
+
+$\propto$
+
+posterior
+
+
+:::
+::: {.column width="80%"}
+
+```{r ten_flips, echo=FALSE, fig.height=2.0*fig.dim}
+theta <- (1:9)/10
+prior <- rep(1/9, 9)
+likelihood <- dbinom(6, size=10, prob=theta)
+posterior <- prior*likelihood/sum(prior*likelihood)
+layout(1:3)
+par(mar=c(4,4,1.5,1)+.1, mgp=c(2.6,0.8,0))
+plot(theta, prior, type='b'); title("prior", line=0.5)
+plot(theta, likelihood, type='b'); title("likelihood", line=0.5)
+plot(theta, posterior, type='b'); title("posterior", line=0.5)
+```
+
+:::
+::::::::::::::
+
+----------------
+
+## The likelihood: 30 H in 50 flips
+
+:::::::::::::: {.columns}
+::: {.column width="20%"}
+
+prior
+
+$\times$
+
+likelihood
+
+$\propto$
+
+posterior
+
+
+:::
+::: {.column width="80%"}
+
+```{r fifty_flips, echo=FALSE, fig.height=2.0*fig.dim}
+theta <- (1:9)/10
+prior <- rep(1/9, 9)
+likelihood <- dbinom(30, size=50, prob=theta)
+posterior <- prior*likelihood/sum(prior*likelihood)
+layout(1:3)
+par(mar=c(4,4,1.5,1)+.1, mgp=c(2.6,0.8,0))
+plot(theta, prior, type='b'); title("prior", line=0.5)
+plot(theta, likelihood, type='b'); title("likelihood", line=0.5)
+plot(theta, posterior, type='b'); title("posterior", line=0.5)
+```
+
+:::
+::::::::::::::
+
+
+----------------
+
+## The likelihood: 60 H in 100 flips
+
+:::::::::::::: {.columns}
+::: {.column width="20%"}
+
+prior
+
+$\times$
+
+likelihood
+
+$\propto$
+
+posterior
+
+
+:::
+::: {.column width="80%"}
+
+```{r 100_flips, echo=FALSE, fig.height=2.0*fig.dim}
+theta <- (1:9)/10
+prior <- rep(1/9, 9)
+likelihood <- dbinom(60, size=100, prob=theta)
+posterior <- prior*likelihood/sum(prior*likelihood)
+layout(1:3)
+par(mar=c(4,4,1.5,1)+.1, mgp=c(2.6,0.8,0))
+plot(theta, prior, type='b'); title("prior", line=0.5)
+plot(theta, likelihood, type='b'); title("likelihood", line=0.5)
+plot(theta, posterior, type='b'); title("posterior", line=0.5)
+```
+
+:::
+::::::::::::::
+
+----------------
+
+## The likelihood: 6,000 H in 10,000 flips
+
+:::::::::::::: {.columns}
+::: {.column width="20%"}
+
+prior
+
+$\times$
+
+likelihood
+
+$\propto$
+
+posterior
+
+
+:::
+::: {.column width="80%"}
+
+```{r ten_thou_flips, echo=FALSE, fig.height=2.0*fig.dim}
+theta <- (1:9)/10
+prior <- rep(1/9, 9)
+likelihood <- dbinom(6000, size=10000, prob=theta)
+posterior <- prior*likelihood/sum(prior*likelihood)
+names(posterior) <- theta
+layout(1:3)
+par(mar=c(4,4,1.5,1)+.1, mgp=c(2.6,0.8,0))
+plot(theta, prior, type='b'); title("prior", line=0.5)
+plot(theta, likelihood, type='b'); title("likelihood", line=0.5)
+plot(theta, posterior, type='b'); title("posterior", line=0.5)
+```
+
+:::
+::::::::::::::
+
+
+# A question
+
+## What is the right answer to the "coin question"?
+
+:::::::::::::: {.columns}
+::: {.column width="60%"}
+
+Recall: there were nine possible values of $\theta$.
+
+
+Which coin is it, and how sure are you?
+
+
+*Possible types of answer:*
+
+1. "best guess"
+2. "range of values"
+3. "don't know"
+
+
+:::
+::: {.column width="40%"}
+
+
+```{r plot_pos}
+theta <- (1:9)/10
+prior <- rep(1/9, 9)
+likelihood <- dbinom(6, size=10, prob=theta)
+posterior <- prior*likelihood/sum(prior*likelihood)
+names(posterior) <- theta
+barplot(posterior, xlab='true prob of heads', main='posterior probability')
+```
+
+:::
+::::::::::::::
+
+# Unknown coins
+
+## Motivating example
+
+Now suppose we want to estimate the probability of heads
+for a coin *without* knowing the possible values.
+(or, a disease incidence, or error rate in an experiment, ...)
+
+We flip it $n$ times and get $z$ Heads.
+
+The *likelihood* of this, given the prob-of-heads $\theta$, is:
+$$p(z \given \theta) = \binom{n}{z}\theta^z (1-\theta)^{n-z} . $$
+
+How to weight the possible $\theta$?
+Need a flexible set of weighting functions, i.e.,
+**prior distributions** on $[0,1]$.
+
+. . .
+
+* **Beta** distributions.
+
+--------------
+
+::: {.columns}
+::::::: {.column width=50%}
+
+
+What $\alpha$ and $\beta$ would we use for a $\Beta(\alpha, \beta)$ prior if:
+
+- the coin is probably close to fair.
+
+- the disease is probably quite rare.
+
+- no idea whatsoever.
+
+:::
+::::::: {.column width=50%}
+
+```{r beta_stuff, echo=FALSE, fig.width=1.5*fig.dim, fig.height=1.5*fig.dim}
+shadecurve <- function (pf, xlim, plot=TRUE, xlab='', ylab='', main='', yaxt='n',
+                        border="black", col=adjustcolor(border, 0.25), ...) {
+    x <- seq(xlim[1], xlim[2], length.out=401)
+    mids <- x[-1] - diff(x)/2
+    df <- diff(pf(x, ...))
+    if (plot) { plot(0, type='n', xlim=range(x), ylim=range(df),
+                     main=main, xlab=xlab, ylab=ylab, yaxt=yaxt) }
+    polygon(c(mids, x[length(x)], x[1]), c(df, 0, 0), col=col, border=border) 
+    return(invisible(list(x=x, y=df)))
+}
+
+a <- 20
+b <- 40
+par(mar=c(3,1,3,0)+.1)
+xy <- shadecurve(pbeta, c(0, 1), shape1=a, shape2=b, border="blue", xlab='', ylab='')
+title(main="Beta(α, β)")
+abline(v=a/(a+b), lty=3, lwd=2)
+text(x=a/(a+b)+0.05, y=max(xy$y)*0.8,
+     labels=expression(mu == frac(alpha,alpha+beta)), pos=4)
+qy <- xy$y[findInterval(qbeta(0.05, a, b), xy$x)]
+lines(x=xy$x[diff(xy$y > qy) != 0],
+      y=rep(xy$y[diff(xy$y > qy) > 0], 2), lwd=2)
+text(x=xy$x[diff(xy$y > qy) < 0],
+     y=xy$y[diff(xy$y > qy) > 0],
+     labels=expression(sqrt(frac(mu * (1-mu), alpha + beta + 1))), pos=4)
+```
+
+:::
+:::::::
+
+
+## Beta-Binomial Bayesian analysis
+
+If
+$$\begin{aligned}
+P &\sim \text{Beta}(a,b) \\
+Z &\sim \text{Binom}(n,P) ,
+\end{aligned}$$
+
+then "miraculously",
+
+$$\begin{aligned}
+(P \given Z = z) \sim \text{Beta}(a+z, b+n-z) .
+\end{aligned}$$
+
+
+## Discuss:
+
+We flip an odd-looking coin 100 times,
+and get 65 heads.
+What is it's true* probability of heads?
+
+1. What prior to use?
+
+2. Plot the prior and the posterior.
+
+3. Is it reasonable that $\theta = 1/2$?
+
+4. Best guess at $\theta$?
+
+5. How far off are we, probably?
+
+*Tools include:* `rbeta( )`
+
+
+## IN CLASS:
+
+```{r inclass}
+# prior: theta could be anything,
+# but a little less likely to be 0% or 100%
+alpha <- 1.1
+beta <- 1.1
+
+prior_samples <- rbeta(1e6, shape1=alpha, shape2=beta)
+hist(prior_samples, breaks=100)
+```
+
+----------------
+
+```{r inclass2}
+# Plot the posterior
+z <- 65
+n <- 100
+post_alpha <- alpha + z
+post_beta <- beta + n - z
+
+posterior_samples <- rbeta(1e6, shape1=post_alpha, shape2=post_beta)
+hist(posterior_samples, breaks=100)
+abline(v=0.5, col='red')
+abline(v=post_alpha / (post_alpha + post_beta), col='blue')
+```
+
+---------------------
+
+3. It's not totally improbable that theta is 0.5, but it doesn't look likely.
+
+4. Around 64%.
+
+5. We're off by around 5-10%, probably.
+
+
+
+
+
+# Reporting uncertainty
+
+## How do we communicate results?
+
+If we want a *point estimate*:
+
+1. posterior mean,
+2. posterior median, or
+3. maximum *a posteriori* estimate ("MAP": highest posterior density).
+
+These all convey "where the posterior distribution is", more or less.
+
+. . .
+
+What about uncertainty?
+
+
+## Credible region
+
+**Definition:** A 95% *credible region* is a portion of parameter space
+having a total of 95% of the *posterior probability*.
+
+. . .
+
+(same with other numbers for "95%")
+
+## Interpretation \#1
+
+If we construct a 95% credible interval for $\theta$
+for each of many datasets;
+*and* the coin in each dataset has $\theta$ drawn independently from the prior,
+*then* the true $\theta$ will fall in its credible interval for 95% of the datasets.
+
+
+## Interpretation \#2
+
+If we construct a 95% credible interval for $\theta$ with a dataset,
+and the distribution of the coin's true $\theta$ across many parallel universes
+is given by the prior,
+then the true $\theta$ will be in the credible interval
+in 95% of those universes.
+
+
+
+## Interpretation \#3
+
+Given my prior beliefs (prior distribution),
+the posterior distribution is the most rational${}^*$ 
+way to update my beliefs to account for the data.
+
+. . .
+
+${}^*$ if you do this many times you will be wrong least often
+
+. . .
+
+${}^*$ **or** you will be wrong in the fewest possible universes
+
+
+## But which credible interval?
+
+**Definition:** The "95\% highest density interval" is the 95\% credible interval
+with the highest posterior probability density at each point.
+
+. . .
+
+((back to the coins))
+

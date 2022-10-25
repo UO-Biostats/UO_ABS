@@ -1,0 +1,86 @@
+---
+title: "Rules of probability"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+```
+
+# Probability: review and notation
+
+## Probability rules:
+
+> 0. *Probabilities are proportions:* $\hspace{2em} 0 \le \P\{A\} \le 1$
+> 
+> 1. *Everything:* $\hspace{2em} \P\{ \Omega \} = 1$
+> 
+> 2. *Complements:* $\hspace{2em} \P\{ \text{not } A\} = 1 - \P\{A\}$
+> 
+> 3. *Disjoint events:* If $\hspace{2em} \P\{A \text{ and } B\} = 0$ then $\hspace{2em} \P\{A \text{ or } B\} = \P\{A\} + \P\{B\}$.
+> 
+> 4. *Independence:* $A$ and $B$ are independent iff $\P\{A \text{ and } B\} = \P\{A\} \P\{B\}$.
+> 
+> 5. *Conditional probability:* 
+>     $$\P\{A \given B\} = \frac{\P\{A \text{ and } B\}}{ \P\{B\} }$$
+
+## Bayes' rule
+
+A consequence is
+
+$$\P\{B \given A\} = \frac{\P\{B\} \P\{A \given B\}}{ \P\{A\} } .$$
+
+. . .
+
+In "Bayesian statistics":
+
+> - $B$: possible model
+> - $A$: data
+> - $\P\{B\}$: prior weight on model $B$
+> - $\P\{A \given B\}$: likelihood of data under $B$
+> - $\P\{B\} \P\{A \given B\}$: posterior weight on $B$
+> - $\P\{A\}$: total sum of posterior weights
+
+
+## Example:
+
+Coin #1 comes up heads 75% of the time, and coin #2 only comes up heads 25% of the time.
+We grab one coin at random, flip it 10 times, and get 6 Heads.
+What's the probability that the coin we grabbed is coin #1?
+
+. . .
+
+
+- $B$: possible model (*I have the 75% coin*)
+- $A$: data (*6 Heads out of 10 flips*)
+- $\P\{B\}$: prior weight on model $B$  (*how likely I think it is I got the 75% coin*)
+- $\P\{A \given B\}$: likelihood of data under $B$ (*chance of getting 6 H with 10 flips with the 75% coin*)
+- $\P\{B\} \P\{A \given B\}$: posterior weight on $B$ (*combined probability of getting 75% coin and then getting 6 H out of 10 flips*)
+- $\P\{A\}$: total sum of posterior weights (*the sum of the last thing over all possible coins*)
+
+---------
+
+- $\P\{B\} = 1/2$: (*chance of getting 75% coin*)
+- $\P\{A \given B\} = \binom{10}{6} 0.75^6 \times 0.25^4 = 0.146$: (*chance of getting 6 H with 10 flips with the 75% coin*)
+- $\P\{B\} \P\{A \given B\} = 1/2 \times 0.146 = 0.073$: posterior weight on $B$ (*combined probability of getting 75% coin and then getting 6 H out of 10 flips*)
+- $\P\{\text{not }B\} \P\{A \given \text{not }B\} = 1/2 \times \binom{10}{6} 0.25^6 \times 0.75^4 = 0.0081$: (*same thing but with the other coin*)
+- $\P\{A\} = 0.073 + 0.0081= 0.081$: total sum of posterior weights (*the sum of posterior weights over all possible coins*)
+
+-------------
+
+
+$$\begin{aligned}
+    \P\{B \given A\} 
+        &= \P\{\text{grabbed 75% coin}\given\text{6 heads from 10 flips}\} \\
+        &= \frac{\P\{B\} \P\{A \given B\}}{ \P\{A\} } \\
+        &= \frac{0.073}{0.073 + 0.0081} \\
+        &= 0.9
+\end{aligned}$$
+
+
