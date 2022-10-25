@@ -32,6 +32,8 @@ code { white-space: pre; }
 
 .scrollable { overflow-y: auto !important; height: 500px; }
 
+.reveal code.sourceCode.r { overflow: scroll; }
+
 </style>
 
 
