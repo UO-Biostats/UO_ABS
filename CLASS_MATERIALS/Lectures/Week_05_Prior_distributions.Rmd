@@ -1,7 +1,7 @@
 ---
 title: "Prior distributions and uncertainty"
 author: "Peter Ralph"
-date: "9 November -- Advanced Biological Statistics"
+date: "Advanced Biological Statistics"
 ---
 
 

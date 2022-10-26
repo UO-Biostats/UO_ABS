@@ -10,7 +10,6 @@ MATHJAX = https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js
 LOCAL_MATHJAX = /usr/share/javascript/mathjax/MathJax.js
 
 # may want to add "--self-contained" to the following
-# NOTE: to build offline
 PANDOC_OPTS = --standalone --self-contained
 MATHJAX_OPTS = --mathjax
 LOCAL_MATHJAX_OPTS = --mathjax=$(LOCAL_MATHJAX)?config=TeX-AMS-MML_HTMLorMML
