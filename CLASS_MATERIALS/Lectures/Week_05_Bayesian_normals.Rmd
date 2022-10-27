@@ -1,0 +1,43 @@
+---
+title: "Bayesian estimation of means"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(tidyverse)
+library(matrixStats)
+library(rstan)
+```
+
+
+# Estimating means, part 2
+
+## The problem
+
+We are interested in estimating the average body weight
+of squirrels in a nearby patch of forest
+(for the purpose of comparing to other locations).
+We have only weighed so far five squirrels,
+whose weights, in grams, are
+```
+642, 687, 451, 410, 586
+```
+
+Suppose that the distribution of squirrel weights
+is Normal with mean $\mu$ and standard deviation $\sigma$.
+
+1. Assuming that $\sigma=150$,
+    choose a Normal prior for $\mu$
+    and find the maximum posterior estimate for $\mu$,
+    given the data.
+
+2. Choose Normal prior distributions for $\mu$ and $\sigma$,
+    and find the maximum posterior estimates for both.
+

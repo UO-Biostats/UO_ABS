@@ -79,6 +79,7 @@ Week 5 (*10/25*)
     - Slides: [Probability rules](../CLASS_MATERIALS/Lectures/Week_05_Probability_rules.slides.html)
     - Slides: [Prior distributions](../CLASS_MATERIALS/Lectures/Week_05_Prior_distributions.slides.html)
     - Slides: [The Beta distribution](../CLASS_MATERIALS/Lectures/Week_05_Beta_distribution.slides.html)
+    - Slides: [Maximum posterior example](../CLASS_MATERIALS/Lectures/Week_05_Bayesian_normals.slides.html)
     - [Homework 5](../CLASS_MATERIALS/Homeworks/HW05.html) *(due 11/3)*
 
 
