@@ -40,4 +40,3 @@ is Normal with mean $\mu$ and standard deviation $\sigma$.
 
 2. Choose Normal prior distributions for $\mu$ and $\sigma$,
     and find the maximum posterior estimates for both.
-
