@@ -499,3 +499,48 @@ What is it's true* probability of heads?
 
 *Tools include:* `rbeta( )`
 
+## IN CLASS
+
+```{r in_calss}
+prior_alpha <- prior_beta <- 1
+post_alpha <- prior_alpha + 65
+post_beta <- prior_beta + 35
+post_mean <- post_alpha / (post_alpha + post_beta)
+
+xvals <- seq(0, 1, length.out=101)
+plot(xvals, dbeta(xvals, prior_alpha, prior_beta),
+     type='l', ylim=c(0,10), ylab='density', xlab='theta')
+lines(xvals, dbeta(xvals, post_alpha, post_beta),
+    col='red')
+abline(v=post_mean, lty=1, col='green')
+abline(v= qbeta(c(.025, .975), post_alpha, post_beta),
+       lty=3, col='blue')
+legend("topleft", lty=c(1,1,1,3), col=c('black', 'red', 'green', 'blue'),
+        legend=c("prior", "posterior", "posterior mean", "95% CI"))
+abline(v=1/2, lty=3)
+
+```
+It doesn't look likely that $\theta = 1/2$:
+in fact, the posterior probability
+that $\theta \le 1/2$
+is `pbeta(1/2, post_alpha, post_beta)`.
+The posterior mean is `r post_mean`.
+Our guess is probably acurate to within about 10% or so;
+a 95% credible interval
+is from `r qbeta(.975, post_alpha, post_beta)`
+to `r qbeta(.025, post_alpha, post_beta)`.
+
+------
+
+If we were being frequentist,
+a 95% confidence interval for the mean
+(i.e., the proportion of heads)
+would be almost exactly the same thing.
+```{r freq}
+phat <- 65/100
+se <- sqrt(phat * (1 - phat) / 100)
+conf_int <- phat + c(+1, -1) * 1.96 * se
+
+```
+
+
