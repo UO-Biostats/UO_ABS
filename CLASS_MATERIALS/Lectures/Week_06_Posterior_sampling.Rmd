@@ -379,3 +379,38 @@ then setting $p = p(\theta' \given D) / p(\theta \given D)$
 makes the stationary distribution $p(\theta \given D)$. 
 
 
+
+# IN CLASS
+
+```{r in_class_sim}
+true_alpha <- 8
+true_beta <- 99
+num_coins <- 500
+theta <- rbeta(num_coins, shape1=true_alpha, shape2=true_beta)
+N <- 15
+Z <- rbinom(num_coins, size=N, prob=theta)
+hist(theta, bins=40, xlim=c(0,1))
+plot(theta, Z)
+```
+
+------
+
+```{r fit}
+library(brms)
+df <- data.frame(
+    Z = Z,
+    N = N
+)
+brmfit <- brm(
+    Z | trials(N) ~ 1,
+    data=df,
+    family="binomial"
+)
+# TODO: add in prior
+```
+
+
+
+
+
+

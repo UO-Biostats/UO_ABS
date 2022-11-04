@@ -377,6 +377,25 @@ with:
 :::::::
 
 
+## IN CLASS
+
+```{r do_it}
+df <- data.frame(
+    name=sample(LETTERS, 20),
+    PriPos=sample(unique(batting$PriPos), 20, replace=TRUE),
+    AtBats=rpois(20, 30)
+)
+beta <- rep(0.24, 9)
+names(beta) <- unique(batting$PriPos)
+beta['Pitcher'] <- 0.15
+df$mu <- beta[as.character(df$PriPos)] + rnorm(20, sd=0.05)
+df$theta <- 1/(1 + exp(-df$mu))
+df$Z <- rbinom(nrow(df), size=df$AtBats, prob=df$theta)
+
+```
+
+
+
 # Back to the model
 
 ## Everyone is different, but pitchers are similar
