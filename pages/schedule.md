@@ -98,6 +98,7 @@ Week 7 (*11/8*)
 
     - Reading: Quinn & Keough chapter 13
     - Reading: Kruschke, chapters 9, 10
+    - [Homework 7](../CLASS_MATERIALS/Homeworks/HW07.html) *(due 11/17)*
 
 <!--
     - Slides: [Intro to brms](../CLASS_MATERIALS/Lectures/Week_09_Intro_to_brms.slides.html)
