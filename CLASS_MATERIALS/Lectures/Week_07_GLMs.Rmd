@@ -206,7 +206,7 @@ mcmc_hist(brm_fit, pars=c("b_Intercept", "b_x")) + geom_vline(data=data.frame(Pa
 
 
 $$\begin{aligned}
-    Z &\sim \Gamma(\text{shape}=1, \text{scale}=\mu) \\
+    Z &\sim \Gam(\text{shape}=1, \text{scale}=\mu) \\
     \mu &=\exp(-\beta_1 X - \beta_2 Y)
 \end{aligned}$$
 

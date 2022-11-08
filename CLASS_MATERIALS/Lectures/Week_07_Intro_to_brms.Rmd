@@ -108,6 +108,7 @@ brm(formula = z ~ x + y + (1 + y|f), data = xy,
 
 ## 1. Set up the formula
 
+Some example data:
 ```{r xydata, cache=TRUE}
 xy <- data.frame(x = rnorm(100),
                  y = rexp(100),
@@ -115,6 +116,7 @@ xy <- data.frame(x = rnorm(100),
 xy$z <- xy$x + as.numeric(xy$f) * xy$y + rnorm(100, sd=0.1)
 ```
 
+The formula:
 ```{r bf, cache=TRUE}
 the_formula <- brmsformula(z ~ x + y + (1 + y | f))
 ```
@@ -213,9 +215,9 @@ $$\begin{aligned}
 
 We can ask about:
 
-> 1. the *coefficients*, $\beta$,
-> 2. the *mean*, $\mu = \E[Y]$,
-> 3. the *response*, $Y$.
+1. the *coefficients*, $\beta$,
+2. the *mean*, $\mu = \E[Y]$,
+3. the *response*, $Y$.
 
 ... with or without the *group-level (random) effects*, $u$.
 

@@ -506,8 +506,14 @@ mcmc_intervals(samps, regex_pars=c("b_PriPos.*")) +
 `posterior_epred()` gives posterior samples of expected responses:
 ```{r viz2, message=FALSE}
 players <- c("Mark Buehrle", "Matt Harvey", "Mike Leake")
-player_data <- subset(batting, Player %in% players)
+(player_data <- subset(batting, Player %in% players))
+```
+
+--------------
+
+```{r getviz2, message=FALSE}
 player_preds <- posterior_epred(logistic_fit, newdata=player_data)
+colnames(player_preds) <- players
 player_preds <- player_preds / player_data$AtBats[col(player_preds)]
 head(player_preds)
 ```
@@ -517,7 +523,7 @@ head(player_preds)
 ```{r plotviz2, fig.height=1.4*fig.dim}
 layout(seq_along(players))
 for (j in seq_along(players)) {
-    hist(player_preds[,j], xlim=range(player_preds), main=players[j], xlab='batting average')
+    hist(player_preds[,j], xlim=range(player_preds), main=players[j], xlab='batting average', breaks=30)
 }
 ```
 
