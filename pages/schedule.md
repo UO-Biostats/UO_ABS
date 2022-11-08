@@ -96,14 +96,12 @@ Week 7 (*11/8*)
 
 : Logistic models and GLMs; sharing power
 
+    - Slides: [Intro to brms](../CLASS_MATERIALS/Lectures/Week_07_Intro_to_brms.slides.html)
+    - Slides: [Generalized Linear Models](../CLASS_MATERIALS/Lectures/Week_07_GLMs.slides.html)
     - Reading: Quinn & Keough chapter 13
     - Reading: Kruschke, chapters 9, 10
     - [Homework 7](../CLASS_MATERIALS/Homeworks/HW07.html) *(due 11/17)*
 
-<!--
-    - Slides: [Intro to brms](../CLASS_MATERIALS/Lectures/Week_09_Intro_to_brms.slides.html)
-    - Slides: [Generalized Linear Models](../CLASS_MATERIALS/Lectures/Week_09_GLMs.slides.html)
--->
 
 Week 8 (*11/15*)
 

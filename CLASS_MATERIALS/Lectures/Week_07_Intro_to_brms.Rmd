@@ -1,0 +1,561 @@
+---
+title: "Introduction to brms"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 5
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+options(mc.cores = parallel::detectCores())
+library(lme4)
+library(tidyverse)
+library(brms)
+library(bayesplot)
+```
+
+
+# Stan, but with formulas
+
+## 
+
+The [`brms`](https://github.com/paul-buerkner/brms) package lets you
+
+. . .
+
+::: {.centered}
+fit hierarchical models using Stan
+:::
+
+. . .
+
+::: {.flushright}
+with mixed-model syntax!!!
+:::
+
+. . .
+
+::: {.columns}
+::::::: {.column width=70%}
+
+
+```
+# e.g.
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = poisson(link='log'))
+# or
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = student(link='identity'))
+```
+
+:::
+::::::: {.column width=30%}
+
+![brms logo](images/brms.png)
+
+:::
+:::::::
+
+# Overview of brms
+
+## Fitting models
+
+```
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = gaussian(link='identity'))
+```
+
+- `formula`: almost just like `lme4`
+- `data`: must contain all the variables
+- `family`: distribution of response
+- `link`: connects mean to linear predictor
+
+## Parameterization
+
+There are several *classes* of parameter in a brms model:
+
+- `b` : the *population-level* (or, *fixed*) effects
+- `sd` : the standard deviations of *group-level* (or, *random*) effects
+- family-specific parameters, like `sigma` for the Gaussian
+
+. . .
+
+Examples:
+
+- `b_x` : the slope of `x` : `class="b", coef="x"`
+- `sd_f` : the SD of effects for levels of `f` : `class="sd", coef="f"`
+
+## Setting priors
+
+Pass a *vector* of "priors", specified by
+```
+    set_prior(prior, class="b", ...)
+```
+where `prior` is some valid Stan code.
+
+. . .
+
+```
+brm(formula = z ~ x + y + (1 + y|f), data = xy,
+    family = gaussian(link='identity'),
+    prior=c(set_prior("normal(0, 5)", class="b"),
+            set_prior("cauchy(0, 1)", class="sd", coef="f")))
+```
+
+## 1. Set up the formula
+
+```{r xydata, cache=TRUE}
+xy <- data.frame(x = rnorm(100),
+                 y = rexp(100),
+                 f = factor(sample(letters[1:3], 100, replace=TRUE)))
+xy$z <- xy$x + as.numeric(xy$f) * xy$y + rnorm(100, sd=0.1)
+```
+
+```{r bf, cache=TRUE}
+the_formula <- brmsformula(z ~ x + y + (1 + y | f))
+```
+
+## 2. Choose priors
+
+Default:
+```{r gp}
+get_prior(the_formula, data=xy)
+```
+
+. . .
+
+Choose modifications:
+```{r somep, cache=TRUE}
+# for example, no good reason to do this
+the_priors = c(set_prior("normal(0, 5)", class = "b"),
+               set_prior("normal(0, 1)", class = "sd", coef="y", group="f"))
+```
+
+## 3. Fit the model
+
+```{r dobrms, cache=TRUE, dependson=c("xydata", "bf", "somep")}
+the_fit <- brm(the_formula, data=xy, family=gaussian(), 
+               prior=the_priors)
+```
+
+## 4. Check converence
+
+
+```{r mcbrms}
+summary(the_fit)
+```
+
+##
+
+Or...
+```
+launch_shinystan(the_fit)
+```
+
+
+## 4. Look at results
+
+Summaries of, or samples from, the posteriors of:
+
+- `fixef( )`: "fixed" effects
+- `ranef( )`: "random" effects
+- `fitted( )`: posterior distribution of *mean* response (see `posterior_epred`)
+- `predict( )`: posterior distribution of actual responses (see `posterior_predict`)
+- `hypothesis( )`: get posterior distributions of *functions* of various parameters (e.g., difference between two classes)
+- `conditional_effects( )`: effect of one predictor conditioned on values of others
+
+## More tools:
+
+- `parnames( )`: list of parameter names
+- `pp_check( )`: compare response distribution to posterior predictive simulations
+- `loo( )` leave-one-out crossvalidation for model comparison
+- `bayes_R2( )`: [Bayesian $r^2$](https://doi.org/10.1080/00031305.2018.1549100)
+
+## More info:
+
+- formulas: [`help(brmsformula)`](https://paul-buerkner.github.io/brms/reference/brmsformula.html)
+- families: [`help(brmsfamily)`](https://paul-buerkner.github.io/brms/reference/brmsfamily.html) (but note can use those in `help(family)` also)
+- priors: [`help(set_prior)`](https://paul-buerkner.github.io/brms/reference/set_prior.html) and also check what can have a prior with `get_prior( )`
+- get the Stan code: [`stancode(the_fit)`](https://paul-buerkner.github.io/brms/reference/stancode.brmsfit.html)
+    (and [`standata(the_fit)`](https://paul-buerkner.github.io/brms/reference/standata.brmsfit.html))
+- compare models with [`loo( )`](https://paul-buerkner.github.io/brms/reference/loo.brmsfit.html)
+- more technical notes at [this tutorial](../Tutorials/using_brms.html)
+
+# Extracting information from the posterior
+
+## The structure of a GLM
+
+$$\begin{aligned}
+    Y &\sim \text{Family}(\text{mean}=\mu) \\
+    \mu &= \text{link}(X \beta) .
+\end{aligned}$$
+
+. . .
+
+We can ask about:
+
+> 1. the *coefficients*, $\beta$,
+> 2. the *mean*, $\mu = \E[Y]$, or
+> 3. the *response*, $Y$.
+
+## ... and, a GLMM
+
+$$\begin{aligned}
+    Y &\sim \text{Family}(\text{mean}=\mu) \\
+    \mu &= \text{link}(X \beta + Z u) .
+\end{aligned}$$
+
+. . .
+
+We can ask about:
+
+> 1. the *coefficients*, $\beta$,
+> 2. the *mean*, $\mu = \E[Y]$,
+> 3. the *response*, $Y$.
+
+... with or without the *group-level (random) effects*, $u$.
+
+
+# Example: baseball
+
+## Recall the model
+
+```{r batting, cache=TRUE}
+batting <- read.csv("data/BattingAveragePlus.csv", header=TRUE, stringsAsFactors=TRUE)
+batting$scaled_height <- (batting$height - mean(batting$height))/sd(batting$height)
+batting$scaled_weight <- (batting$weight - mean(batting$weight))/sd(batting$weight)
+bb_fit <- brm(
+      Hits  | trials(AtBats) ~ 0 + scaled_weight + scaled_height + PriPos + (1 | PriPos:Player),
+      data = batting,
+      family = "binomial",
+      prior = c(prior(normal(0, 5), class = b),
+                prior(normal(0, 5), class = sd)),
+      iter = 2000, chains = 3
+)
+```
+
+# 1. The *coefficients*, $\beta$.
+
+--------------
+
+*Example:*
+Is height associated with batting average?
+Which positions tend to be better batters?
+
+. . .
+
+*Translated:*
+What's the posterior distribution
+of the effect of height on logit batting average?
+
+. . .
+
+*Tools:* (all have `pars=` arguments)
+
+- `summary( )`
+- `mcmc_hist( )`
+- `mcmc_intervals( )`
+- `extract( )`
+
+------------
+
+```{r summbb}
+summary(bb_fit)
+```
+
+-------------
+
+```{r plot_coefs, message=FALSE}
+mcmc_hist(bb_fit, pars=c("b_scaled_weight", "b_scaled_height"))
+```
+
+-------------
+
+```{r plot_betas}
+mcmc_intervals(bb_fit, regex_pars="b_PriPos.*")
+```
+
+# 2. The *mean*, $\mu = \E[Y]$.
+
+--------------
+
+*Example:*
+What is the mean batting average of each position,
+as a function of weight?
+
+*Tools:*
+
+- `conditional_effects( )`: means in abstract conditions
+- `fitted( )`: expected values, summarized (optionally, for new data)
+- `posterior_epred( )`: draws from the posterior mean (optionally, for new data)
+
+-------------
+
+`conditional_effects` for average-height-and-weight:
+
+```{r ce1}
+conditional_effects(bb_fit, effects="PriPos")
+```
+
+-------------
+
+`conditional_effects` by weight at average height:
+
+```{r ce2}
+conditional_effects(bb_fit, effects="scaled_weight:PriPos")
+```
+
+-------------
+
+`conditional_effects` for shortstops by weight that are one SD above average height:
+
+```{r ce3}
+conditional_effects(bb_fit, effects="scaled_weight",
+                    conditions=data.frame(PriPos="Shortstop", scaled_height=1))
+```
+
+------------
+
+The `fitted( )` values: for the original data
+```{r fitted_bb}
+bb_fitted <- fitted(bb_fit)
+ggplot(cbind(batting, bb_fitted)) +
+       geom_segment(aes(x=Q2.5, xend=Q97.5, y=Hits, yend=Hits), col='red') +
+       geom_point(aes(x=Estimate, y=Hits)) +
+       geom_abline(intercept=0, slope=1) +
+       ylab("actual hits") + xlab("predicted hits") + coord_fixed()
+```
+
+-----------
+
+`posterior_epred( )`: posterior distribution of expected values
+
+Mean number of hits out of 50 at-bats
+for a shortstop of average weight that is 1.5 SD above average height?
+```{r bb_pep}
+pp <- posterior_epred(bb_fit,
+        newdata=data.frame(
+            PriPos="Shortstop",
+            scaled_weight=0,
+            scaled_height=1.5,
+            AtBats=50),
+        re_formula=NA
+)
+head(pp)
+```
+
+-----------
+
+```{r plot_pp}
+ggplot(data.frame(hits=pp)) + geom_histogram(aes(x=hits), bins=32)
+```
+
+# 3. The response, $Y$:
+
+-----------
+
+Suppose Miguel Cairo, and Franklin Gutierrez go up to bat 150 more times,
+how many hits will they get?
+```{r jj}
+(mc <- subset(batting, Player %in% c("Miguel Cairo", "Franklin Gutierrez"))[, c("Player", "PriPos", "Hits", "AtBats", "scaled_height", "scaled_weight" )])
+```
+
+. . .
+
+*Tools:*
+
+- `predict( )`: summary
+- `posterior_predict( )`: get samples
+
+------------
+
+```{r miguel1}
+cbind(mc,
+    predict(bb_fit, newdata=mc)
+)
+```
+
+## `fitted( )` vs `predict( )`
+
+`predict` always has greater uncertainty.
+```{r miguel2}
+cbind(mc,
+    predict=predict(bb_fit, newdata=mc),
+    fitted=fitted(bb_fit, newdata=mc)
+)
+```
+
+
+# Exercise
+
+## 
+
+:::{.columns}
+:::::::{.column width=50%}
+
+$$\begin{aligned}
+Z_i  &\sim \Binom(N_i, \theta_i) \\
+\theta_i &= \logit(\beta_{p_i} + u_i) \\
+u_i &\sim \Normal(0, \sigma^2)
+\end{aligned}$$
+
+where for the $i^\text{th}$ player,
+
+- $N_i$: number of at-bats
+- $Z_i$: number of hits
+- $p_i$: position
+- $\beta_p$: position effect
+- $u_i$: random player effect
+
+:::
+:::::::{.column width=50%}
+
+```{r albert, echo=FALSE}
+subset(batting, Player == "Albert Pujols")[, c("Player", "PriPos", "Hits", "AtBats", "scaled_height", "scaled_weight")]
+```
+
+How would we use the posterior to summarize:
+
+1. Mean batting average of 1st base players of average weight and height?
+2. Range of batting averages of 1st base players?
+3. Albert Pujol's batting average?
+4. How many hits Albert Pujol would get out of 100 at bats?
+
+:::
+:::::::
+
+
+
+# `pp_check`
+
+## 
+
+*Question:* does our model fit the data?
+
+. . .
+
+*Possible answer:* gee, I dunno, let's simulate from it and see?
+
+
+## Posterior predictive simulations
+
+1. Fit a model.
+
+2. Draw a set of parameters from the posterior distribution.
+
+3. With these, simulate a new data set.
+
+4. Do this a few times, and compare the results to the original dataset.
+
+. . .
+
+`brms` lets you do this with the `pp_check(brms_fit, type='xyz')` method
+
+See [the docs](https://mc-stan.org/bayesplot/reference/PPC-overview.html)
+for options.
+
+## pp_check: datasets
+
+```{r bb_pp1, message=FALSE}
+pp_check(bb_fit, type='hist')
+```
+
+## pp_check: means by group
+
+```{r bb_pp2, message=FALSE}
+pp_check(bb_fit, type='stat_grouped', group='PriPos')
+```
+
+## pp_check: responses
+
+```{r bb_pp3, message=FALSE}
+pp_check(bb_fit, type='intervals_grouped', group='PriPos')
+```
+
+## pp_check: scatterplots
+
+```{r bb_pp4, message=FALSE}
+pp_check(bb_fit, type='scatter')
+```
+
+
+
+# Example: pumpkins
+
+##
+
+Let's first go back to the pumpkin data from Week 5:
+```{r read_pumpkins, cache=TRUE}
+pumpkins <- read.table("data/pumpkins.tsv", header=TRUE)
+pumpkins$plot <- factor(pumpkins$plot)
+pumpkins$fertilizer <- factor(pumpkins$fertilizer)
+pumpkins$water <- factor(pumpkins$water)
+```
+
+##
+
+```{r plot_pumpkins}
+ggplot(pumpkins) + geom_boxplot(aes(x=fertilizer:water, y=weight, fill=water))
+```
+
+## A mixed model with `lme4`:
+
+Then, we fit a *mixed model* with `lme4`:
+```{r fit_lme4}
+lme_pumpkins <- lmer( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
+summary(lme_pumpkins)
+```
+
+## ... with `brms`:
+
+Here's the "same thing" with `brms`:
+```{r fit_brms, cache=TRUE, dependson="read_pumpkins"}
+brms_pumpkins <- brm( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
+```
+
+----------
+
+```r
+brms_pumpkins <- brm( weight ~ water * fertilizer + (1|plot:water:fertilizer), data=pumpkins)
+```
+
+```{r fit_brms_summary}
+summary(brms_pumpkins)
+```
+
+## Quick comparison:
+
+
+::: {.columns}
+::::::: {.column width=50%}
+
+```{r brmp_summary}
+summary(brms_pumpkins)
+```
+
+:::
+::::::: {.column width=50%}
+
+```{r lmep_summary}
+summary(lme_pumpkins)
+```
+
+:::
+:::::::
+
+# Your turn
+
+##
+
+
+Try out:
+
+1. `launch_shinystan(brms_pumpkins)`
+
+2. `conditional_effects(brms_pumpkins)`
+
+3. `pp_check(brms_pumpkins, type='scatter')`
