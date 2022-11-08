@@ -234,7 +234,7 @@ over time? To answer these questions, fit a binomial model with
 brms:</p>
 <pre><code> brm(Number_Yes | trials(Sample_Size) ~ Gender + Education + YEAR + (1|state),
             data=d, family=binomial(link=&#39;logit&#39;))</code></pre>
-<p>Explain the model, and use the results provide quantitative estimates
+<p>Explain the model, and use the results to provide quantitative estimates
 of how much cigarette use differs by state, education level, gender, and
 year.</p></li>
 <li><p>Use the fitted model to <em>predict</em> the percent of female

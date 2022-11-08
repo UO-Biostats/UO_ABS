@@ -501,6 +501,12 @@ mcmc_intervals(samps, regex_pars=c("b_PriPos.*")) +
     xlab("coefficient (logit scale)")
 ```
 
+## In the natural scale
+
+```{r moreviz}
+conditional_effects(logistic_fit, effects="PriPos")
+```
+
 ## Let's look at some players?
 
 `posterior_epred()` gives posterior samples of expected responses:
