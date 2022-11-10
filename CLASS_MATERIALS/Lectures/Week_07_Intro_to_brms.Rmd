@@ -269,6 +269,12 @@ of the effect of height on logit batting average?
 summary(bb_fit)
 ```
 
+## Kinda like $p$-values:
+
+```{r hyp_betas}
+hypothesis(bb_fit, "scaled_weight > 0")
+hypothesis(bb_fit, "scaled_height < 0")
+```
 -------------
 
 ```{r plot_coefs, message=FALSE}
@@ -280,6 +286,8 @@ mcmc_hist(bb_fit, pars=c("b_scaled_weight", "b_scaled_height"))
 ```{r plot_betas}
 mcmc_intervals(bb_fit, regex_pars="b_PriPos.*")
 ```
+
+
 
 # 2. The *mean*, $\mu = \E[Y]$.
 
@@ -336,7 +344,7 @@ ggplot(cbind(batting, bb_fitted)) +
 
 `posterior_epred( )`: posterior distribution of expected values
 
-Mean number of hits out of 50 at-bats
+*Expected* number of hits out of 50 at-bats
 for a shortstop of average weight that is 1.5 SD above average height?
 ```{r bb_pep}
 pp <- posterior_epred(bb_fit,
@@ -345,16 +353,40 @@ pp <- posterior_epred(bb_fit,
             scaled_weight=0,
             scaled_height=1.5,
             AtBats=50),
-        re_formula=NA
-)
+        re_formula=NULL,
+        allow_new_levels=TRUE)
 head(pp)
 ```
+
 
 -----------
 
 ```{r plot_pp}
 ggplot(data.frame(hits=pp)) + geom_histogram(aes(x=hits), bins=32)
 ```
+
+-----------
+
+Compare: same thing but `re_formula=NA`:
+```{r bb_pep2}
+pp2 <- posterior_epred(bb_fit,
+        newdata=data.frame(
+            PriPos="Shortstop",
+            scaled_weight=0,
+            scaled_height=1.5,
+            AtBats=50),
+        re_formula=NA
+)
+head(pp2)
+```
+
+
+-----------
+
+```{r plot_pp2}
+ggplot(data.frame(hits=c(pp, pp2), new_re=rep(c("include group effects", "no group effects"), each=length(pp)))) + geom_histogram(aes(x=hits), bins=32) + facet_wrap(~ new_re)
+```
+
 
 # 3. The response, $Y$:
 
@@ -423,12 +455,84 @@ subset(batting, Player == "Albert Pujols")[, c("Player", "PriPos", "Hits", "AtBa
 How would we use the posterior to summarize:
 
 1. Mean batting average of 1st base players of average weight and height?
-2. Range of batting averages of 1st base players?
-3. Albert Pujol's batting average?
+2. Range of batting averages of actual 1st base players?
+3. Albert Pujols' batting average?
 4. How many hits Albert Pujol would get out of 100 at bats?
 
 :::
 :::::::
+
+## IN CLASS
+
+*Mean batting average of 1st base players of average weight and height?*
+
+```{r inclass1}
+firstpost <- posterior_epred(
+    bb_fit,
+    newdata=data.frame(
+        PriPos="1st Base",
+        scaled_weight=0,
+        scaled_height=0,
+        AtBats=1
+    ),
+    re_formula=NA
+)
+hist(firstpost, breaks=40, xlab="batting average")
+```
+
+--------------
+
+*Range of batting averages of actual 1st base players?*
+We'll get the posterior distributions
+of the min and max batting averages.
+
+```{r inclass2}
+firstdf <- subset(batting, PriPos=="1st Base")
+firstdf$AtBats <- 1
+everyone_post <- posterior_epred(
+    bb_fit,
+    newdata=firstdf
+)
+minmaxpost <- data.frame(
+    min=rowMins(everyone_post),
+    max=rowMaxs(everyone_post)
+)
+layout(t(1:2))
+hist(minmaxpost[,1], breaks=40, title='min batting avg')
+hist(minmaxpost[,2], breaks=40, title='max batting avg')
+```
+
+---------------
+
+*Albert Pujols' batting average?*
+
+```{r inclass3}
+albert <- subset(batting,
+                   Player=="Albert Pujols"
+)
+albert$AtBats <- 1
+albert_post <- posterior_epred(
+    bb_fit,
+    newdata=albert
+)
+hist(albert_post, breaks=40,
+     main="Albert Pujols batting avg", xlab="batting avg")
+```
+
+
+------------------
+
+*How many hits Albert Pujol would get out of 100 at bats?*
+
+```{r inclass4}
+albert$AtBats <- 100
+albert_post <- posterior_predict(
+    bb_fit,
+    newdata=albert
+)
+hist(albert_post, breaks=40,
+     main="Albert Pujols hits out of 100", xlab="batting avg")
+```
 
 
 
@@ -490,7 +594,7 @@ pp_check(bb_fit, type='scatter')
 
 ##
 
-Let's first go back to the pumpkin data from Week 5:
+Let's first go back to the [pumpkin data](https://raw.githubusercontent.com/UO-Biostats/UO_ABS/master/CLASS_MATERIALS/Lectures/data/pumpkins.tsv) from Week 5:
 ```{r read_pumpkins, cache=TRUE}
 pumpkins <- read.table("data/pumpkins.tsv", header=TRUE)
 pumpkins$plot <- factor(pumpkins$plot)
