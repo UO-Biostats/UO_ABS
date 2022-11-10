@@ -20,7 +20,12 @@ description: useful links for Advanced Biological Statistics
 * An example of [debugging Stan convergence](../CLASS_MATERIALS/Tutorials/Improving_convergence_1.html)
 * A [technical look at brms](../CLASS_MATERIALS/Tutorials/using_brms.html)
 
-### Stan/brms
+### brms (and stan)
+
+* the [brms manual](https://paul-buerkner.github.io/brms/index.html)
+* the [bayesplot manual](http://mc-stan.org/bayesplot/index.html)
+* Rewrite of [Kruschke's models using brms (and tidyverse)](https://bookdown.org/content/3686/), by A. Solomon Kurz.
+* Rewrite of *Applied longitudinal data analysis* using [brms (and tidyverse)](https://bookdown.org/content/4253/) by A. Solomon Kurz
 
 * [Stan documentation](https://mc-stan.org/users/documentation/) 
     - the [Reference Manual](https://mc-stan.org/docs/reference-manual/index.html)
@@ -35,8 +40,6 @@ description: useful links for Advanced Biological Statistics
     each contains a Stan program, code for simulating data, real data, and model output and diagnostics
 * Vignette on [stanfit objects](https://cran.r-project.org/web/packages/rstan/vignettes/stanfit-objects.html)
 * Brief guide to [Stan's warnings](http://mc-stan.org/misc/warnings)
-* Rewrite of [Kruschke's models using brms (and tidyverse)](https://bookdown.org/content/3686/), by A. Solomon Kurz.
-* Rewrite of *Applied longitudinal data analysis* using [brms (and tidyverse)](https://bookdown.org/content/4253/) by A. Solomon Kurz
 
 ### Other books
 

@@ -35,6 +35,7 @@ d.parent(".dropdown-menu").length&&(d=d.closest("li.dropdown").addClass("active"
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "all"} } });
 </script>
+
 \[%%
 % Add your macros here; they&#39;ll be included in pdf and html output.
 %%
@@ -44,10 +45,13 @@ d.parent(".dropdown-menu").length&&(d=d.closest("li.dropdown").addClass("active"
 \renewcommand{\P}{\mathbb{P}}  % probability
 \DeclareMathOperator{\logit}{logit}
 \DeclareMathOperator{\logistic}{logistic}
+\DeclareMathOperator{\SE}{SE}
 \DeclareMathOperator{\sd}{sd}
 \DeclareMathOperator{\var}{var}
 \DeclareMathOperator{\cov}{cov}
+\DeclareMathOperator{\cor}{cor}
 \DeclareMathOperator{\Normal}{Normal}
+\DeclareMathOperator{\MVN}{MVN}
 \DeclareMathOperator{\LogNormal}{logNormal}
 \DeclareMathOperator{\Poisson}{Poisson}
 \DeclareMathOperator{\Beta}{Beta}
@@ -96,9 +100,9 @@ hljs.initHighlightingOnLoad();
 
 </script>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
+pre:not([class]) {
+background-color: white;
+}
 </style>
 <script type="text/javascript">
 if (window.hljs && document.readyState && document.readyState === "complete") {
@@ -116,18 +120,15 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 <style type="text/css">
 .main-container {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
+max-width: 940px;
+margin-left: auto;
+margin-right: auto;
 }
 code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
+color: inherit;
+background-color: rgba(0, 0, 0, 0.04);
 }
-img { 
-  max-width:100%; 
-  height: auto; 
-}
+img { max-width:100%; height: auto; }
 </style>
 <div class="container-fluid main-container">
 
@@ -135,22 +136,31 @@ img {
 <div id="header">
 <h1 class="title">Using brms</h1>
 <h4 class="author"><em>Peter Ralph</em></h4>
-<h4 class="date"><em>Mon Jan 6 11:54:42 2020</em></h4>
+<h4 class="date"><em>Wed Nov 9 20:59:03 2022</em></h4>
 </div>
 
 
 <section id="running-brms" class="level1">
 <h1>Running brms</h1>
-<p>The paper introducing <code>brms</code>, available through <code>vignette(&quot;brms_overview&quot;)</code>, provides a good technical introduction to how <code>brms</code> works.</p>
+<p>The paper introducing <code>brms</code>, available through
+<code>vignette(&quot;brms_overview&quot;)</code>, provides a good technical
+introduction to how <code>brms</code> works.</p>
 <p>Some other useful places for documentation are:</p>
 <ul>
 <li>Vignettes listed under <code>vignette(package=&#39;brms&#39;)</code></li>
-<li><code>help(brmsformula)</code> - very detailed! Describes all (?) the modeling options.</li>
-<li><code>help(brmsfamily)</code> - lists defaults, etcetera for each <code>family</code>.</li>
+<li><code>help(brmsformula)</code> - very detailed! Describes all (?)
+the modeling options.</li>
+<li><code>help(brmsfamily)</code> - lists defaults, etcetera for each
+<code>family</code>.</li>
 <li><code>help(set_prior)</code> for how to choose priors</li>
-<li><code>methods(class = &quot;brmsfit&quot;)</code> for methods of a brmsfit object</li>
+<li><code>methods(class = &quot;brmsfit&quot;)</code> for methods of a brmsfit
+object</li>
 </ul>
-<p>Here, we’ll look under the hood, in detail, at one of its examples, the <code>kidney</code> dataset, whose analysis is described in the <code>brms_overview</code> vignette. This has data describing the first and (possibly) second recurrence time of infection in thirty-eight patients.</p>
+<p>Here, we’ll look under the hood, in detail, at one of its examples,
+the <code>kidney</code> dataset, whose analysis is described in the
+<code>brms_overview</code> vignette. This has data describing the first
+and (possibly) second recurrence time of infection in thirty-eight
+patients.</p>
 <pre class="r"><code>library(brms)
 data(kidney)
 kidney$patient &lt;- factor(kidney$patient)
@@ -170,41 +180,43 @@ head(kidney)</code></pre>
             set_prior(&quot;lkj(2)&quot;, class = &quot;cor&quot;)),
             warmup = 1000, iter = 2000, chains = 4,
             control = list(adapt_delta = 0.95))</code></pre>
-<pre><code>## Compiling the C++ model</code></pre>
+<pre><code>## Compiling Stan program...</code></pre>
 <pre><code>## Start sampling</code></pre>
 <pre class="r"><code>fit1</code></pre>
 <pre><code>##  Family: lognormal 
 ##   Links: mu = identity; sigma = identity 
 ## Formula: time | cens(censored) ~ age * sex + disease + (1 + age | patient) 
 ##    Data: kidney (Number of observations: 76) 
-## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
-##          total post-warmup samples = 4000
+##   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 4000
 ## 
 ## Group-Level Effects: 
 ## ~patient (Number of levels: 38) 
 ##                    Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)          0.40      0.29     0.01     1.04 1.01     1074     1801
-## sd(age)                0.01      0.01     0.00     0.02 1.00     1173     1951
-## cor(Intercept,age)    -0.13      0.46    -0.87     0.78 1.00     2831     2802
+## sd(Intercept)          0.41      0.29     0.02     1.09 1.00     1179     2016
+## sd(age)                0.01      0.01     0.00     0.02 1.00      794     1249
+## cor(Intercept,age)    -0.17      0.46    -0.89     0.74 1.00     1985     1817
 ## 
 ## Population-Level Effects: 
 ##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept         2.72      0.98     0.77     4.63 1.00     1875     2284
-## age               0.01      0.03    -0.04     0.06 1.00     1584     1943
-## sexfemale         2.43      1.13     0.27     4.68 1.00     1773     1924
-## diseaseGN        -0.40      0.53    -1.47     0.63 1.00     2203     2832
-## diseaseAN        -0.52      0.52    -1.51     0.53 1.00     2153     2552
-## diseasePKD        0.60      0.73    -0.86     2.03 1.00     2412     2873
-## age:sexfemale    -0.02      0.03    -0.07     0.03 1.00     1720     1772
+## Intercept         2.74      0.98     0.84     4.70 1.00     1475     1999
+## age               0.01      0.03    -0.03     0.06 1.00     1070     1629
+## sexfemale         2.42      1.16     0.13     4.74 1.00     1229     1867
+## diseaseGN        -0.37      0.53    -1.42     0.66 1.00     1930     2045
+## diseaseAN        -0.50      0.51    -1.54     0.51 1.00     2360     2636
+## diseasePKD        0.62      0.73    -0.78     2.01 1.00     2053     2693
+## age:sexfemale    -0.02      0.03    -0.08     0.03 1.00     1031     1628
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     1.15      0.13     0.92     1.41 1.00     3130     3159
+## sigma     1.14      0.13     0.91     1.43 1.00     2271     2467
 ## 
-## Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
-## is a crude measure of effective sample size, and Rhat is the potential 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
 ## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-<p>Note that the <code>cens(censored)</code> call is documented in <code>help(&quot;addition-terms&quot;)</code> and <code>help(brmsformula)</code>, which says that</p>
+<p>Note that the <code>cens(censored)</code> call is documented in
+<code>help(&quot;addition-terms&quot;)</code> and <code>help(brmsformula)</code>,
+which says that</p>
 <pre><code>     With the exception of categorical, ordinal, and mixture families,
      left, right, and interval censoring can be modeled through ‘y |
      cens(censored) ~ predictors’. The censoring variable (named
@@ -221,32 +233,56 @@ head(kidney)</code></pre>
 </section>
 <section id="the-model" class="level1">
 <h1>The model</h1>
-<p>Translating the formula, we’re trying to fit the following Bayesian hierarchical model. Let <span class="math inline">\(\text{time}_i\)</span> be the <span class="math inline">\(i\)</span>th time, with <span class="math inline">\(\text{censored}_i = 0\)</span> if this is a recurrence, and <span class="math inline">\(\text{censored}_i = 1\)</span> otherwise (i.e., if it is censored). Let’s use <span class="math inline">\(S_i\)</span> to denote the <em>actual</em> recurrence time. Then the basic model is <span class="math display">\[\begin{aligned}
+<p>Translating the formula, we’re trying to fit the following Bayesian
+hierarchical model. Let <span class="math inline">\(\text{time}_i\)</span> be the <span class="math inline">\(i\)</span>th time, with <span class="math inline">\(\text{censored}_i = 0\)</span> if this is a
+recurrence, and <span class="math inline">\(\text{censored}_i =
+1\)</span> otherwise (i.e., if it is censored). Let’s use <span class="math inline">\(S_i\)</span> to denote the <em>actual</em>
+recurrence time. Then the basic model is <span class="math display">\[\begin{aligned}
     \text{time}_i &amp;= S_i \qquad \text{if } \text{censored}_i = 0 \\
-    \text{time}_i &amp;&lt; S_i \qquad \text{if } \text{censored}_i = 1 \\
+    \text{time}_i &amp;&lt; S_i \qquad \text{if } \text{censored}_i = 1
+\\
     S_i &amp;\sim \LogNormal(\mu_i, \sigma) .
-\end{aligned}\]</span> How does <span class="math inline">\(\mu\)</span> relate to the linear predictor? Well, since a link is not specified, checking <code>help(brmsfamily)</code> tells us that the defaults are</p>
+\end{aligned}\]</span> How does <span class="math inline">\(\mu\)</span>
+relate to the linear predictor? Well, since a link is not specified,
+checking <code>help(brmsfamily)</code> tells us that the defaults
+are</p>
 <pre><code>     lognormal(link = &quot;identity&quot;, link_sigma = &quot;log&quot;)</code></pre>
 <p>and so the parameterization will be equivalent to: <span class="math display">\[\begin{aligned}
     \mu_i = \alpha
-            + \beta_\text{age, sex$_i$} \text{age}_i 
+            + \beta_\text{age, sex$_i$} \text{age}_i
             + \beta_\text{disease} \text{disease}_i
             + \nu_\text{patient$_i$}
             + \nu_\text{age, patient$_i$} \text{age}_i
-\end{aligned}\]</span> Here <span class="math inline">\(\alpha\)</span> is the intercept, and the various <span class="math inline">\(\beta\)</span> and <span class="math inline">\(\nu\)</span> are other parameters. This is overparameterized; we’ll verify what parameters are actually used below.</p>
+\end{aligned}\]</span> Here <span class="math inline">\(\alpha\)</span>
+is the intercept, and the various <span class="math inline">\(\beta\)</span> and <span class="math inline">\(\nu\)</span> are other parameters. This is
+overparameterized; we’ll verify what parameters are actually used
+below.</p>
 <p>For priors, we have for the “fixed effects”: <span class="math display">\[\begin{aligned}
     \beta_\text{age, s} &amp;\sim \Normal(0, 5) .
-\end{aligned}\]</span> There is no prior specified in the call for the (“random” or “group”) patient-specific effects, <span class="math inline">\(\nu\)</span>, and in fact there doesn’t seem to be a way to specify their priors directly: the prior on <span class="math inline">\((\nu_p, \nu_{a,p})\)</span> will always be Normal, (but by default correlated between patients <span class="math inline">\(p\)</span>). The prior standard deviations of each of these two effects are specified, though; this is the <code>class = &quot;sd&quot;</code> argument to <code>brm( )</code> above: <span class="math display">\[\begin{aligned}
-    (\nu_\text{patient$_i$}, \nu_\text{patient$_i$, age$_i$}) &amp;\sim \Normal(0, \mathop{diag}(\sigma) L L^T \mathop{diag}(\sigma) ) \\
+\end{aligned}\]</span> There is no prior specified in the call for the
+(“random” or “group”) patient-specific effects, <span class="math inline">\(\nu\)</span>, and in fact there doesn’t seem to be
+a way to specify their priors directly: the prior on <span class="math inline">\((\nu_p, \nu_{a,p})\)</span> will always be Normal,
+(but by default correlated between patients <span class="math inline">\(p\)</span>). The prior standard deviations of each
+of these two effects are specified, though; this is the
+<code>class = &quot;sd&quot;</code> argument to <code>brm( )</code> above: <span class="math display">\[\begin{aligned}
+    (\nu_\text{patient$_i$}, \nu_\text{patient$_i$, age$_i$}) &amp;\sim
+\Normal(0, \mathop{diag}(\sigma) L L^T \mathop{diag}(\sigma) ) \\
     \sigma_{1} &amp;\sim \Cauchy(0, 2) \\
     \sigma_{2} &amp;\sim \Cauchy(0, 2) \\
     L &amp;\sim LKJ(2)
-\end{aligned}\]</span> The last term is an LKJ prior on the correlation matrix.</p>
-<p>The only remaining aspect of the model (not specified in the <code>brm()</code> call) is the intercept, <span class="math inline">\(\alpha\)</span>. For discussion of the prior on <em>this</em> (which is somewhat involved because of mean-centering), see <code>help(brmsformula)</code>.</p>
+\end{aligned}\]</span> The last term is an LKJ prior on the correlation
+matrix.</p>
+<p>The only remaining aspect of the model (not specified in the
+<code>brm()</code> call) is the intercept, <span class="math inline">\(\alpha\)</span>. For discussion of the prior on
+<em>this</em> (which is somewhat involved because of mean-centering),
+see <code>help(brmsformula)</code>.</p>
 </section>
 <section id="the-stan-model" class="level1">
 <h1>The Stan model</h1>
-<p>Let’s make sure we understand exactly what’s going on here. Use the source, Rey: let’s look at the underlying Stan code. The call <code>stancode(fit1)</code> produces this, which we’ll look at in pieces.</p>
+<p>Let’s make sure we understand exactly what’s going on here. Use the
+source, Rey: let’s look at the underlying Stan code. The call
+<code>stancode(fit1)</code> produces this, which we’ll look at in
+pieces.</p>
 <section id="the-data-block" class="level2">
 <h2>The data block</h2>
 <p>First, comes the <code>data</code> block:</p>
@@ -269,7 +305,10 @@ data {
   int&lt;lower=1&gt; NC_1;  // number of group-level correlations
   int prior_only;  // should the likelihood be ignored?
 }</code></pre>
-<p>It is pretty generic, since presumably the same structure gets used for many types of model, but it is <em>commented</em> – nice! We can check that the data that <code>brms</code> actually passes to Stan matches this: <code>standata(fit1)</code> returns this:</p>
+<p>It is pretty generic, since presumably the same structure gets used
+for many types of model, but it is <em>commented</em> – nice! We can
+check that the data that <code>brms</code> actually passes to Stan
+matches this: <code>standata(fit1)</code> returns this:</p>
 <pre class="r"><code>str(standata(fit1))</code></pre>
 <pre><code>## List of 12
 ##  $ N         : int 76
@@ -299,10 +338,11 @@ data {
 ##  $ J_1       : int [1:76(1d)] 1 2 3 4 5 6 7 8 9 10 ...
 ##  $ N_1       : int 38
 ##  $ M_1       : int 2
-##  $ NC_1      : num 1
+##  $ NC_1      : int 1
 ##  $ prior_only: int 0
-##  - attr(*, &quot;class&quot;)= chr &quot;standata&quot;</code></pre>
-<p>A key object here is <code>X</code>, the design matrix for the covariates. In this case, this is</p>
+##  - attr(*, &quot;class&quot;)= chr [1:2] &quot;standata&quot; &quot;list&quot;</code></pre>
+<p>A key object here is <code>X</code>, the design matrix for the
+covariates. In this case, this is</p>
 <pre class="r"><code>head(standata(fit1)$X)</code></pre>
 <pre><code>##   Intercept age sexfemale diseaseGN diseaseAN diseasePKD age:sexfemale
 ## 1         1  28         0         0         0          0             0
@@ -311,7 +351,8 @@ data {
 ## 4         1  31         1         0         0          0            31
 ## 5         1  10         0         0         0          0             0
 ## 6         1  16         1         0         0          0            16</code></pre>
-<p>The transformed data block just centers the columns of <code>X</code>, producing <code>Xc</code>:</p>
+<p>The transformed data block just centers the columns of
+<code>X</code>, producing <code>Xc</code>:</p>
 <pre><code>transformed data {
   int Kc = K - 1;
   matrix[N, Kc] Xc;  // centered version of X without an intercept
@@ -321,11 +362,16 @@ data {
     Xc[, i - 1] = X[, i] - means_X[i - 1];
   }
 }</code></pre>
-<p>Note also that the term <code>(1 + age | patient)</code> has produced <code>standata(fit1)$M_1 = 2</code> coefficients for each of the <code>standata(fit1)$N_1 = 38</code> levels of the <code>patient</code> factor.</p>
+<p>Note also that the term <code>(1 + age | patient)</code> has produced
+<code>standata(fit1)$M_1 = 2</code> coefficients for each of the
+<code>standata(fit1)$N_1 = 38</code> levels of the <code>patient</code>
+factor.</p>
 </section>
 <section id="the-parameters-block" class="level2">
 <h2>The parameters block</h2>
-<p>There are five (vectors or matrices) of coefficents and one (Cholesky factor of a) correlation matrix in the <code>parameters</code> block:</p>
+<p>There are five (vectors or matrices) of coefficents and one (Cholesky
+factor of a) correlation matrix in the <code>parameters</code>
+block:</p>
 <pre><code>parameters {
   vector[Kc] b;  // population-level effects
   // temporary intercept for centered predictors
@@ -338,16 +384,23 @@ data {
 }</code></pre>
 <p>Here, there is:</p>
 <ul>
-<li>one <code>b</code> for each column of the design matrix, <code>X</code>;</li>
+<li>one <code>b</code> for each column of the design matrix,
+<code>X</code>;</li>
 <li>an <code>Intercept</code>;</li>
-<li>a standard deviation, <code>sigma</code>, for the logNormal response</li>
-<li>two <code>sd_1</code>s for the <code>patient</code> effects: one for the patient-specific intercept, and one for the patient-specific age effect</li>
-<li>a (2 x 38) matrix <code>z_1</code> encoding each of the <code>patient</code> effects, decorrelated</li>
-<li>a (Cholesky factor for the 2 x 2) correlation matrix for the two <code>patient</code> effects</li>
+<li>a standard deviation, <code>sigma</code>, for the logNormal
+response</li>
+<li>two <code>sd_1</code>s for the <code>patient</code> effects: one for
+the patient-specific intercept, and one for the patient-specific age
+effect</li>
+<li>a (2 x 38) matrix <code>z_1</code> encoding each of the
+<code>patient</code> effects, decorrelated</li>
+<li>a (Cholesky factor for the 2 x 2) correlation matrix for the two
+<code>patient</code> effects</li>
 </ul>
 <p>In <em>transformed parameters</em> we get</p>
 <ul>
-<li><code>r_1</code>, the (38 x 2) matrix of the <em>actual</em> patent effects</li>
+<li><code>r_1</code>, the (38 x 2) matrix of the <em>actual</em> patent
+effects</li>
 </ul>
 <p>and some stuff for optimization.</p>
 <pre><code>transformed parameters {
@@ -368,18 +421,33 @@ data {
     // add more terms to the linear predictor
     mu[n] += r_1_1[J_1[n]] * Z_1_1[n] + r_1_2[J_1[n]] * Z_1_2[n];
   }</code></pre>
-<p>Then, comes the sampling statements. Recall that <code>target += normal_lpdf(b | 0, 5);</code> is the same as <code>b ~ normal(0, 5);</code>, so these are priors:</p>
+<p>Then, comes the sampling statements. Recall that
+<code>target += normal_lpdf(b | 0, 5);</code> is the same as
+<code>b ~ normal(0, 5);</code>, so these are priors:</p>
 <pre><code>  // priors including all constants
   target += normal_lpdf(b | 0,5);
   target += student_t_lpdf(Intercept | 3, 4, 10);</code></pre>
-<p>The strange terms here, e.g., subtracting off <code>student_t_lccdf(0 | ...)</code> are because we’ve got a <em>half</em> Student’s <span class="math inline">\(t\)</span> prior (i.e., we condition on it being above 0), so brms is (admirably) keeping the log posterior density correct, even up to constants. (Here, <code>_lcdf</code> is “log cumulative distribution function”, and <code>_lccdf</code> is &quot;log complementary cumulative distribution function.)</p>
+<p>The strange terms here, e.g., subtracting off
+<code>student_t_lccdf(0 | ...)</code> are because we’ve got a
+<em>half</em> Student’s <span class="math inline">\(t\)</span> prior
+(i.e., we condition on it being above 0), so brms is (admirably) keeping
+the log posterior density correct, even up to constants. (Here,
+<code>_lcdf</code> is “log cumulative distribution function”, and
+<code>_lccdf</code> is “log complementary cumulative distribution
+function.)</p>
 <pre><code>  target += student_t_lpdf(sigma | 3, 0, 10)
     - 1 * student_t_lccdf(0 | 3, 0, 10);
   target += cauchy_lpdf(sd_1 | 0,2)
     - 2 * cauchy_lccdf(0 | 0,2);
   target += normal_lpdf(to_vector(z_1) | 0, 1);
   target += lkj_corr_cholesky_lpdf(L_1 | 2);</code></pre>
-<p>And, here’s where censoring comes in: if the observation is not censored (if <code>cens[n] == 0</code>) then the sampling statement is as usual, adding <code>lognormal_lpdf(Y[n] | mu[n], sigma)</code>; but if it is right-censored (<code>cens[n] == 1</code>), then we need to add the log probability that the logNormal is <em>greater than</em> <code>Y[n]</code>, and so add <code>lognormmal_lccdf(Y[n] | mu[n], sigma)</code>.</p>
+<p>And, here’s where censoring comes in: if the observation is not
+censored (if <code>cens[n] == 0</code>) then the sampling statement is
+as usual, adding <code>lognormal_lpdf(Y[n] | mu[n], sigma)</code>; but
+if it is right-censored (<code>cens[n] == 1</code>), then we need to add
+the log probability that the logNormal is <em>greater than</em>
+<code>Y[n]</code>, and so add
+<code>lognormmal_lccdf(Y[n] | mu[n], sigma)</code>.</p>
 <pre><code>  // likelihood including all constants
   if (!prior_only) {
     for (n in 1:N) {
@@ -398,7 +466,10 @@ data {
 </section>
 <section id="generated-quantities" class="level2">
 <h2>Generated quantities</h2>
-<p>Here’s where two normalizations for optimization get undone: the mean-centering of <code>X</code>, and the decorrelation of patient effects, extracting the non-mean-centered intercept and the actual correlation matrix of patient effects.</p>
+<p>Here’s where two normalizations for optimization get undone: the
+mean-centering of <code>X</code>, and the decorrelation of patient
+effects, extracting the non-mean-centered intercept and the actual
+correlation matrix of patient effects.</p>
 <pre><code>generated quantities {
   // actual population-level intercept
   real b_Intercept = Intercept - dot_product(means_X, b);
@@ -416,136 +487,172 @@ data {
 </section>
 <section id="extracting-information" class="level1">
 <h1>Extracting information</h1>
-<p>Ok, now that we know precisely what’s being estimated, what information can we get out of the fitted model?</p>
-<p>One thing useful to know about is the concept of <em>distributional parameters</em>, or “dpars”. These are the parameters to the response distribution: for instance, those of the logNormal are <code>mu</code> and <code>sigma</code>:</p>
+<p>Ok, now that we know precisely what’s being estimated, what
+information can we get out of the fitted model?</p>
+<p>One thing useful to know about is the concept of <em>distributional
+parameters</em>, or “dpars”. These are the parameters to the response
+distribution: for instance, those of the logNormal are <code>mu</code>
+and <code>sigma</code>:</p>
 <pre class="r"><code>fit1$family$dpars</code></pre>
 <pre><code>## [1] &quot;mu&quot;    &quot;sigma&quot;</code></pre>
-<p>Since the (transformed) linear predictor is turned into <code>mu</code>, this means that each observation has it’s own posterior distribution on <code>mu</code> (and on <code>sigma</code>, too).</p>
+<p>Since the (transformed) linear predictor is turned into
+<code>mu</code>, this means that each observation has it’s own posterior
+distribution on <code>mu</code> (and on <code>sigma</code>, too).</p>
 <section id="posterior_samples-all-the-samples" class="level2">
 <h2><code>posterior_samples( )</code> : All the samples</h2>
-<p>A straightforward way to get the samples out of the <code>brmsfit</code> object is to use <code>posterior_samples( )</code> (or <code>as.matrix( )</code>) on it; this will give you one column per parameter and one row per sample. Specific parameters can be obtained by the <code>pars</code> argument (which takes regular expressions). For instance, here are posterior samples of the “slope” parameters:</p>
+<p>A straightforward way to get the samples out of the
+<code>brmsfit</code> object is to use <code>posterior_samples( )</code>
+(or <code>as.matrix( )</code>) on it; this will give you one column per
+parameter and one row per sample. Specific parameters can be obtained by
+the <code>pars</code> argument (which takes regular expressions). For
+instance, here are posterior samples of the “slope” parameters:</p>
 <pre class="r"><code>head(posterior_samples(fit1, pars=&quot;b_&quot;))</code></pre>
-<pre><code>##   b_Intercept      b_age b_sexfemale b_diseaseGN b_diseaseAN b_diseasePKD b_age:sexfemale
-## 1    1.043771 0.05053808    3.838284  -0.6508190  -0.4624490    0.7665921     -0.05425362
-## 2    2.832988 0.01481519    2.158909  -0.9401550  -0.2148529    0.5625642     -0.02338348
-## 3    1.819965 0.03902285    3.749548  -0.4582374  -2.4208881    0.3681958     -0.04008815
-## 4    1.834780 0.05432978    2.348745  -1.2991449  -1.2454812   -1.0897825     -0.02191795
-## 5    2.355912 0.04748569    2.080690  -1.2201985  -1.3990708   -1.0805727     -0.02124655
-## 6    3.275309 0.01278897    2.684692  -0.8875593  -0.5054072    0.7073028     -0.03553824</code></pre>
+<pre><code>##   b_Intercept        b_age b_sexfemale b_diseaseGN b_diseaseAN b_diseasePKD b_age:sexfemale
+## 1    2.041359  0.039193905   4.4811974  -0.8015959 -0.65459314    0.3064934     -0.07510717
+## 2    4.927252 -0.032136290  -0.2090837  -0.4479103 -0.09809829    0.8209213      0.02781259
+## 3    4.323357 -0.027484442   0.5044778  -0.4336619  0.10034811    0.6383120      0.02536837
+## 4    4.169794 -0.022590576   0.1477550  -0.4698482 -0.86476422    0.9181340      0.03824760
+## 5    5.125690 -0.042474171  -0.6314809  -0.5944212 -0.39030076    1.2497668      0.04456000
+## 6    2.800304  0.009680656   2.1796588  -0.2117511 -0.75716502    0.2059602     -0.01259277</code></pre>
 <p>and here are the SD and correlation parameters:</p>
 <pre class="r"><code>head(posterior_samples(fit1, pars=c(&quot;sd&quot;, &quot;cor&quot;, &quot;sigma&quot;)))</code></pre>
-<pre><code>##   sd_patient__Intercept sd_patient__age cor_patient__Intercept__age     sigma
-## 1             0.6089514     0.004767654                  0.37070648 1.0448740
-## 2             0.7033869     0.001957058                 -0.64477996 0.9060083
-## 3             0.6582902     0.008514933                  0.80973729 1.0902855
-## 4             1.0077927     0.008282485                 -0.49195571 1.0534181
-## 5             1.2004937     0.009011539                 -0.62717659 1.0354015
-## 6             0.5571578     0.008512882                 -0.05170612 1.0239400</code></pre>
+<pre><code>##   sd_patient__Intercept sd_patient__age cor_patient__Intercept__age    sigma
+## 1           0.243324980    1.431458e-04                  -0.6145436 1.293972
+## 2           0.009494062    1.995648e-05                   0.5904942 1.139450
+## 3           0.025387962    6.603650e-05                   0.8473875 1.308999
+## 4           0.268901508    3.632726e-05                   0.9405463 1.302209
+## 5           0.103122401    1.234581e-05                   0.7234974 1.345990
+## 6           0.044433133    1.663014e-05                  -0.5477178 1.022988</code></pre>
 <p>and here are some of the patient-specific effects:</p>
 <pre class="r"><code>head(posterior_samples(fit1, pars=&quot;^r_&quot;))[,1:5]</code></pre>
 <pre><code>##   r_patient[1,Intercept] r_patient[2,Intercept] r_patient[3,Intercept] r_patient[4,Intercept] r_patient[5,Intercept]
-## 1            -0.41390006             -1.2382426             0.05416522             0.86837218             1.42418880
-## 2             0.35974675             -0.4855881            -0.38277992             0.65731419             0.07161190
-## 3            -0.56551764             -0.4528248             0.49859623             0.07729513             0.53742534
-## 4             0.01828551             -1.2411204            -0.78619099             0.70084796             0.18927338
-## 5             0.09126765             -1.6675468            -0.96632166             0.82190870             0.01673659
-## 6            -0.08100823              0.3912830            -0.31401409             0.15593497            -0.14961808</code></pre>
+## 1             0.50150450           -0.086635015            -0.38823154           -0.146653443           -0.161207530
+## 2            -0.01450695            0.001081755             0.01151147            0.013138762           -0.002226891
+## 3            -0.03131236           -0.026826527            -0.00705684            0.006915832           -0.046216653
+## 4            -0.11871762           -0.595192980             0.09752397            0.293331071           -0.229389286
+## 5            -0.15855766           -0.172572301             0.08654596           -0.012225816           -0.136896996
+## 6            -0.02309118            0.032195989            -0.03540636            0.030838992           -0.033534607</code></pre>
 </section>
 <section id="fixef-fixed-effects" class="level2">
 <h2><code>fixef( )</code> : fixed effects</h2>
-<p>The “fixed effects” (i.e., the <code>b_</code> parameters) can be extracted with <code>fixef( )</code>, either as a summary table (if <code>summary=TRUE</code>) or as a matrix of samples (otherwise). Here it is for this model:</p>
+<p>The “fixed effects” (i.e., the <code>b_</code> parameters) can be
+extracted with <code>fixef( )</code>, either as a summary table (if
+<code>summary=TRUE</code>) or as a matrix of samples (otherwise). Here
+it is for this model:</p>
 <pre class="r"><code>fixef(fit1)</code></pre>
 <pre><code>##                  Estimate  Est.Error        Q2.5      Q97.5
-## Intercept      2.72370132 0.98305696  0.77465586 4.62971815
-## age            0.01479766 0.02532772 -0.03502140 0.06487419
-## sexfemale      2.42859555 1.13082169  0.27192208 4.67561291
-## diseaseGN     -0.40497541 0.53322711 -1.47108690 0.63462065
-## diseaseAN     -0.52414603 0.51809903 -1.51024304 0.53086585
-## diseasePKD     0.60185573 0.73079216 -0.85802675 2.03092654
-## age:sexfemale -0.02178832 0.02603389 -0.07365413 0.02881635</code></pre>
-<p>The <code>Estimate</code> and <code>Est.Error</code> columns give the mean and SD, respectively, of the posterior distributions of the listed parameters.</p>
+## Intercept      2.74297839 0.98179304  0.84025703 4.69512966
+## age            0.01402661 0.02530538 -0.03450567 0.06385842
+## sexfemale      2.41837062 1.16469139  0.12983696 4.73713428
+## diseaseGN     -0.36751978 0.52518004 -1.41939034 0.66052565
+## diseaseAN     -0.50043002 0.50891622 -1.53753157 0.50840965
+## diseasePKD     0.62207929 0.72807200 -0.78246718 2.00589764
+## age:sexfemale -0.02159992 0.02681184 -0.07532626 0.03058815</code></pre>
+<p>The <code>Estimate</code> and <code>Est.Error</code> columns give the
+mean and SD, respectively, of the posterior distributions of the listed
+parameters.</p>
 </section>
 <section id="ranef-random-effects" class="level2">
 <h2><code>ranef( )</code> : “random” effects</h2>
-<p>The “group-level” effects - here, the patient-specific intercepts and slopes - are returned, as a 3D array, by <code>ranef( )</code>, in a similar format to <code>fixef( )</code>. For instance, here are the patient-specific age effects:</p>
+<p>The “group-level” effects - here, the patient-specific intercepts and
+slopes - are returned, as a 3D array, by <code>ranef( )</code>, in a
+similar format to <code>fixef( )</code>. For instance, here are the
+patient-specific age effects:</p>
 <pre class="r"><code>head(ranef(fit1, pars=&#39;age&#39;))</code></pre>
 <pre><code>## $patient
 ## , , age
 ## 
 ##         Estimate   Est.Error        Q2.5      Q97.5
-## 1  -1.248353e-03 0.010228262 -0.02480145 0.01991644
-## 2  -2.499683e-03 0.009494461 -0.02538772 0.01466784
-## 3   1.931617e-04 0.009793658 -0.02134204 0.02127998
-## 4   2.198256e-03 0.009891963 -0.01726341 0.02500553
-## 5   4.445090e-06 0.010714607 -0.02305753 0.02209148
-## 6  -3.839409e-04 0.010250048 -0.02237757 0.02080066
-## 7  -3.568175e-03 0.009709885 -0.02639559 0.01416723
-## 8   1.520523e-03 0.009207552 -0.01651290 0.02208039
-## 9   1.761712e-03 0.008206630 -0.01462302 0.01996909
-## 10  2.557678e-03 0.009674017 -0.01510790 0.02522004
-## 11 -1.137050e-03 0.009545670 -0.02268559 0.01869127
-## 12 -2.906004e-06 0.010062210 -0.02135451 0.02110060
-## 13 -5.725744e-04 0.009704052 -0.02214098 0.01917098
-## 14  4.127712e-03 0.010794522 -0.01366511 0.03113108
-## 15  5.744211e-04 0.010875599 -0.02304416 0.02439097
-## 16 -6.847018e-05 0.009330083 -0.02016338 0.01963184
-## 17  1.616055e-03 0.008999782 -0.01543608 0.02222165
-## 18  9.685211e-04 0.009096903 -0.01814827 0.02054324
-## 19  4.321489e-03 0.010799507 -0.01347722 0.03161748
-## 20 -1.884421e-03 0.009297734 -0.02300590 0.01560208
-## 21  5.420694e-03 0.011254831 -0.01243756 0.03295435
-## 22  1.645949e-03 0.010324131 -0.01844898 0.02552681
-## 23 -2.999297e-03 0.008828635 -0.02424898 0.01252458
-## 24  8.350436e-05 0.009555792 -0.02057604 0.01980092
-## 25  1.120078e-03 0.009674070 -0.01837762 0.02274927
-## 26  4.663177e-03 0.009895198 -0.01208115 0.02861943
-## 27 -1.128841e-04 0.010218647 -0.02287984 0.02164806
-## 28 -2.820337e-03 0.009715606 -0.02545485 0.01535300
-## 29 -4.105795e-03 0.010397499 -0.03022921 0.01321739
-## 30 -1.358309e-03 0.008853760 -0.02135696 0.01602564
-## 31 -1.957701e-03 0.008852073 -0.02192602 0.01524163
-## 32 -9.209905e-04 0.009777600 -0.02207263 0.01900341
-## 33 -4.474990e-03 0.010207285 -0.02953851 0.01251723
-## 34  1.551715e-03 0.010092574 -0.01867624 0.02479246
-## 35 -2.114009e-03 0.011524814 -0.02785026 0.01960084
-## 36  1.150592e-03 0.010379110 -0.01963359 0.02548478
-## 37 -2.566435e-03 0.009931970 -0.02702742 0.01608300
-## 38 -3.892830e-05 0.009261197 -0.02021361 0.02047529</code></pre>
+## 1  -1.228074e-03 0.010599731 -0.02394011 0.01987465
+## 2  -2.279677e-03 0.010314875 -0.02698522 0.01726670
+## 3  -5.515474e-06 0.010235396 -0.02128074 0.02219155
+## 4   2.070935e-03 0.010917735 -0.01841183 0.02733859
+## 5  -6.172472e-05 0.010461073 -0.02199139 0.02238146
+## 6  -6.709983e-04 0.010372109 -0.02295300 0.02056866
+## 7  -3.703092e-03 0.010176718 -0.02817039 0.01383671
+## 8   1.320567e-03 0.009127154 -0.01692709 0.02216013
+## 9   1.837007e-03 0.008716498 -0.01465174 0.02185969
+## 10  2.953904e-03 0.009477916 -0.01458713 0.02587324
+## 11 -1.739521e-03 0.009600864 -0.02522923 0.01581569
+## 12  2.007554e-04 0.010316832 -0.02179273 0.02228575
+## 13 -6.964507e-04 0.010144372 -0.02347726 0.02073956
+## 14  3.989352e-03 0.011400428 -0.01563742 0.03179674
+## 15  5.205242e-04 0.011170096 -0.02387479 0.02428181
+## 16  1.859519e-04 0.009563485 -0.01937539 0.02218193
+## 17  1.799486e-03 0.009351846 -0.01543432 0.02339253
+## 18  1.141962e-03 0.009790292 -0.01789273 0.02292219
+## 19  3.862817e-03 0.010877725 -0.01392571 0.03059823
+## 20 -1.732127e-03 0.010033630 -0.02532850 0.01719203
+## 21  5.398422e-03 0.011829486 -0.01389832 0.03390025
+## 22  1.512313e-03 0.011292346 -0.02129536 0.02654629
+## 23 -3.082049e-03 0.008824515 -0.02366211 0.01260636
+## 24  2.506236e-04 0.010066061 -0.02010505 0.02286438
+## 25  5.556263e-04 0.009810147 -0.01948684 0.02167248
+## 26  4.950458e-03 0.010561234 -0.01166078 0.03069769
+## 27 -1.562869e-04 0.010528780 -0.02442324 0.02182849
+## 28 -2.905325e-03 0.009618501 -0.02562252 0.01363890
+## 29 -4.347550e-03 0.010633456 -0.03013918 0.01343027
+## 30 -1.673425e-03 0.009216802 -0.02476945 0.01513619
+## 31 -2.265434e-03 0.009125489 -0.02299769 0.01405937
+## 32 -9.540620e-04 0.009491849 -0.02314714 0.01714449
+## 33 -4.592717e-03 0.009872965 -0.03007115 0.01085338
+## 34  1.612935e-03 0.009846022 -0.01776378 0.02412524
+## 35 -1.761414e-03 0.011630702 -0.02765050 0.02292380
+## 36  1.276532e-03 0.010091617 -0.01966985 0.02498874
+## 37 -2.320132e-03 0.010660002 -0.02752366 0.01645066
+## 38  1.779828e-04 0.009750630 -0.02080964 0.02130386</code></pre>
 </section>
 <section id="predict-the-responses" class="level2">
 <h2><code>predict( )</code> : the responses</h2>
-<p>The <code>predict.brmsfit( )</code> method will produce the posterior distribution of the <em>responses</em>, which is in this case the <em>times</em>. This is either the recurrence time, for uncensored observations, or a uniform time between 0 and the recurrence time, for censored ones. With <code>summary=FALSE</code>, this gets a (num steps) x (num data points matrix of samples from the posterior distribution, and with <code>summary=TRUE</code> it returns a summary table, e.g.:</p>
+<p>The <code>predict.brmsfit( )</code> method will produce the posterior
+distribution of the <em>responses</em>, which is in this case the
+<em>times</em>. This is either the recurrence time, for uncensored
+observations, or a uniform time between 0 and the recurrence time, for
+censored ones. With <code>summary=FALSE</code>, this gets a (num steps)
+x (num data points matrix of samples from the posterior distribution,
+and with <code>summary=TRUE</code> it returns a summary table, e.g.:</p>
 <pre class="r"><code>head(predict(fit1))</code></pre>
 <pre><code>##       Estimate Est.Error      Q2.5     Q97.5
-## [1,]  43.43192  78.52751  1.485012  237.1969
-## [2,] 147.19042 314.01797  5.817357  751.5115
-## [3,]  56.70559 166.25860  2.027000  294.2551
-## [4,] 381.97620 720.92482 15.709920 1939.0455
-## [5,]  46.62423 116.03553  1.318615  269.3849
-## [6,] 299.07139 722.09210 10.949559 1669.9115</code></pre>
-<p>Under the hood, this just calls <code>rlnorm( )</code> with posterior samples from the <code>dpars</code>,</p>
+## [1,]  44.50189  97.24697  1.655912  239.8330
+## [2,] 156.46379 359.46260  5.234299  806.1940
+## [3,]  55.43995 105.98715  2.233496  303.8072
+## [4,] 384.20582 699.12042 14.321316 2215.3332
+## [5,]  45.25001 120.27611  1.346303  267.4825
+## [6,] 288.55267 544.61076 11.654704 1525.1934</code></pre>
+<p>Under the hood, this just calls <code>rlnorm( )</code> with posterior
+samples from the <code>dpars</code>,</p>
 </section>
 <section id="fitted-the-mean-response" class="level2">
 <h2><code>fitted( )</code> : the “mean” response</h2>
-<p>The method <code>fitted.brmsfit( )</code> can produce the posterior distribution of either the linear predictor (if <code>scale=&quot;linear&quot;</code>) or the mean response (if <code>scale=&quot;response&quot;</code>). Again, <code>summary</code> can be used to return either a summary table or the full set of samples.</p>
-<pre class="r"><code>head(predict(fit1, summary=TRUE))</code></pre>
-<pre><code>##       Estimate Est.Error      Q2.5     Q97.5
-## [1,]  44.55112  99.39429  1.478473  233.6722
-## [2,] 151.46358 295.54952  5.346665  878.7369
-## [3,]  55.90325 114.91082  2.075873  305.2809
-## [4,] 402.30933 925.42158 15.542708 2241.7176
-## [5,]  45.13859 113.84965  1.347394  237.2541
-## [6,] 294.39938 556.31433 11.159852 1525.4370</code></pre>
-<p>You can also pass <code>fitted( )</code> the name of a distributional parameter to have it return the posterior distribution of those parameters (one per data point). For instance, here are summaries of the posterior of <code>mu</code> the top few data points:</p>
-<pre class="r"><code>head(predict(fit1, dpar=&#39;mu&#39;))</code></pre>
-<pre><code>##       Estimate Est.Error      Q2.5     Q97.5
-## [1,]  43.69917  98.33353  1.803059  220.4207
-## [2,] 174.25195 496.34084  5.620286  968.1708
-## [3,]  52.88393  94.65917  2.254862  278.7891
-## [4,] 368.52864 600.49912 15.495147 1888.3776
-## [5,]  45.87519 115.93329  1.179257  252.8489
-## [6,] 304.85430 657.46373 10.758341 1591.9008</code></pre>
-<p>Under the hood, the standard <code>fitted( )</code> function uses the samples of the <code>dpars</code> and the analytical relationship between those and the mean. For instance, in this case, here’s what ends up being called:</p>
+<p>The method <code>fitted.brmsfit( )</code> can produce the posterior
+distribution of either the linear predictor (if
+<code>scale=&quot;linear&quot;</code>) or the mean response (if
+<code>scale=&quot;response&quot;</code>). Again, <code>summary</code> can be used
+to return either a summary table or the full set of samples.</p>
+<pre class="r"><code>head(fitted(fit1, summary=TRUE))</code></pre>
+<pre><code>##       Estimate Est.Error       Q2.5    Q97.5
+## [1,]  44.15714  26.78380  12.235186 111.6373
+## [2,] 160.10570 114.80782  36.559616 453.5086
+## [3,]  55.18891  33.55914  17.170841 141.8991
+## [4,] 392.70267 231.08303 139.904747 971.5443
+## [5,]  45.91564  41.22531   9.151228 154.0889
+## [6,] 297.94963 177.68905  89.744473 748.5797</code></pre>
+<p>You can also pass <code>fitted( )</code> the name of a distributional
+parameter to have it return the posterior distribution of those
+parameters (one per data point). For instance, here are summaries of the
+posterior of <code>mu</code> the top few data points:</p>
+<pre class="r"><code>head(fitted(fit1, dpar=&#39;mu&#39;))</code></pre>
+<pre><code>##      Estimate Est.Error     Q2.5    Q97.5
+## [1,] 2.969156 0.5252858 1.889021 3.958614
+## [2,] 4.221122 0.5823402 2.995580 5.352074
+## [3,] 3.204536 0.5058786 2.216919 4.237261
+## [4,] 5.180230 0.4991074 4.258862 6.233864
+## [5,] 2.895303 0.7027871 1.521475 4.315845
+## [6,] 4.887733 0.5035245 3.902700 5.848140</code></pre>
+<p>Under the hood, the standard <code>fitted( )</code> function uses the
+samples of the <code>dpars</code> and the analytical relationship
+between those and the mean. For instance, in this case, here’s what ends
+up being called:</p>
 <pre><code>&gt; brms:::fitted_lognormal
 function (draws)
 {

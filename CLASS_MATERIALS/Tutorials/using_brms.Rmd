@@ -395,14 +395,14 @@ of either the linear predictor (if `scale="linear"`)
 or the mean response (if `scale="response"`).
 Again, `summary` can be used to return either a summary table or the full set of samples.
 ```{r fitmean}
-head(predict(fit1, summary=TRUE))
+head(fitted(fit1, summary=TRUE))
 ```
 
 You can also pass `fitted( )` the name of a distributional parameter
 to have it return the posterior distribution of those parameters (one per data point).
 For instance, here are summaries of the posterior of `mu` the top few data points:
 ```{r fdpar}
-head(predict(fit1, dpar='mu'))
+head(fitted(fit1, dpar='mu'))
 ```
 Under the hood, the standard `fitted( )` function uses the samples of the `dpars`
 and the analytical relationship between those and the mean.
