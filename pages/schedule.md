@@ -108,12 +108,9 @@ Week 8 (*11/15*)
 : Robust linear models; data analysis example
 
     - Reading: Donihue, C.M., Herrel, A., Fabre, AC. et al. [*Hurricane-induced selection on the morphology of an island lizard.*](https://doi.org/10.1038/s41586-018-0352-3)
-
-<!--
-    - Slides: [Cauchy distribution](../CLASS_MATERIALS/Lectures/Week_10_Cauchy_distribution.slides.html)
-    - Slides: [Robust models](../CLASS_MATERIALS/Lectures/Week_10_Robust_fitting.slides.html)
-    - slides: [Hurricane Lizards](../CLASS_MATERIALS/Lectures/Week_16_Hurricane_lizards.slides.html)
--->
+    - Slides: [Cauchy distribution](../CLASS_MATERIALS/Lectures/Week_08_Cauchy_distribution.slides.html)
+    - Slides: [Robust models](../CLASS_MATERIALS/Lectures/Week_08_Robust_fitting.slides.html)
+    - slides: [Hurricane Lizards](../CLASS_MATERIALS/Lectures/Week_08_Hurricane_lizards.slides.html)
 
 Week 9 (*11/22*, no class Thursday)
 
