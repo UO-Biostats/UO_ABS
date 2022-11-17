@@ -283,5 +283,219 @@ legend("bottomright", lty=1, col=c("black", "red"), legend=c("Before", "After"))
 
 > Remaining female lizards of average size on Pine Cay had an average finger pad area that was X% larger (95% CI of L-U%) than before the hurricane. This difference of X square centimeters represents roughly Y standard deviations of finger pad area. Similarly, males of average length ...
 
+----------------
+
+Pick a family:
+recall that the "family" describes the distribution
+of the *residuals*, so let's check a histogram of those:
+
+
+```{r family}
+hist(resid(lm(Femur ~ SVL_cm, data=lizards)), breaks=20)
+```
+
+
+
 ---------------
+
+Priors: differences between groups will be
+no bigger than 1mm or so (for Femur length);
+slopes are no bigger than 10.
+So, we'll set an uninformative Normal prior,
+with mean 0 and sd 10;
+it's "uninformative" because it's just saying that
+the parameters are no bigger than $\pm$ 20 or so.
+
+```{r priors}
+bformula <- brmsformula(Femur ~ SVL_cm * Sex + Hurricane + Origin)
+get_prior(bformula, data=lizards)
+priors <- set_prior("normal(0, 10)", class="b")
+```
+
+----------------------------
+
+```{r fitit}
+bfit <- brm(
+    bformula,
+    data=lizards,
+    family=gaussian(),
+    prior=priors,
+    file="lizardfit.rds"
+)    
+```
+
+
+-------------
+
+Rhat and ESS look good: it seems like we have convergence.
+
+```{r convergence}
+summary(bfit)
+```
+
+-------------
+
+Fuzzy caterpillars are good, also:
+```{r traces}
+mcmc_trace(bfit)
+```
+
+----------------
+
+This does not look like there's a difference before/after?
+```{r resultsnow}
+conditional_effects(bfit, effects="Hurricane")
+```
+
+----------------
+
+Here are posterior distributions for *before* the hurricane:
+notice that males/females aren't overlapping at intermediate lengths.
+```{r resultsnow2}
+plot(
+    conditional_effects(bfit,
+                        effects="SVL_cm:Sex",
+                        conditions=make_conditions(bfit, "Origin"),
+                        plot=FALSE),
+    points=TRUE
+)
+```
+
+------------------
+
+Note that *after* the hurricane,
+they found smaller male lizards;
+perhaps the bigger ones got blown away,
+so smaller ones got to come out into their territories.
+
+In each case, the 95% credible intervals
+for the "before" and "after" lizards are separated,
+in the regions where we have data.
+```{r hurricane_results}
+plot(
+    conditional_effects(bfit,
+                    effects="SVL_cm:Hurricane",
+                    conditions=make_conditions(bfit, c("Sex", "Origin")),
+                    plot=FALSE
+    ),
+    points=TRUE
+)
+```
+
+-------------
+
+Here, let's get the posterior distributions
+of femur length
+for lizards of average length in the eight combinations
+of hurricane, sex, and origin,
+as well as the posterior of the average difference
+(after minus before):
+
+```{r answers}
+mean_lengths <- tapply(lizards$SVL_cm, lizards$Sex, mean)
+
+pred_data <- expand.grid(
+    Sex=levels(lizards$Sex),
+    Origin=levels(lizards$Origin),
+    Hurricane=levels(lizards$Hurricane)
+)
+pred_data$SVL_cm <- mean_lengths[as.character(pred_data$Sex)]
+
+posts <- posterior_epred(bfit,
+                newdata=pred_data
+)
+post_results <- pred_data[1:4, c("Sex", "Origin", "SVL_cm")]
+
+post_results$mean_diff <- colMeans(
+    posts[,pred_data$Hurricane == "After"] 
+    - posts[,pred_data$Hurricane == "Before"]
+)
+post_results$lower_ci_diff <- colQuantiles(
+    posts[,pred_data$Hurricane == "After"] 
+    - posts[,pred_data$Hurricane == "Before"],
+    probs=0.025
+)
+post_results$upper_ci_diff <- colQuantiles(
+    posts[,pred_data$Hurricane == "After"] 
+    - posts[,pred_data$Hurricane == "Before"],
+    probs=0.975
+)
+```
+
+------------
+
+
+Here are the results.
+Notice that all the mean differences are *identical*;
+that's because under our model
+the effect of Hurricane is additive,
+independent of anything else.
+So, the posterior distribution of
+the difference in mean femur length, after minus before,
+is the same for *any* conditions.
+```{r post_diff_results}
+post_results
+```
+
+-----------
+
+So, we could just look at the posterior distribution
+for that parameter, e.g.
+```{r mcmchist}
+mcmc_hist(bfit, pars="b_HurricaneAfter", bindiwdth=0.03)
+```
+
+------------
+
+However, it's a better idea in general
+(easier to figure out, more generalizable, less confusing)
+to look at posterior distributions of predicted differences
+themselves, rather than the underlying parameters.
+So, we'll do that.
+Here's the posterior distribution
+for the difference in mean femur length
+of females on Pine Cay of average length:
+
+```{r fpc_hist}
+hist(posts[,5] - posts[,1], breaks=30, main="femur length difference (mm)", xlab="after - before")
+```
+
+----------
+
+We'd also like to know how this difference compares to typical variation
+in femur length;
+so, we'd like to know how much lizards that are otherwise the same
+differ in femur length.
+This is given by the `sigma` parameter in this (Gaussian) model,
+which we can get out the summary table:
+
+```{r summary_again}
+summary(bfit)
+```
+
+
+## Conclusion
+
+Remaining lizards had an average femur length that was
+`r (-1)* round(post_results$mean_diff[post_results$Sex=="Female"][1], 2)`mm shorter
+(95% CI of 
+`r (-1)* round(post_results$lower_ci_diff[post_results$Sex=="Female"][1], 2)`-`r (-1)* round(post_results$upper_ci_diff[post_results$Sex=="Female"][1], 2)`mm) than before the hurricane.
+This is about a `r round(100*abs(mean(post_results$mean_diff))/mean(lizards$Femur))`% reduction in femur length.
+The estimated standard deviation of femur length is 0.61mm
+among lizards in the same condition
+(95% CI of 0.55 to 0.68mm),
+so this change represents slightly less than one standard deviation.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
