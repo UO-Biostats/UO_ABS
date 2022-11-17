@@ -121,7 +121,11 @@ head(lizards)
 
 ## Ideas
 
-IN CLASS
+- do boxplots and t-tests for each variable, before vs after
+- *or*, do this after dividing by length (i.e., SVL)
+    so it's *relative* measurements
+- *or*, fit a model with `measurement ~ SVL + hurricane`,
+    which allows more flexibility in how overall length is incorporated
 
 
 ## Goals
@@ -252,3 +256,32 @@ abline(coefs["(Intercept)"], coefs["SVL_cm"])
 abline(coefs["(Intercept)"] + coefs["HurricaneAfter"], coefs["SVL_cm"], col='red', pch=20)
 legend("bottomright", lty=1, col=c("black", "red"), legend=c("Before", "After"))
 ```
+
+
+# Data analysis
+
+## Today's plan
+
+- Fit a model (maybe only to one or two measurements)
+- check model fit, and
+- summarize results.
+
+
+. . .
+
+*Steps:*
+
+1. choose a formula, and family
+2. pick some priors
+3. check for convergence
+4. visualize results
+5. get numerical summaries of what we want
+
+-------------
+
+*Goal:* 
+
+> Remaining female lizards of average size on Pine Cay had an average finger pad area that was X% larger (95% CI of L-U%) than before the hurricane. This difference of X square centimeters represents roughly Y standard deviations of finger pad area. Similarly, males of average length ...
+
+---------------
+
