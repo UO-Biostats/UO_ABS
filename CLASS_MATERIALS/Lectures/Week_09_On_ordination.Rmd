@@ -1,0 +1,106 @@
+---
+title: "On ordination and dimension reduction methods"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(lars)
+library(tidyverse)
+library(rstan)
+library(matrixStats)
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+```
+
+
+# An ordination of dimension reduction techniques?
+
+## The menagerie
+
+There are *many* dimension reduction methods, e.g.:
+
+- principal components analysis (PCA)
+- non-negative matrix factorization (NMF)
+- independent components analysis (ICA)
+- canonical correpondence analysis (CCA)
+- principal coordinates analysis (PCoA)
+- multidimensional scaling (MDS)
+- redundancy analysis (RDA)
+- Sammon mapping
+- kernel PCA
+- t-SNE
+- UMAP
+- locally linear embedding (LLE)
+- Laplacian eigenmaps
+- autoencoders
+
+## Using distances or similarities?
+
+PCA uses the *covariance matrix*, which measures similarity.
+
+t-SNE begins with the matrix of *distances*, measuring dissimilarity.
+
+## Metric or non-Metric?
+
+Are distances interpretable?
+
+. . .
+
+*metric:* In PCA, each axis is a fixed linear combination of variables.
+So, distances always mean the same thing no matter where you are on the plot.
+
+. . .
+
+*non-metric:* In t-SNE,
+distances within different clusters are not comparable.
+
+
+## Why ordination?
+
+From [ordination.okstate.edu](http://ordination.okstate.edu/overview.htm),
+about ordination in ecology:
+
+
+1. Graphical results often lead to intuitive interpretations of species-environment relationships.
+
+2. A single multivariate analysis saves time, in contrast to a separate univariate analysis for each species.
+
+3. Ideally and typically, dimensions of this 'low dimensional space' will represent important and interpretable environmental gradients.
+
+4. If statistical tests are desired, problems of multiple comparisons are diminished when species composition is studied in its entirety.
+
+5. Statistical power is enhanced when species are considered in aggregate, because of redundancy.
+
+6. By focusing on 'important dimensions', we avoid interpreting (and misinterpreting) noise.
+
+
+
+## Beware overinterpretation
+
+
+1. Ordination methods
+    are strongly influenced by *sampling*:
+    ordination may ignore large-scale patterns in favor of describing variation within a highly oversampled area.
+
+2. Ordination methods also describe patterns common to many variables:
+   measuring the same thing many times may drive results.
+
+3. Many methods are designed to find clusters, because our brain likes to categorize things.
+   This doesn't mean those clusters are well-separated in reality.
+
+
+## Some questions to ask
+
+The goal is usually to produce a picture
+in which similar things are nearby each other,
+while also capturing global structure.
+
+1. How is similarity measured in the original data?
+2. How does the algorithm use that information?
+

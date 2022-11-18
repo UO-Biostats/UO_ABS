@@ -1,0 +1,718 @@
+---
+title: "Dimension reduction and PCA"
+author: "Peter Ralph"
+date: "Advanced Biological Statistics"
+---
+
+```{r setup, include=FALSE}
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,
+                      fig.height=fig.dim,
+                      fig.align='center')
+set.seed(23)
+library(matrixStats)
+library(tidyverse)
+options(digits=2)
+```
+
+# Multivariate data
+
+## 
+
+We need **multivariate statistics** when we're dealing with lots (more than one?) variables.
+
+**Goals:** for this and next week:
+
+1. *Describe* and visualize multivariate data.
+
+2. *Distinguish* groups using many variables (e.g., cases from controls).
+
+Both things involve *dimension reduction*,
+because we see things in ${} \le 3$ dimensions,
+and categorization is low-dimensional.
+
+
+## The setting
+
+We have observations of *many variables*:
+
+$$ \mathbf{x}_i = (x_{i1}, x_{i2}, \ldots, x_{im}) . $$
+
+so
+
+$$ x_{ij} = (\text{measurement of $j^\text{th}$ variable in $i^\text{th}$ subject}) $$
+
+-------------------
+
+```{r data_setup, include=FALSE}
+diabetes <- read.table("data/diabetes_data.tsv", header=TRUE)[,1:11]
+lizards <- read.csv("../Datasets/Hurricane_lizards/lizards.csv", header=TRUE, stringsAsFactors=TRUE)
+lizards$Hurricane <- factor(lizards$Hurricane, levels=c("Before", "After"))
+lizards <- na.omit(lizards[,setdiff(names(lizards), c(paste0("FingerArea", 1:3), paste0("ToeArea", 1:3), "SumFingers", "SumToes", "MaxFingerForce"))])
+```
+
+```{r show_dia}
+head(diabetes, 20)
+```
+
+--------------------
+
+```{r show_cc}
+head(lizards, 20)
+```
+
+
+
+# Principal component analysis (PCA)
+
+## Primary aims of PCA
+
+- **Variable reduction** - reduce to a small number of "composite" variables
+    that adequately summarize the original information (*dimension reduction*). 
+
+- **Ordination** - Reveal patterns in the data
+    that could not be found by analyzing each variable separately.
+
+## Quick example: diabetes data
+
+```{r prcomp_dia, echo=FALSE, fig.width=2*fig.dim, fig.height=2*fig.dim}
+dia_pc <- princomp(diabetes[,-1], cor=TRUE, scores=TRUE)
+biplot(dia_pc, choices=1:2, col=c("grey", 'red'))
+```
+
+## Quick example: diabetes data
+
+PC1 is correlated with outcome:
+```{r dia2, fig.width=3*fig.dim, fig.height=1.8*fig.dim, echo=FALSE}
+ycol <- function (x) {
+    rx <- colorRamp(c("red", "orange", "blue"), space="Lab")(x/350)/256
+    rgb(rx[,1], rx[,2], rx[,3])
+}
+layout(t(1:2))
+plot(dia_pc$scores[,1:2], pch=20, cex=2,
+     col=ycol(diabetes$y),
+     xlab="PC1", ylab="PC2")
+yleg <- (1:3)*100
+legend("topright", pch=20, cex=2, col=ycol(yleg),
+       legend=sprintf("y=%0.0f", yleg))
+plot(dia_pc$scores[,1],  diabetes$y, pch=20, cex=2,
+     col=ycol(diabetes$y),
+     xlab="PC1", ylab="diabetes progression")
+```
+
+## Quick example: lizards
+
+```{r prcomp_cc, echo=FALSE, fig.width=2*fig.dim, fig.height=2*fig.dim}
+cc_pc <- princomp(lizards[,-(1:4)], cor=TRUE, scores=TRUE)
+biplot(cc_pc, choices=1:2)
+```
+
+## Quick example: lizards
+
+PC1 is size:
+```{r cc2, fig.width=3.5*fig.dim, fig.height=1.8*fig.dim, echo=FALSE}
+layout(t(1:2))
+plot(cc_pc$loadings[,1:2], type='n', xlab="PC1 loadings", ylab="PC2 loadings",
+     xlim=c(0, 1.3 * max(cc_pc$loadings[,1])))
+arrows(x0=0, y0=0,
+       x1=cc_pc$loadings[,1],
+       y1=cc_pc$loadings[,2])
+text(cc_pc$loadings[,1:2], xlab="PC1 loadings", ylab="PC2 loadings",
+     col='red', cex=2,
+     labels=colnames(lizards)[-(1:4)])
+plot(cc_pc$scores[,1], lizards$SVL, xlab='PC1', ylab='SVL (mm)')
+```
+
+
+
+# PCA: how it works
+
+## Reducing dimesions
+
+Say we've got a *data matrix* $x_{ij}$ of $n$ observations in $m$ variables,
+
+but we want to make do with *fewer variables* - say, only $k$ of them.
+
+. . .
+
+**Idea:** Let's pick a few linear combinations of the variables
+that best captures variability within the dataset.
+For instance, strongly correlated variables will be combined into one.
+
+. . .
+
+Try it out: [setosa.io/ev/principal-component-analysis/](https://setosa.io/ev/principal-component-analysis/)
+
+
+## Notation:
+
+1. These new variables are the *principal components*,
+   $$u^{(1)}, \ldots, u^{(k)} . $$
+
+2. The importance of each variable to the principal components  -
+    i.e., the coefficients of the linear combination - 
+    are the *loadings*,
+    $$v^{(1)}, \ldots, v^{(k)} . $$
+
+3. So, the position of the $i$th data point on the $\ell$th PC is
+   $$ u_i^{(\ell)} = v_1^{(\ell)} x_{i1} + v_2^{(\ell)} x_{i2} + \cdots v_m^{(\ell)} x_{im} . $$
+
+
+## Geometric interpretation
+
+1. The loadings are the directions in multidimensional space
+   that explain most variation in the data.
+
+2. The PCs are the coordinates of the data
+   along these directions.
+
+3. These directions are *orthogonal*,
+   and the resulting variables are *uncorrelated*.
+
+## A model for PCA
+
+The *approximation* to the data matrix using only $k$ PCs is:
+$$
+    x_{ij} \approx u_i^{(1)} v_j^{(1)} + u_i^{(2)} v_j^{(2)} + \cdots + u_i^{(k)} v_j^{(k)} .
+$$
+
+. . .
+
+This is the *best possible* $k$-dimensional approximation,
+in the least-squares sense,
+so is the MLE for the low-dimensional model with Gaussian noise.
+
+## Also known as
+
+PCA is also called "eigenanalysis"
+because (as usually computed),
+the PCs are *eigenvectors* of the covariance matrix.
+
+. . .
+
+The *eigenvalues* are
+$$ \lambda_\ell = \sum_{i=1}^n \left(u_i^{(\ell)}\right)^2, $$
+and they partition the *total variance*:
+$$
+\lambda_1 + \lambda_2 + \cdots + \lambda_m
+=
+\sum_{ij} (x_{ij} - \bar x_j)^2 .
+$$
+
+
+## Interpretation
+
+- PCs: Observations that are *close* in PC space are similar.
+- Loadings: high values indicate a strong correlation with that PC (positive or negative).
+
+. . .
+
+Sometimes PCs are rotated to improve *interpretability*.
+
+## What next?
+
+The PCs are *nice new variables*
+you can use in any analysis!
+
+. . .
+
+Example: Does mouse body size correlate with the top three climate PCs?
+
+# Beer
+
+## Example: local beer
+
+```{r read_beer, echo=1:4}
+beer <- read.csv("data/Beer_Specs.csv", stringsAsFactors=TRUE)
+table(beer$Beer_Type)
+beer_vars <- c("Volume", "CO2", "Color", "DO", "pH", "Bitterness_Units", "ABV", "Real_Extract", "Real_Degrees_Fermentation", "Final_Gravity")
+beer[,c("Beer_Type", beer_vars)]
+```
+
+## Goals:
+
+1. Describe major axes of variation between beer batches.
+2. Look for variation not related to taste/style.
+3. Make a pretty plot.
+
+
+##
+
+```{r beerpairs, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+pairs(beer[,beer_vars])
+```
+
+
+# PCA: how to do it
+
+## Practical considerations
+
+1. Only use **numeric variables** - omit factors.
+2. Variables should all be on the **same scale**, at least roughly.
+3. Variables should also probably be **centered**.
+
+. . . 
+
+... however,
+
+4. Beware outliers.
+5. Transformations may be a good idea.
+6. Missing data must be removed or imputed.
+7. Consider replacing highly skewed variables with ranks.
+
+
+## `?princomp`
+
+```
+princomp                 package:stats                 R Documentation
+
+Principal Components Analysis
+
+Description:
+
+     ‘princomp’ performs a principal components analysis on the given
+     numeric data matrix and returns the results as an object of class
+     ‘princomp’.
+
+Usage:
+
+     princomp(x, ...)
+     
+     ## S3 method for class 'formula'
+     princomp(formula, data = NULL, subset, na.action, ...)
+     
+     ## Default S3 method:
+     princomp(x, cor = FALSE, scores = TRUE, covmat = NULL,
+              subset = rep_len(TRUE, nrow(as.matrix(x))), fix_sign = TRUE, ...)
+     
+     ## S3 method for class 'princomp'
+     predict(object, newdata, ...)
+     
+Arguments:
+
+ formula: a formula with no response variable, referring only to
+          numeric variables.
+
+    data: an optional data frame (or similar: see ‘model.frame’)
+          containing the variables in the formula ‘formula’.  By
+          default the variables are taken from ‘environment(formula)’.
+
+  subset: an optional vector used to select rows (observations) of the
+          data matrix ‘x’.
+
+na.action: a function which indicates what should happen when the data
+          contain ‘NA’s.  The default is set by the ‘na.action’ setting
+          of ‘options’, and is ‘na.fail’ if that is unset. The
+          ‘factory-fresh’ default is ‘na.omit’.
+
+       x: a numeric matrix or data frame which provides the data for
+          the principal components analysis.
+
+     cor: a logical value indicating whether the calculation should use
+          the correlation matrix or the covariance matrix.  (The
+          correlation matrix can only be used if there are no constant
+          variables.)
+
+  scores: a logical value indicating whether the score on each
+          principal component should be calculated.
+
+  covmat: a covariance matrix, or a covariance list as returned by
+          ‘cov.wt’ (and ‘cov.mve’ or ‘cov.mcd’ from package ‘MASS’).
+          If supplied, this is used rather than the covariance matrix
+          of ‘x’.
+
+fix_sign: Should the signs of the loadings and scores be chosen so that
+          the first element of each loading is non-negative?
+
+     ...: arguments passed to or from other methods. If ‘x’ is a
+          formula one might specify ‘cor’ or ‘scores’.
+
+  object: Object of class inheriting from ‘"princomp"’.
+
+ newdata: An optional data frame or matrix in which to look for
+          variables with which to predict.  If omitted, the scores are
+          used.  If the original fit used a formula or a data frame or
+          a matrix with column names, ‘newdata’ must contain columns
+          with the same names. Otherwise it must contain the same
+          number of columns, to be used in the same order.
+
+Details:
+
+     ‘princomp’ is a generic function with ‘"formula"’ and ‘"default"’
+     methods.
+
+     The calculation is done using ‘eigen’ on the correlation or
+     covariance matrix, as determined by ‘cor’.  This is done for
+     compatibility with the S-PLUS result.  A preferred method of
+     calculation is to use ‘svd’ on ‘x’, as is done in ‘prcomp’.
+
+     Note that the default calculation uses divisor ‘N’ for the
+     covariance matrix.
+
+     The ‘print’ method for these objects prints the results in a nice
+     format and the ‘plot’ method produces a scree plot (‘screeplot’).
+     There is also a ‘biplot’ method.
+
+     If ‘x’ is a formula then the standard NA-handling is applied to
+     the scores (if requested): see ‘napredict’.
+
+     ‘princomp’ only handles so-called R-mode PCA, that is feature
+     extraction of variables.  If a data matrix is supplied (possibly
+     via a formula) it is required that there are at least as many
+     units as variables.  For Q-mode PCA use ‘prcomp’.
+
+Value:
+
+     ‘princomp’ returns a list with class ‘"princomp"’ containing the
+     following components:
+
+    sdev: the standard deviations of the principal components.
+
+loadings: the matrix of variable loadings (i.e., a matrix whose columns
+          contain the eigenvectors).  This is of class ‘"loadings"’:
+          see ‘loadings’ for its ‘print’ method.
+
+  center: the means that were subtracted.
+
+   scale: the scalings applied to each variable.
+
+   n.obs: the number of observations.
+
+  scores: if ‘scores = TRUE’, the scores of the supplied data on the
+          principal components.  These are non-null only if ‘x’ was
+          supplied, and if ‘covmat’ was also supplied if it was a
+          covariance list.  For the formula method, ‘napredict()’ is
+          applied to handle the treatment of values omitted by the
+          ‘na.action’.
+
+    call: the matched call.
+
+na.action: If relevant.
+
+Note:
+
+     The signs of the columns of the loadings and scores are arbitrary,
+     and so may differ between different programs for PCA, and even
+     between different builds of R: ‘fix_sign = TRUE’ alleviates that.
+
+References:
+
+     Mardia, K. V., J. T. Kent and J. M. Bibby (1979).  _Multivariate
+     Analysis_, London: Academic Press.
+
+     Venables, W. N. and B. D. Ripley (2002).  _Modern Applied
+     Statistics with S_, Springer-Verlag.
+
+See Also:
+
+     ‘summary.princomp’, ‘screeplot’, ‘biplot.princomp’, ‘prcomp’,
+     ‘cor’, ‘cov’, ‘eigen’.
+
+```
+
+
+## 
+
+```{r prcomp_beer}
+beer_pc <- princomp(na.omit(beer[, beer_vars]), cor=TRUE, scores=TRUE)
+str(beer_pc)
+```
+
+## What it means
+
+```
+> str(beer_pc)
+List of 7
+```
+
+- `$ sdev`: standard deviations of the PCs
+- `$ loadings`: loadings of the variables on each PC
+- `$ center`: subtracted from columns of the data
+- `$ scale`: divided from columns of the data
+- `$ scores`: the actual PCs
+
+## How many PCs should I use?
+
+- PCA gives you as many PCs as variables.
+
+Depends - what for?
+
+. . .
+
+Some answers:
+
+1. Visualization: as many as make sense (but beware overinterpretation).
+2. Further analysis: as many as your method can handle.
+3. Until an obvious break in the *scree plot*.
+
+## The scree plot
+
+Shows the *variance explained by each PC*
+(these are always decreasing).
+
+```{r scree, fig.width=2*fig.dim}
+plot(beer_pc)
+```
+
+## The top four PCs (plot by `biplot( )`)
+
+```{r plot_prcomp_beer, fig.width=3*fig.dim, fig.height=2*fig.dim, echo=FALSE}
+layout(t(1:2))
+biplot(beer_pc, choices=1:2, xlabs=na.omit(beer[,c("Beer_Type", beer_vars)])$Beer_Type)
+biplot(beer_pc, choices=3:4, xlabs=na.omit(beer[,c("Beer_Type", beer_vars)])$Beer_Type)
+```
+
+## 
+
+```{r plot_b1, echo=FALSE, fig.width=4.0*fig.dim, fig.height=1.8*fig.dim}
+beer_cols <- c(RColorBrewer::brewer.pal(name="Paired", n=10), "#000000")
+names(beer_cols) <- levels(beer$Beer_Type)
+layout(t(1:3), widths=c(0.6, 1, 1))
+plot(0, type='n', xlab='', ylab='', xaxt='n', yaxt='n', bty='n')
+legend("topleft", col=beer_cols, legend=names(beer_cols),
+       pch=20, cex=2)
+plot(beer_pc$scores[,1:2], pch=20, cex=3,
+     xlab='PC1', ylab='PC2',
+     col=beer_cols[match(beer$Beer_Type, names(beer_cols))])
+plot(beer_pc$loadings[,1:2], type='n', xlab="PC1 loadings", ylab="PC2 loadings",
+     xlim=1.5 * range(beer_pc$loadings[,1]))
+arrows(x0=0, y0=0,
+       x1=beer_pc$loadings[,1],
+       y1=beer_pc$loadings[,2])
+text(beer_pc$loadings[,1:2],
+     col='red', cex=2,
+     labels=beer_vars)
+```
+
+
+## 
+
+```{r plot_b2, echo=FALSE, fig.width=4.0*fig.dim, fig.height=1.8*fig.dim}
+layout(t(1:3), widths=c(0.6, 1, 1))
+plot(0, type='n', xlab='', ylab='', xaxt='n', yaxt='n', bty='n')
+legend("topleft", col=beer_cols, legend=names(beer_cols),
+       pch=20, cex=2)
+plot(beer_pc$scores[,3:4], pch=20, cex=3,
+     xlab='PC3', ylab='PC4',
+     col=beer_cols[match(beer$Beer_Type, names(beer_cols))])
+plot(beer_pc$loadings[,3:4], type='n', xlab="PC3 loadings", ylab="PC4 loadings",
+     xlim=1.5 * range(beer_pc$loadings[,3]))
+arrows(x0=0, y0=0,
+       x1=beer_pc$loadings[,3],
+       y1=beer_pc$loadings[,4])
+text(beer_pc$loadings[,3:4],
+     col='red', cex=2,
+     labels=beer_vars)
+```
+
+## Gotchas
+
+- PCs are only well-defined up to sign ($\pm$) and scale.
+- Some programs report PCs normalized to have SD 1.
+- Many ways to do basically the same thing: e.g., `prcomp` and `princomp`.
+
+# Your turn: wine
+
+## 
+
+Using this [dataset of chemical concentrations in wine](data/wine.tsv):
+
+```{r wine}
+(wine <- read.table("data/wine.tsv", header=TRUE))
+```
+
+--------------
+
+1. Look at the data.
+2. Do PCA, and plot the results colored by vineyard.
+3. What happens if you set `cor=FALSE`?
+4. Which variables most strongly differentiate the three vineyards?
+
+
+## IN CLASS
+
+
+
+
+# Text analysis
+
+## Identifying authors
+
+In [data/passages.txt](data/passages.txt)
+we have a number of short passages from a few different books.
+
+. . .
+
+Can we identify the authors of each passage?
+
+. . .
+
+The true sources of the passages are in [data/passage_sources.tsv](data/passage_sources.tsv).
+
+## Turn the data into a matrix
+
+```{r wordmat, cache=TRUE}
+passages <- readLines("data/passages.txt")
+sources <- read.table("data/passage_sources.tsv", header=TRUE, stringsAsFactors=TRUE)
+words <- sort(unique(strsplit(paste(passages, collapse=" "), " +")[[1]]))
+tabwords <- function (x, w) { tabulate(match(strsplit(x, " ")[[1]], w), nbins=length(w)) }
+wordmat <- sapply(passages, tabwords, words)
+dimnames(wordmat) <- list(words, NULL)
+stopifnot( min(rowSums(wordmat)) > 0 )
+wordmat[1:20, 1:20]
+```
+
+## PCA?
+
+```{r wordpca, fig.width=2.5*fig.dim, fig.height=1.5*fig.dim, cache=TRUE, dependson="wordmat"}
+wordpcs <- prcomp(wordmat, scale.=TRUE)
+layout(t(1:2))
+plot(wordpcs$rotation[,1:2], col=sources$source, pch=20, xlab="PC1", ylab="PC2")
+plot(wordpcs$rotation[,2:3], col=sources$source, pch=20, xlab="PC2", ylab="PC3")
+legend("topright", pch=20, col=1:3, legend=levels(sources$source))
+```
+
+## PC1 is shortness
+
+```{r wordlen, fig.width=2.0*fig.dim, fig.height=1.5*fig.dim}
+plot(colSums(wordmat), wordpcs$rotation[,1], col=sources$source, xlab='length', ylab='PC1')
+```
+
+## PC2 is book
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings, echo=FALSE}
+xw <- wordpcs$x
+head(xw[order(xw[,2]),1:3], 50)
+```
+
+:::
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings2, echo=FALSE}
+head(xw[order(xw[,2],decreasing=TRUE),1:3], 50)
+```
+
+:::
+::::::::::::::
+
+
+## PC3 ???
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings3, echo=FALSE}
+head(xw[order(xw[,3]),1:3], 50)
+```
+
+:::
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings4, echo=FALSE}
+head(xw[order(xw[,3],decreasing=TRUE),1:3], 50)
+```
+
+:::
+::::::::::::::
+
+
+## PC4 ???
+
+::: {.columns}
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings5, echo=FALSE}
+head(xw[order(xw[,4]),1:4], 50)
+```
+
+:::
+:::::::::::::: {.column width=50%}
+
+```{r wordloadings6, echo=FALSE}
+head(xw[order(xw[,4],decreasing=TRUE),1:4], 50)
+```
+
+:::
+::::::::::::::
+
+
+
+# PCA: Squaring the math and the code:
+
+## 
+
+The data matrix $X$ can be written
+using the singular value decomposition,
+as 
+$$ X = U \Lambda V^T, $$
+where $U^T U = I$ and $V^T V = I$
+and $\Lambda$ 
+has the *singular values* $\lambda_1, \ldots, \lambda_m$ on the diagonal.
+
+The best $k$-dimensional approximation to $X$ is
+$$ \hat X = \sum_{i=1}^k \lambda_i u_i v_i^T , $$
+where $u_i$ and $v_i$ are the $i$th columns of $U$ and $V$.
+
+Furthermore, 
+$$ \sum_{ij} X_{ij} = \sum_i \lambda_i^2 . $$
+
+## A translation table
+
+1. $u_\ell$ is the $\ell$th PC, standardized.
+2. $v_\ell$ gives the *loadings* of the $\ell$th PC.
+3. $\lambda_\ell^2 / \sum_{ij} X_{ij}^2$ is the percent variation explained by the $\ell$th PC.
+
+Furthermore, since $\Lambda U = X V$,
+
+4. $\lambda_\ell u_\ell$ is the vector of values given by the linear combination
+   of the variables with weights given by $v_\ell$.
+
+## Translation to `prcomp`:
+
+```{r check_pca}
+X <- lizards[,-(1:4)]
+X.svd <- svd(X)
+X.pca <- prcomp(X, center=FALSE, scale=FALSE)
+
+# Singular values:
+#  prcomps's sdevs are singular values / sqrt(n-1)
+stopifnot(all(X.svd$d / sqrt(nrow(X) - 1) == X.pca$sdev))
+
+# Loadings:
+#  prcomp's loadings (returned as "rotation") are V
+stopifnot(all(X.pca$rotation == X.svd$v))
+
+# PCs:
+#  prcomp's PCs (returned as "x")
+#  are Lambda * U
+stopifnot(all(abs(X.pca$x - X.svd$u * X.svd$d[col(X.svd$u)]) < 1e-10))
+```
+
+## Translation to `princomp`:
+
+`princomp` uses eigendecomposition of the covariance matrix,
+and so necessarily recenters the variables.
+
+```{r check_princomp}
+X.svd2 <- svd(scale(X, center=TRUE, scale=FALSE))
+X.pca2 <- princomp(X, cor=FALSE, scores=TRUE)
+
+# Singular values:
+#  princomps's sdevs are singular values / sqrt(n)
+stopifnot(all(abs(sqrt(eigen(cov(X))$values * (nrow(X)-1)/nrow(X)) - X.pca2$sdev) < 1e-10))
+stopifnot(all(abs(X.svd2$d / sqrt(nrow(X)) - X.pca2$sdev) < 1e-10))
+
+# Loadings:
+#  princomp's loadings are V, up to sign
+the_signs <- sign(X.pca2$loadings[1,] * X.svd2$v[1,])
+stopifnot(all(abs(X.pca2$loadings - X.svd2$v * the_signs[col(X.svd2$v)]) < 1e-10))
+
+# PCs:
+#  princomp's PCs (returned as "scores")
+#  are Lambda * U
+stopifnot(all(abs(X.pca2$scores
+                  - X.svd2$u * X.svd2$d[col(X.svd2$u)] * the_signs[col(X.svd2$u)]) < 1e-10))
+```
