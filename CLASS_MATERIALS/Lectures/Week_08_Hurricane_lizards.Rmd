@@ -314,7 +314,7 @@ priors <- set_prior("normal(0, 10)", class="b")
 
 ----------------------------
 
-```{r fitit}
+```{r fitit2}
 bfit <- brm(
     bformula,
     data=lizards,
@@ -491,6 +491,14 @@ so this change represents slightly less than one standard deviation.
 ## posterior predictive checks
 
 
+
+
+
+
+
+
+
+
 # Multivariate model
 
 ## More than one response
@@ -523,7 +531,7 @@ plot(
 
 ---------
 
-```{r moarplots}
+```{r moarplots2}
 plot(
     conditional_effects(bfit2,
                     effects="SVL_cm:Hurricane",
