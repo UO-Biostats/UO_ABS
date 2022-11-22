@@ -486,16 +486,56 @@ among lizards in the same condition
 (95% CI of 0.55 to 0.68mm),
 so this change represents slightly less than one standard deviation.
 
+# Goodness of fit
+
+## posterior predictive checks
 
 
+# Multivariate model
 
+## More than one response
 
+```{r fitit}
+bfit2 <- brm(
+    brmsformula(
+        mvbind(Femur, MeanToeArea) ~ SVL_cm * Sex * Hurricane
+    ) + set_rescor(TRUE),
+    data=lizards,
+    family=gaussian(),
+    prior=priors,
+    file="lizardfit2.rds"
+)    
+```
 
+---------
 
+```{r moarplots}
+plot(
+    conditional_effects(bfit2,
+                    effects="SVL_cm:Hurricane",
+                    conditions=make_conditions(bfit, "Sex"),
+                    resp="MeanToeArea",
+                    plot=FALSE
+    ),
+    points=TRUE
+)
+```
 
+---------
 
+```{r moarplots}
+plot(
+    conditional_effects(bfit2,
+                    effects="SVL_cm:Hurricane",
+                    conditions=make_conditions(bfit, "Sex"),
+                    resp="Femur",
+                    plot=FALSE
+    ),
+    points=TRUE
+)
+```
 
-
+-----------------
 
 
 

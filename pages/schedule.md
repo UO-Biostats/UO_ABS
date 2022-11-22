@@ -117,11 +117,8 @@ Week 9 (*11/22*, no class Thursday)
 : Factor analysis, dimensionality reduction, and PCA
 
     - Reading: Quinn & Keough chapter 17
-
-<!--
     - slides: [Dimension reduction and PCA](../CLASS_MATERIALS/Lectures/Week_17_Dimension_reduction_and_PCA.slides.html)
     - slides: [On ordination](../CLASS_MATERIALS/Lectures/Week_17_On_ordination.slides.html)
--->
 
 Week 10 (*11/30*)
 
