@@ -119,14 +119,14 @@ Week 9 (*11/22*, no class Thursday)
     - Reading: Quinn & Keough chapter 17
     - slides: [Dimension reduction and PCA](../CLASS_MATERIALS/Lectures/Week_17_Dimension_reduction_and_PCA.slides.html)
     - slides: [On ordination](../CLASS_MATERIALS/Lectures/Week_17_On_ordination.slides.html)
+    - [Homework 8](../CLASS_MATERIALS/Homeworks/HW08.html) *(due 12/6)*
 
 Week 10 (*11/30*)
 
 : Factor analysis continued, t-SNE; random forests 
 
     - Reading: [The two cultures, by Leo Breiman](https://dx.doi.org/10.1214/ss/1009213726)
-
-<!--
-    - slides: [t-SNE](../CLASS_MATERIALS/Lectures/Week_18_tSNE.slides.html)
-    - slides: [Random forests](../CLASS_MATERIALS/Lectures/Week_20_Random_forests.slides.html)
--->
+    - slides: [t-SNE](../CLASS_MATERIALS/Lectures/Week_10_tSNE.slides.html)
+    - slides: [Random forests](../CLASS_MATERIALS/Lectures/Week_10_Random_forests.slides.html)
+    - [Homework 9](../CLASS_MATERIALS/Homeworks/HW09.html) 
+        and [Homework 10](../CLASS_MATERIALS/Homeworks/HW10.html) *(one of these due 12/8)*
