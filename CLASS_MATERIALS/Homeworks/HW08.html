@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>HW08</title>
+  <style>
+html {
+line-height: 1.5;
+font-family: Georgia, serif;
+font-size: 20px;
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 1em;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+font-size: 85%;
+margin: 0;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+</style>
+  <div style="display: none">
+  \[
+  %%
+  % Add your macros here; they&#39;ll be included in pdf and html output.
+  %%
+
+  \newcommand{\R}{\mathbb{R}}    % reals
+  \newcommand{\E}{\mathbb{E}}    % expectation
+  \renewcommand{\P}{\mathbb{P}}  % probability
+  \DeclareMathOperator{\logit}{logit}
+  \DeclareMathOperator{\logistic}{logistic}
+  \DeclareMathOperator{\sd}{sd}
+  \DeclareMathOperator{\var}{var}
+  \DeclareMathOperator{\cov}{cov}
+  \DeclareMathOperator{\cor}{cor}
+  \DeclareMathOperator{\Normal}{Normal}
+  \DeclareMathOperator{\LogNormal}{logNormal}
+  \DeclareMathOperator{\Poisson}{Poisson}
+  \DeclareMathOperator{\Beta}{Beta}
+  \DeclareMathOperator{\Binom}{Binomial}
+  \DeclareMathOperator{\Gam}{Gamma}
+  \DeclareMathOperator{\Exp}{Exponential}
+  \DeclareMathOperator{\Cauchy}{Cauchy}
+  \DeclareMathOperator{\Unif}{Unif}
+  \DeclareMathOperator{\Dirichlet}{Dirichlet}
+  \DeclareMathOperator{\Wishart}{Wishart}
+  \DeclareMathOperator{\StudentsT}{StudentsT}
+  \DeclareMathOperator{\Weibull}{Weibull}
+
+  \newcommand{\given}{\;\vert\;}
+  \]
+  </div>
+  <style> body { min-width: 80% !important; } </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="homework-number-8-simulation-challenge">Homework number 8:
+Simulation challenge</h1>
+<p><strong>Assignment:</strong> You should analyze one of the
+student-created datasets described below. As usual, your task is to use
+Rmarkdown to write a short report, readable by a technically literate
+person. The code you used should not be visible in the final report
+(unless you have a good reason to show it). You will have time to
+discuss this in groups (the same groups as before), but you should write
+up the report yourself (in your own words).</p>
+<p>You can use the following function to find out which dataset to
+analyze, where <code>g</code> is your group number:</p>
+<pre><code>f &lt;- function (g) {
+    groups &lt;- c(1, 3, 4, 5, 8)
+    c(groups, groups)[match(g, groups) + 3]
+}</code></pre>
+<p>For instance, if you are in group 3, then <code>f(3) = 8</code>, so
+you should analyze the “group 8” dataset below.</p>
+<p><strong>Due:</strong> Submit your work via Canvas by the end of the
+day (midnight) on <strong>Tuesday, December 3rd</strong>.</p>
+<h2 id="group-1-ufos">Group 1: UFOs</h2>
+<p>The X-files unit of the FBI is interested in the number of recent UFO
+sightings in the United States. The agents suspect that the government
+is testing alien technology at military bases. To help assess this
+hypothesis, they have surveyed 150 towns in America. Previous “research”
+has indicated that UFO sightings are more common in rural areas, so they
+chose a random 150 towns from the smallest 25% of towns in America. For
+each town, they recorded the population size (in 1000s) and the distance
+to the nearest military base (in miles). Their tech-savvy crew of three
+nerds scoured the Internet to count up the number of UFO sightings
+posted about in each town during 2020 (though they did not control for
+unique UFOs or usernames). Since one of the agents thinks UFO sightings
+are made up by conspiracy theorists, they have also recorded the 2020
+voter turnout rate in each town.</p>
+<p>The questions that the agents are interested in answering are:</p>
+<ol type="1">
+<li>Do towns that are closer to military bases have more UFO
+sightings?</li>
+<li>Do towns with lower voter turnout rates have more UFO
+sightings?</li>
+<li>Do these effects depend on population size?</li>
+</ol>
+<p><em>Dataset:</em> <a href="group_assignments/CONFIDENTIAL_ufo_sightings.csv">CONFIDENTIAL_ufo_sightings.csv</a></p>
+<h2 id="group-3-social-media">Group 3: Social Media</h2>
+<p>We have conducted a survey on 150 students from 3 different major,
+(sociology, biology, and fine arts) and asked them to record their daily
+social media usage. The applicants voluntarily installed an app on their
+phone to track their daily social media usage and at the end of the
+month their average daily usage was recorded. We included information
+about genders and range of ages (18-30) in the survey.</p>
+<p>They then participated in an electronic test that measures one’s
+attention span and strength of their focus through various games and
+questions, and the possible scores ranged from 40 (worse attention span)
+to 100 (best able to focus without distraction).</p>
+<p>None of the applicants were diagnosed with any mood or attention
+disorders prior to this test, and to the best of their knowledge they
+were not using any medication that would effect their attention span and
+ability to focus.</p>
+<p>Before starting the test they were asked again if they feel ready and
+comfortable to take the test, and they had the chance to opt out at any
+time; the applicants were instructed not to do any heavy physical or
+intellectual activity on the day of the test.</p>
+<p>We want to know to what degree the demographic variables (age, gender
+and major) and the number of hours spent on social media are correlated
+with attention span (as measured by the test score).</p>
+<p><em>Dataset:</em> <a href="group_assignments/social_media.csv">social_media.csv</a></p>
+<h2 id="group-4">Group 4:</h2>
+<p>The North Pole surveys cities every year to ask children if they have
+seen reindeer flying on Christmas Eve (not really, but let’s be festive
+and pretend!). The data contains survey data collected over 50 years
+(from 1972 to 2021) on 5 different cities - Nuuk, Montreal,
+Longyearbyen, Moscow, and Reykjavik. The “surveyed” column reports the
+number of children in each city who were surveyed that year. The
+“yes_reindeer” column records the number of children surveyed who
+reported reindeer sightings on Christmas Eve. Note that each city varies
+in terms of their distance from the North Pole - you can look at a map
+to see how far they are. With the data provided, please answer the
+following questions:</p>
+<ol type="1">
+<li><p>How, if at all, is the number of children who reported reindeer
+sightings influenced by location (city, and distance from the North
+Pole), and year? Hint: you should account for the fact that the number
+of individuals surveyed (and thus the number of “yeses” recorded) varies
+by both city and year.</p></li>
+<li><p>Based on your results, which cities are more/less likely to have
+higher prevalence of reindeer sightings?</p></li>
+</ol>
+<p><em>Dataset:</em> <a href="group_assignments/reindeer.csv">reindeer.csv</a></p>
+<h2 id="group-5-alcohol-use-in-a-clinical-sample-of-adolescents">Group
+5: Alcohol Use in a Clinical Sample of Adolescents</h2>
+<p>Researchers used a cross-sectional design to examine alcohol use in a
+clinical sample of adolescents. The sample consisted of 400 adolescents
+receiving substance use treatment from a university-affiliated hospital
+system. Data were collected by trained research assistants who conducted
+clinical assessment interviews with the participants during the
+treatment admission/intake process. Only those who reported at least one
+binge drinking or high-intensity drinking episode within the seven days
+prior to intake were eligible to participate in the study. Variables
+include:</p>
+<ul>
+<li><p><strong>Drinking episode level:</strong> Binge drinking episode
+(consuming 5-9 standard drinks in a row) or high-intensity drinking
+episode (consuming 10+ standard drinks in a row) in the <a href="https://doi.org/10.1177/1178221818822976">past seven days</a>. If
+an adolescent reported drinking episodes at both levels, the level with
+greater risk (i.e., high-intensity drinking) was recorded.</p></li>
+<li><p><strong>Age:</strong> In years.</p></li>
+<li><p><strong>Gender:</strong> Self-reported gender identity (girl,
+boy, non-binary).</p></li>
+<li><p><strong><a href="https://doi.org/10.1001/jamapediatrics.2013.420">Revised Adverse
+Childhood Experiences Checklist</a> score</strong>: Number of adverse
+childhood experiences (ACEs; e.g., abuse, maltreatment, stressful life
+events, environmental stressors), with a higher number indicating a
+greater number of adverse experiences. The revised checklist consists of
+14 different adverse experiences.</p></li>
+<li><p><strong>Past 7-day cannabis use:</strong> Days of cannabis use
+over the past seven days</p></li>
+<li><p><strong><a href="https://doi.org/10.1016/0272-7358(88)90050-5">Beck Depression
+Inventory</a> score:</strong> A validated measure of depression
+severity, with a total score ranging from 0-63. A higher score indicates
+more severe depression. The recognized ranges are: minimal depression
+(0-13), mild depression (14-19), moderate depression (20-28), and severe
+depression (29-63).</p></li>
+<li><p><strong><a href="https://doi.org/10.1016/0887-6185(92)90026-4">Beck Anxiety
+Inventory</a> score:</strong> A validated measure of anxiety severity,
+with a total score ranging from 0-63. A higher score indicates more
+severe anxiety. The recognized ranges are: minimal anxiety (0-7), mild
+anxiety (8-15), moderate anxiety (16-25), and severe anxiety
+(26-63).</p></li>
+<li><p><strong>Coping motives for alcohol use score:</strong> A subscale
+from the <a href="https://psycnet.apa.org/doi/10.1037/1040-3590.6.2.117">Drinking
+Motives Questionnaire</a> measuring how often alcohol use is motivated
+by decreasing stress, avoidant behavior, and alleviating negative
+affect. The total score ranges from 0-20, with a higher score indicating
+drinking is more often motivated by coping.</p></li>
+<li><p><strong>Social motives for alcohol use score:</strong> A subscale
+from the Drinking Motives Questionnaire measuring how often alcohol use
+is motivated by drinking to improve social situations and interactions.
+The total score ranges from 0-20, with a higher score indicating
+drinking is more often socially motivated.</p></li>
+</ul>
+<p><em>Question:</em> What characteristics differentiate adolescents who
+reported a high-intensity drinking episode from those who reported a
+binge drinking episode?</p>
+<p><em>Dataset:</em> <a href="group_assignments/alcohol.csv">alcohol.csv</a></p>
+<h2 id="group-8">Group 8:</h2>
+<p>The goal of this study was to explore the effects of multiple factors
+on patients’ blood sugar. For this study, 100 participants ate pancakes
+and drank juice as their first meal of the day. Participants were
+provided with juice boxes by the study, but were given the option of
+receiving pancakes from the study or bringing them homemade from home.
+The participants were then asked to record the amount of pancakes (in
+grams) and the amount of juice (mL) consumed. In addition, they were
+asked to note whether the pancakes were homemade or provided by the
+study. Finally, the participants were asked to record how much time they
+had spent exercising (in minutes) earlier that day. 15 minutes after the
+meal, the participants received a blood sugar test to determine their
+blood sugar in mg/dL.</p>
+<p>The goal of the analysis is to determine which (if any) of the
+variables including pancake consumed (g), juice consumed (mL), whether
+the pancakes were homemade, and time spent exercising (min)
+significantly predict the blood sugar (mg/dL) of the participant</p>
+<p><em>Dataset:</em> <a href="group_assignments/blood_sugar.csv">blood_sugar.csv</a></p>
+</body>
+</html>

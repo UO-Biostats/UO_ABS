@@ -490,6 +490,26 @@ so this change represents slightly less than one standard deviation.
 
 ## posterior predictive checks
 
+The posterior predictive checks look good -
+no obvious issues with model fit.
+
+```{r pp1}
+pp_check(bfit, type='scatter')
+```
+
+----------
+
+```{r pp2}
+pp_check(bfit, type='loo_intervals')
+```
+
+----------
+
+```{r pp3}
+pp_check(bfit, type='hist')
+```
+
+
 
 
 
