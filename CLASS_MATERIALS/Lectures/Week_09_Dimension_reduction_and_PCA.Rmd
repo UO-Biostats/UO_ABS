@@ -531,6 +531,24 @@ Using this [dataset of chemical concentrations in wine](data/wine.tsv):
 
 ## IN CLASS
 
+```{r mroe}
+pcs <- princomp(wine[,-1])
+
+```
+
+
+```{r thedata}
+wine_pcs <- princomp(wine[,-1], cor=TRUE)
+pairs(wine_pcs$scores[,1:3], col=wine[,1])
+```
+
+
+--------
+
+Loadings:
+```{r theloadings}
+wine_pcs$loadings[,1:3]
+```
 
 
 
