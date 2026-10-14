@@ -48,7 +48,7 @@ c(t.test(x)$statistic,
 If $X_1, \ldots, X_n$ are independent random samples from a distribution with mean $\mu$,
 then
 $$\begin{equation}
-    t(X - \mu) = \frac{\bar x - \mu}{s/\sqrt{n}} \approx \StudentsT(n-2) ,
+    t(X - \mu) = \frac{\bar x - \mu}{s/\sqrt{n}} \approx \StudentsT(n-1) ,
 \end{equation}$$
 as long as $n$ is not too small and the distribution isn't too wierd.
 

@@ -38,7 +38,7 @@ away from the *true mean* has a $t$ distribution.
 
 . . .
 
-- ... with $n-2$ degrees of freedom.
+- ... with $n-1$ degrees of freedom.
 - "standard error" = $s / \sqrt{n}$ = SD of the sample mean
 
 . . .
@@ -63,8 +63,8 @@ of the true mean [is approximately](https://en.wikipedia.org/wiki/Student%27s_t-
 
 $$\begin{aligned}
     \int_{-2}^2
-        \frac{\Gamma\left(\frac{n-1}{2}\right)}{\sqrt{(n-2) \pi}\Gamma\left(\frac{n-2}{2}\right)}
-        \left(1 + \frac{x^2}{n-2}\right)^{-\frac{n - 1}{2}} dx .
+        \frac{\Gamma\left(\frac{n}{2}\right)}{\sqrt{(n-1) \pi}\Gamma\left(\frac{n-1}{2}\right)}
+        \left(1 + \frac{x^2}{n-1}\right)^{-\frac{n}{2}} dx .
 \end{aligned}$$
 
 . . .
